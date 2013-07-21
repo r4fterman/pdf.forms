@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu_configuration>
+    <menu name="File" visible="true">
+        <item command="NEW" name="New" visible="true" />
+        <item command="OPEN" name="Open Designer File" visible="true" />
+        <item command="RECENT_OPEN" name="Recently Designer Files" visible="true" />
+        <item command="CLOSE" name="Close" visible="true" />
+        <item command="SEPERATOR" name="Seperator" visible="true" />
+        <item command="IMPORT" name="Import PDF Document" visible="true" />
+        <item command="RECENT_IMPORT" name="Recently Imported PDF Documents" visible="true" />
+        <item command="SEPERATOR" name="Seperator" visible="true" />
+        <item command="SAVE_FILE" name="Save Designer File" visible="true" />
+        <item command="SAVE_FILE_AS" name="Save Designer File As" visible="true" />
+        <item command="SEPERATOR" name="Seperator" visible="true" />
+        <item command="PUBLISH" name="Publish PDF Document" visible="true" />
+        <item command="SEPERATOR" name="Seperator" visible="true" />
+        <item command="FONT_MANAGEMENT" name="Font Management" visible="true" />
+        <item command="SEPERATOR" name="Seperator" visible="true" />
+        <item command="EXIT" name="Exit" visible="true" />
+    </menu>
+    <menu name="Insert" visible="true">
+        <item command="INSERT_PAGE" name="Insert Page" visible="true" />
+        <item command="REMOVE_PAGE" name="Remove Page" visible="true" />
+    </menu>
+    <menu name="Layout" visible="true">
+        <item command="ALIGN" name="Align" visible="true" />
+        <item command="SEPERATOR" name="Seperator" visible="true" />
+        <item command="GROUP" name="Group" visible="true" />
+        <item command="UNGROUP" name="Ungroup" visible="true" />
+        <item command="SEPERATOR" name="Seperator" visible="true" />
+        <item command="BRING_TO_FRONT" name="Bring to Front" visible="true" />
+        <item command="SEND_TO_BACK" name="Send to Back" visible="true" />
+        <item command="BRING_FORWARDS" name="Bring Forwards" visible="true" />
+        <item command="SEND_BACKWARDS" name="Send Backwards" visible="true" />
+    </menu>
+    <menu name="Window" visible="true">
+        <item command="TOOLBARS" name="Toolbars" visible="true" />
+        <item command="SCRIPT_EDITOR" name="Script Editor" visible="true" />
+        <item command="SEPERATOR" name="Seperator" visible="true" />
+        <item command="HIERARCHY" name="Hierarchy" visible="true" />
+        <item command="SEPERATOR" name="Seperator" visible="true" />
+        <item command="LIBRARY" name="Library" visible="true" />
+        <item command="SEPERATOR" name="Seperator" visible="true" />
+        <item command="PROPERTIES" name="Properties" visible="true" />
+        <item command="LAYOUT" name="Layout" visible="true" />
+        <item command="BORDER" name="Border" visible="true" />
+        <item command="OBJECT" name="Object" visible="true" />
+        <item command="SEPERATOR" name="Seperator" visible="true" />
+        <item command="FONT" name="Font" visible="true" />
+        <item command="PARAGRAPH" name="Paragraph" visible="true" />
+    </menu>
+    <menu name="Help" visible="true">
+        <item command="WEBSITE" name="Visit Website" visible="true" />
+        <item command="ABOUT" name="About" visible="true" />
+    </menu>
+</menu_configuration>

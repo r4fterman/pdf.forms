@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window_configuration>
+    <window command="SCRIPT_EDITOR" name="Script Editor" visible="true" />
+    <window command="HIERARCHY" name="Hierarchy" visible="true" />
+    <window command="LIBRARY" name="Library" visible="true" />
+    <window command="PROPERTIES" name="Properties" visible="true" />
+</window_configuration>
