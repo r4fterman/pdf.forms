@@ -477,7 +477,7 @@ public class Writer {
                     break;
                 }
                 case IWidget.CHECK_BOX: {
-//                    writeOutCaption(widget, pageSize, currentPage);
+                    writeOutCaption(widget, pageSize, currentPage);
 //
 //                    PdfCheckBox value = (PdfCheckBox) widget.getValueComponent();
 //

@@ -153,7 +153,8 @@ public class FileFinder extends javax.swing.JDialog {
     }//GEN-LAST:event_skipClicked
 
     private void browseClicked(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseClicked
-        final JFileChooser chooser = new JFileChooser();
+        String path = locationBox.getText();
+        final JFileChooser chooser = new JFileChooser(path);
 
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
