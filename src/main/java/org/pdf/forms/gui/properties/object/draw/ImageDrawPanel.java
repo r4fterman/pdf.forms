@@ -155,7 +155,8 @@ public class ImageDrawPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_updateSizing
 
     private void loadImageFileChooser(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadImageFileChooser
-        final JFileChooser chooser = new JFileChooser();
+        String path = imageLocationBox.getText();
+        final JFileChooser chooser = new JFileChooser(path);
 
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
