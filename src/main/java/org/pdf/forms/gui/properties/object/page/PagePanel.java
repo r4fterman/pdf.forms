@@ -31,17 +31,15 @@
 */
 package org.pdf.forms.gui.properties.object.page;
 
-import java.awt.Dimension;
-import java.awt.event.ActionListener;
-import java.util.Set;
-
-import javax.swing.JComboBox;
-
+import com.itextpdf.text.PageSize;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.Rule;
 
-import com.lowagie.text.PageSize;
+import javax.swing.JComboBox;
+import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import java.util.Set;
 
 public class PagePanel extends javax.swing.JPanel {
     

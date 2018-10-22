@@ -26,29 +26,29 @@
 
  *
  * ---------------
- * Tester.java
+ * WriterTest.java
  * ---------------
  */
 package org.pdf.forms.writer;
 
-import java.awt.*;
-import java.io.FileOutputStream;
-
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.BaseField;
+import com.itextpdf.text.pdf.GrayColor;
+import com.itextpdf.text.pdf.PdfBorderDictionary;
+import com.itextpdf.text.pdf.PdfFormField;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.RadioCheckField;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.BaseField;
-import com.lowagie.text.pdf.PdfBorderDictionary;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfFormField;
-import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.RadioCheckField;
+import java.awt.Color;
+import java.io.FileOutputStream;
 
-public class Tester {
+public class WriterTest {
 
     @Rule
     public final TemporaryFolder testFolder = new TemporaryFolder();
@@ -62,10 +62,10 @@ public class Tester {
 
         RadioCheckField bt = new RadioCheckField(writer, new Rectangle(100, 100, 200, 200), "radio", "v1");
         bt.setCheckType(RadioCheckField.TYPE_CIRCLE);
-        bt.setBackgroundColor(Color.cyan);
+        bt.setBackgroundColor(getBaseColor(Color.cyan));
         bt.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
-        bt.setBorderColor(Color.red);
-        bt.setTextColor(Color.yellow);
+        bt.setBorderColor(getBaseColor(Color.red));
+        bt.setTextColor(getBaseColor(Color.yellow));
         bt.setBorderWidth(BaseField.BORDER_WIDTH_THICK);
         bt.setChecked(false);
         PdfFormField f1 = bt.getRadioField();
@@ -85,10 +85,14 @@ public class Tester {
         bt = new RadioCheckField(writer, new Rectangle(300, 300, 400, 400), "check1", "Yes");
         bt.setCheckType(RadioCheckField.TYPE_CHECK);
         bt.setBorderWidth(BaseField.BORDER_WIDTH_THIN);
-        bt.setBorderColor(Color.black);
-        bt.setBackgroundColor(Color.white);
+        bt.setBorderColor(getBaseColor(Color.black));
+        bt.setBackgroundColor(getBaseColor(Color.white));
         PdfFormField ck = bt.getCheckField();
         writer.addAnnotation(ck);
         document.close();
+    }
+
+    private BaseColor getBaseColor(Color color) {
+        return new GrayColor(color.getRGB());
     }
 }

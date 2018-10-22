@@ -31,28 +31,27 @@
 */
 package org.pdf.forms.writer;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.swing.AbstractButton;
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListModel;
-
+import com.itextpdf.awt.DefaultFontMapper;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.AcroFields;
+import com.itextpdf.text.pdf.BaseField;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.GrayColor;
+import com.itextpdf.text.pdf.PdfAction;
+import com.itextpdf.text.pdf.PdfBorderDictionary;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfCopyFields;
+import com.itextpdf.text.pdf.PdfFormField;
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PushbuttonField;
+import com.itextpdf.text.pdf.RadioCheckField;
+import com.itextpdf.text.pdf.TextField;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.utils.XMLUtils;
@@ -69,25 +68,26 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.AcroFields;
-import com.lowagie.text.pdf.BaseField;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.DefaultFontMapper;
-import com.lowagie.text.pdf.PdfAction;
-import com.lowagie.text.pdf.PdfBorderDictionary;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfCopyFields;
-import com.lowagie.text.pdf.PdfFormField;
-import com.lowagie.text.pdf.PdfName;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfStamper;
-import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.PushbuttonField;
-import com.lowagie.text.pdf.RadioCheckField;
-import com.lowagie.text.pdf.TextField;
+import javax.swing.AbstractButton;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListModel;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Writer {
 
@@ -483,8 +483,8 @@ public class Writer {
                     tf.setText(valueText);
                     tf.setFont(baseFont);
                     tf.setFontSize(value.getFont().getSize());
-                    tf.setTextColor(widget.getValueComponent().getForeground());
-                    tf.setBackgroundColor(Color.white);
+                    tf.setTextColor(getBaseColor(widget.getValueComponent().getForeground()));
+                    tf.setBackgroundColor(getBaseColor(Color.white));
                     addBorder(widget, tf);
 
                     field = tf.getTextField();
@@ -562,7 +562,7 @@ public class Writer {
                     TextField combo = new TextField(writer, pdfValueBounds, widget.getWidgetName());
                     combo.setFont(baseFont);
                     combo.setFontSize(value.getFont().getSize());
-                    combo.setTextColor(widget.getValueComponent().getForeground());
+                    combo.setTextColor(getBaseColor(widget.getValueComponent().getForeground()));
                     combo.setChoices(items);
 
                     Element editableElement = XMLUtils.getPropertyElement(rootElement, "Allow Custom Text Entry");
@@ -652,8 +652,8 @@ public class Writer {
                     pushbutton.setFont(baseFont);
                     pushbutton.setFontSize(font.getSize());
                     pushbutton.setText(value.getText());
-                    pushbutton.setTextColor(value.getForeground());
-                    pushbutton.setBackgroundColor(value.getBackground());
+                    pushbutton.setTextColor(getBaseColor(value.getForeground()));
+                    pushbutton.setBackgroundColor(getBaseColor(value.getBackground()));
 
                     org.w3c.dom.Document document = widget.getProperties();
                     Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
@@ -682,6 +682,10 @@ public class Writer {
             else
                 globalStamper.addAnnotation(field, currentPage);
         }
+    }
+
+    private BaseColor getBaseColor(Color color) {
+        return new GrayColor(color.getRGB());
     }
 
     private String getName(IWidget widget) {
@@ -714,7 +718,7 @@ public class Writer {
         else if (style.equals("None"))
             return;
 
-        tf.setBorderColor(new Color(Integer.parseInt(color)));
+        tf.setBorderColor(new GrayColor(Integer.parseInt(color)));
         tf.setBorderWidth(Integer.parseInt(width));
     }
 
