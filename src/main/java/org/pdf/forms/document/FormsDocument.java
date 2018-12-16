@@ -1,40 +1,37 @@
 /**
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* 	This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* FormsDocument.java
-* ---------------
-*/
+ * ===========================================
+ * PDF Forms Designer
+ * ===========================================
+ * <p>
+ * Project Info:  http://pdfformsdesigne.sourceforge.net
+ * (C) Copyright 2006-2008..
+ * Lead Developer: Simon Barnett (n6vale@googlemail.com)
+ * <p>
+ * This file is part of the PDF Forms Designer
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>
+ * <p>
+ * <p>
+ * ---------------
+ * FormsDocument.java
+ * ---------------
+ */
 package org.pdf.forms.document;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -49,10 +46,10 @@ import org.w3c.dom.Node;
 
 public class FormsDocument {
 
-    private List pages = new ArrayList();
+    private List<Page> pages = new ArrayList<>();
     private Document documentProperties;
-    
-    public FormsDocument() {
+
+    public FormsDocument(final String version) {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -74,9 +71,6 @@ public class FormsDocument {
             DocumentBuilder db = dbf.newDocumentBuilder();
             documentProperties = db.newDocument();
 
-//            Element rootElement = documentProperties.createElement("document");
-//            documentProperties.appendChild(rootElement);
-
             Node newRoot = documentProperties.importNode(loadedRoot, true);
             documentProperties.appendChild(newRoot);
         } catch (ParserConfigurationException e) {
@@ -84,51 +78,53 @@ public class FormsDocument {
         }
     }
 
-    public void movePage(int fromIndex, int toIndex) {
+    public void movePage(
+            int fromIndex,
+            int toIndex) {
         if (fromIndex > toIndex) {
-            Object objectToMove = pages.get(fromIndex);
+            Page objectToMove = pages.get(fromIndex);
             pages.add(toIndex, objectToMove);
 
             pages.remove(pages.lastIndexOf(objectToMove));
         } else {
             toIndex++;
-            Object objectToMove = pages.get(fromIndex);
+            Page objectToMove = pages.get(fromIndex);
             pages.add(toIndex, objectToMove);
 
-            pages.remove(pages.indexOf(objectToMove));
+            pages.remove(objectToMove);
         }
     }
 
-    public LinkedHashMap getPdfFilesUsed(){
-    	LinkedHashMap pdfFilesUsed = new LinkedHashMap();
-    	
-    	for (Iterator it = pages.iterator(); it.hasNext();) {
-			Page page = (Page) it.next();
+//    public LinkedHashMap getPdfFilesUsed() {
+//        LinkedHashMap<String, Double> pdfFilesUsed = new LinkedHashMap<>();
+//
+//        for (Page page : pages) {
+//            String pdfFileLocation = page.getPdfFileLocation();
+//
+//            if (pdfFileLocation != null && pdfFilesUsed.get(pdfFileLocation) == null) {
+//                File file = new File(pdfFileLocation);
+//                Double size = round((file.length() / 1000d));
+//
+//                pdfFilesUsed.put(pdfFileLocation, size);
+//            }
+//        }
+//
+//        return pdfFilesUsed;
+//    }
 
-			String pdfFileLocation = page.getPdfFileLocation();
+//    private double round(double number) {
+//        double exponential = Math.pow(10, 1);
+//
+//        number *= exponential;
+//        number = Math.round(number);
+//        number /= exponential;
+//
+//        return number;
+//    }
 
-			if (pdfFileLocation != null && pdfFilesUsed.get(pdfFileLocation) == null) {
-				File file = new File(pdfFileLocation);
-				Double size = new Double(round((file.length() / 1000d), 1));
-
-				pdfFilesUsed.put(pdfFileLocation, size);
-			}
-		}
-    	
-    	return pdfFilesUsed;
-    }
-    
-    private double round(double number, int decPlaces) {
-        double exponential = Math.pow(10, decPlaces);
-
-        number *= exponential;
-        number = Math.round(number);
-        number /= exponential;
-
-        return number;
-    }
-    
-    public void addPage(int index, Page page) {
+    public void addPage(
+            int index,
+            Page page) {
         pages.add(index - 1, page);
     }
 
@@ -141,13 +137,12 @@ public class FormsDocument {
     }
 
     public Page getPage(int pageNumber) {
-        return (Page) pages.get(pageNumber - 1);
+        return pages.get(pageNumber - 1);
     }
 
     public int getNoOfPages() {
         return pages.size();
     }
-
 
     //todo try removing this
     public Document getDocument() {
@@ -158,26 +153,24 @@ public class FormsDocument {
 
         List pageNodes = XMLUtils.getElementsFromNodeList(documentProperties.getElementsByTagName("page"));
 
-        /** remove all pages from document so we can rebuild */
-        for (Iterator it = pageNodes.iterator(); it.hasNext();) {
-            Element element = (Element) it.next();
+        /* remove all pages from document so we can rebuild */
+        for (final Object node : pageNodes) {
+            Element element = (Element) node;
             Node parent = element.getParentNode();
             parent.removeChild(element);
         }
 
-//        List radioButtonGroupsList = XMLUtils.getElementsFromNodeList(documentProperties.getElementsByTagName("radio_button_groups"));
-//
-//        /** remove any radio button groups from the document */
-//        for (Iterator it = radioButtonGroupsList.iterator(); it.hasNext();) {
-//            Element element = (Element) it.next();
-//            Node parent = element.getParentNode();
-//            parent.removeChild(element);
-//        }
+        //        List radioButtonGroupsList = XMLUtils.getElementsFromNodeList(documentProperties.getElementsByTagName("radio_button_groups"));
+        //
+        //        /** remove any radio button groups from the document */
+        //        for (Iterator it = radioButtonGroupsList.iterator(); it.hasNext();) {
+        //            Element element = (Element) it.next();
+        //            Node parent = element.getParentNode();
+        //            parent.removeChild(element);
+        //        }
 
-        /** add all pages to the document*/
-        for (Iterator it = pages.iterator(); it.hasNext();) {
-            Page page = (Page) it.next();
-
+        /* add all pages to the document*/
+        for (Page page : pages) {
             Document pageProperties = page.getPageProperties();
 
             Element pageRoot = pageProperties.getDocumentElement();
@@ -185,18 +178,18 @@ public class FormsDocument {
             documentProperties.getDocumentElement().appendChild(documentProperties.importNode(pageRoot, true));
         }
 
-        /** add radio button groups to the document */
+        /* add radio button groups to the document */
 
-//            try {
-//                StringWriter sw = new StringWriter();
-//                InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
-//                TransformerFactory transformerFactory = TransformerFactory.newInstance();
-//                Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
-//                transformer.transform(new DOMSource(documentProperties), new StreamResult(sw));
-//                System.out.println(sw.toString());
-//            } catch (TransformerException e) {
-//                e.printStackTrace();
-//            }
+        //            try {
+        //                StringWriter sw = new StringWriter();
+        //                InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
+        //                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        //                Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
+        //                transformer.transform(new DOMSource(documentProperties), new StreamResult(sw));
+        //                System.out.println(sw.toString());
+        //            } catch (TransformerException e) {
+        //                e.printStackTrace();
+        //            }
 
         return documentProperties;
     }
