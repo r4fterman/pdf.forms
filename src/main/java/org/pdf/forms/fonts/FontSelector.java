@@ -1,45 +1,42 @@
 /**
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* 	This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* FontSelector.java
-* ---------------
-*/
+ * ===========================================
+ * PDF Forms Designer
+ * ===========================================
+ * <p>
+ * Project Info:  http://pdfformsdesigne.sourceforge.net
+ * (C) Copyright 2006-2008..
+ * Lead Developer: Simon Barnett (n6vale@googlemail.com)
+ * <p>
+ * This file is part of the PDF Forms Designer
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>
+ * <p>
+ * <p>
+ * ---------------
+ * FontSelector.java
+ * ---------------
+ */
 package org.pdf.forms.fonts;
 
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.io.File;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 
 import org.jpedal.examples.simpleviewer.utils.FileFilterer;
 import org.pdf.forms.gui.IMainFrame;
@@ -49,31 +46,33 @@ public class FontSelector extends javax.swing.JPanel {
 
     private IMainFrame mainFrame;
     private JDialog parent;
-    
-	/**
+
+    /**
      * Creates new form FontSelector
-	 * @param parentDialog
+     * @param parentDialog
      */
-    public FontSelector(IMainFrame mainFrame, JDialog parentDialog) {
+    public FontSelector(
+            IMainFrame mainFrame,
+            JDialog parentDialog) {
         initComponents();
 
-        this.parent = parent;
+        this.parent = parentDialog;
         this.mainFrame = mainFrame;
-        
+
         populateFontsAvailiable();
     }
 
-	private void populateFontsAvailiable() {
-		Map fonts = FontHandler.getInstance().getFontFileMap();
+    private void populateFontsAvailiable() {
+        Map fonts = FontHandler.getInstance().getFontFileMap();
 
         DefaultListModel model = new DefaultListModel();
-		fontsList.setModel(model);
+        fontsList.setModel(model);
 
-        for (Iterator it = fonts.keySet().iterator(); it.hasNext();) {
+        for (Iterator it = fonts.keySet().iterator(); it.hasNext(); ) {
             Font font = (Font) it.next();
-			model.addElement(font.getFontName() + " -> " + fonts.get(font));
+            model.addElement(font.getFontName() + " -> " + fonts.get(font));
         }
-	}
+    }
 
     /**
      * This method is called from within the constructor to
@@ -111,32 +110,32 @@ public class FontSelector extends javax.swing.JPanel {
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jLabel1)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 794, Short.MAX_VALUE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, okButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, addFontButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap())
+                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(jLabel1)
+                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 794, Short.MAX_VALUE)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, okButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, addFontButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jLabel1)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(addFontButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 327, Short.MAX_VALUE)
-                        .add(okButton))
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE))
-                .addContainerGap())
+                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(jLabel1)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(layout.createSequentialGroup()
+                                                .add(addFontButton)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 327, Short.MAX_VALUE)
+                                                .add(okButton))
+                                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE))
+                                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -145,12 +144,12 @@ public class FontSelector extends javax.swing.JPanel {
     }//GEN-LAST:event_okClicked
 
     private void addFontClicked(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addFontClicked
-        
-    	final JFileChooser chooser = new JFileChooser();
+
+        final JFileChooser chooser = new JFileChooser();
 
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        String[] ttf = new String[]{"ttf"};
+        String[] ttf = new String[] { "ttf" };
         chooser.addChoosableFileFilter(new FileFilterer(ttf, "ttf (*.ttf)"));
 
         final int state = chooser.showOpenDialog((Component) mainFrame);
@@ -158,14 +157,13 @@ public class FontSelector extends javax.swing.JPanel {
         final File fileToOpen = chooser.getSelectedFile();
 
         if (fileToOpen != null && state == JFileChooser.APPROVE_OPTION) {
-        	String name = FontHandler.getInstance().registerFont(fileToOpen);
-        	DesignerPropertiesFile.getInstance().addCustomFont(name, fileToOpen.getAbsolutePath());
-        	
-        	populateFontsAvailiable();
-        }
-    	
-    }//GEN-LAST:event_addFontClicked
+            String name = FontHandler.getInstance().registerFont(fileToOpen);
+            DesignerPropertiesFile.getInstance().addCustomFont(name, fileToOpen.getAbsolutePath());
 
+            populateFontsAvailiable();
+        }
+
+    }//GEN-LAST:event_addFontClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList fontsList;
