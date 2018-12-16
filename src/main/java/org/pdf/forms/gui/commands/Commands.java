@@ -31,9 +31,7 @@
 */
 package org.pdf.forms.gui.commands;
 
-import java.awt.Component;
-import java.awt.EventQueue;
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -48,12 +46,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.ProgressMonitor;
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -72,7 +65,6 @@ import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.fonts.FontSelector;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.gui.designer.Designer;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.DesignerCompound;
 import org.pdf.forms.gui.windows.AboutPanel;
@@ -133,15 +125,19 @@ public class Commands {
     public static final int ZOOM = 608001297;
     public static final int ZOOM_OUT = 1668177090;
 	
-    private IMainFrame mainFrame;
-    
-	private JMenuItem[] recentDesignerDocuments;
+    private final IMainFrame mainFrame;
+    private final String version;
+
+    private JMenuItem[] recentDesignerDocuments;
 	private JMenuItem[] recentImportedDocuments;
 	private int noOfRecentDocs;
 
-    public Commands(IMainFrame mainFrame) {
+    public Commands(
+            final IMainFrame mainFrame,
+            final String version) {
         this.mainFrame = mainFrame;
-        
+        this.version = version;
+
         noOfRecentDocs = DesignerPropertiesFile.getInstance().getNoRecentDocumentsToDisplay();
         recentDesignerDocuments = new JMenuItem[noOfRecentDocs];
         recentImportedDocuments = new JMenuItem[noOfRecentDocs];
@@ -587,7 +583,7 @@ public class Commands {
 
                 writeXML(documentProperties, mainFrame.getCurrentDesignerFileName());
 
-                mainFrame.setTitle(fileToSave + " - PDF Forms Designer Version " + Designer.version);
+                mainFrame.setTitle(fileToSave + " - PDF Forms Designer Version " + version);
 
                 finished = true;
             } else {
@@ -623,11 +619,11 @@ public class Commands {
         closePDF();
 
         mainFrame.setCurrentDesignerFileName("Untitled");
-        mainFrame.setTitle("Untitled - PDF Forms Designer Version " + Designer.version);
+        mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version);
 
         setPanelsState(true);
 
-        mainFrame.setFormsDocument(new FormsDocument());
+        mainFrame.setFormsDocument(new FormsDocument(version));
 
         insertPage(width, height);
     }
@@ -729,7 +725,7 @@ public class Commands {
 
 		setTotalPages();
 
-		mainFrame.setTitle(mainFrame.getCurrentDesignerFileName() + " - PDF Forms Designer Version " + Designer.version);
+		mainFrame.setTitle(mainFrame.getCurrentDesignerFileName() + " - PDF Forms Designer Version " + version);
 		
 		DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance();
 		properties.addRecentDocument(designerFileToOpen, "recentdesfiles");
@@ -771,7 +767,7 @@ public class Commands {
 
 		    setPanelsState(true);
 
-		    mainFrame.setFormsDocument(new FormsDocument());
+		    mainFrame.setFormsDocument(new FormsDocument(version));
 		}
 
         try {
@@ -837,7 +833,7 @@ public class Commands {
 		    			}
 
 		    			mainFrame.setCurrentDesignerFileName("Untitled");
-		    			mainFrame.setTitle("Untitled - PDF Forms Designer Version " + Designer.version);
+		    			mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version);
 
 		    		} else if (importType == PDFImportChooser.IMPORT_EXISTING) {
 		    			for (int pdfPageNumber = 1; pdfPageNumber < pageCount + 1; pdfPageNumber++) {
@@ -1010,7 +1006,7 @@ public class Commands {
         mainFrame.getDesigner().close();
 
         mainFrame.setCurrentDesignerFileName("");
-        mainFrame.setTitle("PDF Forms Designer Version " + Designer.version);
+        mainFrame.setTitle("PDF Forms Designer Version " + version);
 
         mainFrame.setPropertiesCompound(new HashSet());
         mainFrame.setPropertiesToolBar(new HashSet());
@@ -1145,7 +1141,7 @@ public class Commands {
 		    			}
 
 		    			mainFrame.setCurrentDesignerFileName("Untitled");
-		    			mainFrame.setTitle("Untitled - PDF Forms Designer Version " + Designer.version);
+		    			mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version);
 
 		    		} else if (importType == PDFImportChooser.IMPORT_EXISTING) {
 		    			for (int pdfPageNumber = 1; pdfPageNumber < pageCount + 1; pdfPageNumber++) {

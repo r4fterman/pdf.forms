@@ -129,7 +129,7 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>${library.folder}</classpathPrefix>
-                            <mainClass>org.pdf.forms.gui.VLFrame</mainClass>
+                            <mainClass>org.pdf.forms.Application</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Class-Path>${library.folder}/jpedal.jar</Class-Path>

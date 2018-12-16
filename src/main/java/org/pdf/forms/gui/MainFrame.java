@@ -31,17 +31,10 @@
 */
 package org.pdf.forms.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.util.Set;
 
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
@@ -62,14 +55,14 @@ public class MainFrame extends JFrame implements IMainFrame {
 
     private FontPropertiesTab properties;
 
-    public MainFrame() {
+    public MainFrame(final String version) {
         Rule horizontalRuler = new Rule(INSET, Rule.HORIZONTAL, true);
         horizontalRuler.setPreferredWidth(Toolkit.getDefaultToolkit().getScreenSize().width);
 
         Rule verticalRuler = new Rule(INSET, Rule.VERTICAL, true);
         verticalRuler.setPreferredHeight(Toolkit.getDefaultToolkit().getScreenSize().height);
 
-        IDesigner designerPanel = new Designer(INSET, horizontalRuler, verticalRuler, this);
+        IDesigner designerPanel = new Designer(INSET, horizontalRuler, verticalRuler, this, version);
 //		designerPanel.addMouseListener(new DesignerMouseListener(designerPanel));
 //		designerPanel.addMouseMotionListener(new DesignerMouseMotionListener(designerPanel));
 
@@ -124,7 +117,7 @@ public class MainFrame extends JFrame implements IMainFrame {
             e.printStackTrace();
         }
 
-        new MainFrame();
+        new MainFrame("TEST");
     }
 
     public void resetPaletteButtons() {

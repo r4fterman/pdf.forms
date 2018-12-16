@@ -1,43 +1,37 @@
 /**
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* 	This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* Designer.java
-* ---------------
-*/
+ * ===========================================
+ * PDF Forms Designer
+ * ===========================================
+ * <p>
+ * Project Info:  http://pdfformsdesigne.sourceforge.net
+ * (C) Copyright 2006-2008..
+ * Lead Developer: Simon Barnett (n6vale@googlemail.com)
+ * <p>
+ * This file is part of the PDF Forms Designer
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>
+ * <p>
+ * <p>
+ * ---------------
+ * Designer.java
+ * ---------------
+ */
 package org.pdf.forms.gui.designer;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.Collection;
 import java.util.HashSet;
@@ -46,9 +40,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JToolTip;
+import javax.swing.*;
 
 import org.jpedal.PdfDecoder;
 import org.pdf.forms.document.Page;
@@ -66,8 +58,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class Designer extends PdfDecoder implements IDesigner {
-
-    public static final String version = "0.8b05";
 
     private List widgets;// = new ArrayList();
 
@@ -107,38 +97,42 @@ public class Designer extends PdfDecoder implements IDesigner {
 
     private int drawingState;
 
-	private Page currentPage;
+    private Page currentPage;
 
-//	private double scale = 1; @scale
+    //	private double scale = 1; @scale
 
-    public Designer(int inset, Rule horizontalRuler, Rule verticalRuler,
-                    IMainFrame mainFrame) {
+    public Designer(
+            int inset,
+            Rule horizontalRuler,
+            Rule verticalRuler,
+            IMainFrame mainFrame,
+            final String version) {
 
         super();
 
-//        try {
-//            URL testFile = new URL("http://www.jpedal.org/forms/forms.lic");
-//            URLConnection yc = testFile.openConnection();
-//            yc.getInputStream();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            JOptionPane.showMessageDialog(null, "This application is no longer valid");
-//            System.exit(1);
-//        }
+        //        try {
+        //            URL testFile = new URL("http://www.jpedal.org/forms/forms.lic");
+        //            URLConnection yc = testFile.openConnection();
+        //            yc.getInputStream();
+        //        } catch (Exception e) {
+        //            e.printStackTrace();
+        //            JOptionPane.showMessageDialog(null, "This application is no longer valid");
+        //            System.exit(1);
+        //        }
 
         //setDisplayForms(false);
 
         setBackground(BACKGROUND_COLOR);
 
         this.selectionBox = new DesignerSelectionBox(this);
-        this.widgetSelection = new WidgetSelection(this);
+        this.widgetSelection = new WidgetSelection(this, version);
 
         this.horizontalRuler = horizontalRuler;
         this.verticalRuler = verticalRuler;
         this.inset = inset;
         this.mainFrame = mainFrame;
 
-//        new DropTarget(this, new DropableComponent(this));
+        //        new DropTarget(this, new DropableComponent(this));
 
         addMouseListener(new DesignerMouseListener(this));
         addMouseMotionListener(new DesignerMouseMotionListener(this));
@@ -154,8 +148,8 @@ public class Designer extends PdfDecoder implements IDesigner {
             Rectangle r = new Rectangle(inset, inset, currentPage.getWidth(), currentPage.getHeight());
 
             if (drawingState != IDesigner.PDFPAGE) {
-//				g2.setPaint(IDesigner.PAGE_COLOR);
-//				g2.fillRect((int) Math.round((inset) / scale), (int) Math.round ((inset) / scale), pageWidth, pageHeight);
+                //				g2.setPaint(IDesigner.PAGE_COLOR);
+                //				g2.fillRect((int) Math.round((inset) / scale), (int) Math.round ((inset) / scale), pageWidth, pageHeight);
                 g2.setPaint(IDesigner.PAGE_COLOR);
                 g2.fill(r);
             }
@@ -163,13 +157,15 @@ public class Designer extends PdfDecoder implements IDesigner {
             g2.setColor(Color.black);
             g2.draw(r);
 
-//			g2.setPaint(Color.black);
-//			g2.drawRect((int) Math.round((inset - 1) / scale), (int) Math.round ((inset - 1) / scale), pageWidth + 1, pageHeight + 1);
+            //			g2.setPaint(Color.black);
+            //			g2.drawRect((int) Math.round((inset - 1) / scale), (int) Math.round ((inset - 1) / scale), pageWidth + 1, pageHeight + 1);
 
         }
     }
 
-    private void drawWidget(IWidget widget, Graphics2D g2) {
+    private void drawWidget(
+            IWidget widget,
+            Graphics2D g2) {
 
         if (widget.getType() == IWidget.GROUP) {
             widgetSelection.drawMulitipleSelectionBox(g2, new HashSet(widget.getWidgetsInGroup()), false);
@@ -210,7 +206,7 @@ public class Designer extends PdfDecoder implements IDesigner {
         Graphics2D g2 = (Graphics2D) g;
 
         AffineTransform transform = g2.getTransform();
-//		transform.scale(scale, scale); @scale
+        //		transform.scale(scale, scale); @scale
         g2.setTransform(transform);
 
         /**
@@ -221,15 +217,16 @@ public class Designer extends PdfDecoder implements IDesigner {
         /**
          * draw each widget in turn onto the page
          */
-        for (Iterator iter = widgets.iterator(); iter.hasNext();) {
+        for (Iterator iter = widgets.iterator(); iter.hasNext(); ) {
             drawWidget((IWidget) iter.next(), g2);
         }
 
         IWidget selectedWidget;
-        if (selectedWidgets.isEmpty())
+        if (selectedWidgets.isEmpty()) {
             selectedWidget = null;
-        else
+        } else {
             selectedWidget = (IWidget) selectedWidgets.iterator().next();
+        }
 
         /**
          * if we're dragging out a component from the library, dragBoxMouseLocation will
@@ -262,11 +259,13 @@ public class Designer extends PdfDecoder implements IDesigner {
         selectionBox.paintBox(g2);
     }
 
-    private void drawDragOutBoxAndDisplayTooltip(Graphics2D g2, Rectangle boxSize) {
+    private void drawDragOutBoxAndDisplayTooltip(
+            Graphics2D g2,
+            Rectangle boxSize) {
         int dragBoxX = dragBoxMouseLocation.x - (boxSize.width / 2);
         int dragBoxY = dragBoxMouseLocation.y - (boxSize.height / 2);
 
-        float[] dashPattern = {1, 1};
+        float[] dashPattern = { 1, 1 };
         g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 1,
                 dashPattern, 0));
@@ -281,7 +280,10 @@ public class Designer extends PdfDecoder implements IDesigner {
         displayTooltip(g2, boxSize, false);
     }
 
-    private void displayTooltip(Graphics2D g2, Rectangle boxSize, boolean isResizing) {
+    private void displayTooltip(
+            Graphics2D g2,
+            Rectangle boxSize,
+            boolean isResizing) {
         JToolTip tooltip = new JToolTip();
 
         String text;
@@ -319,7 +321,9 @@ public class Designer extends PdfDecoder implements IDesigner {
         g2.translate(-translateX, -translateY);
     }
 
-    private double round(double number, int decPlaces) {
+    private double round(
+            double number,
+            int decPlaces) {
 
         double exponential = Math.pow(10, decPlaces);
 
@@ -355,19 +359,20 @@ public class Designer extends PdfDecoder implements IDesigner {
     }
 
     public Dimension getPreferredSize() {
-        if (drawingState == IDesigner.PDFPAGE)
+        if (drawingState == IDesigner.PDFPAGE) {
             return getMaximumSize();
-        else
+        } else {
             return new Dimension(inset * 2 + pageWidth, inset * 2 + pageHeight);
+        }
     }
 
     public void displayPage(final Page page) {
-    	
-    	this.currentPage = page;
-    	
+
+        this.currentPage = page;
+
         widgets = page.getWidgets();
-        
-//		widgetsInAddedOrder = page.getWidgetsInAddedOrder();
+
+        //		widgetsInAddedOrder = page.getWidgetsInAddedOrder();
 
         selectedWidgets.clear();
 
@@ -377,20 +382,21 @@ public class Designer extends PdfDecoder implements IDesigner {
 
             pageWidth = page.getWidth();
             pageHeight = page.getHeight();
-            
+
             closePdfFile();
         } else {
             drawingState = IDesigner.PDFPAGE;
 
             try {
-            	closePdfFile();
-            	
+                closePdfFile();
+
                 setDisplayForms(false);
 
-                if (pdfFile.startsWith("http:") || pdfFile.startsWith("file:"))
+                if (pdfFile.startsWith("http:") || pdfFile.startsWith("file:")) {
                     openPdfFileFromURL(pdfFile);
-                else
+                } else {
                     openPdfFile(pdfFile);
+                }
 
                 currentlyOpenPDF = pdfFile;
 
@@ -404,17 +410,17 @@ public class Designer extends PdfDecoder implements IDesigner {
                 pageWidth = getPdfPageData().getCropBoxWidth(pdfPageNumber);
                 pageHeight = getPdfPageData().getCropBoxHeight(pdfPageNumber);
 
-//                if (!page.widgetsAddedToDesigner()) {
-//                    List widgestList = WidgetParser.parseWidgets(getCurrentFormRenderer(), pageHeight);
-//
-//                    for (Iterator it = widgestList.iterator(); it.hasNext();) {
-//                        IWidget widget = (IWidget) it.next();
-//						if (widget != null)
-//							addWidget(widget);
-//                    }
-//
-//                    page.setWidgetsAddedToDesigner(true);
-//                }
+                //                if (!page.widgetsAddedToDesigner()) {
+                //                    List widgestList = WidgetParser.parseWidgets(getCurrentFormRenderer(), pageHeight);
+                //
+                //                    for (Iterator it = widgestList.iterator(); it.hasNext();) {
+                //                        IWidget widget = (IWidget) it.next();
+                //						if (widget != null)
+                //							addWidget(widget);
+                //                    }
+                //
+                //                    page.setWidgetsAddedToDesigner(true);
+                //                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -423,17 +429,21 @@ public class Designer extends PdfDecoder implements IDesigner {
         updateUI();
     }
 
-//    private void setDisplayForms(boolean displayForms) {
-//		this.displayForms = displayForms;
-//	}
+    //    private void setDisplayForms(boolean displayForms) {
+    //		this.displayForms = displayForms;
+    //	}
 
-	public IWidget getWidgetAt(int x, int y) {
+    public IWidget getWidgetAt(
+            int x,
+            int y) {
 
-        for (ListIterator iter = widgets.listIterator(widgets.size()); iter.hasPrevious();) {
+        for (ListIterator iter = widgets.listIterator(widgets.size()); iter.hasPrevious(); ) {
             IWidget widget = (IWidget) iter.previous();
 
             if (widget.getBounds().contains(x, y))//if (widget.getBounds().contains(x / scale, y / scale)) @scale
+            {
                 return widget;
+            }
         }
 
         return null;
@@ -443,35 +453,39 @@ public class Designer extends PdfDecoder implements IDesigner {
         mainFrame.addWidgetToHierarchy(widget);
 
         mainFrame.addWidgetToPage(widget);
-        
+
         Set set = new HashSet();
         set.add(widget);
         mainFrame.setPropertiesCompound(set);
         mainFrame.setPropertiesToolBar(set);
     }
 
-    public void addWidget(int index, IWidget w) {
+    public void addWidget(
+            int index,
+            IWidget w) {
         widgets.add(index, w);
-//		widgetsInAddedOrder.add(w);
+        //		widgetsInAddedOrder.add(w);
     }
 
     public void removeSelectedWidgets() {
         this.widgets.removeAll(selectedWidgets);
-//		this.widgetsInAddedOrder.removeAll(selectedWidgets);
+        //		this.widgetsInAddedOrder.removeAll(selectedWidgets);
 
         removeWidgetsFromHierarchy(selectedWidgets);
     }
 
     private void removeWidgetsFromHierarchy(Collection widgets) {
-        for (Iterator it = widgets.iterator(); it.hasNext();) {
+        for (Iterator it = widgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             mainFrame.removeWidgetFromHierarchy(widget);
         }
     }
 
-    public void removeWidget(IWidget widgetToRemove, List widgets) {
+    public void removeWidget(
+            IWidget widgetToRemove,
+            List widgets) {
 
-        for (Iterator it = widgets.iterator(); it.hasNext();) {
+        for (Iterator it = widgets.iterator(); it.hasNext(); ) {
             IWidget w = (IWidget) it.next();
 
             if (w.getType() == IWidget.GROUP) {
@@ -511,8 +525,9 @@ public class Designer extends PdfDecoder implements IDesigner {
     public void setSelectedWidgets(Set selectedWidgets) {
         this.selectedWidgets = selectedWidgets;
 
-        if (selectedWidgets.isEmpty())
+        if (selectedWidgets.isEmpty()) {
             widgetSelection.hideGroupingButtons();
+        }
 
     }
 
@@ -565,19 +580,19 @@ public class Designer extends PdfDecoder implements IDesigner {
         return widgets;
     }
 
-//	public IWidget getOldestSelectedWidget() {
-//	IWidget oldestSelectedWidget = null;
+    //	public IWidget getOldestSelectedWidget() {
+    //	IWidget oldestSelectedWidget = null;
 
-//for (Iterator iter = widgetsInAddedOrder.iterator(); iter.hasNext();) {
-//	IWidget widget = (IWidget) iter.next();
-//	if (selectedWidgets.contains(widget)) {
-//	oldestSelectedWidget = widget;
-//	break;
-//	}
-//	}
+    //for (Iterator iter = widgetsInAddedOrder.iterator(); iter.hasNext();) {
+    //	IWidget widget = (IWidget) iter.next();
+    //	if (selectedWidgets.contains(widget)) {
+    //	oldestSelectedWidget = widget;
+    //	break;
+    //	}
+    //	}
 
-//	return oldestSelectedWidget;
-//	}
+    //	return oldestSelectedWidget;
+    //	}
 
     public void setIsResizingSplitComponent(boolean isResizingSplitComponentSplitComponent) {
         this.isResizingSplitComponent = isResizingSplitComponentSplitComponent;
@@ -599,13 +614,13 @@ public class Designer extends PdfDecoder implements IDesigner {
         return mainFrame;
     }
 
-//	@scale
-//public double getScale() {
-//	return scale;
-//	}
+    //	@scale
+    //public double getScale() {
+    //	return scale;
+    //	}
 
-//	public void setScale(double scale) {
-//	this.scale = scale;
-//	repaint();
-//	}
+    //	public void setScale(double scale) {
+    //	this.scale = scale;
+    //	repaint();
+    //	}
 }

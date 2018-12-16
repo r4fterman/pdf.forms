@@ -31,16 +31,16 @@
 */
 package org.pdf.forms.gui.windows;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
-import javax.swing.JWindow;
+import javax.swing.*;
 
 public class SplashWindow extends JWindow //612, 350
 {
     private SplashPanel splashPanel;
 
-	public SplashWindow() {
-        splashPanel = new SplashPanel();
+	public SplashWindow(final String version) {
+        splashPanel = new SplashPanel(version);
         
         getContentPane().add(splashPanel, BorderLayout.CENTER);
         
