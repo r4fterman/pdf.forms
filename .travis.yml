@@ -1,6 +1,5 @@
 language: java
-jdk:
-  - openjdk10
+jdk: openjdk10
 
 before_install:
   - wget https://archive.apache.org/dist/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.zip
@@ -10,4 +9,6 @@ before_install:
 
 install: /bin/true
 
-script: mvn clean install -Pci
+script:
+  - jdk_switcher use openjdk10
+  - mvn clean install -Pci
