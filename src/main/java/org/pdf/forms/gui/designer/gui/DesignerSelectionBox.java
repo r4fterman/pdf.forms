@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -37,7 +37,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -50,25 +49,27 @@ public class DesignerSelectionBox {
 
     private Rectangle rectToDraw = null;
 
-    private Rectangle previousRectDrawn = new Rectangle();
+    private final Rectangle previousRectDrawn = new Rectangle();
 
-    private IDesigner designerPanel;
+    private final IDesigner designerPanel;
 
-    public DesignerSelectionBox(IDesigner designerPanel) {
+    public DesignerSelectionBox(final IDesigner designerPanel) {
         this.designerPanel = designerPanel;
     }
 
-    public void updateSize(MouseEvent e) {
-        int x = e.getX();
-        int y = e.getY();
+    public void updateSize(final MouseEvent e) {
+        final int x = e.getX();
+        final int y = e.getY();
 
         currentRect.setSize(x - currentRect.x, y - currentRect.y);
         updateDrawableRect(designerPanel.getWidth(), designerPanel.getHeight());
-        Rectangle totalRepaint = rectToDraw.union(previousRectDrawn);
+        final Rectangle totalRepaint = rectToDraw.union(previousRectDrawn);
         designerPanel.repaint(totalRepaint.x, totalRepaint.y, totalRepaint.width, totalRepaint.height);
     }
 
-    public void updateDrawableRect(int compWidth, int compHeight) {
+    public void updateDrawableRect(
+            final int compWidth,
+            final int compHeight) {
         int x = currentRect.x;
         int y = currentRect.y;
         int width = currentRect.width;
@@ -110,7 +111,7 @@ public class DesignerSelectionBox {
         }
     }
 
-    public void setCurrentRect(Rectangle currentRect) {
+    public void setCurrentRect(final Rectangle currentRect) {
         this.currentRect = currentRect;
     }
 
@@ -118,11 +119,11 @@ public class DesignerSelectionBox {
         return currentRect;
     }
 
-    public void paintBox(Graphics2D g2) {
+    public void paintBox(final Graphics2D g2) {
         if (currentRect != null) {
             //g2.setPaint(Color.green);
 
-            float[] dashPattern = {1, 1};
+            final float[] dashPattern = { 1, 1 };
             g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
                     BasicStroke.JOIN_MITER, 1,
                     dashPattern, 0));
@@ -134,11 +135,12 @@ public class DesignerSelectionBox {
 
     public void setSelectedWedgets() {
 
-        if (currentRect == null)
+        if (currentRect == null) {
             return;
+        }
 
-        int width = currentRect.width;
-        int height = currentRect.height;
+        final int width = currentRect.width;
+        final int height = currentRect.height;
 
         if (width < 0) {
             currentRect.setLocation(currentRect.x + width, currentRect.y);
@@ -149,21 +151,20 @@ public class DesignerSelectionBox {
             currentRect.setSize(currentRect.width, -currentRect.height);
         }
 
-        List widgets = designerPanel.getWidgets();
+        final List<IWidget> widgets = designerPanel.getWidgets();
 
-        Set widgetSet = new HashSet();
-        for (Iterator iter = widgets.iterator(); iter.hasNext();) {
-            IWidget widget = (IWidget) iter.next();
-
+        final Set<IWidget> widgetSet = new HashSet<>();
+        for (final IWidget widget : widgets) {
             Rectangle bounds = widget.getBounds();
 
-//            double scale = designerPanel.getScale(); @scale
-//            bounds = new Rectangle((int) (bounds.x * scale), (int) (bounds.y * scale), (int) (bounds.width * scale), (int) (bounds.height * scale)); //@scale
+            //            double scale = designerPanel.getScale(); @scale
+            //            bounds = new Rectangle((int) (bounds.x * scale), (int) (bounds.y * scale), (int) (bounds.width * scale), (int) (bounds.height * scale)); //@scale
 
             bounds = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 
-            if (currentRect.contains(bounds))
+            if (currentRect.contains(bounds)) {
                 widgetSet.add(widget);
+            }
         }
 
         designerPanel.setSelectedWidgets(widgetSet);

@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -69,7 +69,7 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
 
         if (designerPanel.getWidgetToAdd() == IWidget.NONE) {
 
-            /**
+            /*
              * nothing selected, so just drag out selection box
              */
             if (designerPanel.getSelectedWidgets().isEmpty()) {
@@ -89,19 +89,15 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
 
 
     public void mouseMoved(MouseEvent e) {
-
         designerPanel.updateRulers(new Point(e.getX(), e.getY()));
 
-        Set selectedWidgets = designerPanel.getSelectedWidgets();
+        Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
 
-        /**
+        /*
          * if we're resizing, or adding a new component, then dont change the cursor here,
          * otherwise, set the cusor to whatever it needs to be
          */
         if (!(designerPanel.isResizing() || designerPanel.getWidgetToAdd() != IWidget.NONE)) {
-
-            //@scale
-            //double scale = designerPanel.getScale();
 
 //            int resizeType = widgetSelection.getResizeType((int) (e.getX() / scale), (int) (e.getY() / scale), selectedWidgets); //@scale
             int resizeType = widgetSelection.getResizeType(e.getX(), e.getY(), selectedWidgets);
@@ -146,10 +142,10 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
     private void moveAndResizeSelectedWidget(MouseEvent e) {
 
         int resizeType = designerPanel.getResizeType();
-        Set selectedWidgets = designerPanel.getSelectedWidgets();
+        Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
 
         //IWidget w= (IWidget) selectedWidgets.iterator().next();
-        Set widgetsToUse = widgetSelection.getFlatternedWidgets(selectedWidgets); //w.getType() == IWidget.GROUP ? w.getWidgetsInGroup() : selectedWidgets;
+        Set<IWidget> widgetsToUse = widgetSelection.getFlatternedWidgets(selectedWidgets); //w.getType() == IWidget.GROUP ? w.getWidgetsInGroup() : selectedWidgets;
 
         if (resizeType == DesignerMouseMotionListener.DEFAULT_CURSOR) // move a selection or single widget
             widgetSelection.moveWidgets(widgetsToUse, e.getX(), e.getY());

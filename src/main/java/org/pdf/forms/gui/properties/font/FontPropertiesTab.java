@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -35,7 +35,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,7 +55,6 @@ public class FontPropertiesTab extends JPanel implements Dockable {
     private DockKey key = new DockKey("Font");
 
     public FontPropertiesTab(IDesigner designer) {
-
         fontPanel.setDesignerPanel(designer);
 
         setLayout(new BorderLayout());
@@ -64,19 +62,16 @@ public class FontPropertiesTab extends JPanel implements Dockable {
         setMinimumSize(new Dimension(0, 0));
     }
 
-    public void setProperties(Set widgets) {
-
+    public void setProperties(Set<IWidget> widgets) {
         if (widgets.isEmpty() || (widgets.iterator().next() instanceof Page)) {
             removeAll();
         } else {
-            Map widgetsAndProperties = new HashMap();
+            Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
 
-            for (Iterator it = widgets.iterator(); it.hasNext();) {
-                IWidget widget = (IWidget) it.next();
-                
-                if(widget.getType() == IWidget.IMAGE){
-                	removeAll();
-                	return;
+            for (IWidget widget : widgets) {
+                if (widget.getType() == IWidget.IMAGE) {
+                    removeAll();
+                    return;
                 }
 
                 Document properties = widget.getProperties();

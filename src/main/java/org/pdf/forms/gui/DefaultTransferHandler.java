@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -58,26 +58,34 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class DefaultTransferHandler extends TransferHandler {
-	private Commands currentCommands;
-    private IDesigner designerPanel;
+    private final Commands currentCommands;
+    private final IDesigner designerPanel;
 
-    public DefaultTransferHandler(Commands currentCommands, IDesigner designerPanel) {
+    public DefaultTransferHandler(
+            final Commands currentCommands,
+            final IDesigner designerPanel) {
         this.currentCommands = currentCommands;
-	    this.designerPanel = designerPanel;
+        this.designerPanel = designerPanel;
     }
 
-	public boolean canImport(JComponent dest, DataFlavor[] flavors) {
-		return true;
-	}
+    @Override
+    public boolean canImport(
+            final JComponent dest,
+            final DataFlavor[] flavors) {
+        return true;
+    }
 
-	public boolean importData(JComponent src, Transferable transferable) {
+    @Override
+    public boolean importData(
+            final JComponent src,
+            final Transferable transferable) {
 
-        int widgetToAdd = designerPanel.getWidgetToAdd();
+        final int widgetToAdd = designerPanel.getWidgetToAdd();
 
         if (widgetToAdd == IWidget.NONE) {
-            DataFlavor[] flavors = transferable.getTransferDataFlavors();
+            final DataFlavor[] flavors = transferable.getTransferDataFlavors();
             DataFlavor listFlavor = null;
-            int lastFlavor = flavors.length - 1;
+            final int lastFlavor = flavors.length - 1;
 
             // Check the flavors and see if we find one we like.
             // If we do, save it.
@@ -89,37 +97,39 @@ public class DefaultTransferHandler extends TransferHandler {
 
             // Ok, now try to display the content of the drop.
             try {
-                DataFlavor bestTextFlavor = DataFlavor.selectBestTextFlavor(flavors);
+                final DataFlavor bestTextFlavor = DataFlavor.selectBestTextFlavor(flavors);
                 if (bestTextFlavor != null) { // this could be a file from a web page being dragged in
-                    Reader r = bestTextFlavor.getReaderForText(transferable);
+                    final Reader r = bestTextFlavor.getReaderForText(transferable);
 
-                    /** acquire the text data from the reader. */
+                    /* acquire the text data from the reader. */
                     String textData = readTextDate(r);
 
                     System.out.println("textData = " + textData);
 
-                    /** need to remove all the 0 characters that will appear in the String when importing on Linux */
+                    /* need to remove all the 0 characters that will appear in the String when importing on Linux */
                     textData = removeChar(textData, (char) 0);
 
-                    /** get the URL from the text data */
-                    String url = getURL(textData);
+                    /* get the URL from the text data */
+                    final String url = getURL(textData);
 
                     if (url.indexOf("file:/") != url.lastIndexOf("file:/")) // make sure only one url is in the String
+                    {
                         JOptionPane.showMessageDialog(src, "You may only import 1 file at a time");
-                    else
+                    } else {
                         openFile(url, src);
+                    }
 
                 } else if (listFlavor != null) { // this is most likely a file being dragged in
-                    List list = (List) transferable.getTransferData(listFlavor);
+                    final List list = (List) transferable.getTransferData(listFlavor);
                     //System.out.println("list = " + list);
                     if (list.size() == 1) { // we can process
-                        File file = (File) list.get(0);
+                        final File file = (File) list.get(0);
                         openFile(file.getAbsolutePath(), src);
                     } else {
                         JOptionPane.showMessageDialog(src, "You may only import 1 file at a time");
                     }
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 //<start-full><start-demo>
                 System.out.println("Caught exception decoding transfer:");
                 e.printStackTrace();
@@ -132,28 +142,30 @@ public class DefaultTransferHandler extends TransferHandler {
         return false;
     }
 
-	private void openFile(String file, Component src) {
+    private void openFile(
+            final String file,
+            final Component src) {
 
-		/**
-		 * open any default file and selected page
-		 */
-		if (file != null){
+        /*
+         * open any default file and selected page
+         */
+        if (file != null) {
 
-			File testExists = new File(file);
-			boolean isURL = false;
-			if (file.startsWith("http:") || file.startsWith("file:")) {
-				isURL = true;
-			}
+            final File testExists = new File(file);
+            boolean isURL = false;
+            if (file.startsWith("http:") || file.startsWith("file:")) {
+                isURL = true;
+            }
 
-			if ((!isURL) && (!testExists.exists())) {
-				JOptionPane.showMessageDialog(src, file + '\n' + "does not exist");
-			} else if ((!isURL) && (testExists.isDirectory())) {
-				JOptionPane.showMessageDialog(src, file + '\n' + "This file is a Directory and cannot be opened");
-			} else {
+            if ((!isURL) && (!testExists.exists())) {
+                JOptionPane.showMessageDialog(src, file + '\n' + "does not exist");
+            } else if ((!isURL) && (testExists.isDirectory())) {
+                JOptionPane.showMessageDialog(src, file + '\n' + "This file is a Directory and cannot be opened");
+            } else {
 
-                boolean isPdf = file.endsWith(".pdf");
-                boolean isDes = file.endsWith(".des");
-                boolean isImage = file.endsWith(".des") || file.endsWith(".tif")
+                final boolean isPdf = file.endsWith(".pdf");
+                final boolean isDes = file.endsWith(".des");
+                final boolean isImage = file.endsWith(".des") || file.endsWith(".tif")
                         || file.endsWith(".tiff") || file.endsWith(".png")
                         || file.endsWith(".jpg") || file.endsWith(".jpeg")
                         || file.endsWith(".gif");
@@ -169,73 +181,83 @@ public class DefaultTransferHandler extends TransferHandler {
                     JOptionPane.showMessageDialog(src, "You may only import a valid PDF, des file or image");
                 }
             }
-		}
-	}
-
-    private String removeChar(String s, char c) {
-        String r = "";
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) != c) r += s.charAt(i);
         }
-        return r;
+    }
+
+    private String removeChar(
+            final String s,
+            final char c) {
+        final StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) != c) {
+                builder.append(s.charAt(i));
+            }
+        }
+        return builder.toString();
     }
 
     /**
-	 * Returns the URL from the text data acquired from the transferable object.
-	 * @param textData text data acquired from the transferable.
-	 * @return the URL of the file to open
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
-	 */
-	private String getURL(String textData) throws ParserConfigurationException, SAXException, IOException {
+     * Returns the URL from the text data acquired from the transferable object.
+     *
+     * @param textData
+     *         text data acquired from the transferable.
+     * @return the URL of the file to open
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     */
+    private String getURL(String textData) throws ParserConfigurationException, SAXException, IOException {
         if (!textData.startsWith("http://") && !textData.startsWith("file://")) { // its not a url so it must be a file
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(new ByteArrayInputStream(textData.getBytes()));
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder db = dbf.newDocumentBuilder();
+            final Document doc = db.parse(new ByteArrayInputStream(textData.getBytes()));
 
-            Element a = (Element) doc.getElementsByTagName("a").item(0);
+            final Element a = (Element) doc.getElementsByTagName("a").item(0);
             textData = getHrefAttribute(a);
         }
 
-		return textData;
-	}
+        return textData;
+    }
 
-	/**
-	 * Acquire text data from a reader. <br/><br/>
-	 * Firefox this will be some html containing an "a" element with the "href" attribute linking to the to the PDF. <br/><br/>
-	 * IE a simple one line String containing the URL will be returned
-	 * @param r the reader to read from
-	 * @return the text data from the reader
-	 * @throws IOException
-	 */
-	private String readTextDate(Reader r) throws IOException {
-		BufferedReader br = new BufferedReader(r);
+    /**
+     * Acquire text data from a reader. <br/><br/>
+     * Firefox this will be some html containing an "a" element with the "href" attribute linking to the to the PDF. <br/><br/>
+     * IE a simple one line String containing the URL will be returned
+     *
+     * @param r
+     *         the reader to read from
+     * @return the text data from the reader
+     * @throws IOException
+     */
+    private String readTextDate(final Reader r) throws IOException {
+        final BufferedReader br = new BufferedReader(r);
 
-		String textData = "";
-		String line = br.readLine();
-		while (line != null) {
-			textData += line;
-			line = br.readLine();
-		}
-		br.close();
+        StringBuilder builder = new StringBuilder();
+        String line = br.readLine();
+        while (line != null) {
+            builder.append(line);
+            line = br.readLine();
+        }
+        br.close();
 
-		return textData;
-	}
+        return builder.toString();
+    }
 
-	/**
-	 * Returns the URL held in the href attribute from an element
-	 * @param element the element containing the href attribute
-	 * @return the URL held in the href attribute
-	 */
-	private String getHrefAttribute(Element element) {
-		NamedNodeMap attrs = element.getAttributes();
+    /**
+     * Returns the URL held in the href attribute from an element
+     *
+     * @param element
+     *         the element containing the href attribute
+     * @return the URL held in the href attribute
+     */
+    private String getHrefAttribute(final Element element) {
+        final NamedNodeMap attrs = element.getAttributes();
 
-		Node nameNode = attrs.getNamedItem("href");
-		if (nameNode != null) {
-			return nameNode.getNodeValue();
-		}
+        final Node nameNode = attrs.getNamedItem("href");
+        if (nameNode != null) {
+            return nameNode.getNodeValue();
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

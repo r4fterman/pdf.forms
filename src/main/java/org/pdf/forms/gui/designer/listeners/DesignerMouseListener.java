@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -49,15 +49,15 @@ import org.pdf.forms.widgets.utils.WidgetSelection;
 
 public class DesignerMouseListener implements MouseListener {
 
-    private IDesigner designerPanel;
+    private final IDesigner designerPanel;
 
-    private DesignerSelectionBox selectionBox;
+    private final DesignerSelectionBox selectionBox;
 
-    private CaptionChanger captionChanger;
+    private final CaptionChanger captionChanger;
 
-    private WidgetSelection widgetSelection;
+    private final WidgetSelection widgetSelection;
 
-    public DesignerMouseListener(IDesigner designerPanel) {
+    public DesignerMouseListener(final IDesigner designerPanel) {
         this.designerPanel = designerPanel;
 
         this.widgetSelection = designerPanel.getWidgetSelection();
@@ -69,26 +69,27 @@ public class DesignerMouseListener implements MouseListener {
      * Method called when the mouse is clicked.  The primary goal of this method is to pick up the location of the
      * click, and if the mouse has been clicked inside a caption box, then display the caption changer
      *
-     * @param e a MouseEvent object passed in by Java
+     * @param e
+     *         a MouseEvent object passed in by Java
      */
-    public void mouseClicked(MouseEvent e) {
+    @Override
+    public void mouseClicked(final MouseEvent e) {
         if (e.getClickCount() == 2) {
 
-            Set selectedWidgets = designerPanel.getSelectedWidgets();
+            final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
 
-            /** get a flatterned set of widgets, this means if widgets are in a group, then get them out */
-            Set flatternedWidgets = widgetSelection.getFlatternedWidgets(selectedWidgets);
+            /* get a flatterned set of widgets, this means if widgets are in a group, then get them out */
+            final Set<IWidget> flatternedWidgets = widgetSelection.getFlatternedWidgets(selectedWidgets);
 
-            for (Iterator it = flatternedWidgets.iterator(); it.hasNext();) {
-                IWidget widget = (IWidget) it.next();
-
-                if (!widget.allowEditOfCaptionOnClick())
+            for (final IWidget widget : flatternedWidgets) {
+                if (!widget.allowEditOfCaptionOnClick()) {
                     continue;
+                }
 
-                Rectangle captionBounds = widget.getCaptionComponent().getBounds();
+                final Rectangle captionBounds = widget.getCaptionComponent().getBounds();
                 captionBounds.setLocation(widget.getAbsoluteLocationsOfCaption());
 
-                /** see if the click is inside the caption bounds */
+                /* see if the click is inside the caption bounds */
                 if (captionBounds.contains(e.getX(), e.getY())) {
                     captionChanger.displayCaptionChanger(widget, designerPanel);
                 }
@@ -96,43 +97,39 @@ public class DesignerMouseListener implements MouseListener {
         }
     }
 
-    public void mousePressed(MouseEvent e) {
-
-        //System.out.println("mouse pressed");
-
+    @Override
+    public void mousePressed(final MouseEvent e) {
         designerPanel.grabFocus();
 
         captionChanger.closeCaptionChanger();
 
-        int x = e.getX();
-        int y = e.getY();
+        final int x = e.getX();
+        final int y = e.getY();
 
-//        double scale = designerPanel.getScale(); @scale
-
-        /**
+        /*
          * if the widget is being resized the mouse is not over the
          * the widget so we need to keep the present selectedWidget,
          * otherwise, we can get the current selectedWidget
          */
         if (designerPanel.getResizeType() == DesignerMouseMotionListener.DEFAULT_CURSOR) { // widget not being resized
-            IWidget selectedWidget = designerPanel.getWidgetAt(x, y);
+            final IWidget selectedWidget = designerPanel.getWidgetAt(x, y);
 
             if (selectedWidget == null) {
                 // user has clicked off all widgets, so empty the selected widgets Set
-                designerPanel.setSelectedWidgets(new HashSet());
+                designerPanel.setSelectedWidgets(new HashSet<>());
             } else {
 
-                /**
+                /*
                  * if the new selected widget is already selected the we leave it selected
                  * and dont change anything
                  */
                 if (!designerPanel.getSelectedWidgets().contains(selectedWidget)) {
 
-                    /**
+                    /*
                      * the user has clicked on a widget that isnt already selected
                      * so we need to create a new set with just the new selected widget
                      */
-                    Set selectedWidgets = new HashSet();
+                    final Set<IWidget> selectedWidgets = new HashSet<>();
                     selectedWidgets.add(selectedWidget);
 
                     designerPanel.setSelectedWidgets(selectedWidgets);
@@ -143,9 +140,9 @@ public class DesignerMouseListener implements MouseListener {
             }
         }
 
-        Set selectedWidgets = designerPanel.getSelectedWidgets();
+        final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
 
-        /**
+        /*
          * if no widget is selected then set up the selection box, otherwise
          * a widget is either about to be moved or resized, so set up for that
          */
@@ -153,16 +150,15 @@ public class DesignerMouseListener implements MouseListener {
             selectionBox.setCurrentRect(new Rectangle(x, y, 0, 0));
             selectionBox.updateDrawableRect(designerPanel.getWidth(), designerPanel.getHeight());
         } else { // set up the widget to be moved or resized
-            Iterator iter = widgetSelection.getFlatternedWidgets(selectedWidgets).iterator();
+            final Iterator iter = widgetSelection.getFlatternedWidgets(selectedWidgets).iterator();
 
-            Rectangle selectionBoxBounds = widgetSelection.getSelectionBoxBounds();
+            final Rectangle selectionBoxBounds = widgetSelection.getSelectionBoxBounds();
 
             while (iter.hasNext()) {
-                IWidget widget = (IWidget) iter.next();
+                final IWidget widget = (IWidget) iter.next();
 
                 widget.setResizeHeightRatio(widget.getBoxSize().getHeight() / (selectionBoxBounds.getHeight()));
                 widget.setResizeWidthRatio(widget.getBoxSize().getWidth() / (selectionBoxBounds.getWidth()));
-
 
                 widget.setResizeFromTopRatio(
                         (widget.getY() - (selectionBoxBounds.getY() + WidgetSelection.BOX_MARGIN)) /
@@ -172,15 +168,11 @@ public class DesignerMouseListener implements MouseListener {
                         (widget.getX() - (selectionBoxBounds.getX() + WidgetSelection.BOX_MARGIN)) /
                                 selectionBoxBounds.getWidth());
 
-//                widget.setLastX((int) (widget.getX() * scale - x)); @scale
-//                widget.setLastY((int) (widget.getY() * scale - y)); @scale
+                //                widget.setLastX((int) (widget.getX() * scale - x)); @scale
+                //                widget.setLastY((int) (widget.getY() * scale - y)); @scale
 
                 widget.setLastX(widget.getX() - x);
                 widget.setLastY(widget.getY() - y);
-
-                //System.out.println((int) (widget.getX() * scale - x)+ " " + (int) (widget.getY() * scale - y));
-
-                //System.out.println(widget.getResizeFromTopRatio()+" "+widget.getResizeFromLeftRatio());
             }
 
             widgetSelection.setLastX(x);
@@ -190,8 +182,8 @@ public class DesignerMouseListener implements MouseListener {
         designerPanel.setProperties(selectedWidgets);
     }
 
-    public void mouseReleased(MouseEvent e) {
-
+    @Override
+    public void mouseReleased(final MouseEvent e) {
         if (designerPanel.getWidgetToAdd() == IWidget.NONE) {
             selectionBox.setSelectedWedgets();
             selectionBox.setCurrentRect(null);
@@ -201,17 +193,17 @@ public class DesignerMouseListener implements MouseListener {
             designerPanel.setIsResizingSplitComponent(false);
             designerPanel.setCurrentlyDraging(false);
         } else {
-            int widgetToAdd = designerPanel.getWidgetToAdd();
+            final int widgetToAdd = designerPanel.getWidgetToAdd();
 
-            Rectangle bounds = selectionBox.getCurrentRect();
+            final Rectangle bounds = selectionBox.getCurrentRect();
 
-            IWidget widget;
+            final IWidget widget;
             if (widgetToAdd == IWidget.RADIO_BUTTON) {
-                IMainFrame mainFrame = designerPanel.getMainFrame();
+                final IMainFrame mainFrame = designerPanel.getMainFrame();
                 widget = WidgetFactory.createRadioButtonWidget(
                         mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage()), bounds);
             } else if (widgetToAdd == IWidget.CHECK_BOX) {
-                IMainFrame mainFrame = designerPanel.getMainFrame();
+                final IMainFrame mainFrame = designerPanel.getMainFrame();
                 widget = WidgetFactory.createCheckBoxWidget(
                         mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage()), bounds);
             } else {
@@ -220,7 +212,7 @@ public class DesignerMouseListener implements MouseListener {
             widget.setX(bounds.x);
             widget.setY(bounds.y);
 
-            Set set = new HashSet();
+            final Set<IWidget> set = new HashSet<>();
             set.add(widget);
 
             designerPanel.setSelectedWidgets(set);
@@ -235,14 +227,17 @@ public class DesignerMouseListener implements MouseListener {
         designerPanel.repaint();
     }
 
-    public void mouseEntered(MouseEvent e) {
-        int widgetToAdd = designerPanel.getWidgetToAdd();
+    @Override
+    public void mouseEntered(final MouseEvent e) {
+        final int widgetToAdd = designerPanel.getWidgetToAdd();
 
-        if (widgetToAdd != IWidget.NONE)
+        if (widgetToAdd != IWidget.NONE) {
             designerPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+        }
     }
 
-    public void mouseExited(MouseEvent arg0) {
+    @Override
+    public void mouseExited(final MouseEvent arg0) {
 
     }
 }

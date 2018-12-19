@@ -1,39 +1,38 @@
-/**
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* 	This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* Page.java
-* ---------------
-*/
+/*
+ * ===========================================
+ * PDF Forms Designer
+ * ===========================================
+ * <p>
+ * Project Info:  http://pdfformsdesigne.sourceforge.net
+ * (C) Copyright 2006-2008..
+ * Lead Developer: Simon Barnett (n6vale@googlemail.com)
+ * <p>
+ * This file is part of the PDF Forms Designer
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>
+ * <p>
+ * <p>
+ * ---------------
+ * Page.java
+ * ---------------
+ */
 package org.pdf.forms.document;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -48,12 +47,12 @@ import org.w3c.dom.Element;
 
 public class Page {
 
-    private String pageName;
+    private final String pageName;
 
-    private List widgets = new ArrayList();
+    private List<IWidget> widgets = new ArrayList<>();
 
-    private List radioButtonGroups = new ArrayList();
-    private List checkBoxGroups = new ArrayList();
+    private final List<ButtonGroup> radioButtonGroups = new ArrayList<>();
+    private final List<ButtonGroup> checkBoxGroups = new ArrayList<>();
 
     private int height;
 
@@ -64,38 +63,42 @@ public class Page {
 
     private Document pageProperties;
 
-    private boolean widgetsAddedToDesigner = false;
     private int rotation = 0;
 
-    public Page(String pageName, int width, int height) {
+    public Page(
+            final String pageName,
+            final int width,
+            final int height) {
         this.width = width;
         this.height = height;
 
         this.pageName = pageName;
     }
 
-    public Page(String pageName, String pdfFile, int pdfPage) {
+    public Page(
+            final String pageName,
+            final String pdfFile,
+            final int pdfPage) {
         this.pdfFileLocation = pdfFile;
         this.pdfPageNumber = pdfPage;
 
         this.pageName = pageName;
     }
 
-    public Document getPageProperties() {
-
+    Document getPageProperties() {
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder db = dbf.newDocumentBuilder();
             pageProperties = db.newDocument();
 
-            Element rootElement = XMLUtils.createAndAppendElement(pageProperties, "page", pageProperties);
+            final Element rootElement = XMLUtils.createAndAppendElement(pageProperties, "page", pageProperties);
 
-            boolean isPdfFile = pdfFileLocation != null;
+            final boolean isPdfFile = pdfFileLocation != null;
             XMLUtils.addBasicProperty(pageProperties, "pagetype", isPdfFile ? "pdfpage" : "simplepage", rootElement);
 
             XMLUtils.addBasicProperty(pageProperties, "pagename", pageName, rootElement);
 
-            Element pageDate = XMLUtils.createAndAppendElement(pageProperties, "pagedata", rootElement);
+            final Element pageDate = XMLUtils.createAndAppendElement(pageProperties, "pagedata", rootElement);
 
             if (isPdfFile) {
                 XMLUtils.addBasicProperty(pageProperties, "pdffilelocation", pdfFileLocation, pageDate);
@@ -105,36 +108,34 @@ public class Page {
                 XMLUtils.addBasicProperty(pageProperties, "height", height + "", pageDate);
             }
 
-            for (Iterator it = widgets.iterator(); it.hasNext();) {
-                IWidget widget = (IWidget) it.next();
+            for (final IWidget widget : widgets) {
+                final Document widgetProperties = widget.getProperties();
 
-                Document widgetProperties = widget.getProperties();
-
-                Element widgetRoot = widgetProperties.getDocumentElement();
+                final Element widgetRoot = widgetProperties.getDocumentElement();
 
                 pageProperties.getDocumentElement().appendChild(pageProperties.importNode(widgetRoot, true));
             }
 
-            /** add radio button groups to the page */
-            Element radioButtonGroupsElement = XMLUtils.createAndAppendElement(pageProperties, "radiobuttongroups", rootElement);
+            /* add radio button groups to the page */
+            final Element radioButtonGroupsElement = XMLUtils.createAndAppendElement(pageProperties, "radiobuttongroups", rootElement);
             addButtonGroupsToPage(radioButtonGroupsElement, IWidget.RADIO_BUTTON);
 
-            /** add check box groups to the page */
-            Element checkBoxGroupsElement = XMLUtils.createAndAppendElement(pageProperties, "checkboxgroups", rootElement);
+            /* add check box groups to the page */
+            final Element checkBoxGroupsElement = XMLUtils.createAndAppendElement(pageProperties, "checkboxgroups", rootElement);
             addButtonGroupsToPage(checkBoxGroupsElement, IWidget.CHECK_BOX);
-
-        } catch (ParserConfigurationException e) {
+        } catch (final ParserConfigurationException e) {
             e.printStackTrace();
         }
 
         return pageProperties;
     }
 
-    private void addButtonGroupsToPage(Element radioButtonGroupsElement, int type) {
-        List buttonGroups = type == IWidget.RADIO_BUTTON ? radioButtonGroups : checkBoxGroups;
+    private void addButtonGroupsToPage(
+            final Element radioButtonGroupsElement,
+            final int type) {
+        final List<ButtonGroup> buttonGroups = type == IWidget.RADIO_BUTTON ? radioButtonGroups : checkBoxGroups;
 
-        for (Iterator it = buttonGroups.iterator(); it.hasNext();) {
-            ButtonGroup buttonGroup = (ButtonGroup) it.next();
+        for (final ButtonGroup buttonGroup : buttonGroups) {
             XMLUtils.addBasicProperty(pageProperties, "buttongroupname", buttonGroup.getName(), radioButtonGroupsElement);
         }
     }
@@ -151,78 +152,64 @@ public class Page {
         return pageName;
     }
 
-    public void setPageName(String pageName) {
-        this.pageName = pageName;
-    }
-
-    public List getWidgets() {
+    public List<IWidget> getWidgets() {
         return widgets;
     }
 
-    public List getRadioButtonGroups() {
+    public List<ButtonGroup> getRadioButtonGroups() {
         return radioButtonGroups;
     }
 
-    public List getCheckBoxGroups() {
+    public List<ButtonGroup> getCheckBoxGroups() {
         return checkBoxGroups;
     }
 
-    public int getRotation(){
-    	return rotation;
+    public int getRotation() {
+        return rotation;
     }
-    
-    public void setRotation(int rotation){
-    	this.rotation = rotation;
+
+    public void setRotation(final int rotation) {
+        this.rotation = rotation;
     }
-    
+
     public int getWidth() {
-    	return width;
+        return width;
     }
 
     public int getHeight() {
-    	return height;
+        return height;
     }
 
-    public Dimension getSize(){
-    	return new Dimension(width, height);
+    public Dimension getSize() {
+        return new Dimension(width, height);
     }
-    
-    public void setWidth(int width) {
+
+    public void setWidth(final int width) {
         this.width = width;
     }
 
-    public void setHeight(int height) {
-    	this.height = height;
-    }
-    
-    public void setSize(Dimension size){
-    	this.width = size.width;
-    	this.height = size.height;
+    public void setHeight(final int height) {
+        this.height = height;
     }
 
-    public void setWidgets(List widgets) {
-//    	System.out.println(pageName+" "+widgets);
+    public void setSize(final Dimension size) {
+        this.width = size.width;
+        this.height = size.height;
+    }
+
+    public void setWidgets(final List<IWidget> widgets) {
         this.widgets = widgets;
     }
 
-    public void setWidgetsAddedToDesigner(boolean widgetsAddedToDesigner) {
-        this.widgetsAddedToDesigner = widgetsAddedToDesigner;
-    }
+    public ButtonGroup getCheckBoxGroup(final String groupName) {
+        for (final Object group : checkBoxGroups) {
+            final ButtonGroup buttonGroup = (ButtonGroup) group;
+            final String bgName = buttonGroup.getName();
+            if (bgName.equals(groupName)) {
+                return buttonGroup;
+            }
+        }
 
-    public boolean widgetsAddedToDesigner() {
-        return widgetsAddedToDesigner;
+        return null;
     }
-
-	public ButtonGroup getCheckBoxGroup(String groupName) {
-		ButtonGroup returnedGroup = null;
-		
-		for (Iterator it = checkBoxGroups.iterator(); it.hasNext();) {
-			ButtonGroup buttonGroup = (ButtonGroup) it.next();
-			String bgName = buttonGroup.getName();
-			if(bgName.equals(groupName))
-				returnedGroup = buttonGroup;
-		}
-		
-		return returnedGroup;
-	}
 }

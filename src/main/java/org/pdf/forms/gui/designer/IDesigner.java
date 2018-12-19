@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -48,12 +48,13 @@ import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetSelection;
 
 public interface IDesigner {
+
     Color BACKGROUND_COLOR = new Color(236, 233, 216);
     Color PAGE_COLOR = Color.white;
 
-    static final int CLOSED = 0;
-    static final int SIMPLEPAGE = 1;
-    static final int PDFPAGE = 2;
+    int CLOSED = 0;
+    int SIMPLEPAGE = 1;
+    int PDFPAGE = 2;
 
     void displayPage(Page page);
 
@@ -67,13 +68,13 @@ public interface IDesigner {
 
     void removeWidget(IWidget widgetToRemove, List widgets);
 
-    Set getSelectedWidgets();
+    Set<IWidget> getSelectedWidgets();
 
     void setWidgetToAdd(int widgetToAdd);
 
     int getWidgetToAdd();
 
-    void setSelectedWidgets(Set selectedWidgets);
+    void setSelectedWidgets(Set<IWidget> selectedWidgets);
 
     void setResizeType(int resizeType);
 
@@ -87,7 +88,7 @@ public interface IDesigner {
 
     void resetPaletteButtons();
 
-    void setProperties(Set widget);
+    void setProperties(Set<IWidget> widget);
 
     void updateRulers(Point point);
 
@@ -95,9 +96,7 @@ public interface IDesigner {
 
     void setCurrentlyDraging(boolean currentlyDraging);
 
-    List getWidgets();
-
-//    IWidget getOldestSelectedWidget();
+    List<IWidget> getWidgets();
 
     void setIsResizingSplitComponent(boolean isResizingSplitComponentSplitComponent);
 
@@ -127,10 +126,6 @@ public interface IDesigner {
 
 	void updateUI();
 
-    public void setTransferHandler(TransferHandler newHandler);
+    void setTransferHandler(TransferHandler newHandler);
 
-//    @scale
-//    void setScale(double scale);
-//
-//    double getScale();
 }

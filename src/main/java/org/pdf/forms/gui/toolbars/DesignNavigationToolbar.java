@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -35,13 +35,14 @@ import org.pdf.forms.gui.designer.gui.DesignNavigatable;
 
 public class DesignNavigationToolbar extends NavigationToolbar {
 
-    private DesignNavigatable designer;
+    private final DesignNavigatable designer;
 
-    public DesignNavigationToolbar(DesignNavigatable designer) {
+    public DesignNavigationToolbar(final DesignNavigatable designer) {
         this.designer = designer;
     }
 
-    public void executeCommand(int type) {
+    @Override
+    public void executeCommand(final int type) {
         switch (type) {
             case FIRSTPAGE:
                 designer.displayDesignerPage(1);
@@ -62,7 +63,7 @@ public class DesignNavigationToolbar extends NavigationToolbar {
                 designer.displayDesignerPage(designer.getTotalNoOfPages());
                 break;
             case SETPAGE:
-                int page = Integer.parseInt(currentPageBox.getText());
+                final int page = Integer.parseInt(currentPageBox.getText());
 
                 if (page >= 1 && page <= designer.getTotalNoOfPages()) {
                     designer.displayDesignerPage(page);

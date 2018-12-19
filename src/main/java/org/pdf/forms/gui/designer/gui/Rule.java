@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -47,32 +47,42 @@ public class Rule extends JComponent {
     public static final int HORIZONTAL = 0;
     public static final int VERTICAL = 1;
     public static final int SIZE = 20;
-    
-	public static final double DPI = 72;
+
+    public static final double DPI = 72;
 
     public boolean isMetric;
 
-    private int orientation, increment, units, start, end, tickLength, incrementsPerUnit;
+    private final int orientation;
+    private int increment;
+    private int units;
+    private final int start;
+    private final int end;
+    private int tickLength;
+    private int incrementsPerUnit;
     private int markerLocation;
 
-    public Rule(int inset, int o, boolean m) {
+    public Rule(
+            final int inset,
+            final int o,
+            final boolean m) {
 
         orientation = o;
         isMetric = m;
 
         start = inset;
 
-        if (orientation == HORIZONTAL)
+        if (orientation == HORIZONTAL) {
             end = Toolkit.getDefaultToolkit().getScreenSize().width;
-        else
+        } else {
             end = Toolkit.getDefaultToolkit().getScreenSize().height;
+        }
 
         setIncrementAndUnits();
 
         setFont(new Font("SansSerif", Font.PLAIN, 10));
     }
 
-    public void setIsMetric(boolean isMetric) {
+    public void setIsMetric(final boolean isMetric) {
         this.isMetric = isMetric;
         setIncrementAndUnits();
         repaint();
@@ -99,19 +109,20 @@ public class Rule extends JComponent {
         return increment;
     }
 
-    public void setPreferredHeight(int ph) {
+    public void setPreferredHeight(final int ph) {
         setPreferredSize(new Dimension(SIZE, ph));
     }
 
-    public void setPreferredWidth(int pw) {
+    public void setPreferredWidth(final int pw) {
         setPreferredSize(new Dimension(pw, SIZE));
     }
 
-    protected void paintComponent(Graphics g) {
+    @Override
+    protected void paintComponent(final Graphics g) {
 
         super.paintComponent(g);
 
-        Graphics2D g2 = (Graphics2D) g;
+        final Graphics2D g2 = (Graphics2D) g;
 
         g2.setColor(Color.white);
         g2.fillRect(0, 0, getWidth(), getHeight());
@@ -124,7 +135,6 @@ public class Rule extends JComponent {
             g2.drawLine(0, markerLocation, getWidth(), markerLocation);
         }
 
-
         int incrementCount = 0;
         int numberCount = 0;
         String text;
@@ -135,29 +145,30 @@ public class Rule extends JComponent {
                 text = numberCount + "";
                 numberCount++;
             } else {
-                if (incrementCount % (incrementsPerUnit / 2) == 0)
+                if (incrementCount % (incrementsPerUnit / 2) == 0) {
                     tickLength = 8;
-                else
+                } else {
                     tickLength = 5;
+                }
 
                 text = null;
             }
 
             incrementCount++;
 
-
             if (orientation == HORIZONTAL) {
                 g2.drawLine(i, SIZE - 1, i, SIZE - tickLength - 1);
 
-                if (text != null)
+                if (text != null) {
                     g2.drawString(text, i + 3, 10);
+                }
 
             } else {
                 g2.drawLine(SIZE - 1, i, SIZE - tickLength - 1, i);
 
                 if (text != null) {
-                    FontMetrics metrics = g2.getFontMetrics();
-                    int width = (int) metrics.getStringBounds(text, g2).getWidth() + i + 2;
+                    final FontMetrics metrics = g2.getFontMetrics();
+                    final int width = (int) metrics.getStringBounds(text, g2).getWidth() + i + 2;
 
                     g2.rotate(-Math.PI / 2.0, 9, width);
 
@@ -169,19 +180,10 @@ public class Rule extends JComponent {
         }
     }
 
-    public void updateMarker(int location) {
+    public void updateMarker(final int location) {
         markerLocation = location;
 
         repaint();
     }
 
-//	private void init(Graphics2D g2) {
-//		bounds = getBounds();
-//						
-//		
-//		
-//		//start = 15;
-//		
-//		initilized = true;
-//	}
 }

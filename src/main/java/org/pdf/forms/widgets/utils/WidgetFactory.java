@@ -1,34 +1,34 @@
-/**
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* 	This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* WidgetFactory.java
-* ---------------
-*/
+/*
+ * ===========================================
+ * PDF Forms Designer
+ * ===========================================
+ * <p>
+ * Project Info:  http://pdfformsdesigne.sourceforge.net
+ * (C) Copyright 2006-2008..
+ * Lead Developer: Simon Barnett (n6vale@googlemail.com)
+ * <p>
+ * This file is part of the PDF Forms Designer
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>
+ * <p>
+ * <p>
+ * ---------------
+ * WidgetFactory.java
+ * ---------------
+ */
 package org.pdf.forms.widgets.utils;
 
 import java.awt.Color;
@@ -73,38 +73,46 @@ public class WidgetFactory {
 
     private static JFrame w = new JFrame();
 
-    //private static PdfDecoder pdfDecoder = new PdfDecoder();
-    
-    public static JLabel createResizedComponent(JComponent comp, int width, int height) {
+    public static JLabel createResizedComponent(
+            final JComponent comp,
+            final int width,
+            final int height) {
         return WidgetFactory.getComponentAsLabel(comp, width, height);
     }
 
-    public static IWidget createCheckBoxWidget(Page page, Rectangle bounds, String groupName){
-    	IWidget widget = createWidget(IWidget.CHECK_BOX, bounds);
+    static IWidget createCheckBoxWidget(
+            final Page page,
+            final Rectangle bounds,
+            final String groupName) {
+        IWidget widget = createWidget(IWidget.CHECK_BOX, bounds);
 
-    	ButtonGroup cbg;
-		if (groupName == null) {
-			List checkBoxGroups = page.getCheckBoxGroups();
-			cbg = new ButtonGroup(IWidget.CHECK_BOX);
-			checkBoxGroups.add(cbg);
-		} else {
-			cbg = page.getCheckBoxGroup(groupName);
-			if(cbg == null){
-				List checkBoxGroups = page.getCheckBoxGroups();
-				cbg = new ButtonGroup(IWidget.CHECK_BOX, groupName);
-				checkBoxGroups.add(cbg);
-			}
-		}
+        ButtonGroup cbg;
+        if (groupName == null) {
+            List checkBoxGroups = page.getCheckBoxGroups();
+            cbg = new ButtonGroup(IWidget.CHECK_BOX);
+            checkBoxGroups.add(cbg);
+        } else {
+            cbg = page.getCheckBoxGroup(groupName);
+            if (cbg == null) {
+                List checkBoxGroups = page.getCheckBoxGroups();
+                cbg = new ButtonGroup(IWidget.CHECK_BOX, groupName);
+                checkBoxGroups.add(cbg);
+            }
+        }
         ((CheckBoxWidget) widget).setCheckBoxGroupName(cbg.getName());
 
         return widget;
     }
-    
-    public static IWidget createCheckBoxWidget(Page page, Rectangle bounds) {
+
+    public static IWidget createCheckBoxWidget(
+            final Page page,
+            final Rectangle bounds) {
         return createCheckBoxWidget(page, bounds, null);
     }
 
-    public static IWidget createRadioButtonWidget(Page page, Rectangle bounds) {
+    public static IWidget createRadioButtonWidget(
+            final Page page,
+            final Rectangle bounds) {
         IWidget widget = createWidget(IWidget.RADIO_BUTTON, bounds);
 
         List radioButtonGroups = page.getRadioButtonGroups();
@@ -121,7 +129,9 @@ public class WidgetFactory {
         return widget;
     }
 
-    public static IWidget createWidget(int widgetToAdd, Rectangle bounds) {
+    public static IWidget createWidget(
+            final int widgetToAdd,
+            final Rectangle bounds) {
         WidgetFactory.bounds = bounds;
 
         if (bounds != null) {
@@ -139,7 +149,9 @@ public class WidgetFactory {
         return createWidget(widgetToAdd);
     }
 
-    public static IWidget createWidget(int widgetToAdd, Element root) {
+    public static IWidget createWidget(
+            final int widgetToAdd,
+            final Element root) {
         WidgetFactory.root = root;
 
         IWidget widget = createWidget(widgetToAdd);
@@ -149,42 +161,42 @@ public class WidgetFactory {
         return widget;
     }
 
-    private static IWidget createWidget(int widgetToAdd) {
+    private static IWidget createWidget(final int widgetToAdd) {
         IWidget w = null;
 
         switch (widgetToAdd) {
-            case IWidget.TEXT_FIELD:
-                w = WidgetFactory.createTextField();
-                break;
-            case IWidget.TEXT:
-                w = WidgetFactory.createLabel();
-                break;
-            case IWidget.BUTTON:
-                w = WidgetFactory.createButton();
-                break;
-            case IWidget.RADIO_BUTTON:
-                w = WidgetFactory.createRadioButton();
-                break;
-            case IWidget.CHECK_BOX:
-                w = WidgetFactory.createCheckBox();
-                break;
-            case IWidget.COMBO_BOX:
-                w = WidgetFactory.createComboBox();
-                break;
-            case IWidget.LIST_BOX:
-                w = WidgetFactory.createListBox();
-                break;
-            case IWidget.IMAGE:
-                w = WidgetFactory.createImageWidget();
-                break;
-            default:
-                System.out.println("Manual exit because of imposible sitation " +
-                        "in WidgetFactory, trying to add widget type = " + widgetToAdd);
+        case IWidget.TEXT_FIELD:
+            w = WidgetFactory.createTextField();
+            break;
+        case IWidget.TEXT:
+            w = WidgetFactory.createLabel();
+            break;
+        case IWidget.BUTTON:
+            w = WidgetFactory.createButton();
+            break;
+        case IWidget.RADIO_BUTTON:
+            w = WidgetFactory.createRadioButton();
+            break;
+        case IWidget.CHECK_BOX:
+            w = WidgetFactory.createCheckBox();
+            break;
+        case IWidget.COMBO_BOX:
+            w = WidgetFactory.createComboBox();
+            break;
+        case IWidget.LIST_BOX:
+            w = WidgetFactory.createListBox();
+            break;
+        case IWidget.IMAGE:
+            w = WidgetFactory.createImageWidget();
+            break;
+        default:
+            System.out.println("Manual exit because of imposible sitation " +
+                    "in WidgetFactory, trying to add widget type = " + widgetToAdd);
 
-                new Exception().printStackTrace();
-                //System.exit(1);
+            new Exception().printStackTrace();
+            //System.exit(1);
 
-                break;
+            break;
         }
 
         return w;
@@ -194,12 +206,13 @@ public class WidgetFactory {
         JLabel image = new JLabel();
         image.setBackground(new Color(255, 255, 255));
 
-        int size[] = getSize(150, 150);
+        int[] size = getSize(150, 150);
 
         int width = size[0], height = size[1];
 
-        if (root == null)
+        if (root == null) {
             return new ImageWidget(IWidget.IMAGE, image, getComponentAsLabel(image, width, height));
+        }
 
         return new ImageWidget(IWidget.IMAGE, image, getComponentAsLabel(image, width, height), root);
     }
@@ -207,12 +220,13 @@ public class WidgetFactory {
     private static IWidget createTextField() {
         SplitComponent tf = new SplitComponent("Text Field", new PdfTextField("Text Field"), SplitComponent.CAPTION_LEFT);
 
-        int size[] = getSize(150, 20);
+        int[] size = getSize(150, 20);
 
         int width = size[0], height = size[1];
 
-        if (root == null)
+        if (root == null) {
             return new TextFieldWidget(IWidget.TEXT_FIELD, tf, getComponentAsLabel(tf, width, height));
+        }
 
         return new TextFieldWidget(IWidget.TEXT_FIELD, tf, getComponentAsLabel(tf, width, height), root);
     }
@@ -221,45 +235,45 @@ public class WidgetFactory {
         PdfCaption label = new PdfCaption("Text");
         label.setBackground(IDesigner.PAGE_COLOR);
 
-        int size[] = getSize(100, 20);
+        int[] size = getSize(100, 20);
 
         int width = size[0], height = size[1];
 
-        if (root == null)
+        if (root == null) {
             return new TextWidget(IWidget.TEXT, label, getComponentAsLabel(label, width, height));
+        }
 
         return new TextWidget(IWidget.TEXT, label, getComponentAsLabel(label, width, height), root);
     }
 
     private static IWidget createCheckBox() {
-    	int size[] = getSize(100, 20);
-    	int width = size[0], height = size[1];
+        int[] size = getSize(100, 20);
+        int width = size[0], height = size[1];
 
-    	
-    	PdfCheckBox cb = new PdfCheckBox();
+        PdfCheckBox cb = new PdfCheckBox();
         cb.setBackground(IDesigner.PAGE_COLOR);
 
         SplitComponent checkBox = new SplitComponent("Check Box", cb, SplitComponent.CAPTION_RIGHT);
 
-
-        if (root == null)
+        if (root == null) {
             return new CheckBoxWidget(IWidget.CHECK_BOX, checkBox, getComponentAsLabel(checkBox, width, height));
+        }
 
         return new CheckBoxWidget(IWidget.CHECK_BOX, checkBox, getComponentAsLabel(checkBox, width, height), root);
     }
 
     private static IWidget createComboBox() {
-        PdfComboBox c = new PdfComboBox(/*new String[]{"first", "second"}*/);
+        PdfComboBox c = new PdfComboBox();
 
         SplitComponent combo = new SplitComponent("Drop-down list", c, SplitComponent.CAPTION_LEFT);
 
-
-        int size[] = getSize(200, 20);
+        int[] size = getSize(200, 20);
 
         int width = size[0], height = size[1];
 
-        if (root == null)
+        if (root == null) {
             return new ComboBoxWidget(IWidget.COMBO_BOX, combo, getComponentAsLabel(combo, width, height));
+        }
 
         return new ComboBoxWidget(IWidget.COMBO_BOX, combo, getComponentAsLabel(combo, width, height), root);
     }
@@ -268,12 +282,13 @@ public class WidgetFactory {
         PdfList list = new PdfList();
         SplitComponent scroll = new SplitComponent("List", list, SplitComponent.CAPTION_TOP);
 
-        int size[] = getSize(100, 100);
+        int[] size = getSize(100, 100);
 
         int width = size[0], height = size[1];
 
-        if (root == null)
+        if (root == null) {
             return new ListBoxWidget(IWidget.LIST_BOX, scroll, getComponentAsLabel(scroll, width, height));
+        }
 
         return new ListBoxWidget(IWidget.LIST_BOX, scroll, getComponentAsLabel(scroll, width, height), root);
     }
@@ -281,12 +296,13 @@ public class WidgetFactory {
     private static IWidget createButton() {
         PdfButton button = new PdfButton("Button");
 
-        int size[] = getSize(100, 50);
+        int[] size = getSize(100, 50);
 
         int width = size[0], height = size[1];
 
-        if (root == null)
+        if (root == null) {
             return new ButtonWidget(IWidget.BUTTON, button, getComponentAsLabel(button, width, height));
+        }
 
         return new ButtonWidget(IWidget.BUTTON, button, getComponentAsLabel(button, width, height), root);
     }
@@ -297,36 +313,45 @@ public class WidgetFactory {
 
         SplitComponent radioButton = new SplitComponent("Radio Button", rb, SplitComponent.CAPTION_RIGHT);
 
-
-        int size[] = getSize(200, 20);
+        int[] size = getSize(200, 20);
 
         int width = size[0], height = size[1];
 
-        if (root == null)
+        if (root == null) {
             return new RadioButtonWidget(IWidget.RADIO_BUTTON, radioButton, getComponentAsLabel(radioButton, width, height));
+        }
 
         return new RadioButtonWidget(IWidget.RADIO_BUTTON, radioButton, getComponentAsLabel(radioButton, width, height), root);
     }
 
-    private static int[] getSize(int defaultWidth, int defaultHeight) {
+    private static int[] getSize(
+            final int defaultWidth,
+            final int defaultHeight) {
+        int width = defaultWidth;
+        int height = defaultHeight;
         if (WidgetFactory.bounds != null) {
 
-            if (WidgetFactory.bounds.width != 0)
-                defaultWidth = WidgetFactory.bounds.width;
+            if (WidgetFactory.bounds.width != 0) {
+                width = WidgetFactory.bounds.width;
+            }
 
-            if (WidgetFactory.bounds.height != 0)
-                defaultHeight = WidgetFactory.bounds.height;
+            if (WidgetFactory.bounds.height != 0) {
+                height = WidgetFactory.bounds.height;
+            }
 
             WidgetFactory.bounds = null;
         }
 
-        return new int[]{defaultWidth, defaultHeight};
+        return new int[] { width, height };
     }
 
-    private static JLabel getComponentAsLabel(JComponent comp, int width, int height) {
-    	
+    private static JLabel getComponentAsLabel(
+            final JComponent comp,
+            final int width,
+            final int height) {
+
         comp.setSize(width, height);
-        
+
         w.getContentPane().setLayout(null);
         w.getContentPane().add(comp);
         w.pack();
@@ -336,7 +361,7 @@ public class WidgetFactory {
         return l;
     }
 
-    private static BufferedImage createImage(JComponent component) {
+    private static BufferedImage createImage(final JComponent component) {
         Dimension d = component.getSize();
         Rectangle region = new Rectangle(0, 0, d.width, d.height);
         component.setOpaque(true);

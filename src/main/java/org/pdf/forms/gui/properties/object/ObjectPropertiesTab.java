@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -34,7 +34,6 @@ package org.pdf.forms.gui.properties.object;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.swing.JLabel;
@@ -60,30 +59,28 @@ public class ObjectPropertiesTab extends JPanel implements Dockable {
         setMinimumSize(new Dimension(0, 0));
     }
 
-    public void setProperties(Set widgets) {
+    public void setProperties(Set<IWidget> widgets) {
         removeAll();
 
         if (!widgets.isEmpty()) {
             boolean mixed = false;
             int type = -1;
-            for (Iterator it = widgets.iterator(); it.hasNext();) {
-                Object o = it.next();
-                
-                if(o instanceof IWidget){
-                	IWidget widget = (IWidget) o;
-                	
-                	if (type == -1)
-                		type = widget.getType();
-                	else {
-                		if (type != widget.getType()) {
-                			mixed = true;
-                			break;
-                		}
-                	}
+            for (Object o   : widgets) {
+                if (o instanceof IWidget) {
+                    IWidget widget = (IWidget) o;
+
+                    if (type == -1) {
+                        type = widget.getType();
+                    } else {
+                        if (type != widget.getType()) {
+                            mixed = true;
+                            break;
+                        }
+                    }
                 } else { // the page is selected
-                	type = IWidget.NONE;
+                    type = IWidget.NONE;
                 }
-                
+
             }
 
             if (mixed) {

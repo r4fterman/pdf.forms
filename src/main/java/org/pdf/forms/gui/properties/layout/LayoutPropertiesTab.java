@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -35,7 +35,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,10 +51,10 @@ import com.vlsolutions.swing.docking.Dockable;
 
 public class LayoutPropertiesTab extends JPanel implements Dockable {
 
-    private LayoutPropertiesPanel layoutPanel = new LayoutPropertiesPanel();
-    private DockKey key = new DockKey("Layout");
+    private final LayoutPropertiesPanel layoutPanel = new LayoutPropertiesPanel();
+    private final DockKey key = new DockKey("Layout");
 
-    public LayoutPropertiesTab(IDesigner designer) {
+    public LayoutPropertiesTab(final IDesigner designer) {
 
         layoutPanel.setDesignerPanel(designer);
 
@@ -64,20 +63,18 @@ public class LayoutPropertiesTab extends JPanel implements Dockable {
         setMinimumSize(new Dimension(0, 0));
     }
 
-    public void setProperties(Set widgets) {
-
-    	if (widgets.isEmpty() || (widgets.iterator().next() instanceof Page)) {
+    public void setProperties(final Set widgets) {
+        if (widgets.isEmpty() || (widgets.iterator().next() instanceof Page)) {
             removeAll();
         } else {
+            final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
 
-            Map widgetsAndProperties = new HashMap();
+            for (final Object widget1 : widgets) {
+                final IWidget widget = (IWidget) widget1;
 
-            for (Iterator it = widgets.iterator(); it.hasNext();) {
-                IWidget widget = (IWidget) it.next();
+                final Document properties = widget.getProperties();
 
-                Document properties = widget.getProperties();
-
-                Element layoutProperties = (Element) properties.getElementsByTagName("layout").item(0);
+                final Element layoutProperties = (Element) properties.getElementsByTagName("layout").item(0);
 
                 widgetsAndProperties.put(widget, layoutProperties);
             }
@@ -90,10 +87,12 @@ public class LayoutPropertiesTab extends JPanel implements Dockable {
         updateUI();
     }
 
+    @Override
     public DockKey getDockKey() {
         return key;
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }

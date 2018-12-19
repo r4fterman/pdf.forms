@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -31,10 +31,7 @@
 */
 package org.pdf.forms.gui.toolbars;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -47,7 +44,7 @@ import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public class WidgetAlignmentAndOrderToolbar extends VLToolBar {
 
-    private List buttonsList = new ArrayList();
+    private List<JButton> buttonsList = new ArrayList<>();
 
     public WidgetAlignmentAndOrderToolbar(final IDesigner designer) {
 
@@ -56,8 +53,7 @@ public class WidgetAlignmentAndOrderToolbar extends VLToolBar {
 
         String[] buttons = concat(alignButtons, layoutButtons);
 
-        for (int i = 0; i < buttons.length; i++) {
-            final String url = buttons[i];
+        for (final String url : buttons) {
             if (url.equals("Seperator")) {
                 addSeparator();
             } else {
@@ -67,11 +63,7 @@ public class WidgetAlignmentAndOrderToolbar extends VLToolBar {
                 JButton button = new JButton();
                 button.setIcon(new ImageIcon(getClass().getResource(url)));
                 button.setToolTipText(type);
-                button.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        WidgetAlignmentAndOrder.alignAndOrder(designer, type);
-                    }
-                });
+                button.addActionListener(e -> WidgetAlignmentAndOrder.alignAndOrder(designer, type));
 
                 buttonsList.add(button);
 
@@ -80,7 +72,9 @@ public class WidgetAlignmentAndOrderToolbar extends VLToolBar {
         }
     }
 
-    String[] concat(String[] array1, String[] array2) {
+    private String[] concat(
+            String[] array1,
+            String[] array2) {
 
         String[] res = new String[array1.length + array2.length];
         System.arraycopy(array1, 0, res, 0, array1.length);
@@ -90,8 +84,7 @@ public class WidgetAlignmentAndOrderToolbar extends VLToolBar {
     }
 
     public void setState(boolean enabled) {
-        for (Iterator it = buttonsList.iterator(); it.hasNext();) {
-            JButton button = (JButton) it.next();
+        for (final JButton button : buttonsList) {
             button.setEnabled(enabled);
         }
     }

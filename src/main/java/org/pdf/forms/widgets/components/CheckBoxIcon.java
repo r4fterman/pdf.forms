@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -39,35 +39,46 @@ import java.awt.Image;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
 
-public class CheckBoxIcon implements Icon { //http://forum.java.sun.com/thread.jspa?forumID=57&threadID=641479
-	
-	private Image onImage, offImage;
-	
-	public void setOnOffImage(Image onImage, Image offImage){
-		this.onImage = onImage;
-		this.offImage = offImage;
-	}
-	
-	public void paintIcon(Component c, Graphics g, int x, int y) {
-		Graphics2D g2 = (Graphics2D) g;
-		
-		JCheckBox checkBox = (JCheckBox) c;
-		
-		int height = c.getHeight();
-		if (checkBox.isSelected()) {
-			y = (height / 2) - (onImage.getHeight(null) / 2);
-			g2.drawImage(onImage, 0, y, null);
-		} else {
-			y = (height / 2) - (offImage.getHeight(null) / 2);
-			g2.drawImage(offImage, 0, y, null);
-		}
-	}
+//http://forum.java.sun.com/thread.jspa?forumID=57&threadID=641479
+public class CheckBoxIcon implements Icon {
 
-	public int getIconWidth() {
-		return onImage.getWidth(null);
-	}
+    private Image onImage;
+    private Image offImage;
 
-	public int getIconHeight() {
-		return onImage.getHeight(null);
-	}
+    public void setOnOffImage(
+            final Image onImage,
+            final Image offImage) {
+        this.onImage = onImage;
+        this.offImage = offImage;
+    }
+
+    @Override
+    public void paintIcon(
+            final Component c,
+            final Graphics g,
+            final int x,
+            int y) {
+        final Graphics2D g2 = (Graphics2D) g;
+
+        final JCheckBox checkBox = (JCheckBox) c;
+
+        final int height = c.getHeight();
+        if (checkBox.isSelected()) {
+            y = (height / 2) - (onImage.getHeight(null) / 2);
+            g2.drawImage(onImage, 0, y, null);
+        } else {
+            y = (height / 2) - (offImage.getHeight(null) / 2);
+            g2.drawImage(offImage, 0, y, null);
+        }
+    }
+
+    @Override
+    public int getIconWidth() {
+        return onImage.getWidth(null);
+    }
+
+    @Override
+    public int getIconHeight() {
+        return onImage.getHeight(null);
+    }
 }

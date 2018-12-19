@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -44,17 +44,20 @@ import com.vlsolutions.swing.docking.DockKey;
 
 public class PropertiesCompound extends CompoundDockable {
 
-    private DockKey key = new DockKey("Properties");
+    private final DockKey key = new DockKey("Properties");
 
-    private FontPropertiesTab fontPropertiesTab;
-    private ObjectPropertiesTab objectPropertiesTab;
-    private LayoutPropertiesTab layoutPropertiesTab;
-    private BorderPropertiesTab borderPropertiesTab;
-    private ParagraphPropertiesTab paragraphPropertiesTab;
+    private final FontPropertiesTab fontPropertiesTab;
+    private final ObjectPropertiesTab objectPropertiesTab;
+    private final LayoutPropertiesTab layoutPropertiesTab;
+    private final BorderPropertiesTab borderPropertiesTab;
+    private final ParagraphPropertiesTab paragraphPropertiesTab;
 
-    public PropertiesCompound(ObjectPropertiesTab objectPropertiesTab, FontPropertiesTab fontPropertiesTab,
-                              LayoutPropertiesTab layoutPropertiesTab, BorderPropertiesTab borderPropertiesTab,
-                              ParagraphPropertiesTab paragraphPropertiesTab) {
+    public PropertiesCompound(
+            final ObjectPropertiesTab objectPropertiesTab,
+            final FontPropertiesTab fontPropertiesTab,
+            final LayoutPropertiesTab layoutPropertiesTab,
+            final BorderPropertiesTab borderPropertiesTab,
+            final ParagraphPropertiesTab paragraphPropertiesTab) {
 
         super(new DockKey("Properties"));
 
@@ -66,11 +69,12 @@ public class PropertiesCompound extends CompoundDockable {
         //key.setName("name");
     }
 
+    @Override
     public DockKey getDockKey() {
         return key;
     }
 
-    public void setProperties(Set widget) {
+    public void setProperties(final Set widget) {
         fontPropertiesTab.setProperties(widget);
         objectPropertiesTab.setProperties(widget);
         layoutPropertiesTab.setProperties(widget);
@@ -78,8 +82,8 @@ public class PropertiesCompound extends CompoundDockable {
         paragraphPropertiesTab.setProperties(widget);
     }
 
-	public void updateAvailiableFonts() {
-		fontPropertiesTab.updateAvailiableFonts();
-		
-	}
+    public void updateAvailiableFonts() {
+        fontPropertiesTab.updateAvailiableFonts();
+
+    }
 }

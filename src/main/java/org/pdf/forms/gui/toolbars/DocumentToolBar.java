@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -33,7 +33,6 @@ package org.pdf.forms.gui.toolbars;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -47,81 +46,82 @@ import org.pdf.forms.gui.commands.Commands;
 import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public class DocumentToolBar extends VLToolBar {
-    
-    private CommandListener commandListener;
 
-    private JButton saveButton;
-    
-    private List zoomComponents = new ArrayList();
-    private List documentComponents = new ArrayList();
+    private final CommandListener commandListener;
 
-	private SwingCombo zoomBox;
-    
-	public DocumentToolBar(CommandListener commandListener) {
-    	
-    	this.commandListener = commandListener;
-    	
-    	documentComponents.add(addToolBarButton("/org/pdf/forms/res/New.gif", Commands.NEW, "New"));
-    	documentComponents.add(addToolBarButton("/org/pdf/forms/res/open.gif", Commands.OPEN, "Open"));
-    	
-    	saveButton = addToolBarButton("/org/pdf/forms/res/save.gif", Commands.SAVE_FILE, "Save");
-        
-    	addSeparator();
-    	
-        JButton zoomIn = addToolBarButton("/org/pdf/forms/res/plus.gif", Commands.ZOOM_IN, "Zoom In");
+    private final JButton saveButton;
+
+    private final List<JComponent> zoomComponents = new ArrayList<>();
+    private final List<JComponent> documentComponents = new ArrayList<>();
+
+    private final SwingCombo zoomBox;
+
+    public DocumentToolBar(final CommandListener commandListener) {
+
+        this.commandListener = commandListener;
+
+        documentComponents.add(addToolBarButton("/org/pdf/forms/res/New.gif", Commands.NEW, "New"));
+        documentComponents.add(addToolBarButton("/org/pdf/forms/res/open.gif", Commands.OPEN, "Open"));
+
+        saveButton = addToolBarButton("/org/pdf/forms/res/save.gif", Commands.SAVE_FILE, "Save");
+
+        addSeparator();
+
+        final JButton zoomIn = addToolBarButton("/org/pdf/forms/res/plus.gif", Commands.ZOOM_IN, "Zoom In");
         zoomIn.setEnabled(false);
-		zoomComponents.add(zoomIn);
+        zoomComponents.add(zoomIn);
 
-		zoomBox = new SwingCombo(new String[]{"100%", "75%", "50%", "25%"});
-		zoomBox.setEditable(true);
-		zoomBox.setID(Commands.ZOOM);
-		zoomBox.addActionListener(commandListener);
+        zoomBox = new SwingCombo(new String[] { "100%", "75%", "50%", "25%" });
+        zoomBox.setEditable(true);
+        zoomBox.setID(Commands.ZOOM);
+        zoomBox.addActionListener(commandListener);
         zoomBox.setPreferredSize(new Dimension(80, 24));
         add(zoomBox);
         zoomBox.setEnabled(false);
         zoomComponents.add(zoomBox);
-        
-        JButton zoomOut = addToolBarButton("/org/pdf/forms/res/minus.gif", Commands.ZOOM_OUT, "Zoom Out");
+
+        final JButton zoomOut = addToolBarButton("/org/pdf/forms/res/minus.gif", Commands.ZOOM_OUT, "Zoom Out");
         zoomOut.setEnabled(false);
-		zoomComponents.add(zoomOut);
+        zoomComponents.add(zoomOut);
     }
-    
-    private JButton addToolBarButton(String url, int command, String toolTip) {
-        SwingButton button = new SwingButton();
+
+    private JButton addToolBarButton(
+            final String url,
+            final int command,
+            final String toolTip) {
+        final SwingButton button = new SwingButton();
         button.init(url, command, toolTip);
         button.addActionListener(commandListener);
         add(button);
-        
+
         return button;
     }
-    
-    public void setSaveState(boolean state){
-    	saveButton.setEnabled(state);
-    }
-    
-    public void setZoomState(boolean state){
-    	for (Iterator it = zoomComponents.iterator(); it.hasNext();) {
-			JComponent component = (JComponent) it.next();
-			component.setEnabled(state);
-		}
+
+    public void setSaveState(final boolean state) {
+        saveButton.setEnabled(state);
     }
 
-	public void setState(boolean state) {
-		setSaveState(state);
-		
-		for (Iterator it = documentComponents.iterator(); it.hasNext();) {
-			JComponent component = (JComponent) it.next();
-			component.setEnabled(state);
-		}
-	}
+    public void setZoomState(final boolean state) {
+        for (final JComponent component : zoomComponents) {
+            component.setEnabled(state);
+        }
+    }
 
-	public double getCurrentSelectedScaling() {
-		return Double.parseDouble(((String) zoomBox.getSelectedItem()).replaceAll("%",""));
-	}
+    public void setState(final boolean state) {
+        setSaveState(state);
 
-	public void setCurrentlySelectedScaling(double scaling) {
-		zoomBox.removeActionListener(commandListener);
-		zoomBox.setSelectedItem(scaling+"%");
-		zoomBox.addActionListener(commandListener);
-	}
+        for (final JComponent component : documentComponents) {
+            component.setEnabled(state);
+        }
+    }
+
+    public double getCurrentSelectedScaling() {
+        return Double.parseDouble(((String) zoomBox.getSelectedItem()).replaceAll("%", ""));
+    }
+
+    public void setCurrentlySelectedScaling(final double scaling) {
+        zoomBox.removeActionListener(commandListener);
+        zoomBox.setSelectedItem(scaling + "%");
+        zoomBox.addActionListener(commandListener);
+    }
 }

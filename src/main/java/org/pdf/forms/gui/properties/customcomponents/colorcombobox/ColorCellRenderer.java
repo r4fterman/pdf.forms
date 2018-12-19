@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -41,13 +41,19 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 public class ColorCellRenderer implements ListCellRenderer {
-    protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+    private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
     // width doesn't matter as combobox will size
     private final Dimension preferredSize = new Dimension(0, 20);
 
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+    @Override
+    public Component getListCellRendererComponent(
+            final JList list,
+            final Object value,
+            final int index,
+            final boolean isSelected,
+            final boolean cellHasFocus) {
+        final JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
         if (value instanceof Color) {
             renderer.setBackground((Color) value);

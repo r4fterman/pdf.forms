@@ -1,41 +1,40 @@
-/**
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* 	This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* GroupWidget.java
-* ---------------
-*/
+/*
+ * ===========================================
+ * PDF Forms Designer
+ * ===========================================
+ * <p>
+ * Project Info:  http://pdfformsdesigne.sourceforge.net
+ * (C) Copyright 2006-2008..
+ * Lead Developer: Simon Barnett (n6vale@googlemail.com)
+ * <p>
+ * This file is part of the PDF Forms Designer
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>
+ * <p>
+ * <p>
+ * ---------------
+ * GroupWidget.java
+ * ---------------
+ */
 package org.pdf.forms.widgets;
 
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -54,10 +53,11 @@ import org.w3c.dom.Node;
 
 /**
  * Special widget object that represents a group of widgets. Although this class
- * implments IWidget (as all widgets must do) it does not extend Widget
+ * implements IWidget (as all widgets must do) it does not extend Widget
  */
 public class GroupWidget implements IWidget {
-    private List widgetsInGroup;
+
+    private List<IWidget> widgetsInGroup;
     private int type = IWidget.GROUP;
     private Icon icon;
     private static int nextWidgetNumber = 1;
@@ -65,10 +65,6 @@ public class GroupWidget implements IWidget {
 
     private Document properties;
     private Element widgetsElement;
-
-//    private void addProperties(Element rootElement) {
-//
-//    }
 
     private Element setupProperties() {
         try {
@@ -96,49 +92,34 @@ public class GroupWidget implements IWidget {
         XMLUtils.addBasicProperty(properties, "name", widgetName, rootElement);
 
         widgetsElement = XMLUtils.createAndAppendElement(properties, "widgets", rootElement);
-        //addProperties(rootElement);
     }
 
-    public List getWidgetsInGroup() {
+    public List<IWidget> getWidgetsInGroup() {
         return widgetsInGroup;
     }
 
-    public void setWidgetsInGroup(List widgetsInGroup) {
+    public void setWidgetsInGroup(final List<IWidget> widgetsInGroup) {
         this.widgetsInGroup = widgetsInGroup;
 
         List widgets = XMLUtils.getElementsFromNodeList(widgetsElement.getChildNodes());
 
-        for (Iterator it = widgets.iterator(); it.hasNext();) {
-            Element widget = (Element) it.next();
+        for (final Object widget1 : widgets) {
+            Element widget = (Element) widget1;
             Node parent = widget.getParentNode();
             parent.removeChild(widget);
         }
 
-        for (Iterator it = widgetsInGroup.iterator(); it.hasNext();) {
-            IWidget widget = (IWidget) it.next();
-
+        for (final IWidget widget : widgetsInGroup) {
             Document widgetProperties = widget.getProperties();
 
             Element widgetRoot = widgetProperties.getDocumentElement();
 
             widgetsElement.appendChild(properties.importNode(widgetRoot, true));
         }
-
-//        try {
-//            StringWriter sw = new StringWriter();
-//            InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
-//            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-//            Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
-//            transformer.transform(new DOMSource(properties), new StreamResult(sw));
-//            System.out.println(sw.toString());
-//        } catch (TransformerException e) {
-//            e.printStackTrace();
-//        }
-
     }
 
     public Rectangle getBounds() {
-        return WidgetSelection.getMultipleWidgetBounds(new HashSet(widgetsInGroup));
+        return WidgetSelection.getMultipleWidgetBounds(new HashSet<>(widgetsInGroup));
     }
 
     public int getType() {
@@ -153,7 +134,7 @@ public class GroupWidget implements IWidget {
         return icon;
     }
 
-    public void setName(String widgetName) {
+    public void setName(final String widgetName) {
         this.widgetName = widgetName;
     }
 
@@ -171,15 +152,17 @@ public class GroupWidget implements IWidget {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void setParagraphProperties(Element paragraphProperties, int currentlyEditing) {
-
+    public void setParagraphProperties(
+            final Element paragraphProperties,
+            final int currentlyEditing) {
     }
 
-    public void setLayoutProperties(Element paragraphProperties) {
-
+    public void setLayoutProperties(final Element paragraphProperties) {
     }
 
-    public void setFontProperties(Element parentElement, int currentlyEditing) {
+    public void setFontProperties(
+            final Element parentElement,
+            final int currentlyEditing) {
     }
 
     public void setCaptionProperties(Element captionProperties) {
@@ -190,13 +173,15 @@ public class GroupWidget implements IWidget {
         return null;
     }
 
-    public void setPosition(int x, int y) {
+    public void setPosition(
+            final int x,
+            final int y) {
     }
 
-    public void setX(int x) {
+    public void setX(final int x) {
     }
 
-    public void setY(int y) {
+    public void setY(final int y) {
     }
 
     public int getX() {
@@ -215,25 +200,15 @@ public class GroupWidget implements IWidget {
         return 0;
     }
 
-    public void setSize(int width, int height) {
+    public void setSize(
+            final int width,
+            final int height) {
     }
 
-//    public FontProperties getValueFontProperties() {
-//        return null;
-//    }
-//
-//    public FontProperties getCaptionFontProperties() {
-//        return null;
-//    }
-//
-//    public void setFontProperties(FontProperties fontProperties, int componentToEdit) {
-//    }
-
-    public int getResizeTypeForSplitComponent(int mouseX, int mouseY) {
+    public int getResizeTypeForSplitComponent(
+            final int mouseX,
+            final int mouseY) {
         return 0;
-    }
-
-    public void setDivisorLocation(int x) {
     }
 
     public boolean allowEditCaptionAndValue() {
@@ -252,7 +227,6 @@ public class GroupWidget implements IWidget {
         return type;
     }
 
-
     public JComponent getValueComponent() {
         return null;
     }
@@ -261,10 +235,10 @@ public class GroupWidget implements IWidget {
         return null;
     }
 
-    public void setLastX(int lastX) {
+    public void setLastX(final int lastX) {
     }
 
-    public void setLastY(int lastY) {
+    public void setLastY(final int lastY) {
     }
 
     public int getLastX() {
@@ -283,9 +257,6 @@ public class GroupWidget implements IWidget {
         return null;
     }
 
-    public void setCaptionText(String captionText) {
-    }
-
     public boolean isComponentSplit() {
         return false;
     }
@@ -298,10 +269,10 @@ public class GroupWidget implements IWidget {
         return 0;
     }
 
-    public void setResizeHeightRatio(double resizeHeightRatio) {
+    public void setResizeHeightRatio(final double resizeHeightRatio) {
     }
 
-    public void setResizeWidthRatio(double resizeWidthRation) {
+    public void setResizeWidthRatio(final double resizeWidthRation) {
     }
 
     public double getResizeFromTopRatio() {
@@ -312,18 +283,16 @@ public class GroupWidget implements IWidget {
         return 0;
     }
 
-    public void setResizeFromTopRatio(double resizeHeightRatio) {
+    public void setResizeFromTopRatio(final double resizeHeightRatio) {
     }
 
-    public void setResizeFromLeftRatio(double resizeWidthRation) {
+    public void setResizeFromLeftRatio(final double resizeWidthRation) {
     }
 
-    public void setObjectProperties(Element parentElement) {
+    public void setObjectProperties(final Element parentElement) {
     }
 
-    public void setBorderAndBackgroundProperties(Element borderProperties) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void setBorderAndBackgroundProperties(final Element borderProperties) {
     }
-
 
 }

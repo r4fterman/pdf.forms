@@ -1,34 +1,34 @@
-/**
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* 	This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* DesignerPropertiesFile.java
-* ---------------
-*/
+/*
+ * ===========================================
+ * PDF Forms Designer
+ * ===========================================
+ * <p>
+ * Project Info:  http://pdfformsdesigne.sourceforge.net
+ * (C) Copyright 2006-2008..
+ * Lead Developer: Simon Barnett (n6vale@googlemail.com)
+ * <p>
+ * This file is part of the PDF Forms Designer
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>
+ * <p>
+ * <p>
+ * ---------------
+ * DesignerPropertiesFile.java
+ * ---------------
+ */
 package org.pdf.forms.utils;
 
 import java.util.ArrayList;
@@ -50,34 +50,36 @@ import org.w3c.dom.NodeList;
  * holds values stored in XML file on disk
  */
 public class DesignerPropertiesFile extends PropertiesFile {
-	
-	private static DesignerPropertiesFile instance;
 
-	private DesignerPropertiesFile(String fileName) {
-		super(fileName);
-	}
+    private static DesignerPropertiesFile instance;
+
+    private DesignerPropertiesFile(final String fileName) {
+        super(fileName);
+    }
 
     public static DesignerPropertiesFile getInstance() {
         if (instance == null)
-            // it's ok, we can call this constructor
+        // it's ok, we can call this constructor
+        {
             instance = new DesignerPropertiesFile(".properties.xml");
+        }
 
         return instance;
     }
 
-    public String[] getRecentDocuments(String type) {
-        String[] recentDocuments = new String[noOfRecentDocs];
+    public String[] getRecentDocuments(final String type) {
+        String[] recentDocuments;
 
         try {
-            NodeList nl = doc.getElementsByTagName(type);
-            List fileNames = new ArrayList();
+            final NodeList nl = doc.getElementsByTagName(type);
+            final List<String> fileNames = new ArrayList<>();
 
             if (nl != null && nl.getLength() > 0) {
-                NodeList allRecentDocs = ((Element) nl.item(0)).getElementsByTagName("*");
+                final NodeList allRecentDocs = ((Element) nl.item(0)).getElementsByTagName("*");
 
                 for (int i = 0; i < allRecentDocs.getLength(); i++) {
-                    Node item = allRecentDocs.item(i);
-                    NamedNodeMap attrs = item.getAttributes();
+                    final Node item = allRecentDocs.item(i);
+                    final NamedNodeMap attrs = item.getAttributes();
                     fileNames.add(attrs.getNamedItem("name").getNodeValue());
                 }
             }
@@ -89,8 +91,8 @@ public class DesignerPropertiesFile extends PropertiesFile {
 
             Collections.reverse(fileNames);
 
-            recentDocuments = (String[]) fileNames.toArray(new String[noOfRecentDocs]);
-        } catch (Exception e) {
+            recentDocuments = fileNames.toArray(new String[noOfRecentDocs]);
+        } catch (final Exception e) {
             //<start-full><start-demo>
             e.printStackTrace();
             //<end-demo><end-full>
@@ -101,13 +103,15 @@ public class DesignerPropertiesFile extends PropertiesFile {
         return recentDocuments;
     }
 
-    public void addRecentDocument(String file, String type) {
+    public void addRecentDocument(
+            final String file,
+            final String type) {
         try {
-            Element recentElement = (Element) doc.getElementsByTagName(type).item(0);
+            final Element recentElement = (Element) doc.getElementsByTagName(type).item(0);
 
             checkExists(file, recentElement);
 
-            Element elementToAdd = doc.createElement("file");
+            final Element elementToAdd = doc.createElement("file");
             elementToAdd.setAttribute("name", file);
 
             recentElement.appendChild(elementToAdd);
@@ -115,7 +119,7 @@ public class DesignerPropertiesFile extends PropertiesFile {
             removeOldFiles(recentElement);
 
             writeDoc();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LogWriter.writeLog("Exception " + e + " adding recent document to properties file");
             //<start-full><start-demo>
             e.printStackTrace();
@@ -123,20 +127,22 @@ public class DesignerPropertiesFile extends PropertiesFile {
         }
     }
 
-    public void addCustomFont(String name, String path) {
+    public void addCustomFont(
+            final String name,
+            final String path) {
         try {
-            Element customFontsElement = (Element) doc.getElementsByTagName("customfonts").item(0);
+            final Element customFontsElement = (Element) doc.getElementsByTagName("customfonts").item(0);
 
             checkExists(name, customFontsElement);
 
-            Element elementToAdd = doc.createElement("file");
+            final Element elementToAdd = doc.createElement("file");
             elementToAdd.setAttribute("name", name);
             elementToAdd.setAttribute("path", path);
 
             customFontsElement.appendChild(elementToAdd);
 
             writeDoc();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LogWriter.writeLog("Exception " + e + " adding custom font to properties file");
             //<start-full><start-demo>
             e.printStackTrace();
@@ -144,26 +150,26 @@ public class DesignerPropertiesFile extends PropertiesFile {
         }
     }
 
-    public Map getCustomFonts() {
-        Map customFonts = new HashMap();
+    public Map<String, String> getCustomFonts() {
+        final Map<String, String> customFonts = new HashMap<>();
 
         try {
-            NodeList nl = doc.getElementsByTagName("customfonts");
+            final NodeList nl = doc.getElementsByTagName("customfonts");
 
             if (nl != null && nl.getLength() > 0) {
-                NodeList allCustomFonts = ((Element) nl.item(0)).getElementsByTagName("*");
+                final NodeList allCustomFonts = ((Element) nl.item(0)).getElementsByTagName("*");
 
                 for (int i = 0; i < allCustomFonts.getLength(); i++) {
-                    Node item = allCustomFonts.item(i);
-                    NamedNodeMap attrs = item.getAttributes();
+                    final Node item = allCustomFonts.item(i);
+                    final NamedNodeMap attrs = item.getAttributes();
 
-                    String name = attrs.getNamedItem("name").getNodeValue();
-                    String path = attrs.getNamedItem("path").getNodeValue();
+                    final String name = attrs.getNamedItem("name").getNodeValue();
+                    final String path = attrs.getNamedItem("path").getNodeValue();
 
                     customFonts.put(name, path);
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             //<start-full><start-demo>
             e.printStackTrace();
             //<end-demo><end-full>
@@ -174,24 +180,26 @@ public class DesignerPropertiesFile extends PropertiesFile {
         return customFonts;
     }
 
+    @Override
     public boolean checkAllElementsPresent() throws Exception {
-    	
-    	//assume true and set to false if wrong
-        boolean hasAllElements=true;
-        
-        NodeList allElements = doc.getElementsByTagName("*");
-        List elementsInTree = new ArrayList(allElements.getLength());
 
-        for (int i = 0; i < allElements.getLength(); i++)
+        //assume true and set to false if wrong
+        boolean hasAllElements = true;
+
+        NodeList allElements = doc.getElementsByTagName("*");
+        List<String> elementsInTree = new ArrayList<>(allElements.getLength());
+
+        for (int i = 0; i < allElements.getLength(); i++) {
             elementsInTree.add(allElements.item(i).getNodeName());
+        }
 
         Element propertiesElement = null;
 
         if (elementsInTree.contains("properties")) {
             propertiesElement = (Element) doc.getElementsByTagName("properties").item(0);
         } else {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder db = dbf.newDocumentBuilder();
 
             doc = db.newDocument();
 
@@ -199,35 +207,36 @@ public class DesignerPropertiesFile extends PropertiesFile {
             doc.appendChild(propertiesElement);
 
             allElements = doc.getElementsByTagName("*");
-            elementsInTree = new ArrayList(allElements.getLength());
+            elementsInTree = new ArrayList<>(allElements.getLength());
 
-            for (int i = 0; i < allElements.getLength(); i++)
+            for (int i = 0; i < allElements.getLength(); i++) {
                 elementsInTree.add(allElements.item(i).getNodeName());
-            
-            hasAllElements=false;
+            }
+
+            hasAllElements = false;
         }
 
         if (!elementsInTree.contains("recentdesfiles")) {
-            Element recentDes = doc.createElement("recentdesfiles");
+            final Element recentDes = doc.createElement("recentdesfiles");
             propertiesElement.appendChild(recentDes);
-            
-            hasAllElements=false;
+
+            hasAllElements = false;
         }
 
         if (!elementsInTree.contains("recentpdffiles")) {
-            Element recentPDF = doc.createElement("recentpdffiles");
+            final Element recentPDF = doc.createElement("recentpdffiles");
             propertiesElement.appendChild(recentPDF);
-            
-            hasAllElements=false;
+
+            hasAllElements = false;
         }
 
         if (!elementsInTree.contains("customfonts")) {
-            Element customFonts = doc.createElement("customfonts");
+            final Element customFonts = doc.createElement("customfonts");
             propertiesElement.appendChild(customFonts);
-            
-            hasAllElements=false;
+
+            hasAllElements = false;
         }
-        
+
         return hasAllElements;
     }
 }

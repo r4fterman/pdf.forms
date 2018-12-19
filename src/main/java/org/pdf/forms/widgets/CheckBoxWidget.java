@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -47,9 +47,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class CheckBoxWidget extends Widget implements IWidget {
+
     private static int nextWidgetNumber = 1;
 
-    public CheckBoxWidget(int type, JComponent baseComponent, JComponent component) {
+    public CheckBoxWidget(
+            final int type,
+            final JComponent baseComponent,
+            final JComponent component) {
         super(type, baseComponent, component, "/org/pdf/forms/res/Check Box.gif");
 
         isComponentSplit = true;
@@ -71,7 +75,11 @@ public class CheckBoxWidget extends Widget implements IWidget {
         addJavaScript(rootElement);
     }
 
-    public CheckBoxWidget(int type, JComponent baseComponent, JComponent component, Element root) {
+    public CheckBoxWidget(
+            final int type,
+            final JComponent baseComponent,
+            final JComponent component,
+            final Element root) {
 
         super(type, baseComponent, component, "/org/pdf/forms/res/Check Box.gif");
 
@@ -91,7 +99,7 @@ public class CheckBoxWidget extends Widget implements IWidget {
         setAllProperties();
     }
 
-    private void addProperties(Element rootElement) {
+    private void addProperties(final Element rootElement) {
         Element propertiesElement = XMLUtils.createAndAppendElement(properties, "properties", rootElement);
 
         addFontProperties(propertiesElement);
@@ -107,14 +115,13 @@ public class CheckBoxWidget extends Widget implements IWidget {
         addCaptionProperties(propertiesElement);
     }
 
-    private void addCaptionProperties(Element propertiesElement) {
+    private void addCaptionProperties(final Element propertiesElement) {
         Element captionElement = XMLUtils.createAndAppendElement(properties, "caption_properties", propertiesElement);
         XMLUtils.addBasicProperty(properties, "Text", "Check Box", captionElement);
         XMLUtils.addBasicProperty(properties, "Divisor Location", "", captionElement);
     }
 
     private void addFontProperties(Element propertiesElement) {
-
         Element fontElement = XMLUtils.createAndAppendElement(properties, "font", propertiesElement);
 
         Element caption = XMLUtils.createAndAppendElement(properties, "font_caption", fontElement);
@@ -126,8 +133,7 @@ public class CheckBoxWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(properties, "Color", Color.BLACK.getRGB() + "", caption);
     }
 
-    private void addObjectProperties(Element propertiesElement) {
-
+    private void addObjectProperties(final Element propertiesElement) {
         Element objectElement = XMLUtils.createAndAppendElement(properties, "object", propertiesElement);
 
         Element fieldElement = XMLUtils.createAndAppendElement(properties, "field", objectElement);
@@ -144,7 +150,7 @@ public class CheckBoxWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(properties, "Array Number", "0", bindingElement);
     }
 
-    private void addLayoutProperties(Element propertiesElement) {
+    private void addLayoutProperties(final Element propertiesElement) {
         Element layoutElement = XMLUtils.createAndAppendElement(properties, "layout", propertiesElement);
 
         Element sizeAndPositionElement = XMLUtils.createAndAppendElement(properties, "sizeandposition", layoutElement);
@@ -168,7 +174,7 @@ public class CheckBoxWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(properties, "Reserve", "4", caption);
     }
 
-    private void addBorderProperties(Element propertiesElement) {
+    private void addBorderProperties(final Element propertiesElement) {
         Element borderElement = XMLUtils.createAndAppendElement(properties, "border", propertiesElement);
 
         Element borders = XMLUtils.createAndAppendElement(properties, "borders", borderElement);
@@ -181,7 +187,7 @@ public class CheckBoxWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(properties, "Fill Color", Color.WHITE.getRGB() + "", backgorundFill);
     }
 
-    private void addParagraphProperties(Element propertiesElement) {
+    private void addParagraphProperties(final Element propertiesElement) {
         Element paragraphElement = XMLUtils.createAndAppendElement(properties, "paragraph", propertiesElement);
 
         Element value = XMLUtils.createAndAppendElement(properties, "paragraph_caption", paragraphElement);
@@ -189,7 +195,9 @@ public class CheckBoxWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(properties, "Vertical Alignment", "center", value);
     }
 
-    public void setParagraphProperties(Element paragraphPropertiesElememt, int currentlyEditing) {
+    public void setParagraphProperties(
+            final Element paragraphPropertiesElememt,
+            final int currentlyEditing) {
 
         SplitComponent radioButton = (SplitComponent) baseComponent;
 
@@ -201,25 +209,26 @@ public class CheckBoxWidget extends Widget implements IWidget {
         setSize(getWidth(), getHeight());
     }
 
-    public void setLayoutProperties(Element layoutProperties) {
+    public void setLayoutProperties(final Element layoutProperties) {
 
         SplitComponent radioButton = (SplitComponent) baseComponent;
 
-        /** set the size and position of the TextField*/
+        /* set the size and position of the TextField*/
         setSizeAndPosition(layoutProperties);
 
-        /** set the location of the caption */
+        /* set the location of the caption */
         Element captionElement = (Element) layoutProperties.getElementsByTagName("caption").item(0);
 
         String captionPosition = XMLUtils.getAttributeFromChildElement(captionElement, "Position");
 
-        /** use reflection to set the required rotation button selected */
+        /* use reflection to set the required rotation button selected */
         try {
             Field field = radioButton.getClass().getDeclaredField("CAPTION_" + captionPosition.toUpperCase());
 
             int position = field.getInt(this);
-            if (position != radioButton.getCaptionPosition())
+            if (position != radioButton.getCaptionPosition()) {
                 radioButton.setCaptionPosition(position);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -227,18 +236,20 @@ public class CheckBoxWidget extends Widget implements IWidget {
         setSize(getWidth(), getHeight());
     }
 
-    public void setFontProperties(Element fontProperties, int currentlyEditing) {
+    public void setFontProperties(
+            final Element fontProperties,
+            final int currentlyEditing) {
 
         SplitComponent radioButton = (SplitComponent) baseComponent;
 
         Element captionProperties = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
-        
+
         setFontProperties(captionProperties, radioButton.getCaption());
 
         setSize(getWidth(), getHeight());
     }
 
-    public void setObjectProperties(Element objectProperties) {
+    public void setObjectProperties(final Element objectProperties) {
 
         JCheckBox comboBox = (JCheckBox) getValueComponent();
 
@@ -248,13 +259,13 @@ public class CheckBoxWidget extends Widget implements IWidget {
 
         comboBox.setSelected(state.equals("On"));
 
-        /** set binding properties */
+        /* set binding properties */
         setBindingProperties(objectProperties);
 
         setSize(getWidth(), getHeight());
     }
 
-    public void setCheckBoxGroupName(String name) {
+    public void setCheckBoxGroupName(final String name) {
         Element objectElement = (Element) XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("object")).get(0);
         Element groupNameProperty = XMLUtils.getPropertyElement(objectElement, "Group Name");
         groupNameProperty.getAttributeNode("value").setValue(name);
@@ -266,11 +277,13 @@ public class CheckBoxWidget extends Widget implements IWidget {
         return groupNameProperty.getAttributeNode("value").getValue();
     }
 
-	public void setOnOffImage(Image onImage, Image offImage) {
-		PdfCheckBox checkBox = (PdfCheckBox) getValueComponent();
-		CheckBoxIcon checkBoxIcon = new CheckBoxIcon();
-		checkBoxIcon.setOnOffImage(onImage, offImage);
-		checkBox.setIcon(checkBoxIcon);
-		
-	}
+    public void setOnOffImage(
+            final Image onImage,
+            final Image offImage) {
+        PdfCheckBox checkBox = (PdfCheckBox) getValueComponent();
+        CheckBoxIcon checkBoxIcon = new CheckBoxIcon();
+        checkBoxIcon.setOnOffImage(onImage, offImage);
+        checkBox.setIcon(checkBoxIcon);
+
+    }
 }

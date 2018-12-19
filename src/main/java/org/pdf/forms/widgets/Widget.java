@@ -1,34 +1,34 @@
-/**
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* 	This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* Widget.java
-* ---------------
-*/
+/*
+ * ===========================================
+ * PDF Forms Designer
+ * ===========================================
+ * <p>
+ * Project Info:  http://pdfformsdesigne.sourceforge.net
+ * (C) Copyright 2006-2008..
+ * Lead Developer: Simon Barnett (n6vale@googlemail.com)
+ * <p>
+ * This file is part of the PDF Forms Designer
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>
+ * <p>
+ * <p>
+ * ---------------
+ * Widget.java
+ * ---------------
+ */
 package org.pdf.forms.widgets;
 
 import java.awt.Color;
@@ -66,7 +66,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class Widget {
-    protected JComponent component, baseComponent;
+
+    JComponent component;
+    JComponent baseComponent;
 
     protected Document properties;
 
@@ -83,7 +85,11 @@ public class Widget {
     private double resizeWidthFromLeftRatio;
     private Icon icon;
 
-    public Widget(int type, JComponent baseComponent, JComponent component, String iconLocation) {
+    public Widget(
+            final int type,
+            final JComponent baseComponent,
+            final JComponent component,
+            final String iconLocation) {
         this.position = new Point(0, 0);
 
         this.type = type;
@@ -105,16 +111,18 @@ public class Widget {
         return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
 
-    public void setPosition(int x, int y) {
+    public void setPosition(
+            final int x,
+            final int y) {
         position.x = x;
         position.y = y;
     }
 
-    public void setX(int x) {
+    public void setX(final int x) {
         position.x = x;
     }
 
-    public void setY(int y) {
+    public void setY(final int y) {
         position.y = y;
     }
 
@@ -134,17 +142,11 @@ public class Widget {
         return component.getHeight();
     }
 
-    public void setSize(int width, int height) {
+    public void setSize(
+            final int width,
+            final int height) {
         component = WidgetFactory.createResizedComponent(baseComponent, width, height);
     }
-
-//    public FontProperties getValueFontProperties() {
-//        return valueFontProperties;
-//    }
-//
-//    public FontProperties getCaptionFontProperties() {
-//        return captionFontProperties;
-//    }
 
     public boolean allowEditCaptionAndValue() {
         return allowEditCaptionAndValue;
@@ -158,11 +160,14 @@ public class Widget {
         return new Dimension(getWidth() + WidgetSelection.BOX_MARGIN * 2, getHeight() + WidgetSelection.BOX_MARGIN * 2);
     }
 
-    public int getResizeTypeForSplitComponent(int mouseX, int mouseY) {
+    public int getResizeTypeForSplitComponent(
+            final int mouseX,
+            final int mouseY) {
         SplitComponent sc = (SplitComponent) baseComponent;
 
-        if (sc.getCaptionPosition() == SplitComponent.CAPTION_NONE)
+        if (sc.getCaptionPosition() == SplitComponent.CAPTION_NONE) {
             return -1;
+        }
 
         int widgetX = getX();
         int widgetY = getY();
@@ -190,37 +195,32 @@ public class Widget {
         return resizeType;
     }
 
-//    public void setDivisorLocation(int x) {
-//        SplitComponent ptf = (SplitComponent) baseComponent;
-//        ptf.setDividerLocation(x);
-//
-//        setSize(getWidth(), getHeight());
-//    }
-
     public JComponent getValueComponent() {
 
         JComponent value;
-        if (isComponentSplit)
+        if (isComponentSplit) {
             value = ((SplitComponent) baseComponent).getValue();
-        else
+        } else {
             value = baseComponent;
+        }
 
         return value;
     }
 
     public PdfCaption getCaptionComponent() {
         PdfCaption caption = null;
-        if (isComponentSplit)
+        if (isComponentSplit) {
             caption = ((SplitComponent) baseComponent).getCaption();
+        }
 
         return caption;
     }
 
-    public void setLastX(int lastX) {
+    public void setLastX(final int lastX) {
         this.lastX = lastX;
     }
 
-    public void setLastY(int lastY) {
+    public void setLastY(final int lastY) {
         this.lastY = lastY;
     }
 
@@ -233,7 +233,6 @@ public class Widget {
     }
 
     public Point getAbsoluteLocationsOfValue() {
-
         Point location = null;
 
         if (isComponentSplit) {
@@ -269,7 +268,6 @@ public class Widget {
     }
 
     public Point getAbsoluteLocationsOfCaption() {
-
         Point location = null;
 
         if (isComponentSplit) {
@@ -297,28 +295,22 @@ public class Widget {
             }
         }
 
-        if(location == null)
-        	location = new Point(getX(), getY());
-        
+        if (location == null) {
+            location = new Point(getX(), getY());
+        }
+
         return location;
     }
-
-//    public void setCaptionText(String captionText) {
-//
-//
-//        getCaptionComponent().setText(captionText);
-//        setSize(getWidth(), getHeight());
-//    }
 
     public boolean isComponentSplit() {
         return isComponentSplit;
     }
 
-    public void setResizeHeightRatio(double resizeHeightRatio) {
+    public void setResizeHeightRatio(final double resizeHeightRatio) {
         this.resizeHeightRatio = resizeHeightRatio;
     }
 
-    public void setResizeWidthRatio(double resizeWidthRatio) {
+    public void setResizeWidthRatio(final double resizeWidthRatio) {
         this.resizeWidthRatio = resizeWidthRatio;
     }
 
@@ -330,11 +322,11 @@ public class Widget {
         return resizeWidthRatio;
     }
 
-    public void setResizeFromTopRatio(double resizeFromTopRatio) {
+    public void setResizeFromTopRatio(final double resizeFromTopRatio) {
         this.resizeFromTopRatio = resizeFromTopRatio;
     }
 
-    public void setResizeFromLeftRatio(double resizeWidthFromLeftRatio) {
+    public void setResizeFromLeftRatio(final double resizeWidthFromLeftRatio) {
         this.resizeWidthFromLeftRatio = resizeWidthFromLeftRatio;
     }
 
@@ -346,22 +338,12 @@ public class Widget {
         return resizeWidthFromLeftRatio;
     }
 
-    public List getWidgetsInGroup() {
+    public List<IWidget> getWidgetsInGroup() {
         return null;
     }
 
-    public void setWidgetsInGroup(List widgetsInGroup) {
+    public void setWidgetsInGroup(final List widgetsInGroup) {
     }
-
-//    public String toString() {
-//        return "====================Widget====================" + "\n"
-//                + "type = " + type + "\n"
-//                + "component = " + component + "\n"
-//                + "baseComponent = " + baseComponent + "\n"
-//                + "position = " + position + "\n"
-//                + getClass() + "\n"
-//                + "============================================";
-//    }
 
     public int getType() {
         return type;
@@ -371,13 +353,7 @@ public class Widget {
         return widgetName;
     }
 
-    public int getArrayNumber(){
-//        Element bindingPropertiesElement = (Element) properties.getElementsByTagName("binding").item(0);
-//
-//        String arrayNumber = XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Array Number");
-//
-//        return Integer.parseInt(arrayNumber);
-
+    public int getArrayNumber() {
         return arrayNumber;
     }
 
@@ -389,13 +365,17 @@ public class Widget {
         return properties;
     }
 
-    public void setParagraphProperties(Element paragraphProperties, int currentlyEditing) {
+    public void setParagraphProperties(
+            final Element paragraphProperties,
+            final int currentlyEditing) {
     }
 
-    public void setLayoutProperties(Element paragraphProperties) {
+    public void setLayoutProperties(final Element paragraphProperties) {
     }
 
-    public void setFontProperties(Element parentElement, int currentlyEditing) {
+    public void setFontProperties(
+            final Element parentElement,
+            final int currentlyEditing) {
     }
 
     protected Element setupProperties() {
@@ -410,7 +390,9 @@ public class Widget {
         return XMLUtils.createAndAppendElement(properties, "widget", properties);
     }
 
-    protected void setFontProperties(Element properties, IPdfComponent component) {
+    protected void setFontProperties(
+            final Element properties,
+            final IPdfComponent component) {
         String fontNameProperty = XMLUtils.getAttributeFromChildElement(properties, "Font Name");
         String fontSizeProperty = XMLUtils.getAttributeFromChildElement(properties, "Font Size");
         String fontStyleProperty = XMLUtils.getAttributeFromChildElement(properties, "Font Style");
@@ -420,9 +402,8 @@ public class Widget {
 
         Font baseFont = FontHandler.getInstance().getFontFromName(fontNameProperty);
 
-        Map fontAttrs = new HashMap();
-//        fontAttrs.put(TextAttribute.FAMILY, fontNameProperty);
-        fontAttrs.put(TextAttribute.SIZE, new Float(fontSizeProperty));
+        final Map<TextAttribute, Float> fontAttrs = new HashMap<>();
+        fontAttrs.put(TextAttribute.SIZE, Float.valueOf(fontSizeProperty));
 
         int fontStyle = Integer.parseInt(fontStyleProperty);
 
@@ -457,7 +438,7 @@ public class Widget {
         component.setForeground(color);
     }
 
-    protected void setSizeAndPosition(Element layoutPropertiesElement) {
+    void setSizeAndPosition(final Element layoutPropertiesElement) {
         Element sizeAndPositionElement = (Element) layoutPropertiesElement.getElementsByTagName("sizeandposition").item(0);
 
         int x = Integer.parseInt(XMLUtils.getAttributeFromChildElement(sizeAndPositionElement, "X"));
@@ -469,7 +450,9 @@ public class Widget {
         setSize(width, height);
     }
 
-    protected void setParagraphProperties(Element captionPropertiesElement, IPdfComponent component) {
+    protected void setParagraphProperties(
+            final Element captionPropertiesElement,
+            final IPdfComponent component) {
         String horizontalAlignment = XMLUtils.getAttributeFromChildElement(captionPropertiesElement, "Horizontal Alignment");
         String verticallAlignment = XMLUtils.getAttributeFromChildElement(captionPropertiesElement, "Vertical Alignment");
 
@@ -481,8 +464,9 @@ public class Widget {
         }
 
         try {
-            if (horizontalAlignment.equals("justify"))
+            if (horizontalAlignment.equals("justify")) {
                 horizontalAlignment = "left";
+            }
 
             Field field = SwingConstants.class.getDeclaredField(horizontalAlignment.toUpperCase());
             int alignment = field.getInt(this);
@@ -491,8 +475,8 @@ public class Widget {
             field = SwingConstants.class.getDeclaredField(verticallAlignment.toUpperCase());
             alignment = field.getInt(this);
             component.setVerticalAlignment(alignment);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         setSize(getWidth(), getHeight());
@@ -507,13 +491,9 @@ public class Widget {
         setFontProperties(root, IWidget.COMPONENT_BOTH);
         setObjectProperties(root);
         setCaptionProperties(root);
-
-        //setParagraphProperties(Element paragraphProperties, int currentlyEditing)
-        //setLayoutProperties(Element paragraphProperties)
-        //setFontProperties(Element parentElement, int currentlyEditing)
     }
 
-    protected void addJavaScript(Element rootElement) {
+    void addJavaScript(final Element rootElement) {
         Element javaScriptElement = XMLUtils.createAndAppendElement(properties, "javascript", rootElement);
 
         Element mouseEnterElement = XMLUtils.createAndAppendElement(properties, "mouseEnter", javaScriptElement);
@@ -535,29 +515,22 @@ public class Widget {
             Element keystrokeElement = XMLUtils.createAndAppendElement(properties, "keystroke", javaScriptElement);
             keystrokeElement.appendChild(properties.createTextNode(""));
         }
-
-//        Element mouseClickElement = XMLUtils.createAndAppendElement(properties, "click", javaScriptElement);
-//        mouseClickElement.appendChild(properties.createTextNode(""));
     }
 
-    public void setObjectProperties(Element parentElement) {
+    public void setObjectProperties(final Element parentElement) {
 
     }
 
-    protected void setBindingProperties(Element objectPropertiesElement) {
+    void setBindingProperties(Element objectPropertiesElement) {
         Element bindingPropertiesElement = (Element) objectPropertiesElement.getElementsByTagName("binding").item(0);
 
-        String name = XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Name");
-
-        this.widgetName = name;
-
-        int arrayNumber = Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Array Number"));
-        this.arrayNumber = arrayNumber;
+        this.widgetName = XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Name");
+        this.arrayNumber = Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Array Number"));
 
         setSize(getWidth(), getHeight());
     }
 
-    public void setCaptionProperties(Element captionPropertiesElement) {
+    public void setCaptionProperties(final Element captionPropertiesElement) {
         if (isComponentSplit &&
                 ((SplitComponent) baseComponent).getCaptionPosition() != SplitComponent.CAPTION_NONE) {
 
@@ -577,7 +550,7 @@ public class Widget {
         }
     }
 
-    public void setBorderAndBackgroundProperties(Element borderPropertiesElement) {
+    public void setBorderAndBackgroundProperties(final Element borderPropertiesElement) {
         JComponent component = getValueComponent();
 
         Element borderProperties = (Element) borderPropertiesElement.getElementsByTagName("borders").item(0);
@@ -590,16 +563,20 @@ public class Widget {
             String leftEdgeWidth = XMLUtils.getAttributeFromChildElement(borderProperties, "Border Width");
             String leftEdgeColor = XMLUtils.getAttributeFromChildElement(borderProperties, "Border Color");
 
-            Map borderPropertiesMap = new HashMap();
-            if (borderStyle.equals("Beveled"))
+            final Map<String, String> borderPropertiesMap = new HashMap<>();
+            if (borderStyle.equals("Beveled")) {
                 borderPropertiesMap.put("S", "/B");
-            if (borderStyle.equals("Solid"))
+            }
+            if (borderStyle.equals("Solid")) {
                 borderPropertiesMap.put("S", "/S");
-            if (borderStyle.equals("Dashed"))
+            }
+            if (borderStyle.equals("Dashed")) {
                 borderPropertiesMap.put("S", "/D");
+            }
 
-            if (leftEdgeWidth != null && leftEdgeWidth.length() > 0)
+            if (leftEdgeWidth != null && leftEdgeWidth.length() > 0) {
                 borderPropertiesMap.put("W", leftEdgeWidth);
+            }
 
             Color color = new Color(Integer.parseInt(leftEdgeColor));
             Border border = JPedalBorderFactory.createBorderStyle(borderPropertiesMap, color, color);

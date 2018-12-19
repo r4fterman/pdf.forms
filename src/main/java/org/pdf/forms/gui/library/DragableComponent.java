@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -92,7 +92,6 @@ public class DragableComponent implements DragGestureListener, DragSourceListene
     }
 
     public void dragEnter(DragSourceDragEvent dsde) {
-
         int widgetToAdd = designerPanel.getWidgetToAdd();
 
         IWidget widget;
@@ -109,7 +108,7 @@ public class DragableComponent implements DragGestureListener, DragSourceListene
             widget = WidgetFactory.createWidget(widgetToAdd, (Rectangle) null);
         }
 
-        Set list = new HashSet();
+        Set<IWidget> list = new HashSet<>();
         if (widget != null)
             list.add(widget);
 
@@ -125,13 +124,10 @@ public class DragableComponent implements DragGestureListener, DragSourceListene
     }
 
     public void dropActionChanged(DragSourceDragEvent dsde) {
-//        System.out.println("dropActionChanged");
     }
 
     public void dragDropEnd(DragSourceDropEvent dsde) {
-        //System.out.println("dragDropEnd");
-
-        IWidget widget = (IWidget) designerPanel.getSelectedWidgets().iterator().next();
+        IWidget widget = designerPanel.getSelectedWidgets().iterator().next();
 
         Dimension boxSize = widget.getBoxSize();
         Point location = SwingUtilities.convertPoint(null, dsde.getLocation(), (Component) designerPanel);
@@ -147,7 +143,7 @@ public class DragableComponent implements DragGestureListener, DragSourceListene
 
         designerPanel.repaint();
 
-        Set set = new HashSet();
+        Set<IWidget> set = new HashSet<>();
         set.add(widget);
 
         designerPanel.getMainFrame().setPropertiesCompound(set);
@@ -157,7 +153,6 @@ public class DragableComponent implements DragGestureListener, DragSourceListene
     }
 
     public void dragExit(DragSourceEvent dse) {
-//        System.out.println("dragExit");
         dse.getDragSourceContext().setCursor(null);
         designerPanel.setDragBoxLocation(null);
     }

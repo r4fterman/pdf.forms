@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -42,22 +42,22 @@ import org.pdf.forms.gui.properties.PropertyChanger;
 import org.pdf.forms.widgets.IWidget;
 
 public class WidgetAlignmentAndOrder {
-    public static String ALIGN_LEFT = "Align Left";
-    public static String ALIGN_RIGHT = "Align Right";
-    public static String ALIGN_TOP = "Align Top";
-    public static String ALIGN_BOTTOM = "Align Bottom";
-    public static String ALIGN_VERTICALY = "Align Verticaly";
-    public static String ALIGN_HORIZONTALY = "Align Horizontaly";
-    public static String BRING_TO_FRONT = "Bring to Front";
-    public static String SEND_TO_BACK = "Send to Back";
-    public static String BRING_FORWARDS = "Bring Forwards";
-    public static String SEND_BACKWARDS = "Send Backwards";
+    public static final String ALIGN_LEFT = "Align Left";
+    public static final String ALIGN_RIGHT = "Align Right";
+    public static final String ALIGN_TOP = "Align Top";
+    public static final String ALIGN_BOTTOM = "Align Bottom";
+    public static final String ALIGN_VERTICALY = "Align Verticaly";
+    public static final String ALIGN_HORIZONTALY = "Align Horizontaly";
+    public static final String BRING_TO_FRONT = "Bring to Front";
+    public static final String SEND_TO_BACK = "Send to Back";
+    public static final String BRING_FORWARDS = "Bring Forwards";
+    public static final String SEND_BACKWARDS = "Send Backwards";
 
     private static Set selectedWidgets;
 
     private static String resRoot = "/org/pdf/forms/res/";
 
-    private static String[] alignButtons = new String[]{
+    private static String[] alignButtons = new String[] {
             resRoot + ALIGN_LEFT + ".gif",
             resRoot + ALIGN_RIGHT + ".gif",
             resRoot + ALIGN_TOP + ".gif",
@@ -65,13 +65,13 @@ public class WidgetAlignmentAndOrder {
             "Seperator",
             resRoot + ALIGN_VERTICALY + ".gif",
             resRoot + ALIGN_HORIZONTALY + ".gif",
-            "Seperator",};
+            "Seperator", };
 
-    private static String[] orderButtons = new String[]{
+    private static String[] orderButtons = new String[] {
             resRoot + BRING_TO_FRONT + ".gif",
             resRoot + SEND_TO_BACK + ".gif",
             resRoot + BRING_FORWARDS + ".gif",
-            resRoot + SEND_BACKWARDS + ".gif"};
+            resRoot + SEND_BACKWARDS + ".gif" };
 
     public static String[] getAlignButtons() {
         return alignButtons;
@@ -81,31 +81,41 @@ public class WidgetAlignmentAndOrder {
         return orderButtons;
     }
 
-    public static void alignAndOrder(IDesigner designerPanel, String type) {
+    public static void alignAndOrder(
+            final IDesigner designerPanel,
+            final String type) {
 
         selectedWidgets = designerPanel.getSelectedWidgets();
 
-        if (type.equals(WidgetAlignmentAndOrder.ALIGN_LEFT))
+        switch (type) {
+        case WidgetAlignmentAndOrder.ALIGN_LEFT:
             alignLeft();
-        else if (type.equals(WidgetAlignmentAndOrder.ALIGN_RIGHT))
+            break;
+        case WidgetAlignmentAndOrder.ALIGN_RIGHT:
             alignRight();
-        else if (type.equals(WidgetAlignmentAndOrder.ALIGN_TOP))
+            break;
+        case WidgetAlignmentAndOrder.ALIGN_TOP:
             alignTop();
-        else if (type.equals(WidgetAlignmentAndOrder.ALIGN_BOTTOM))
+            break;
+        case WidgetAlignmentAndOrder.ALIGN_BOTTOM:
             alignBottom();
-        else if (type.equals(WidgetAlignmentAndOrder.ALIGN_VERTICALY))
+            break;
+        case WidgetAlignmentAndOrder.ALIGN_VERTICALY:
             alignVerticaly();
-        else if (type.equals(WidgetAlignmentAndOrder.ALIGN_HORIZONTALY))
+            break;
+        case WidgetAlignmentAndOrder.ALIGN_HORIZONTALY:
             alignHorizontaly();
-        else
+            break;
+        default:
             changeOrderOfSelectedWidgets(type, designerPanel.getWidgets());
+            break;
+        }
 
         PropertyChanger.updateSizeAndPosition(selectedWidgets);
 
         designerPanel.getMainFrame().setPropertiesCompound(selectedWidgets);
         designerPanel.getMainFrame().setPropertiesToolBar(selectedWidgets);
         designerPanel.getMainFrame().updateHierarchy();
-
 
         designerPanel.repaint();
     }
@@ -114,19 +124,21 @@ public class WidgetAlignmentAndOrder {
      * Note: This method takes a reference to the list of widgets stored in the
      * designer panel.  It then alters the list here.
      */
-    private static void changeOrderOfSelectedWidgets(String type, List widgets) {
+    private static void changeOrderOfSelectedWidgets(
+            String type,
+            List widgets) {
 
         int size = widgets.size() - 1;
         Set newSet = (Set) ((HashSet) selectedWidgets).clone();
-
 
         if (type.equals(WidgetAlignmentAndOrder.BRING_TO_FRONT)) {
             for (int i = 0; i < size; i++) {
                 IWidget widget = (IWidget) widgets.get(i);
 
                 if (newSet.remove(widget)) {
-                    if (i < size)
+                    if (i < size) {
                         widgets.add(size, widgets.remove(i));
+                    }
 
                     i = -1;
                 }
@@ -136,8 +148,9 @@ public class WidgetAlignmentAndOrder {
                 IWidget widget = (IWidget) widgets.get(i);
 
                 if (newSet.remove(widget)) {
-                    if (i > 0)
+                    if (i > 0) {
                         widgets.add(0, widgets.remove(i));
+                    }
 
                     i = size + 1;
                 }
@@ -147,8 +160,9 @@ public class WidgetAlignmentAndOrder {
                 IWidget widget = (IWidget) widgets.get(i);
 
                 if (newSet.remove(widget)) {
-                    if (i < size)
+                    if (i < size) {
                         widgets.add(i + 1, widgets.remove(i));
+                    }
 
                     i = -1;
                 }
@@ -158,8 +172,9 @@ public class WidgetAlignmentAndOrder {
                 IWidget widget = (IWidget) widgets.get(i);
 
                 if (newSet.remove(widget)) {
-                    if (i > 0)
+                    if (i > 0) {
                         widgets.add(i - 1, widgets.remove(i));
+                    }
 
                     i = size + 1;
                 }
@@ -169,7 +184,7 @@ public class WidgetAlignmentAndOrder {
 
     private static void alignHorizontaly() {
         int averageCenterPoint = 0;
-        for (Iterator it = selectedWidgets.iterator(); it.hasNext();) {
+        for (Iterator it = selectedWidgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             Rectangle bounds = widget.getBounds();
 
@@ -178,7 +193,7 @@ public class WidgetAlignmentAndOrder {
 
         averageCenterPoint = averageCenterPoint / selectedWidgets.size();
 
-        for (Iterator it = selectedWidgets.iterator(); it.hasNext();) {
+        for (Iterator it = selectedWidgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             widget.setX(averageCenterPoint - widget.getBounds().width / 2);
         }
@@ -186,7 +201,7 @@ public class WidgetAlignmentAndOrder {
 
     private static void alignVerticaly() {
         int averageCenterPoint = 0;
-        for (Iterator it = selectedWidgets.iterator(); it.hasNext();) {
+        for (Iterator it = selectedWidgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             Rectangle bounds = widget.getBounds();
 
@@ -195,7 +210,7 @@ public class WidgetAlignmentAndOrder {
 
         averageCenterPoint = averageCenterPoint / selectedWidgets.size();
 
-        for (Iterator it = selectedWidgets.iterator(); it.hasNext();) {
+        for (Iterator it = selectedWidgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             widget.setY(averageCenterPoint - widget.getBounds().height / 2);
         }
@@ -204,7 +219,7 @@ public class WidgetAlignmentAndOrder {
     private static void alignBottom() {
         int bottomPoint = 0;
         boolean firstPass = true;
-        for (Iterator it = selectedWidgets.iterator(); it.hasNext();) {
+        for (Iterator it = selectedWidgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             Rectangle bounds = widget.getBounds();
 
@@ -213,12 +228,13 @@ public class WidgetAlignmentAndOrder {
                 firstPass = false;
             } else {
                 int tempBottomPoint = bounds.y + bounds.height;
-                if (tempBottomPoint > bottomPoint)
+                if (tempBottomPoint > bottomPoint) {
                     bottomPoint = tempBottomPoint;
+                }
             }
         }
 
-        for (Iterator it = selectedWidgets.iterator(); it.hasNext();) {
+        for (Iterator it = selectedWidgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             widget.setY(bottomPoint - widget.getBounds().height);
         }
@@ -227,7 +243,7 @@ public class WidgetAlignmentAndOrder {
     private static void alignTop() {
         int topPoint = 0;
         boolean firstPass = true;
-        for (Iterator it = selectedWidgets.iterator(); it.hasNext();) {
+        for (Iterator it = selectedWidgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             Rectangle bounds = widget.getBounds();
 
@@ -236,12 +252,13 @@ public class WidgetAlignmentAndOrder {
                 firstPass = false;
             } else {
                 int tempTopPoint = bounds.y;
-                if (tempTopPoint < topPoint)
+                if (tempTopPoint < topPoint) {
                     topPoint = tempTopPoint;
+                }
             }
         }
 
-        for (Iterator it = selectedWidgets.iterator(); it.hasNext();) {
+        for (Iterator it = selectedWidgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             widget.setY(topPoint);
         }
@@ -250,7 +267,7 @@ public class WidgetAlignmentAndOrder {
     private static void alignRight() {
         int rightPoint = 0;
         boolean firstPass = true;
-        for (Iterator it = selectedWidgets.iterator(); it.hasNext();) {
+        for (Iterator it = selectedWidgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             Rectangle bounds = widget.getBounds();
 
@@ -259,12 +276,13 @@ public class WidgetAlignmentAndOrder {
                 firstPass = false;
             } else {
                 int tempRightPoint = bounds.x + bounds.width;
-                if (tempRightPoint > rightPoint)
+                if (tempRightPoint > rightPoint) {
                     rightPoint = tempRightPoint;
+                }
             }
         }
 
-        for (Iterator it = selectedWidgets.iterator(); it.hasNext();) {
+        for (Iterator it = selectedWidgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             widget.setX(rightPoint - widget.getBounds().width);
         }
@@ -273,7 +291,7 @@ public class WidgetAlignmentAndOrder {
     private static void alignLeft() {
         int leftPoint = 0;
         boolean firstPass = true;
-        for (Iterator it = selectedWidgets.iterator(); it.hasNext();) {
+        for (Iterator it = selectedWidgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             Rectangle bounds = widget.getBounds();
 
@@ -282,12 +300,13 @@ public class WidgetAlignmentAndOrder {
                 firstPass = false;
             } else {
                 int tempLeftPoint = bounds.x;
-                if (tempLeftPoint < leftPoint)
+                if (tempLeftPoint < leftPoint) {
                     leftPoint = tempLeftPoint;
+                }
             }
         }
 
-        for (Iterator it = selectedWidgets.iterator(); it.hasNext();) {
+        for (Iterator it = selectedWidgets.iterator(); it.hasNext(); ) {
             IWidget widget = (IWidget) it.next();
             widget.setX(leftPoint);
         }

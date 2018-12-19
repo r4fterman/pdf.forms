@@ -1,30 +1,30 @@
-/**
+/*
  * ===========================================
  * PDF Forms Designer
  * ===========================================
- *
+ * <p>
  * Project Info:  http://pdfformsdesigne.sourceforge.net
  * (C) Copyright 2006-2008..
  * Lead Developer: Simon Barnett (n6vale@googlemail.com)
- *
- * 	This file is part of the PDF Forms Designer
- *
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
- *
+ * <p>
+ * This file is part of the PDF Forms Designer
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>
+ * <p>
+ * <p>
  * ---------------
  * FontHandler.java
  * ---------------
@@ -35,8 +35,6 @@ import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -49,13 +47,11 @@ public class FontHandler {
 
     private static FontHandler instance;
 
-    private static Map fontFileMap = new TreeMap(new Comparator() {
-        public int compare(Object o1, Object o2) {
-            String font1 = ((Font) o1).getFontName();
-            String font2 = ((Font) o2).getFontName();
+    private static Map<Font, String> fontFileMap = new TreeMap<>((o1, o2) -> {
+        String font1 = o1.getFontName();
+        String font2 = o2.getFontName();
 
-            return font1.compareToIgnoreCase(font2);
-        }
+        return font1.compareToIgnoreCase(font2);
     });
 
     private String javaFontDir = System.getProperty("java.home") + "/lib/fonts";
@@ -72,40 +68,41 @@ public class FontHandler {
             .addAll(Arrays.asList(fontDirectoriesUnix)).add(javaFontDir).build();
 
     private FontHandler() {
-        for (int i = 0; i < fontDirectories.size(); i++) {
-            String dir = (String) fontDirectories.get(i);
+        for (Object directory : fontDirectories) {
+            String dir = (String) directory;
             registerDirectory(dir);
         }
 
         //TODO need to check if file has moved, and if so offer user chance to browse
         Map customFonts = DesignerPropertiesFile.getInstance().getCustomFonts();
-        for (Iterator it = customFonts.keySet().iterator(); it.hasNext(); ) {
-            String name = (String) it.next();
+        for (final Object o : customFonts.keySet()) {
+            String name = (String) o;
             String path = (String) customFonts.get(name);
 
             registerFont(new File(path));
         }
     }
 
-    private void registerDirectory(String dir) {
+    private void registerDirectory(final String dir) {
         try {
-            File file = new File(dir);
-            if (!file.exists() || !file.isDirectory())
+            File folder = new File(dir);
+            if (!folder.exists() || !folder.isDirectory()) {
                 return;
+            }
 
-            String files[] = file.list();
-
-            if (files == null)
+            File[] fontFiles = folder.listFiles();
+            if (fontFiles == null) {
                 return;
+            }
 
-            for (int k = 0; k < files.length; ++k) {
-                file = new File(dir, files[k]);
-                String name = file.getPath().toLowerCase();
+            for (File fontFile : fontFiles) {
+                String name = fontFile.getPath().toLowerCase();
 
-                if (!name.endsWith("ttf"))
+                if (!name.endsWith("ttf")) {
                     continue;
+                }
 
-                registerFont(file);
+                registerFont(fontFile);
             }
         } catch (Exception e) {
             //empty on purpose
@@ -116,7 +113,7 @@ public class FontHandler {
      * todo adapt this method to handle a duff file, behave nicely, and tell
      * any method that relies on it what happened
      */
-    public String registerFont(File file) {
+    String registerFont(final File file) {
         try {
             String fontLocation = file.getPath();
             FileInputStream fontStream = new FileInputStream(fontLocation);
@@ -133,9 +130,10 @@ public class FontHandler {
     }
 
     public static FontHandler getInstance() {
-        if (instance == null)
-            // it's ok, we can call this constructor
+        // it's ok, we can call this constructor
+        if (instance == null) {
             instance = new FontHandler();
+        }
 
         return instance;
     }
@@ -144,62 +142,31 @@ public class FontHandler {
         return (Font) ((TreeMap) fontFileMap).firstKey();
     }
 
-    public Map getFontFileMap() {
+    public Map<Font, String> getFontFileMap() {
         return fontFileMap;
     }
 
-    public String getFontDirectory(Font font) {
-        String fontName = font.getName();
-
-        for (Iterator it = fontFileMap.keySet().iterator(); it.hasNext(); ) {
-            Font collectionFont = (Font) it.next();
-            if (collectionFont.getName().equals(fontName)) {
-                font = collectionFont;
-                break;
-            }
-        }
-
-        String fontPath = (String) fontFileMap.get(font);
-
-        if (fontPath == null) {
-            fontPath = (String) fontFileMap.get(getDefaultFont());
-        }
-
-        String fileName = new File(fontPath).getName();
-
+    public String getFontDirectory(final Font font) {
+        final String fontPath = getAbsoluteFontPath(font);
+        final String fileName = new File(fontPath).getName();
         return fontPath.substring(0, fontPath.length() - fileName.length());
     }
 
-    public String getAbsoluteFontPath(Font font) {
-        String fontName = font.getName();
+    public String getAbsoluteFontPath(final Font font) {
+        final String fontName = font.getName();
 
-        for (Iterator it = fontFileMap.keySet().iterator(); it.hasNext(); ) {
-            Font collectionFont = (Font) it.next();
-            if (collectionFont.getName().equals(fontName)) {
-                font = collectionFont;
-                break;
-            }
-        }
-
-        String fontPath = (String) fontFileMap.get(font);
-        if (fontPath == null) {
-            fontPath = (String) fontFileMap.get(getDefaultFont());
-        }
-
-        return fontPath;
+        return fontFileMap.entrySet().stream()
+                .filter(entry -> entry.getKey().getName().equals(fontName))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElseGet(() -> fontFileMap.get(getDefaultFont()));
     }
 
     public Font getFontFromName(String fontName) {
-        Font returnedFont = null;
-
-        for (Iterator it = fontFileMap.keySet().iterator(); it.hasNext(); ) {
-            Font collectionFont = (Font) it.next();
-            if (collectionFont.getName().equals(fontName)) {
-                returnedFont = collectionFont;
-                break;
-            }
-        }
-
-        return returnedFont;
+        return fontFileMap.entrySet().stream()
+                .filter(entry -> entry.getKey().getName().equals(fontName))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElseGet(this::getDefaultFont);
     }
 }

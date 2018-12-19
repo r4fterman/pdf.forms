@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -35,13 +35,13 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.pdf.forms.document.FormsDocument;
@@ -61,7 +61,7 @@ public class HierarchyPanel extends JPanel implements Dockable {
 
     private DefaultMutableTreeNode top;
 
-    private List pageNodes = new ArrayList();
+    private List<DefaultMutableTreeNode> pageNodes = new ArrayList<>();
 
     public HierarchyPanel(IDesigner designer) {
 
@@ -102,32 +102,31 @@ public class HierarchyPanel extends JPanel implements Dockable {
     }
 
     public void updateHierarchy(FormsDocument document) {
-        /** remove all pages*/
+        /* remove all pages*/
         pageNodes.clear();
         top.removeAllChildren();
 
         for (int i = 1; i <= document.getNoOfPages(); i++) {
             Page page = document.getPage(i);
             addPage(i, page);
-            for (Iterator it = page.getWidgets().iterator(); it.hasNext();) {
-                IWidget widget = (IWidget) it.next();
+            for (IWidget widget : page.getWidgets()) {
                 addWidgetToHierarchy(widget, i);
             }
         }
     }
 
     public void addWidgetToHierarchy(IWidget widget, int page) {
-        DefaultMutableTreeNode pageNode = (DefaultMutableTreeNode) pageNodes.get(page - 1);
+        DefaultMutableTreeNode pageNode = pageNodes.get(page - 1);
         addWidgetsToParent(pageNode, widget);
 
         tree.updateUI();
     }
 
     public void removeWidgetFromHierarchy(IWidget widget, int page) {
-        DefaultMutableTreeNode pageNode = (DefaultMutableTreeNode) pageNodes.get(page - 1);
+        DefaultMutableTreeNode pageNode = pageNodes.get(page - 1);
 
-        Enumeration children = pageNode.children();
-        List nodesToRemove = new ArrayList();
+        Enumeration<TreeNode> children = pageNode.children();
+        List<DefaultMutableTreeNode> nodesToRemove = new ArrayList<>();
         DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 
         while (children.hasMoreElements()) {
@@ -138,8 +137,7 @@ public class HierarchyPanel extends JPanel implements Dockable {
             }
         }
 
-        for (Iterator it = nodesToRemove.iterator(); it.hasNext();) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) it.next();
+        for (final DefaultMutableTreeNode node : nodesToRemove) {
             model.removeNodeFromParent(node);
         }
 
@@ -151,9 +149,9 @@ public class HierarchyPanel extends JPanel implements Dockable {
         parent.insert(addedWidget, 0);
 
         if (widget.getType() == IWidget.GROUP) {
-            List widgetsInGroup = widget.getWidgetsInGroup();
-            for (Iterator it = widgetsInGroup.iterator(); it.hasNext();) {
-                addWidgetsToParent(addedWidget, (IWidget) it.next());
+            List<IWidget> widgetsInGroup = widget.getWidgetsInGroup();
+            for (final IWidget widgetInGroup : widgetsInGroup) {
+                addWidgetsToParent(addedWidget, widgetInGroup);
             }
         }
 

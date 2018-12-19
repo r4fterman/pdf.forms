@@ -1,40 +1,47 @@
-/**
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* 	This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* MainFrame.java
-* ---------------
-*/
+/*
+ * ===========================================
+ * PDF Forms Designer
+ * ===========================================
+ * <p>
+ * Project Info:  http://pdfformsdesigne.sourceforge.net
+ * (C) Copyright 2006-2008..
+ * Lead Developer: Simon Barnett (n6vale@googlemail.com)
+ * <p>
+ * This file is part of the PDF Forms Designer
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>
+ * <p>
+ * <p>
+ * ---------------
+ * MainFrame.java
+ * ---------------
+ */
 package org.pdf.forms.gui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.util.Set;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
 
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
@@ -51,22 +58,32 @@ public class MainFrame extends JFrame implements IMainFrame {
 
     private static final int INSET = 15;
 
-    private LibraryPanel palette;
+    public static void main(final String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
 
-    private FontPropertiesTab properties;
+        new MainFrame("TEST");
+    }
+
+    private final LibraryPanel palette;
+
+    private final FontPropertiesTab properties;
 
     public MainFrame(final String version) {
-        Rule horizontalRuler = new Rule(INSET, Rule.HORIZONTAL, true);
+        final Rule horizontalRuler = new Rule(INSET, Rule.HORIZONTAL, true);
         horizontalRuler.setPreferredWidth(Toolkit.getDefaultToolkit().getScreenSize().width);
 
-        Rule verticalRuler = new Rule(INSET, Rule.VERTICAL, true);
+        final Rule verticalRuler = new Rule(INSET, Rule.VERTICAL, true);
         verticalRuler.setPreferredHeight(Toolkit.getDefaultToolkit().getScreenSize().height);
 
-        IDesigner designerPanel = new Designer(INSET, horizontalRuler, verticalRuler, this, version);
-//		designerPanel.addMouseListener(new DesignerMouseListener(designerPanel));
-//		designerPanel.addMouseMotionListener(new DesignerMouseMotionListener(designerPanel));
+        final IDesigner designerPanel = new Designer(INSET, horizontalRuler, verticalRuler, this, version);
+        //		designerPanel.addMouseListener(new DesignerMouseListener(designerPanel));
+        //		designerPanel.addMouseMotionListener(new DesignerMouseMotionListener(designerPanel));
 
-        JScrollPane scroll = new JScrollPane();
+        final JScrollPane scroll = new JScrollPane();
 
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -79,232 +96,208 @@ public class MainFrame extends JFrame implements IMainFrame {
 
         properties = new FontPropertiesTab(designerPanel);
 
-        JSplitPane rightSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, palette, properties);
+        final JSplitPane rightSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, palette, properties);
 
-        JSplitPane mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scroll, rightSplit);
+        final JSplitPane mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scroll, rightSplit);
         mainSplit.setResizeWeight(1);
         mainSplit.setDividerLocation(350);
         getContentPane().add(mainSplit, BorderLayout.CENTER);
-
-//		JButton save = new JButton("Save");
-//		save.addActionListener(new ActionListener(){
-//			public void actionPerformed(ActionEvent e) {
-//				JFileChooser chooser = new JFileChooser();
-//				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-//				
-//				int approved=chooser.showSaveDialog(null);
-//				if(approved==JFileChooser.APPROVE_OPTION){
-//					
-//					File file = chooser.getSelectedFile();
-//					
-//					ArrayList widgets = designerPanel.getWidgets();
-//					
-//					Writer writer = new Writer();
-//					writer.write(widgets,file);
-//				}
-//			}
-//		});
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(new Dimension(640, 480));
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        new MainFrame("TEST");
-    }
-
+    @Override
     public void resetPaletteButtons() {
         palette.resetButtons();
     }
 
-    public void setPropertiesCompound(Set widget) {
+    @Override
+    public void setPropertiesCompound(final Set<IWidget> widget) {
         properties.setProperties(widget);
     }
 
-    public void setPropertiesToolBar(Set widgets) {
+    @Override
+    public void setPropertiesToolBar(final Set<IWidget> widgets) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-
-    public void addWidgetToHierarchy(IWidget widget) {
+    @Override
+    public void addWidgetToHierarchy(final IWidget widget) {
     }
 
-    public void removeWidgetFromHierarchy(IWidget widget) {
+    @Override
+    public void removeWidgetFromHierarchy(final IWidget widget) {
     }
 
-    public void displayPage(int page) {
+    @Override
+    public void displayPage(final int page) {
     }
 
+    @Override
     public int getTotalNoOfPages() {
         return 0;
     }
 
+    @Override
     public int getCurrentPage() {
         return 0;
     }
 
-    public void setFormsDocument(FormsDocument formsDocument) {
+    @Override
+    public void setFormsDocument(final FormsDocument formsDocument) {
     }
 
+    @Override
     public IDesigner getDesigner() {
         return null;
     }
 
-    public void setCurrentDesignerFileName(String currentFileName) {
+    @Override
+    public void setCurrentDesignerFileName(final String currentFileName) {
     }
 
+    @Override
     public String getCurrentDesignerFileName() {
         return null;
     }
 
+    @Override
     public FormsDocument getFormsDocument() {
         return null;
     }
 
-    public void setCurrentPage(int currentPage) {
+    @Override
+    public void setCurrentPage(final int currentPage) {
     }
 
-    public void setPanelsState(boolean state) {
+    @Override
+    public void setPanelsState(final boolean state) {
     }
 
-    public void setTotalNoOfDisplayedPages(int totalNoOfDisplayedPages) {
+    @Override
+    public void setTotalNoOfDisplayedPages(final int totalNoOfDisplayedPages) {
     }
 
-    public void addPageToHierarchyPanel(int pdfPage, Page newPage) {
+    @Override
+    public void addPageToHierarchyPanel(
+            final int pdfPage,
+            final Page newPage) {
     }
 
-    public void updateHierarchyPanelUI(IWidget widget, String name) {
+    public void updateHierarchyPanelUI(
+            final IWidget widget,
+            final String name) {
     }
 
-    public void removePageFromHierarchyPanel(int index) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    @Override
+    public void removePageFromHierarchyPanel(final int index) {
     }
 
+    @Override
     public void updateHierarchy() {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void setDockableVisible(String dockable, boolean visible) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    @Override
+    public void setDockableVisible(
+            final String dockable,
+            final boolean visible) {
     }
 
-    public void setScaling(double scaling) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void setScaling(final double scaling) {
     }
 
     public double getScaling() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
-    public void setBorderVisible(boolean visible) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void setFontVisible(boolean visible) {
-        // TODO Auto-generated method stub
+    public void setBorderVisible(final boolean visible) {
 
     }
 
-    public void setHierarchyVisible(boolean visible) {
-        // TODO Auto-generated method stub
-
+    public void setFontVisible(final boolean visible) {
     }
 
-    public void setJavaScriptEditorVisible(boolean visible) {
-        // TODO Auto-generated method stub
-
+    public void setHierarchyVisible(final boolean visible) {
     }
 
-    public void setLayoutVisible(boolean visible) {
-        // TODO Auto-generated method stub
-
+    public void setJavaScriptEditorVisible(final boolean visible) {
     }
 
-    public void setLibraryVisible(boolean visible) {
-        // TODO Auto-generated method stub
-
+    public void setLayoutVisible(final boolean visible) {
     }
 
-    public void setObjectVisible(boolean visible) {
-        // TODO Auto-generated method stub
-
+    public void setLibraryVisible(final boolean visible) {
     }
 
-    public void setParagraphVisible(boolean visible) {
-        // TODO Auto-generated method stub
-
+    public void setObjectVisible(final boolean visible) {
     }
 
-	public int getDesignerCompoundContent() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public void setDesignerCompoundContent(int content) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public DesignerCompound getDesignerCompound() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public double getCurrentSelectedScaling() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public double getCurrentScaling() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public void setCurrentSelectedScaling(double scaling) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void updateAvailiableFonts() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void addWidgetToPage(IWidget widget) {
-		// TODO Auto-generated method stub
-		
-	}
-
-    public int getNextArrayNumberForName(String name, IWidget widget) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    public void setParagraphVisible(final boolean visible) {
     }
 
-    public void handleArrayNumberOnWidgetDeletion(Set selectedWidgets) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    @Override
+    public int getDesignerCompoundContent() {
+        return 0;
     }
 
-	public WidgetArrays getWidgetArrays() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void setDesignerCompoundContent(final int content) {
+    }
 
-	public void renameWidget(String oldName, String name, IWidget widget) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public DesignerCompound getDesignerCompound() {
+        return null;
+    }
 
-	public void updateHierarchyPanelUI() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public double getCurrentSelectedScaling() {
+        return 0;
+    }
 
+    @Override
+    public double getCurrentScaling() {
+        return 0;
+    }
+
+    @Override
+    public void setCurrentSelectedScaling(final double scaling) {
+    }
+
+    @Override
+    public void updateAvailiableFonts() {
+    }
+
+    @Override
+    public void addWidgetToPage(final IWidget widget) {
+    }
+
+    @Override
+    public int getNextArrayNumberForName(
+            final String name,
+            final IWidget widget) {
+        return 0;
+    }
+
+    @Override
+    public void handleArrayNumberOnWidgetDeletion(final Set selectedWidgets) {
+    }
+
+    @Override
+    public WidgetArrays getWidgetArrays() {
+        return null;
+    }
+
+    @Override
+    public void renameWidget(
+            final String oldName,
+            final String name,
+            final IWidget widget) {
+    }
+
+    @Override
+    public void updateHierarchyPanelUI() {
+    }
 
 }

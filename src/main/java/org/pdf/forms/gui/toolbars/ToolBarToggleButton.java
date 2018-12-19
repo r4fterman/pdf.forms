@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -48,19 +48,21 @@ public class ToolBarToggleButton extends JToggleButton {
         super();
     }
 
-    public ToolBarToggleButton(String string) {
+    public ToolBarToggleButton(final String string) {
         super(string);
     }
 
-    public void init(String path, String toolTip) {
-        /**bookmarks icon*/
+    public void init(
+            final String path,
+            final String toolTip) {
+        /* bookmarks icon */
         setToolTipText(toolTip);
 
         setBorderPainted(false);
 
-        URL url = getClass().getResource(path);
+        final URL url = getClass().getResource(path);
         if (url != null) {
-            ImageIcon fontIcon = new ImageIcon(url);
+            final ImageIcon fontIcon = new ImageIcon(url);
             setIcon(fontIcon);
             createPressedLook(this, fontIcon);
         }
@@ -70,16 +72,18 @@ public class ToolBarToggleButton extends JToggleButton {
     /**
      * create a pressed look of the <b>icon</b> and added it to the pressed Icon of <b>button</b>
      */
-    private void createPressedLook(AbstractButton button, ImageIcon icon) {
-        BufferedImage image = new BufferedImage(icon.getIconWidth() + 2, icon.getIconHeight() + 2, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = (Graphics2D) image.getGraphics();
+    private void createPressedLook(
+            final AbstractButton button,
+            final ImageIcon icon) {
+        final BufferedImage image = new BufferedImage(icon.getIconWidth() + 2, icon.getIconHeight() + 2, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g = (Graphics2D) image.getGraphics();
         g.drawImage(icon.getImage(), 1, 1, null);
         g.dispose();
-        ImageIcon iconPressed = new ImageIcon(image);
+        final ImageIcon iconPressed = new ImageIcon(image);
         button.setPressedIcon(iconPressed);
     }
 
-    public void setIcon(ImageIcon icon) {
+    public void setIcon(final ImageIcon icon) {
         super.setIcon(icon);
     }
 }

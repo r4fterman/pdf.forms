@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -43,26 +43,32 @@ import javax.swing.JTextField;
 import javax.swing.event.EventListenerList;
 
 public class ColorComboBoxEditor implements ComboBoxEditor {
-    final protected JTextField editor;
+    protected final JTextField editor;
 
-    transient protected EventListenerList listenerList = new EventListenerList();
+    private final transient EventListenerList listenerList = new EventListenerList();
 
-    public ColorComboBoxEditor(Color initialColor, final JComboBox colorBox) {
+    public ColorComboBoxEditor(
+            final Color initialColor,
+            final JComboBox colorBox) {
         editor = new JTextField("");
         editor.setBackground(initialColor);
         editor.setEditable(false);
 
         editor.addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent e) {
+            @Override
+            public void mouseClicked(final MouseEvent e) {
             }
 
-            public void mouseEntered(MouseEvent e) {
+            @Override
+            public void mouseEntered(final MouseEvent e) {
             }
 
-            public void mouseExited(MouseEvent e) {
+            @Override
+            public void mouseExited(final MouseEvent e) {
             }
 
-            public void mousePressed(MouseEvent e) {
+            @Override
+            public void mousePressed(final MouseEvent e) {
 
                 if (!colorBox.isPopupVisible()) {
                     colorBox.setPopupVisible(true);
@@ -70,35 +76,42 @@ public class ColorComboBoxEditor implements ComboBoxEditor {
 
             }
 
-            public void mouseReleased(MouseEvent e) {
+            @Override
+            public void mouseReleased(final MouseEvent e) {
             }
         });
 
     }
 
-    public void addActionListener(ActionListener l) {
+    @Override
+    public void addActionListener(final ActionListener l) {
         listenerList.add(ActionListener.class, l);
     }
 
+    @Override
     public Component getEditorComponent() {
         return editor;
     }
 
+    @Override
     public Object getItem() {
         return editor.getBackground();
     }
 
-    public void removeActionListener(ActionListener l) {
+    @Override
+    public void removeActionListener(final ActionListener l) {
         listenerList.remove(ActionListener.class, l);
     }
 
+    @Override
     public void selectAll() {
         // ignore
     }
 
-    public void setItem(Object newValue) {
+    @Override
+    public void setItem(final Object newValue) {
         if (newValue instanceof Color) {
-            Color color = (Color) newValue;
+            final Color color = (Color) newValue;
             editor.setBackground(color);
             editor.setText("");
         } else if (newValue == null) {

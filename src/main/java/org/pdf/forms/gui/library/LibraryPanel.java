@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -45,7 +45,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.pdf.forms.gui.designer.IDesigner;
@@ -55,58 +54,55 @@ import com.vlsolutions.swing.docking.Dockable;
 
 public class LibraryPanel extends JPanel implements Dockable {
 
-    private DockKey key = new DockKey("Library");
-    private JList list;
-    private ListSelectionListener listener;
-    private LibraryPanel.LibraryPanelCellRenderer libraryPanelCellRenderer = new LibraryPanelCellRenderer();
+    private final DockKey key = new DockKey("Library");
+    private final JList list;
+    private final ListSelectionListener listener;
+    private final LibraryPanel.LibraryPanelCellRenderer libraryPanelCellRenderer = new LibraryPanelCellRenderer();
 
     public LibraryPanel(final IDesigner designer) {
         setLayout(new BorderLayout());
 
-        list = new JList(new String[]{"Text Field", "Text", "Button", "Radio Button",
-                "Check Box", "Drop-down List", "List Box", "Image"});
+        list = new JList(new String[] { "Text Field", "Text", "Button", "Radio Button",
+                "Check Box", "Drop-down List", "List Box", "Image" });
 
         list.setCellRenderer(libraryPanelCellRenderer);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         list.setVisibleRowCount(-1);
-        listener = new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                designer.setWidgetToAdd(list.getSelectedIndex());
-
-                //System.out.println("list.getSelectedIndex() = " + list.getSelectedIndex());
-
-                designer.getCaptionChanger().closeCaptionChanger();
-            }
+        listener = e -> {
+            designer.setWidgetToAdd(list.getSelectedIndex());
+            designer.getCaptionChanger().closeCaptionChanger();
         };
 
         list.addListSelectionListener(listener);
 
-        DragSource dragSource = new DragSource();
-        dragSource.createDefaultDragGestureRecognizer(
-                list, DnDConstants.ACTION_COPY_OR_MOVE, new DragableComponent(dragSource, designer));
+        final DragSource dragSource = new DragSource();
+        dragSource.createDefaultDragGestureRecognizer(list, DnDConstants.ACTION_COPY_OR_MOVE, new DragableComponent(dragSource, designer));
 
-        JScrollPane listScroller = new JScrollPane(list);
+        final JScrollPane listScroller = new JScrollPane(list);
 
         add(listScroller);
-
     }
 
-    public void setState(boolean state) {
+    public void setState(final boolean state) {
         list.setEnabled(state);
     }
 
     class LibraryPanelCellRenderer extends JLabel implements ListCellRenderer {
 
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-                                                      boolean cellHasFocus) {
+        @Override
+        public Component getListCellRendererComponent(
+                final JList list,
+                final Object value,
+                final int index,
+                final boolean isSelected,
+                final boolean cellHasFocus) {
 
-//            try {
-            String s = value.toString();
+            final String s = value.toString();
             setText(s);
-            URL resource = getClass().getResource("/org/pdf/forms/res/" + s + ".gif");
-            ImageIcon longIcon = new ImageIcon(resource);
+            final URL resource = getClass().getResource("/org/pdf/forms/res/" + s + ".gif");
+            final ImageIcon longIcon = new ImageIcon(resource);
             setIcon(longIcon);
             if (isSelected) {
                 setBackground(new Color(236, 233, 216));
@@ -118,9 +114,6 @@ public class LibraryPanel extends JPanel implements Dockable {
             setEnabled(list.isEnabled());
             setFont(list.getFont());
             setOpaque(true);
-//            } catch (Exception e) {
-//                //e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            }
             return this;
         }
     }
@@ -131,10 +124,12 @@ public class LibraryPanel extends JPanel implements Dockable {
         list.addListSelectionListener(listener);
     }
 
+    @Override
     public DockKey getDockKey() {
         return key;
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }

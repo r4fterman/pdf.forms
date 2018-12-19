@@ -1,39 +1,38 @@
-/**
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* 	This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* ComboBoxWidget.java
-* ---------------
-*/
+/*
+ * ===========================================
+ * PDF Forms Designer
+ * ===========================================
+ * <p>
+ * Project Info:  http://pdfformsdesigne.sourceforge.net
+ * (C) Copyright 2006-2008..
+ * Lead Developer: Simon Barnett (n6vale@googlemail.com)
+ * <p>
+ * This file is part of the PDF Forms Designer
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>
+ * <p>
+ * <p>
+ * ---------------
+ * ComboBoxWidget.java
+ * ---------------
+ */
 package org.pdf.forms.widgets;
 
 import java.awt.Color;
 import java.lang.reflect.Field;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
@@ -47,9 +46,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class ComboBoxWidget extends Widget implements IWidget {
+
     private static int nextWidgetNumber = 1;
 
-    public ComboBoxWidget(int type, JComponent baseComponent, JComponent component) {
+    public ComboBoxWidget(
+            final int type,
+            final JComponent baseComponent,
+            final JComponent component) {
         super(type, baseComponent, component, "/org/pdf/forms/res/Drop-down List.gif");
 
         isComponentSplit = true;
@@ -71,7 +74,11 @@ public class ComboBoxWidget extends Widget implements IWidget {
         addJavaScript(rootElement);
     }
 
-    public ComboBoxWidget(int type, JComponent baseComponent, JComponent component, Element root) {
+    public ComboBoxWidget(
+            final int type,
+            final JComponent baseComponent,
+            final JComponent component,
+            final Element root) {
 
         super(type, baseComponent, component, "/org/pdf/forms/res/Drop-down List.gif");
 
@@ -91,7 +98,7 @@ public class ComboBoxWidget extends Widget implements IWidget {
         setAllProperties();
     }
 
-    private void addProperties(Element rootElement) {
+    private void addProperties(final Element rootElement) {
         Element propertiesElement = XMLUtils.createAndAppendElement(properties, "properties", rootElement);
 
         addFontProperties(propertiesElement);
@@ -107,14 +114,13 @@ public class ComboBoxWidget extends Widget implements IWidget {
         addCaptionProperties(propertiesElement);
     }
 
-    private void addCaptionProperties(Element propertiesElement) {
+    private void addCaptionProperties(final Element propertiesElement) {
         Element captionElement = XMLUtils.createAndAppendElement(properties, "caption_properties", propertiesElement);
         XMLUtils.addBasicProperty(properties, "Text", "Drop-down List", captionElement);
         XMLUtils.addBasicProperty(properties, "Divisor Location", "", captionElement);
     }
 
-    private void addFontProperties(Element propertiesElement) {
-
+    private void addFontProperties(final Element propertiesElement) {
         Element fontElement = XMLUtils.createAndAppendElement(properties, "font", propertiesElement);
 
         Element caption = XMLUtils.createAndAppendElement(properties, "font_caption", fontElement);
@@ -134,8 +140,7 @@ public class ComboBoxWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(properties, "Color", Color.BLACK.getRGB() + "", value);
     }
 
-    private void addObjectProperties(Element propertiesElement) {
-
+    private void addObjectProperties(final Element propertiesElement) {
         Element objectElement = XMLUtils.createAndAppendElement(properties, "object", propertiesElement);
 
         Element fieldElement = XMLUtils.createAndAppendElement(properties, "field", objectElement);
@@ -155,7 +160,7 @@ public class ComboBoxWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(properties, "Array Number", "0", bindingElement);
     }
 
-    private void addLayoutProperties(Element propertiesElement) {
+    private void addLayoutProperties(final Element propertiesElement) {
         Element layoutElement = XMLUtils.createAndAppendElement(properties, "layout", propertiesElement);
 
         Element sizeAndPositionElement = XMLUtils.createAndAppendElement(properties, "sizeandposition", layoutElement);
@@ -179,7 +184,7 @@ public class ComboBoxWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(properties, "Reserve", "4", caption);
     }
 
-    private void addBorderProperties(Element propertiesElement) {
+    private void addBorderProperties(final Element propertiesElement) {
         Element borderElement = XMLUtils.createAndAppendElement(properties, "border", propertiesElement);
 
         Element borders = XMLUtils.createAndAppendElement(properties, "borders", borderElement);
@@ -192,7 +197,7 @@ public class ComboBoxWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(properties, "Fill Color", Color.WHITE.getRGB() + "", backgorundFill);
     }
 
-    private void addParagraphProperties(Element propertiesElement) {
+    private void addParagraphProperties(final Element propertiesElement) {
         Element paragraphElement = XMLUtils.createAndAppendElement(properties, "paragraph", propertiesElement);
 
         Element caption = XMLUtils.createAndAppendElement(properties, "paragraph_caption", paragraphElement);
@@ -204,7 +209,9 @@ public class ComboBoxWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(properties, "Vertical Alignment", "center", value);
     }
 
-    public void setParagraphProperties(Element paragraphPropertiesElememt, int currentlyEditing) {
+    public void setParagraphProperties(
+            final Element paragraphPropertiesElememt,
+            final int currentlyEditing) {
 
         SplitComponent comboBox = (SplitComponent) baseComponent;
 
@@ -216,25 +223,26 @@ public class ComboBoxWidget extends Widget implements IWidget {
         setSize(getWidth(), getHeight());
     }
 
-    public void setLayoutProperties(Element layoutProperties) {
+    public void setLayoutProperties(final Element layoutProperties) {
 
         SplitComponent comboBox = (SplitComponent) baseComponent;
 
-        /** set the size and position of the TextField*/
+        /* set the size and position of the TextField*/
         setSizeAndPosition(layoutProperties);
 
-        /** set the location of the caption */
+        /* set the location of the caption */
         Element captionElement = (Element) layoutProperties.getElementsByTagName("caption").item(0);
 
         String captionPosition = XMLUtils.getAttributeFromChildElement(captionElement, "Position");
 
-        /** use reflection to set the required rotation button selected */
+        /* use reflection to set the required rotation button selected */
         try {
             Field field = comboBox.getClass().getDeclaredField("CAPTION_" + captionPosition.toUpperCase());
 
             int position = field.getInt(this);
-            if (position != comboBox.getCaptionPosition())
+            if (position != comboBox.getCaptionPosition()) {
                 comboBox.setCaptionPosition(position);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -242,7 +250,9 @@ public class ComboBoxWidget extends Widget implements IWidget {
         setSize(getWidth(), getHeight());
     }
 
-    public void setFontProperties(Element fontProperties, int currentlyEditing) {
+    public void setFontProperties(
+            final Element fontProperties,
+            final int currentlyEditing) {
 
         SplitComponent comboBox = (SplitComponent) baseComponent;
 
@@ -253,11 +263,11 @@ public class ComboBoxWidget extends Widget implements IWidget {
         setSize(getWidth(), getHeight());
     }
 
-    public void setObjectProperties(Element objectProperties) {
+    public void setObjectProperties(final Element objectProperties) {
 
         JComboBox comboBox = (JComboBox) getValueComponent();
-        
-        /** add items to combo box list */
+
+        /* add items to combo box list */
         Element itemsElement = (Element) objectProperties.getElementsByTagName("items").item(0);
 
         List items = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes());
@@ -265,23 +275,24 @@ public class ComboBoxWidget extends Widget implements IWidget {
         DefaultComboBoxModel model = (DefaultComboBoxModel) comboBox.getModel();
         model.removeAllElements();
 
-        for (Iterator it = items.iterator(); it.hasNext();) {
-            Element item = (Element) it.next();
+        for (final Object item1 : items) {
+            Element item = (Element) item1;
             String value = XMLUtils.getAttributeFromElement(item, "item");
             model.addElement(value);
         }
 
-        /** set default value for combo box */
+        /* set default value for combo box */
         Element valueElement = (Element) objectProperties.getElementsByTagName("value").item(0);
 
         String defaultText = XMLUtils.getAttributeFromChildElement(valueElement, "Default");
 
-        if (defaultText.equals("< None >"))
+        if (defaultText.equals("< None >")) {
             defaultText = "";
+        }
 
         comboBox.setSelectedItem(defaultText);
 
-        /** set binding properties */
+        /* set binding properties */
         setBindingProperties(objectProperties);
 
         setSize(getWidth(), getHeight());

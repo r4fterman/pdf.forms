@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -32,7 +32,6 @@
 package org.pdf.forms.utils;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.DOMException;
@@ -43,93 +42,112 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class XMLUtils {
-	public static Element getPropertyElement(Element parentElement, String property) {
-        NodeList properties = parentElement.getElementsByTagName("property");
+
+    public static Element getPropertyElement(
+            final Element parentElement,
+            final String property) {
+        final NodeList properties = parentElement.getElementsByTagName("property");
 
         for (int i = 0; i < properties.getLength(); i++) {
-            Node node = properties.item(i);
+            final Node node = properties.item(i);
 
             if (node instanceof Element) {
-                Element e = (Element) node;
-                String attr = e.getAttribute("name");
+                final Element e = (Element) node;
+                final String attr = e.getAttribute("name");
 
-                if (attr.equals(property))
+                if (attr.equals(property)) {
                     return e;
+                }
             }
         }
 
         return null;
     }
 
-    public static String getAttributeByIndex(Element element, int index) {
-    	return getAttribute(getElementsFromNodeList(element.getChildNodes()), index);
+    public static String getAttributeByIndex(
+            final Element element,
+            final int index) {
+        return getAttribute(getElementsFromNodeList(element.getChildNodes()), index);
     }
-    
-    public static String getAttributeFromChildElement(Element element, String name) {
+
+    public static String getAttributeFromChildElement(
+            final Element element,
+            final String name) {
         return getAttributeByName(getElementsFromNodeList(element.getChildNodes()), name);
     }
 
-	public static String getAttributeFromElement(Element element, String attributeName) {
-		NamedNodeMap attrs = element.getAttributes();
+    public static String getAttributeFromElement(
+            final Element element,
+            final String attributeName) {
+        final NamedNodeMap attrs = element.getAttributes();
 
-		Node nameNode = attrs.getNamedItem("name");
-		if (nameNode != null) {
-			String nodeValue = nameNode.getNodeValue();
-			if (nodeValue != null) {
-				if (nodeValue.equals(attributeName))
-					return attrs.getNamedItem("value").getNodeValue();
-			} 
-		}
-		
-		return null;
-	}
+        final Node nameNode = attrs.getNamedItem("name");
+        if (nameNode != null) {
+            final String nodeValue = nameNode.getNodeValue();
+            if (nodeValue != null) {
+                if (nodeValue.equals(attributeName)) {
+                    return attrs.getNamedItem("value").getNodeValue();
+                }
+            }
+        }
 
-    public static Element createAndAppendElement(Document document, String elementName, Node parent) throws DOMException {
-        Element element = document.createElement(elementName);
+        return null;
+    }
+
+    public static Element createAndAppendElement(
+            final Document document,
+            final String elementName,
+            final Node parent) throws DOMException {
+        final Element element = document.createElement(elementName);
         parent.appendChild(element);
 
         return element;
     }
 
-    public static void addBasicProperty(Document document, String value1, String value2, Element element) {
-        Element property = document.createElement("property");
+    public static void addBasicProperty(
+            final Document document,
+            final String name,
+            final String value,
+            final Element element) {
+        final Element property = document.createElement("property");
         element.appendChild(property);
-        property.setAttribute("name", value1);
-        property.setAttribute("value", value2);
-
-        //return property;
+        property.setAttribute("name", name);
+        property.setAttribute("value", value);
     }
 
-    public static List getElementsFromNodeList(NodeList nodeList) {
-        List elements = new ArrayList();
+    public static List<Element> getElementsFromNodeList(final NodeList nodeList) {
+        final List<Element> elements = new ArrayList<>();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node = nodeList.item(i);
+            final Node node = nodeList.item(i);
             if (node instanceof Element) {
-                elements.add(node);
+                elements.add((Element) node);
             }
         }
 
         return elements;
     }
-    
-    private static String getAttribute(List list, int index) {
-        Element element = (Element) list.get(index);
-        NamedNodeMap attrs = element.getAttributes();
 
-        Node item = attrs.getNamedItem("value");
+    private static String getAttribute(
+            final List<Element> list,
+            final int index) {
+        final Element element = list.get(index);
+        final NamedNodeMap attrs = element.getAttributes();
+
+        final Node item = attrs.getNamedItem("value");
         return item.getNodeValue();
     }
-    
-    private static String getAttributeByName(List list, String attributeName) {
-    	for (Iterator it = list.iterator(); it.hasNext();) {
-    		Element element = (Element) it.next();
-    		
-    		String value = getAttributeFromElement(element, attributeName);
-    		if(value != null)
-    			return value;
-    	}
-    	
-    	return null;
+
+    private static String getAttributeByName(
+            final List<Element> list,
+            final String attributeName) {
+        for (final Element element : list) {
+            final String value = getAttributeFromElement(element, attributeName);
+            if (value != null) {
+                return value;
+            }
+        }
+
+        return null;
     }
 }

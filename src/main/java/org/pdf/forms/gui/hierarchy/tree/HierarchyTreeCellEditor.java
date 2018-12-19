@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -43,23 +43,26 @@ import javax.swing.tree.TreeCellEditor;
 public class HierarchyTreeCellEditor extends DefaultTreeCellEditor implements TreeCellEditor {
     private Object value;
 
-    public HierarchyTreeCellEditor(JTree tree, DefaultTreeCellRenderer renderer) {
+    public HierarchyTreeCellEditor(
+            final JTree tree,
+            final DefaultTreeCellRenderer renderer) {
         super(tree, renderer);
     }
 
-    public Component getTreeCellEditorComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row) {
+    @Override
+    public Component getTreeCellEditorComponent(
+            final JTree tree,
+            final Object value,
+            final boolean isSelected,
+            final boolean expanded,
+            final boolean leaf,
+            final int row) {
         this.value = value;
 
-        Container tf = (Container) super.getTreeCellEditorComponent(tree, value, isSelected, expanded, leaf, row);
+        final Container tf = (Container) super.getTreeCellEditorComponent(tree, value, isSelected, expanded, leaf, row);
         ((JTextField) tf.getComponent(0)).setText(renderer.getText());
 
         return tf;
     }
 
-
-//    public Object getCellEditorValue() {
-//        IWidget widget = (IWidget) ((DefaultMutableTreeNode) value).getUserObject();
-//        widget.setName((String) super.getCellEditorValue());
-//        return widget;
-//    }
 }

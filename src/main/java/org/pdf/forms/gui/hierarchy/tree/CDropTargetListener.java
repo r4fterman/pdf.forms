@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -73,16 +73,18 @@ class CDropTargetListener implements DropTargetListener {
 
     // Fields...
     private TreePath pathLast = null;
-    private Rectangle2D raCueLine = new Rectangle2D.Float();
+    private final Rectangle2D raCueLine = new Rectangle2D.Float();
     private Rectangle2D raGhost = new Rectangle2D.Float();
-    private Color colorCueLine;
+    private final Color colorCueLine;
     private Point ptLast = new Point();
-    private Timer timerHover;
-    private CTree cTree;
-    private IDesigner designer;
+    private final Timer timerHover;
+    private final CTree cTree;
+    private final IDesigner designer;
 
     // Constructor...
-    public CDropTargetListener(CTree cTreeRef, IDesigner designer) {
+    public CDropTargetListener(
+            final CTree cTreeRef,
+            final IDesigner designer) {
         this.cTree = cTreeRef;
         this.designer = designer;
 
@@ -96,10 +98,12 @@ class CDropTargetListener implements DropTargetListener {
         // Set up a hover timer, so that a node will be automatically expanded or collapsed
         // if the user lingers on it for more than a short time
         timerHover = new Timer(500, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
                 //_nLeftRight = 0;	// Reset left/right movement trend
-                if (cTree.isRootPath(pathLast))
+                if (cTree.isRootPath(pathLast)) {
                     return;    // Do nothing if we are hovering over the root node
+                }
                 if (!cTree.isExpanded(pathLast)) {
                     cTree.expandPath(pathLast);
                 }
@@ -109,14 +113,17 @@ class CDropTargetListener implements DropTargetListener {
     }
 
     // DropTargetListener interface
-    public void dragEnter(DropTargetDragEvent e) {
-        if (!isDragAcceptable(e))
+    @Override
+    public void dragEnter(final DropTargetDragEvent e) {
+        if (!isDragAcceptable(e)) {
             e.rejectDrag();
-        else
+        } else {
             e.acceptDrag(e.getDropAction());
+        }
     }
 
-    public void dragExit(DropTargetEvent e) {
+    @Override
+    public void dragExit(final DropTargetEvent e) {
         if (!DragSource.isDragImageSupported()) {
             cTree.repaint(raGhost.getBounds());
         }
@@ -125,15 +132,17 @@ class CDropTargetListener implements DropTargetListener {
     /**
      * This is where the ghost image is drawn
      */
-    public void dragOver(DropTargetDragEvent e) {
+    @Override
+    public void dragOver(final DropTargetDragEvent e) {
         // Even if the mouse is not moving, this method is still invoked 10 times per second
-        Point pt = e.getLocation();
-        if (pt.equals(ptLast))
+        final Point pt = e.getLocation();
+        if (pt.equals(ptLast)) {
             return;
+        }
 
         ptLast = pt;
 
-        Graphics2D g2 = (Graphics2D) cTree.getGraphics();
+        final Graphics2D g2 = (Graphics2D) cTree.getGraphics();
 
         // If a drag image is not supported by the platform, then draw my own drag image
         if (!DragSource.isDragImageSupported()) {
@@ -142,18 +151,20 @@ class CDropTargetListener implements DropTargetListener {
             raGhost.setRect(pt.x - cTree.getPtOffset().x, pt.y - cTree.getPtOffset().y, cTree.getImgGhost().getWidth(), cTree.getImgGhost().getHeight());
             g2.drawImage(cTree.getImgGhost(), AffineTransform.getTranslateInstance(raGhost.getX(), raGhost.getY()), null);
         } else    // Just rub out the last cue line
+        {
             cTree.paintImmediately(raCueLine.getBounds());
+        }
 
-        TreePath path = cTree.getClosestPathForLocation(pt.x, pt.y);
+        final TreePath path = cTree.getClosestPathForLocation(pt.x, pt.y);
         if (!(path == pathLast)) {
             pathLast = path;
             timerHover.restart();
         }
 
         // In any case draw (over the ghost image if necessary) a cue line indicating where a drop will occur
-        Rectangle raPath = cTree.getPathBounds(path);
+        final Rectangle raPath = cTree.getPathBounds(path);
 
-        Rectangle2D.Double rect = new Rectangle2D.Double(0, raPath.y + (int) raPath.getHeight(), cTree.getWidth(), 2);
+        final Rectangle2D.Double rect = new Rectangle2D.Double(0, raPath.y + (int) raPath.getHeight(), cTree.getWidth(), 2);
         raCueLine.setRect(rect);
 
         g2.setColor(colorCueLine);
@@ -162,37 +173,39 @@ class CDropTargetListener implements DropTargetListener {
         // And include the cue line in the area to be rubbed out next time
         raGhost = raGhost.createUnion(raCueLine);
 
-        DefaultMutableTreeNode targetNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-        DefaultMutableTreeNode sourceNode = (DefaultMutableTreeNode) cTree.getPathSource().getLastPathComponent();
+        final DefaultMutableTreeNode targetNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+        final DefaultMutableTreeNode sourceNode = (DefaultMutableTreeNode) cTree.getPathSource().getLastPathComponent();
 
-        List flattenedTreeItems = new ArrayList();
+        final List flattenedTreeItems = new ArrayList();
         getFlattenedTreeNodes((TreeNode) cTree.getModel().getRoot(), flattenedTreeItems);
 
-        Object targetUserObject = targetNode.getUserObject();
-        Object sourceUserObject = sourceNode.getUserObject();
+        final Object targetUserObject = targetNode.getUserObject();
+        final Object sourceUserObject = sourceNode.getUserObject();
 
         // check to see if a page is being moved
         if (sourceUserObject instanceof Page) { // we are moving a page
             if (targetUserObject.equals("Document Root")) { // we are dropping it at the document root level which means it is definately going to be dropped at index 0
-                int targetIndex = targetNode.getIndex(targetNode);
-                int sourceIndex = targetNode.getIndex(sourceNode);
+                final int targetIndex = targetNode.getIndex(targetNode);
+                final int sourceIndex = targetNode.getIndex(sourceNode);
 
                 if (targetIndex == sourceIndex) // looks like we are trying to drop the page in the same place it already is
+                {
                     e.rejectDrag();
-                else
+                } else {
                     e.acceptDrag(e.getDropAction());
+                }
             } else {
-                /**
+                /*
                  * it looks as though we are trying to drop a page inside another page, and this would not be allowed, however, if the targetUserObject
                  * is the last widget in its page, then we want to drop the page below this widget
                  */
                 if (targetUserObject instanceof IWidget) {
-                    int locationInFlattenedList = flattenedTreeItems.indexOf(targetNode);
+                    final int locationInFlattenedList = flattenedTreeItems.indexOf(targetNode);
 
-                    int nextIndex = locationInFlattenedList + 1;
+                    final int nextIndex = locationInFlattenedList + 1;
                     if (nextIndex < flattenedTreeItems.size()) {
-                        /** get the item imediately below the this widgets */
-                        DefaultMutableTreeNode nextItemInList = (DefaultMutableTreeNode) flattenedTreeItems.get(nextIndex);
+                        /* get the item imediately below the this widgets */
+                        final DefaultMutableTreeNode nextItemInList = (DefaultMutableTreeNode) flattenedTreeItems.get(nextIndex);
 
                         if (nextItemInList.getUserObject() instanceof Page) { // we are trying to drop this page directly above another page, so this is allowed
                             e.acceptDrag(e.getDropAction());
@@ -210,10 +223,10 @@ class CDropTargetListener implements DropTargetListener {
             if (targetUserObject instanceof Page) { // we are trying to drop a widget on a page which is allowed
                 e.acceptDrag(e.getDropAction());
             } else {// we are not trying to drop a widget on a page, so we need to check if it is being dropped in a group
-                TreeNode targetParent = targetNode.getParent();
+                final TreeNode targetParent = targetNode.getParent();
                 if (targetParent != null) {
                     int targetIndex = targetParent.getIndex(targetNode);
-                    int sourceIndex = sourceNode.getParent().getIndex(sourceNode);
+                    final int sourceIndex = sourceNode.getParent().getIndex(sourceNode);
 
                     if (sourceIndex > targetIndex && sourceNode.getParent() == targetNode.getParent() &&
                             (!(targetUserObject instanceof IWidget) || ((IWidget) targetUserObject).getType() != IWidget.GROUP)) {
@@ -222,9 +235,11 @@ class CDropTargetListener implements DropTargetListener {
                     }
 
                     if (targetIndex == sourceIndex && sourceNode.getParent() == targetNode.getParent()) // looks like we are trying to drop the widget in the same place it already is
+                    {
                         e.rejectDrag();
-                    else
+                    } else {
                         e.acceptDrag(e.getDropAction());
+                    }
                 } else {
                     e.rejectDrag();
                 }
@@ -232,7 +247,8 @@ class CDropTargetListener implements DropTargetListener {
         }
     }
 
-    public void drop(DropTargetDropEvent e) {
+    @Override
+    public void drop(final DropTargetDropEvent e) {
         timerHover.stop();    // Prevent hover timer from doing an unwanted expandPath or collapsePath
 
         if (!isDropAcceptable(e)) {
@@ -242,44 +258,44 @@ class CDropTargetListener implements DropTargetListener {
 
         e.acceptDrop(e.getDropAction());
 
-        Transferable transferable = e.getTransferable();
+        final Transferable transferable = e.getTransferable();
 
-        DataFlavor[] flavors = transferable.getTransferDataFlavors();
+        final DataFlavor[] flavors = transferable.getTransferDataFlavors();
         for (int i = 0; i < flavors.length; i++) {
-            DataFlavor flavor = flavors[i];
+            final DataFlavor flavor = flavors[i];
             if (flavor.isMimeTypeEqual(DataFlavor.javaJVMLocalObjectMimeType)) {
                 try {
-                    Point pt = e.getLocation();
-                    TreePath pathTarget = cTree.getClosestPathForLocation(pt.x, pt.y);
-                    TreePath pathSource = (TreePath) transferable.getTransferData(flavor);
+                    final Point pt = e.getLocation();
+                    final TreePath pathTarget = cTree.getClosestPathForLocation(pt.x, pt.y);
+                    final TreePath pathSource = (TreePath) transferable.getTransferData(flavor);
 
-                    /** clear the ghost image */
+                    /* clear the ghost image */
                     cTree.repaint(raGhost.getBounds());
 
-                    IMainFrame mainFrame = designer.getMainFrame();
+                    final IMainFrame mainFrame = designer.getMainFrame();
 
-                    DefaultMutableTreeNode sourceNode = (DefaultMutableTreeNode) pathSource.getLastPathComponent();
-                    DefaultMutableTreeNode targetNode = (DefaultMutableTreeNode) pathTarget.getLastPathComponent();
+                    final DefaultMutableTreeNode sourceNode = (DefaultMutableTreeNode) pathSource.getLastPathComponent();
+                    final DefaultMutableTreeNode targetNode = (DefaultMutableTreeNode) pathTarget.getLastPathComponent();
 
-                    Object sourceUserObject = sourceNode.getUserObject();
-                    Object targetUserObject = targetNode.getUserObject();
+                    final Object sourceUserObject = sourceNode.getUserObject();
+                    final Object targetUserObject = targetNode.getUserObject();
 
                     // check to see if a page is being moved
                     if (sourceUserObject instanceof Page) { // we are moving a page
-                        DefaultMutableTreeNode sourceParent = (DefaultMutableTreeNode) sourceNode.getParent();
-                        int sourceIndex = sourceParent.getIndex(sourceNode);
+                        final DefaultMutableTreeNode sourceParent = (DefaultMutableTreeNode) sourceNode.getParent();
+                        final int sourceIndex = sourceParent.getIndex(sourceNode);
                         int targeteIndex = 0;
 
                         if (!targetUserObject.equals("Document Root")) {
-                            List flattenedTreeItems = new ArrayList();
+                            final List flattenedTreeItems = new ArrayList();
                             getFlattenedTreeNodes((TreeNode) cTree.getModel().getRoot(), flattenedTreeItems);
 
-                            int locationInFlattenedList = flattenedTreeItems.indexOf(targetNode);
+                            final int locationInFlattenedList = flattenedTreeItems.indexOf(targetNode);
 
-                            int nextIndex = locationInFlattenedList + 1;
+                            final int nextIndex = locationInFlattenedList + 1;
                             if (nextIndex < flattenedTreeItems.size()) {
-                                /** get the item imediately below the this widgets */
-                                DefaultMutableTreeNode nextItemInList = (DefaultMutableTreeNode) flattenedTreeItems.get(nextIndex);
+                                /* get the item imediately below the this widgets */
+                                final DefaultMutableTreeNode nextItemInList = (DefaultMutableTreeNode) flattenedTreeItems.get(nextIndex);
 
                                 targeteIndex = nextItemInList.getParent().getIndex(nextItemInList);
 
@@ -295,29 +311,30 @@ class CDropTargetListener implements DropTargetListener {
                         mainFrame.displayPage(mainFrame.getCurrentPage());
 
                     } else { // we must be moving a widget
-                        Object sourceObjectPath[] = sourceNode.getUserObjectPath();
-                        Object targetObjectPath[] = targetNode.getUserObjectPath();
+                        final Object[] sourceObjectPath = sourceNode.getUserObjectPath();
+                        final Object[] targetObjectPath = targetNode.getUserObjectPath();
 
-                        List sourceWidgetList = getWidgetsList(sourceObjectPath, false);
-                        List targetWidgetList = getWidgetsList(targetObjectPath, true);
+                        final List<Object> sourceWidgetList = getWidgetsList(sourceObjectPath, false);
+                        final List<Object> targetWidgetList = getWidgetsList(targetObjectPath, true);
 
                         Collections.reverse(targetWidgetList);
 
-                        int sourceIndex = sourceWidgetList.indexOf(sourceUserObject);
+                        final int sourceIndex = sourceWidgetList.indexOf(sourceUserObject);
                         int targetIndex;
 
                         if (targetUserObject instanceof Page) { // dropping at the start of the targetPage
                             targetIndex = 0;
                         } else {
-                            IWidget targetWidget = (IWidget) targetUserObject;
+                            final IWidget targetWidget = (IWidget) targetUserObject;
 
                             if (targetWidget.getType() == IWidget.GROUP) { // dropping at start of group
                                 targetIndex = 0;
                             } else { // dropping in the middle of other widgets
                                 targetIndex = targetWidgetList.indexOf(targetUserObject);
                                 if (targetWidgetList == sourceWidgetList) {
-                                    if (targetIndex < sourceIndex)
+                                    if (targetIndex < sourceIndex) {
                                         targetIndex++;
+                                    }
                                 } else {
                                     targetIndex++;
                                 }
@@ -330,7 +347,7 @@ class CDropTargetListener implements DropTargetListener {
                             sourceWidgetList.remove(sourceUserObject);
                             targetWidgetList.add(targetIndex, sourceUserObject);
 
-                            /**
+                            /*
                              * if a radio button widget is moving page, then we need to see if the page it is moving
                              * to already has any ButtonGroup's, and if so add it to one, but if not create a
                              * new ButtonGroup on that page, and add the widget to it.
@@ -340,53 +357,53 @@ class CDropTargetListener implements DropTargetListener {
                             if (sourceUserObject instanceof IWidget &&
                                     ((IWidget) sourceUserObject).getType() == IWidget.RADIO_BUTTON) { // we are moving a radio button
 
-                                Page sourcePage = (Page) sourceObjectPath[1];
-                                Page targetPage = (Page) targetObjectPath[1];
+                                final Page sourcePage = (Page) sourceObjectPath[1];
+                                final Page targetPage = (Page) targetObjectPath[1];
 
                                 if (sourcePage != targetPage) { // we are moving page
-                                    List radioButtonGroups = targetPage.getRadioButtonGroups();
-                                    ButtonGroup rbg;
+                                    final List<ButtonGroup> radioButtonGroups = targetPage.getRadioButtonGroups();
+                                    final ButtonGroup rbg;
                                     if (radioButtonGroups.isEmpty()) {
-                                        /**
+                                        /*
                                          * there are no radio button groups currently on this page, so we need to
                                          * create a new on
                                          */
                                         rbg = new ButtonGroup(IWidget.RADIO_BUTTON);
                                         radioButtonGroups.add(rbg);
                                     } else {
-                                        /** add the radio button to the last ButtonGroup in the list */
-                                        rbg = (ButtonGroup) radioButtonGroups.get(radioButtonGroups.size() - 1);
+                                        /* add the radio button to the last ButtonGroup in the list */
+                                        rbg = radioButtonGroups.get(radioButtonGroups.size() - 1);
                                     }
 
-                                    /** set the radio buttons new group */
+                                    /* set the radio buttons new group */
                                     ((RadioButtonWidget) sourceUserObject).setRadioButtonGroupName(rbg.getName());
                                 }
                             }
 
-                            /**
+                            /*
                              * check to see if we are moving the last widget out of a group, if we are we need to
                              * remove the empty group from its parent
                              */
-                            Object parent = sourceObjectPath[sourceObjectPath.length - 2];
+                            final Object parent = sourceObjectPath[sourceObjectPath.length - 2];
                             if (sourceWidgetList.isEmpty() && parent instanceof IWidget) {
 
-                                /**
+                                /*
                                  * the widget list is empty, and the parent of the widget moved is a group widget,
                                  * therefore we need to remove this group widget from its parent
                                  */
-                                IWidget groupWidget = (IWidget) parent;
+                                final IWidget groupWidget = (IWidget) parent;
                                 if (groupWidget.getType() == IWidget.GROUP) {
 
-                                    /** go back up the tree to find teh parent of the group widget */
-                                    Object parentOfGroup = sourceObjectPath[sourceObjectPath.length - 3];
+                                    /* go back up the tree to find teh parent of the group widget */
+                                    final Object parentOfGroup = sourceObjectPath[sourceObjectPath.length - 3];
                                     if (parentOfGroup instanceof Page) { // remove the group from its parent page
                                         ((Page) parentOfGroup).getWidgets().remove(groupWidget);
                                     } else { // remove the group from its parent group widget
                                         ((IWidget) parentOfGroup).getWidgetsInGroup().remove(groupWidget);
                                     }
 
-                                    /** set no widgets selected */
-                                    designer.setSelectedWidgets(new HashSet());
+                                    /* set no widgets selected */
+                                    designer.setSelectedWidgets(new HashSet<>());
                                 }
                             }
                         }
@@ -399,14 +416,12 @@ class CDropTargetListener implements DropTargetListener {
                     designer.repaint();
 
                     break; // No need to check remaining flavors
-                }
-                catch (UnsupportedFlavorException ufe) {
+                } catch (final UnsupportedFlavorException ufe) {
                     System.out.println(ufe);
                     ufe.printStackTrace();
                     e.dropComplete(false);
                     return;
-                }
-                catch (IOException ioe) {
+                } catch (final IOException ioe) {
                     System.out.println(ioe);
                     ioe.printStackTrace();
                     e.dropComplete(false);
@@ -418,67 +433,80 @@ class CDropTargetListener implements DropTargetListener {
         e.dropComplete(true);
     }
 
-    private List getWidgetsList(Object[] objectPath, boolean isTarget) {
+    private List getWidgetsList(
+            final Object[] objectPath,
+            final boolean isTarget) {
         for (int j = objectPath.length - 1; j >= 0; j--) {
-            Object object = objectPath[j];
-            if (object instanceof Page)
+            final Object object = objectPath[j];
+            if (object instanceof Page) {
                 return ((Page) object).getWidgets();
+            }
 
-            IWidget widget = (IWidget) object;
-            if (widget.getType() == IWidget.GROUP && (isTarget || widget != objectPath[objectPath.length - 1]))
+            final IWidget widget = (IWidget) object;
+            if (widget.getType() == IWidget.GROUP && (isTarget || widget != objectPath[objectPath.length - 1])) {
                 return widget.getWidgetsInGroup();
+            }
         }
 
         return null;
     }
 
-    public void moveWidget(int fromIndex, int toIndex, List page) {
+    public void moveWidget(
+            final int fromIndex,
+            int toIndex,
+            final List<Object> page) {
         if (fromIndex > toIndex) {
-            Object objectToMove = page.get(fromIndex);
+            final Object objectToMove = page.get(fromIndex);
             page.add(toIndex, objectToMove);
 
             page.remove(page.lastIndexOf(objectToMove));
         } else {
             toIndex++;
-            Object objectToMove = page.get(fromIndex);
+            final Object objectToMove = page.get(fromIndex);
             page.add(toIndex, objectToMove);
 
-            page.remove(page.indexOf(objectToMove));
+            page.remove(objectToMove);
         }
     }
 
-    private void getFlattenedTreeNodes(TreeNode theNode, List items) {
+    private void getFlattenedTreeNodes(
+            final TreeNode theNode,
+            final List<TreeNode> items) {
         // add the item
         items.add(theNode);
 
         // recursion
-        for (Enumeration theChildren = theNode.children(); theChildren.hasMoreElements();) {
+        for (final Enumeration theChildren = theNode.children(); theChildren.hasMoreElements(); ) {
             getFlattenedTreeNodes((TreeNode) theChildren.nextElement(), items);
         }
     }
 
-    public void dropActionChanged(DropTargetDragEvent e) {
-        if (!isDragAcceptable(e))
+    @Override
+    public void dropActionChanged(final DropTargetDragEvent e) {
+        if (!isDragAcceptable(e)) {
             e.rejectDrag();
-        else
+        } else {
             e.acceptDrag(e.getDropAction());
+        }
     }
 
     // Helpers...
-    public boolean isDragAcceptable(DropTargetDragEvent e) {
+    public boolean isDragAcceptable(final DropTargetDragEvent e) {
         // Only accept COPY or MOVE gestures (ie LINK is not supported)
-        if ((e.getDropAction() & DnDConstants.ACTION_COPY_OR_MOVE) == 0)
+        if ((e.getDropAction() & DnDConstants.ACTION_COPY_OR_MOVE) == 0) {
             return false;
+        }
 
         // Only accept this particular flavor
         return e.isDataFlavorSupported(CTransferableTreePath.TREEPATH_FLAVOR);
 
     }
 
-    public boolean isDropAcceptable(DropTargetDropEvent e) {
+    public boolean isDropAcceptable(final DropTargetDropEvent e) {
         // Only accept COPY or MOVE gestures (ie LINK is not supported)
-        if ((e.getDropAction() & DnDConstants.ACTION_COPY_OR_MOVE) == 0)
+        if ((e.getDropAction() & DnDConstants.ACTION_COPY_OR_MOVE) == 0) {
             return false;
+        }
 
         // Only accept this particular flavor
         return e.isDataFlavorSupported(CTransferableTreePath.TREEPATH_FLAVOR);

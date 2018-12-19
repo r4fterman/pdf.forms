@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -33,7 +33,6 @@ package org.pdf.forms.gui.properties.object;
 
 import java.awt.BorderLayout;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,7 +71,7 @@ public class ObjectPropertiesPanel extends JPanel {
         this.designerPanel = designerPanel;
     }
 
-    public void setProperties(Set widgets, int type) {
+    public void setProperties(Set<IWidget> widgets, int type) {
         removeTabs();
 
         if (type == IWidget.NONE) {
@@ -86,16 +85,14 @@ public class ObjectPropertiesPanel extends JPanel {
         		tabs.add("Page", pagePanel);
         	}
 		} else {
-			Map widgetsAndProperties = new HashMap();
-			for (Iterator it = widgets.iterator(); it.hasNext();) {
-				IWidget widget = (IWidget) it.next();
+			Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
+            for (IWidget widget : widgets) {
+                Document properties = widget.getProperties();
 
-				Document properties = widget.getProperties();
+                Element objectProperties = (Element) properties.getElementsByTagName("object").item(0);
 
-				Element objectProperties = (Element) properties.getElementsByTagName("object").item(0);
-
-				widgetsAndProperties.put(widget, objectProperties);
-			}
+                widgetsAndProperties.put(widget, objectProperties);
+            }
 			BindingPanel bindingPanel = new BindingPanel();
 			bindingPanel.setDesignerPanel(designerPanel);
 			switch (type) {

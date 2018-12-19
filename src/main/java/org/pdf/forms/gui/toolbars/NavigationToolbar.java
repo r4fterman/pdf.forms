@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -33,8 +33,6 @@ package org.pdf.forms.gui.toolbars;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -54,10 +52,9 @@ public abstract class NavigationToolbar extends VLToolBar {
     protected static final int SETPAGE = 6;
 
     protected JTextField currentPageBox = new JTextField(4);
-    private JLabel totalNoOfPages = new JLabel();
+    private final JLabel totalNoOfPages = new JLabel();
 
     public NavigationToolbar() {
-
         totalNoOfPages.setText("of 1");
         currentPageBox.setText("1");
 
@@ -69,11 +66,7 @@ public abstract class NavigationToolbar extends VLToolBar {
 
         add(new JLabel("Page"));
         currentPageBox.setMaximumSize(new Dimension(5, 50));
-        currentPageBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                executeCommand(SETPAGE);
-            }
-        });
+        currentPageBox.addActionListener(actionEvent -> executeCommand(SETPAGE));
         add(currentPageBox);
         add(totalNoOfPages);
 
@@ -87,12 +80,11 @@ public abstract class NavigationToolbar extends VLToolBar {
 
     public abstract void executeCommand(int type);
 
-
-    public void setTotalNoOfPages(int noOfPages) {
+    public void setTotalNoOfPages(final int noOfPages) {
         totalNoOfPages.setText("of " + noOfPages);
     }
 
-    public void setCurrentPage(int currentPage) {
+    public void setCurrentPage(final int currentPage) {
         currentPageBox.setText(currentPage + "");
     }
 
@@ -107,24 +99,23 @@ public abstract class NavigationToolbar extends VLToolBar {
         setComponentsEnabled(true);
     }
 
-    private void setComponentsEnabled(boolean enabled) {
-        Component[] components = getComponents();
+    private void setComponentsEnabled(final boolean enabled) {
+        final Component[] components = getComponents();
 
         for (int i = 0; i < components.length; i++) {
-            Component component = getComponents()[i];
+            final Component component = getComponents()[i];
             component.setEnabled(enabled);
         }
     }
 
-    private void addButton(String tooltip, String url, final int type) {
-        JButton button = new JButton();
+    private void addButton(
+            final String tooltip,
+            final String url,
+            final int type) {
+        final JButton button = new JButton();
         button.setIcon(new ImageIcon(getClass().getResource(url)));
         button.setToolTipText(tooltip);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                executeCommand(type);
-            }
-        });
+        button.addActionListener(actionEvent -> executeCommand(type));
 
         add(button);
     }

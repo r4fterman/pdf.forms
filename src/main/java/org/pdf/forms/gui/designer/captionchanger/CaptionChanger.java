@@ -1,4 +1,4 @@
-/**
+/*
  * ===========================================
  * PDF Forms Designer
  * ===========================================
@@ -58,14 +58,16 @@ public class CaptionChanger {
     private IDesigner designerPanel;
     private String alignment;
 
-    public void displayCaptionChanger(IWidget selectedWidget, IDesigner designerPanel) {
+    public void displayCaptionChanger(
+            final IWidget selectedWidget,
+            final IDesigner designerPanel) {
 
         this.selectedWidget = selectedWidget;
         this.designerPanel = designerPanel;
 
-        PdfCaption captionComponent = selectedWidget.getCaptionComponent();
+        final PdfCaption captionComponent = selectedWidget.getCaptionComponent();
 
-        Rectangle captionBounds = captionComponent.getBounds();
+        final Rectangle captionBounds = captionComponent.getBounds();
 
         textArea = new JTextPane();
 
@@ -85,10 +87,10 @@ public class CaptionChanger {
 
         textArea.setBorder(BorderFactory.createLineBorder(Color.black));
 
-        Point captionLocation = selectedWidget.getAbsoluteLocationsOfCaption();
+        final Point captionLocation = selectedWidget.getAbsoluteLocationsOfCaption();
 
-        int absoluteX = captionLocation.x;
-        int absoluteY = captionLocation.y;
+        final int absoluteX = captionLocation.x;
+        final int absoluteY = captionLocation.y;
 
         textArea.setBounds(absoluteX, absoluteY, captionBounds.width, captionBounds.height);
 
@@ -97,15 +99,16 @@ public class CaptionChanger {
         textArea.requestFocus();
     }
 
-    private String getAlignment(String captionText) {
+    private String getAlignment(final String captionText) {
 
         int start = captionText.indexOf("align");
         if (start != -1) {
             start += 6;
             int end = start;
 
-            while (captionText.charAt(end) != '>')
+            while (captionText.charAt(end) != '>') {
                 end++;
+            }
 
             return captionText.substring(start, end);
         }
@@ -114,8 +117,9 @@ public class CaptionChanger {
     }
 
     public void closeCaptionChanger() {
-        if (textArea == null || !textArea.isVisible())
+        if (textArea == null || !textArea.isVisible()) {
             return;
+        }
 
         setCaptionText();
 
@@ -125,15 +129,15 @@ public class CaptionChanger {
     private void setCaptionText() {
         String captionText = textArea.getText();
 
-        String alignment = this.alignment == null ? "" : "<p align=" + this.alignment + ">";
+        final String alignment = this.alignment == null ? "" : "<p align=" + this.alignment + ">";
         captionText = "<html>" + alignment + captionText.replaceAll(STRING_LINE_BREAK, HTML_LINE_BREAK);
 
-        Document properties = selectedWidget.getProperties();
-        Element captionProperties =
-                (Element) XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties"))
+        final Document properties = selectedWidget.getProperties();
+        final Element captionProperties =
+                XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties"))
                         .get(0);
 
-        Element textElement = XMLUtils.getPropertyElement(captionProperties, "Text");
+        final Element textElement = XMLUtils.getPropertyElement(captionProperties, "Text");
 
         textElement.getAttributeNode("value").setValue(captionText);
 

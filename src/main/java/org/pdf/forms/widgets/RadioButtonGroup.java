@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -22,8 +22,6 @@
     You should have received a copy of the GNU General Public
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
 *
 * ---------------
 * RadioButtonGroup.java
@@ -32,6 +30,7 @@
 package org.pdf.forms.widgets;
 
 public class RadioButtonGroup {
+
     private static int nextNumber = 1;
 
     private String name;
@@ -47,7 +46,7 @@ public class RadioButtonGroup {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 }

@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -32,28 +32,31 @@
 package org.pdf.forms.widgets;
 
 public class ButtonGroup {
+
     private static int nextRadioButtonGroupNumber = 1;
     private static int nextCheckBoxGroupNumber = 1;
 
     private String name;
 
-    public ButtonGroup(int type) {
+    public ButtonGroup(final int type) {
         String name;
-        if(type == IWidget.RADIO_BUTTON){
+        if (type == IWidget.RADIO_BUTTON) {
             name = "Radio Button Group" + nextRadioButtonGroupNumber;
             nextRadioButtonGroupNumber++;
-        }else{
+        } else {
             name = "CheckBox Group" + nextCheckBoxGroupNumber;
             nextCheckBoxGroupNumber++;
         }
         this.name = name;
     }
 
-    public ButtonGroup(int type, String groupName) {
+    public ButtonGroup(
+            final int type,
+            final String groupName) {
         this.name = groupName;
-	}
+    }
 
-	public String getName() {
+    public String getName() {
         return name;
     }
 

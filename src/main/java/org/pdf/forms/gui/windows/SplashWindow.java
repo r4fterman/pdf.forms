@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -31,9 +31,9 @@
 */
 package org.pdf.forms.gui.windows;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 
-import javax.swing.*;
+import javax.swing.JWindow;
 
 public class SplashWindow extends JWindow //612, 350
 {

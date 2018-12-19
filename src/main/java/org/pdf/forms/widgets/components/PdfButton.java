@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -42,11 +42,11 @@ import org.pdf.forms.widgets.IWidget;
 
 public class PdfButton extends JButton implements IPdfComponent {
 
-    public PdfButton(String string) {
+    public PdfButton(final String string) {
         super(string);
         setFont(FontHandler.getInstance().getDefaultFont().deriveFont(11f));
 
-        /** needed so the background color of the button can be set */
+        /* needed so the background color of the button can be set */
         setContentAreaFilled(false);
         setOpaque(true);
     }
@@ -56,34 +56,35 @@ public class PdfButton extends JButton implements IPdfComponent {
     private boolean doubleUnderline;
     private boolean wordUnderline;
 
-    public void paintComponent(Graphics g) {
+    @Override
+    public void paintComponent(final Graphics g) {
         super.paintComponent(g);
 
-        String text = getText();
+        final String text = getText();
 
-        FontMetrics f = getFontMetrics(getFont());
+        final FontMetrics f = getFontMetrics(getFont());
 
-        Rectangle2D textBounds = f.getStringBounds(text, g);
+        final Rectangle2D textBounds = f.getStringBounds(text, g);
 
         int x = getInsets().left;
         int y = getHeight() / 2 + (int) (textBounds.getHeight() / 2);
-        int w = (int) textBounds.getWidth() + x;
+        final int w = (int) textBounds.getWidth() + x;
 
         if (standardUnderline) {
 
             g.drawLine(x, y, w, y);
 
-            if (doubleUnderline)
+            if (doubleUnderline) {
                 g.drawLine(x, y + 2, w, y + 2);
-
+            }
 
         } else if (wordUnderline) {
-            int startX = x;
+            final int startX = x;
 
             for (int i = 0; i < text.length(); i++) {
-                char currentChar = text.charAt(i);
+                final char currentChar = text.charAt(i);
 
-                int charWidth = f.charWidth(currentChar);
+                final int charWidth = f.charWidth(currentChar);
 
                 if (currentChar != ' ') {
                     g.drawLine(x, y, x + charWidth, y);
@@ -108,36 +109,38 @@ public class PdfButton extends JButton implements IPdfComponent {
         }
     }
 
-    public void setUnderlineType(int type) {
+    @Override
+    public void setUnderlineType(final int type) {
         switch (type) {
-            case IWidget.UNDERLINE_SINGLE:
-                standardUnderline = true;
-                doubleUnderline = false;
-                wordUnderline = false;
+        case IWidget.UNDERLINE_SINGLE:
+            standardUnderline = true;
+            doubleUnderline = false;
+            wordUnderline = false;
 
-                break;
-            case IWidget.UNDERLINE_DOUBLE:
-                standardUnderline = true;
-                doubleUnderline = true;
-                wordUnderline = false;
+            break;
+        case IWidget.UNDERLINE_DOUBLE:
+            standardUnderline = true;
+            doubleUnderline = true;
+            wordUnderline = false;
 
-                break;
-            case IWidget.UNDERLINE_WORD_SINGLE:
-                standardUnderline = false;
-                doubleUnderline = false;
-                wordUnderline = true;
+            break;
+        case IWidget.UNDERLINE_WORD_SINGLE:
+            standardUnderline = false;
+            doubleUnderline = false;
+            wordUnderline = true;
 
-                break;
-            case IWidget.UNDERLINE_WORD_DOUBLE:
-                standardUnderline = false;
-                doubleUnderline = true;
-                wordUnderline = true;
+            break;
+        case IWidget.UNDERLINE_WORD_DOUBLE:
+            standardUnderline = false;
+            doubleUnderline = true;
+            wordUnderline = true;
 
-                break;
+            break;
         }
     }
 
-    public void setStikethrough(boolean isStrikethrough) {
+    @Override
+    public void setStikethrough(final boolean isStrikethrough) {
         this.isStrikethrough = isStrikethrough;
     }
 }

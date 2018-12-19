@@ -1,4 +1,4 @@
-/**
+/*
  * ===========================================
  * PDF Forms Designer
  * ===========================================
@@ -38,7 +38,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.pdf.forms.gui.designer.Designer;
 import org.pdf.forms.utils.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -46,89 +45,61 @@ import org.w3c.dom.Node;
 
 public class FormsDocument {
 
-    private List<Page> pages = new ArrayList<>();
+    private final List<Page> pages = new ArrayList<>();
     private Document documentProperties;
 
     public FormsDocument(final String version) {
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder db = dbf.newDocumentBuilder();
             documentProperties = db.newDocument();
 
-            Element rootElement = documentProperties.createElement("document");
+            final Element rootElement = documentProperties.createElement("document");
             documentProperties.appendChild(rootElement);
 
-            addVersion(rootElement); // todo we really need this to be generated each time the file is saved
+            addVersion(rootElement, version); // todo we really need this to be generated each time the file is saved
             addJavaScript(rootElement);
-        } catch (ParserConfigurationException e) {
+        } catch (final ParserConfigurationException e) {
             e.printStackTrace();
         }
     }
 
-    public FormsDocument(Element loadedRoot) {
+    public FormsDocument(final Element loadedRoot) {
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder db = dbf.newDocumentBuilder();
             documentProperties = db.newDocument();
 
-            Node newRoot = documentProperties.importNode(loadedRoot, true);
+            final Node newRoot = documentProperties.importNode(loadedRoot, true);
             documentProperties.appendChild(newRoot);
-        } catch (ParserConfigurationException e) {
+        } catch (final ParserConfigurationException e) {
             e.printStackTrace();
         }
     }
 
     public void movePage(
-            int fromIndex,
-            int toIndex) {
+            final int fromIndex,
+            final int toIndex) {
         if (fromIndex > toIndex) {
-            Page objectToMove = pages.get(fromIndex);
+            final Page objectToMove = pages.get(fromIndex);
             pages.add(toIndex, objectToMove);
 
             pages.remove(pages.lastIndexOf(objectToMove));
         } else {
-            toIndex++;
-            Page objectToMove = pages.get(fromIndex);
-            pages.add(toIndex, objectToMove);
+            final Page objectToMove = pages.get(fromIndex);
+            pages.add(toIndex + 1, objectToMove);
 
             pages.remove(objectToMove);
         }
     }
 
-//    public LinkedHashMap getPdfFilesUsed() {
-//        LinkedHashMap<String, Double> pdfFilesUsed = new LinkedHashMap<>();
-//
-//        for (Page page : pages) {
-//            String pdfFileLocation = page.getPdfFileLocation();
-//
-//            if (pdfFileLocation != null && pdfFilesUsed.get(pdfFileLocation) == null) {
-//                File file = new File(pdfFileLocation);
-//                Double size = round((file.length() / 1000d));
-//
-//                pdfFilesUsed.put(pdfFileLocation, size);
-//            }
-//        }
-//
-//        return pdfFilesUsed;
-//    }
-
-//    private double round(double number) {
-//        double exponential = Math.pow(10, 1);
-//
-//        number *= exponential;
-//        number = Math.round(number);
-//        number /= exponential;
-//
-//        return number;
-//    }
-
     public void addPage(
-            int index,
-            Page page) {
+            final int index,
+            final Page page) {
         pages.add(index - 1, page);
     }
 
-    public void removePage(int index) {
+    public void removePage(final int index) {
         pages.remove(index - 1);
     }
 
@@ -136,7 +107,7 @@ public class FormsDocument {
         return pages;
     }
 
-    public Page getPage(int pageNumber) {
+    public Page getPage(final int pageNumber) {
         return pages.get(pageNumber - 1);
     }
 
@@ -150,58 +121,37 @@ public class FormsDocument {
     }
 
     public Document getDocumentProperties() {
-
-        List pageNodes = XMLUtils.getElementsFromNodeList(documentProperties.getElementsByTagName("page"));
+        final List pageNodes = XMLUtils.getElementsFromNodeList(documentProperties.getElementsByTagName("page"));
 
         /* remove all pages from document so we can rebuild */
         for (final Object node : pageNodes) {
-            Element element = (Element) node;
-            Node parent = element.getParentNode();
+            final Element element = (Element) node;
+            final Node parent = element.getParentNode();
             parent.removeChild(element);
         }
 
-        //        List radioButtonGroupsList = XMLUtils.getElementsFromNodeList(documentProperties.getElementsByTagName("radio_button_groups"));
-        //
-        //        /** remove any radio button groups from the document */
-        //        for (Iterator it = radioButtonGroupsList.iterator(); it.hasNext();) {
-        //            Element element = (Element) it.next();
-        //            Node parent = element.getParentNode();
-        //            parent.removeChild(element);
-        //        }
-
         /* add all pages to the document*/
-        for (Page page : pages) {
-            Document pageProperties = page.getPageProperties();
+        for (final Page page : pages) {
+            final Document pageProperties = page.getPageProperties();
 
-            Element pageRoot = pageProperties.getDocumentElement();
+            final Element pageRoot = pageProperties.getDocumentElement();
 
             documentProperties.getDocumentElement().appendChild(documentProperties.importNode(pageRoot, true));
         }
 
-        /* add radio button groups to the document */
-
-        //            try {
-        //                StringWriter sw = new StringWriter();
-        //                InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
-        //                TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        //                Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
-        //                transformer.transform(new DOMSource(documentProperties), new StreamResult(sw));
-        //                System.out.println(sw.toString());
-        //            } catch (TransformerException e) {
-        //                e.printStackTrace();
-        //            }
-
         return documentProperties;
     }
 
-    private void addVersion(Element rootElement) {
-        XMLUtils.addBasicProperty(documentProperties, "version", Designer.version, rootElement);
+    private void addVersion(
+            final Element rootElement,
+            final String version) {
+        XMLUtils.addBasicProperty(documentProperties, "version", version, rootElement);
     }
 
-    private void addJavaScript(Element rootElement) {
-        Element javaScriptElement = XMLUtils.createAndAppendElement(documentProperties, "javascript", rootElement);
+    private void addJavaScript(final Element rootElement) {
+        final Element javaScriptElement = XMLUtils.createAndAppendElement(documentProperties, "javascript", rootElement);
 
-        Element mouseEnterElement = XMLUtils.createAndAppendElement(documentProperties, "initialize", javaScriptElement);
+        final Element mouseEnterElement = XMLUtils.createAndAppendElement(documentProperties, "initialize", javaScriptElement);
         mouseEnterElement.appendChild(documentProperties.createTextNode(""));
     }
 }

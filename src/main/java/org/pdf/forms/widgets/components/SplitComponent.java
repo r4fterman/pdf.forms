@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -30,7 +30,6 @@
 * ---------------
 */
 package org.pdf.forms.widgets.components;
-
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -65,7 +64,10 @@ public class SplitComponent extends JPanel {
     private JPanel captionPanel;
     private int captionPosition;
 
-    public SplitComponent(String captionText, JComponent value, int captionPosition) {
+    public SplitComponent(
+           final  String captionText,
+           final  JComponent value,
+           final  int captionPosition) {
 
         setLayout(new BorderLayout());
 
@@ -90,25 +92,21 @@ public class SplitComponent extends JPanel {
         component = new JSplitPane();
 
         setCaptionPosition(captionPosition);
-
-//		setSplitPaneDividerColor(sp, Color.yellow);
-//sp.setBorder(BorderFactory.createEmptyBorder());
-//sp.setDividerSize(DIVIDER_SIZE);
-
-//		add(sp, BorderLayout.CENTER);
     }
 
-    public void setBorder(Border border) {
-        if (value != null)
+    public void setBorder(final Border border) {
+        if (value != null) {
             value.setBorder(border);
+        }
     }
 
-    public void setBackground(Color color) {
-        if (value != null)
+    public void setBackground(final Color color) {
+        if (value != null) {
             value.setBackground(color);
+        }
     }
 
-    public void setCaptionPosition(int position) {
+    public void setCaptionPosition(final int position) {
         this.captionPosition = position;
 
         remove(component);
@@ -122,74 +120,71 @@ public class SplitComponent extends JPanel {
             JSplitPane sp = (JSplitPane) component;
 
             switch (position) {
-                case SplitComponent.CAPTION_LEFT:
+            case SplitComponent.CAPTION_LEFT:
 
-                    sp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+                sp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 
-                    sp.setLeftComponent(captionPanel);
-                    sp.setRightComponent(valuePanel);
+                sp.setLeftComponent(captionPanel);
+                sp.setRightComponent(valuePanel);
 
-                    sp.setResizeWeight(0);
+                sp.setResizeWeight(0);
 
-                    sp.setDividerLocation((int) caption.getPreferredSize().getWidth() + 10);
+                sp.setDividerLocation((int) caption.getPreferredSize().getWidth() + 10);
 
-                    break;
+                break;
 
-                case SplitComponent.CAPTION_TOP:
+            case SplitComponent.CAPTION_TOP:
 
-                    sp.setOrientation(JSplitPane.VERTICAL_SPLIT);
+                sp.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
-                    sp.setTopComponent(captionPanel);
-                    sp.setBottomComponent(valuePanel);
+                sp.setTopComponent(captionPanel);
+                sp.setBottomComponent(valuePanel);
 
-                    sp.setResizeWeight(0);
+                sp.setResizeWeight(0);
 
-                    sp.setDividerLocation((int) caption.getPreferredSize().getHeight());
+                sp.setDividerLocation((int) caption.getPreferredSize().getHeight());
 
+                break;
 
-                    break;
+            case SplitComponent.CAPTION_RIGHT:
 
-                case SplitComponent.CAPTION_RIGHT:
+                sp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 
-                    sp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+                sp.setRightComponent(captionPanel);
+                sp.setLeftComponent(valuePanel);
 
-                    sp.setRightComponent(captionPanel);
-                    sp.setLeftComponent(valuePanel);
+                sp.setResizeWeight(1);
 
-                    sp.setResizeWeight(1);
+                sp.setDividerLocation((int) value.getPreferredSize().getWidth());
 
-                    sp.setDividerLocation((int) value.getPreferredSize().getWidth());
+                break;
 
-                    break;
+            case SplitComponent.CAPTION_BOTTOM:
 
-                case SplitComponent.CAPTION_BOTTOM:
+                sp.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
-                    sp.setOrientation(JSplitPane.VERTICAL_SPLIT);
+                sp.setTopComponent(valuePanel);
+                sp.setBottomComponent(captionPanel);
 
-                    sp.setTopComponent(valuePanel);
-                    sp.setBottomComponent(captionPanel);
+                sp.setResizeWeight(1);
 
-                    sp.setResizeWeight(1);
+                break;
 
-                    break;
-
-                default:
-                    break;
+            default:
+                break;
 
             }
 
-            setSplitPaneDividerColor(sp, Color.yellow);
+            setSplitPaneDividerColor(sp);
             sp.setBorder(BorderFactory.createEmptyBorder());
             sp.setDividerSize(DIVIDER_SIZE);
-
 
         }
 
         add(component, BorderLayout.CENTER);
     }
 
-
-    private void setSplitPaneDividerColor(JSplitPane splitPane, Color newDividerColor) {
+    private void setSplitPaneDividerColor(final JSplitPane splitPane) {
         SplitPaneUI splitUI = splitPane.getUI();
         if (splitUI instanceof BasicSplitPaneUI) { // obviously this will not work if the ui doen't extend Basic...
             int divSize = splitPane.getDividerSize();
@@ -208,7 +203,7 @@ public class SplitComponent extends JPanel {
             }
 
             // this border uses a fillRect
-            colorBorder = BorderFactory.createMatteBorder(divSize - insetsv, divSize - insetsh, 0, 0, newDividerColor);
+            colorBorder = BorderFactory.createMatteBorder(divSize - insetsv, divSize - insetsh, 0, 0, Color.yellow);
 
             if (divBorder == null) {
                 newBorder = colorBorder;
@@ -226,7 +221,9 @@ public class SplitComponent extends JPanel {
      * @param alignmentX
      * @param alignmentY
      */
-    public void setCaptionAlignment(int alignmentX, int alignmentY) {
+    public void setCaptionAlignment(
+            final int alignmentX,
+            final int alignmentY) {
         caption.setHorizontalAlignment(alignmentX);
         caption.setVerticalAlignment(alignmentY);
     }
@@ -239,7 +236,7 @@ public class SplitComponent extends JPanel {
         return caption;
     }
 
-    public void setDividerLocation(int x) {
+    public void setDividerLocation(final int x) {
         ((JSplitPane) component).setDividerLocation(x);
     }
 

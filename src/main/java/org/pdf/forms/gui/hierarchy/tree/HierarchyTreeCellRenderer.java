@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -52,57 +52,66 @@ public class HierarchyTreeCellRenderer extends DefaultTreeCellRenderer {
     private Icon icon;
 
     private IMainFrame mainFrame;
-    private HierarchyTreeCellRenderer(){}
 
-    public HierarchyTreeCellRenderer(IMainFrame mainFrame){
+    private HierarchyTreeCellRenderer() {
+    }
+
+    public HierarchyTreeCellRenderer(final IMainFrame mainFrame) {
         this.mainFrame = mainFrame;
     }
 
+    @Override
     public Icon getLeafIcon() {
         return icon;
     }
 
+    @Override
     public Dimension getPreferredSize() {
-    	Font font = getFont();
-    	if(font != null){
-    		int width = SwingUtilities.computeStringWidth(getFontMetrics(getFont()), getText())
+        final Font font = getFont();
+        if (font != null) {
+            final int width = SwingUtilities.computeStringWidth(getFontMetrics(getFont()), getText())
                     + getIcon().getIconWidth() + getIconTextGap();
-    		return new Dimension(width, super.getPreferredSize().height);
-    	}
-    	return super.getPreferredSize();
+            return new Dimension(width, super.getPreferredSize().height);
+        }
+        return super.getPreferredSize();
     }
 
-    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected,
-                                                  boolean expanded, boolean leaf, int row, boolean hasFocus) {
+    @Override
+    public Component getTreeCellRendererComponent(
+            final JTree tree,
+            Object value,
+            final boolean isSelected,
+            final boolean expanded,
+            final boolean leaf,
+            final int row,
+            final boolean hasFocus) {
 
         value = ((DefaultMutableTreeNode) value).getUserObject();
 
         String s = "";
         if (value instanceof IWidget) {
-            IWidget w = (IWidget) value;
+            final IWidget w = (IWidget) value;
 
             s = w.getWidgetName();
-            
+
             if (mainFrame.getWidgetArrays().isWidgetArrayInList(s)) {
-                int arrayNumber = w.getArrayNumber();
+                final int arrayNumber = w.getArrayNumber();
                 s += "[" + arrayNumber + "]";
-//				System.out.println("w = " + w + " arraynumber = " + arrayNumber);
             }
 
             icon = w.getIcon();
         } else if (value instanceof Page) {
-            Page page = (Page) value;
+            final Page page = (Page) value;
 
             s = page.getPageName();
-            URL resource = getClass().getResource("/org/pdf/forms/res/Page.gif");
+            final URL resource = getClass().getResource("/org/pdf/forms/res/Page.gif");
             icon = new ImageIcon(resource);
 
         } else if (value.equals("Document Root")) {
             s = value.toString();
-            URL resource = getClass().getResource("/org/pdf/forms/res/Form.gif");
+            final URL resource = getClass().getResource("/org/pdf/forms/res/Form.gif");
             icon = new ImageIcon(resource);
         }
-
 
         setText(s);
         setIcon(icon);

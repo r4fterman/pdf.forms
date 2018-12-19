@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -35,7 +35,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,11 +51,10 @@ import com.vlsolutions.swing.docking.Dockable;
 
 public class BorderPropertiesTab extends JPanel implements Dockable {
 
-    private BorderPropertiesPanel borderPanel = new BorderPropertiesPanel();
-    private DockKey key = new DockKey("Border");
+    private final BorderPropertiesPanel borderPanel = new BorderPropertiesPanel();
+    private final DockKey key = new DockKey("Border");
 
-    public BorderPropertiesTab(IDesigner designer) {
-
+    public BorderPropertiesTab(final IDesigner designer) {
         borderPanel.setDesignerPanel(designer);
 
         setLayout(new BorderLayout());
@@ -64,25 +62,21 @@ public class BorderPropertiesTab extends JPanel implements Dockable {
         setMinimumSize(new Dimension(0, 0));
     }
 
-    public void setProperties(Set widgets) {
-
-    	if (widgets.isEmpty() || (widgets.iterator().next() instanceof Page)) {
+    public void setProperties(final Set<IWidget> widgets) {
+        if (widgets.isEmpty() || (widgets.iterator().next() instanceof Page)) {
             removeAll();
         } else {
+            final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
 
-            Map widgetsAndProperties = new HashMap();
-
-            for (Iterator it = widgets.iterator(); it.hasNext();) {
-                IWidget widget = (IWidget) it.next();
-
-                if(widget.getType() == IWidget.IMAGE){
-                	removeAll();
-                	return;
+            for (final IWidget widget : widgets) {
+                if (widget.getType() == IWidget.IMAGE) {
+                    removeAll();
+                    return;
                 }
-                
-                Document properties = widget.getProperties();
 
-                Element layoutProperties = (Element) properties.getElementsByTagName("border").item(0);
+                final Document properties = widget.getProperties();
+
+                final Element layoutProperties = (Element) properties.getElementsByTagName("border").item(0);
 
                 widgetsAndProperties.put(widget, layoutProperties);
             }
@@ -90,16 +84,17 @@ public class BorderPropertiesTab extends JPanel implements Dockable {
             borderPanel.setProperties(widgetsAndProperties);
 
             add(borderPanel);
-
         }
 
         updateUI();
     }
 
+    @Override
     public DockKey getDockKey() {
         return key;
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }

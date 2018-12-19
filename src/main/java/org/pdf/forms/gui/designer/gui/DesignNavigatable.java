@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -32,9 +32,9 @@
 package org.pdf.forms.gui.designer.gui;
 
 public interface DesignNavigatable {
-    public void displayDesignerPage(int page);
+    void displayDesignerPage(int page);
 
-    public int getDesignerCurrentPage();
+    int getDesignerCurrentPage();
 
-    public int getTotalNoOfPages();
+    int getTotalNoOfPages();
 }

@@ -42,78 +42,73 @@ import org.pdf.forms.widgets.utils.WidgetArrays;
 
 public interface IMainFrame {
 
-    public static final int INSET = 15;
+    int INSET = 15;
 
-    public void resetPaletteButtons();
+    void resetPaletteButtons();
 
-    public void setPropertiesCompound(Set widget);
+    void setPropertiesCompound(Set<IWidget> widget);
 
-    public void setPropertiesToolBar(Set widgets);
+    void setPropertiesToolBar(Set<IWidget> widgets);
 
-    public void addWidgetToHierarchy(IWidget widget);
+    void addWidgetToHierarchy(IWidget widget);
 
-    public void removeWidgetFromHierarchy(IWidget widget);
+    void removeWidgetFromHierarchy(IWidget widget);
 
-    public void displayPage(int page);
+    void displayPage(int page);
 
-    public int getTotalNoOfPages();
+    int getTotalNoOfPages();
 
-    public int getCurrentPage();
+    int getCurrentPage();
 
-    public void setFormsDocument(FormsDocument formsDocument);
+    void setFormsDocument(FormsDocument formsDocument);
 
-    public IDesigner getDesigner();
+    IDesigner getDesigner();
 
-    public void setCurrentDesignerFileName(String currentFileName);
+    void setCurrentDesignerFileName(String currentFileName);
 
-    public String getCurrentDesignerFileName();
+    String getCurrentDesignerFileName();
 
-    public void setTitle(String title);
+    void setTitle(String title);
 
-    public FormsDocument getFormsDocument();
+    FormsDocument getFormsDocument();
 
-    public void setCurrentPage(int currentPage);
+    void setCurrentPage(int currentPage);
 
-    public void setPanelsState(boolean state);
+    void setPanelsState(boolean state);
 
-    public void setTotalNoOfDisplayedPages(int totalNoOfDisplayedPages);
+    void setTotalNoOfDisplayedPages(int totalNoOfDisplayedPages);
 
-    public void addPageToHierarchyPanel(int pdfPage, Page newPage);
+    void addPageToHierarchyPanel(int pdfPage, Page newPage);
 
-    public void updateHierarchyPanelUI();
+    void updateHierarchyPanelUI();
 
-    public void removePageFromHierarchyPanel(int index);
+    void removePageFromHierarchyPanel(int index);
 
-    // @scale
-    // public void setScaling(double scaling);
-    //
-    // public double getScaling();
+    void updateHierarchy();
 
-    public void updateHierarchy();
+    void setDockableVisible(String dockable, boolean visible);
 
-    public void setDockableVisible(String dockable, boolean visible);
-
-	public void setDesignerCompoundContent(int content);
+	void setDesignerCompoundContent(int content);
 	
-	public int getDesignerCompoundContent();
+	int getDesignerCompoundContent();
 
-	public DesignerCompound getDesignerCompound();
+	DesignerCompound getDesignerCompound();
 
-	public double getCurrentSelectedScaling();
+	double getCurrentSelectedScaling();
 
-	public double getCurrentScaling();
+	double getCurrentScaling();
 
-	public void setCurrentSelectedScaling(double scaling);
+	void setCurrentSelectedScaling(double scaling);
 
-	public void updateAvailiableFonts();
+	void updateAvailiableFonts();
 
-	public void addWidgetToPage(IWidget widget);
+	void addWidgetToPage(IWidget widget);
 
-    public int getNextArrayNumberForName(String name, IWidget widget);
+    int getNextArrayNumberForName(String name, IWidget widget);
 
-    public void handleArrayNumberOnWidgetDeletion(Set selectedWidgets);
+    void handleArrayNumberOnWidgetDeletion(Set<IWidget> selectedWidgets);
 
-	public WidgetArrays getWidgetArrays();
+	WidgetArrays getWidgetArrays();
 
-	public void renameWidget(String oldName, String name, IWidget widget);
+	void renameWidget(String oldName, String name, IWidget widget);
 }

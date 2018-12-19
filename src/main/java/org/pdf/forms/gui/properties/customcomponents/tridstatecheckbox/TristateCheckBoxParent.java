@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -34,5 +34,5 @@ package org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox;
 import java.awt.event.MouseEvent;
 
 public interface TristateCheckBoxParent {
-    public void checkboxClicked(MouseEvent e);
+    void checkboxClicked(MouseEvent e);
 }

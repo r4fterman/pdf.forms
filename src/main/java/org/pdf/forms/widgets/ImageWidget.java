@@ -1,34 +1,34 @@
-/**
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* 	This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* ImageWidget.java
-* ---------------
-*/
+/*
+ * ===========================================
+ * PDF Forms Designer
+ * ===========================================
+ * <p>
+ * Project Info:  http://pdfformsdesigne.sourceforge.net
+ * (C) Copyright 2006-2008..
+ * Lead Developer: Simon Barnett (n6vale@googlemail.com)
+ * <p>
+ * This file is part of the PDF Forms Designer
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>
+ * <p>
+ * <p>
+ * ---------------
+ * ImageWidget.java
+ * ---------------
+ */
 package org.pdf.forms.widgets;
 
 import java.awt.Image;
@@ -55,7 +55,10 @@ public class ImageWidget extends Widget implements IWidget {
 
     private int sizing;
 
-    public ImageWidget(int type, JComponent baseComponent, JComponent component) {
+    public ImageWidget(
+            final int type,
+            final JComponent baseComponent,
+            final JComponent component) {
         super(type, baseComponent, component, "/org/pdf/forms/res/Image.gif");
 
         isComponentSplit = false;
@@ -75,7 +78,11 @@ public class ImageWidget extends Widget implements IWidget {
         addProperties(rootElement);
     }
 
-    public ImageWidget(int type, JComponent baseComponent, JComponent component, Element root) {
+    public ImageWidget(
+            final int type,
+            final JComponent baseComponent,
+            final JComponent component,
+            final Element root) {
 
         super(type, baseComponent, component, "/org/pdf/forms/res/Image.gif");
 
@@ -92,7 +99,7 @@ public class ImageWidget extends Widget implements IWidget {
         setAllProperties();
     }
 
-    private void addProperties(Element rootElement) {
+    private void addProperties(final Element rootElement) {
         Element propertiesElement = XMLUtils.createAndAppendElement(properties, "properties", rootElement);
 
         addObjectProperties(propertiesElement);
@@ -100,7 +107,7 @@ public class ImageWidget extends Widget implements IWidget {
         addLayoutProperties(propertiesElement);
     }
 
-    private void addLayoutProperties(Element propertiesElement) {
+    private void addLayoutProperties(final Element propertiesElement) {
         Element layoutElement = XMLUtils.createAndAppendElement(properties, "layout", propertiesElement);
 
         Element sizeAndPositionElement = XMLUtils.createAndAppendElement(properties, "sizeandposition", layoutElement);
@@ -120,7 +127,7 @@ public class ImageWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(properties, "Bottom", "4", margins);
     }
 
-    private void addObjectProperties(Element propertiesElement) {
+    private void addObjectProperties(final Element propertiesElement) {
         Element objectElement = XMLUtils.createAndAppendElement(properties, "object", propertiesElement);
 
         Element fieldElement = XMLUtils.createAndAppendElement(properties, "field", objectElement);
@@ -135,16 +142,17 @@ public class ImageWidget extends Widget implements IWidget {
         setSizeAndPosition(layoutProperties);
     }
 
-    public void setObjectProperties(Element objectElement) {
+    public void setObjectProperties(final Element objectElement) {
         Element drawElement = (Element) objectElement.getElementsByTagName("draw").item(0);
 
         String location = XMLUtils.getAttributeFromChildElement(drawElement, "Location");
         String sizing = XMLUtils.getAttributeFromChildElement(drawElement, "Sizing");
 
-        if (sizing.equals("Stretch Image To Fit"))
+        if (sizing.equals("Stretch Image To Fit")) {
             this.sizing = STRETCH;
-        else if (sizing.equals("Use Image Size"))
+        } else if (sizing.equals("Use Image Size")) {
             this.sizing = FULL_SIZE;
+        }
 
         if (new File(location).exists()) {
             currentImage = Toolkit.getDefaultToolkit().createImage(location);
@@ -154,28 +162,32 @@ public class ImageWidget extends Widget implements IWidget {
 
         JLabel imageLabel = (JLabel) baseComponent;
 
-        if (currentImage == null)
+        if (currentImage == null) {
             imageLabel.setIcon(null);
-        else {
-            if (this.sizing == STRETCH)
+        } else {
+            if (this.sizing == STRETCH) {
                 imageLabel.setIcon(new ImageIcon(currentImage.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH)));
-            else if (this.sizing == FULL_SIZE)
+            } else if (this.sizing == FULL_SIZE) {
                 imageLabel.setIcon(new ImageIcon(currentImage));
+            }
         }
 
         setSize(getWidth(), getHeight());
     }
 
-    public void setSize(int width, int height) {
+    public void setSize(
+            final int width,
+            final int height) {
         JLabel imageLabel = (JLabel) baseComponent;
 
-        if (currentImage == null)
+        if (currentImage == null) {
             imageLabel.setIcon(null);
-        else {
-            if (this.sizing == STRETCH)
+        } else {
+            if (this.sizing == STRETCH) {
                 imageLabel.setIcon(new ImageIcon(currentImage.getScaledInstance(width, height, Image.SCALE_SMOOTH)));
-            else if (this.sizing == FULL_SIZE)
+            } else if (this.sizing == FULL_SIZE) {
                 imageLabel.setIcon(new ImageIcon(currentImage));
+            }
         }
 
         component = WidgetFactory.createResizedComponent(baseComponent, width, height);
