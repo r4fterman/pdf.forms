@@ -10,5 +10,4 @@ before_install:
 install: /bin/true
 
 script:
-  - jdk_switcher use openjdk10
   - mvn clean install -Pci
