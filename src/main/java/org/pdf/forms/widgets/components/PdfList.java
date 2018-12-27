@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -42,13 +42,12 @@ public class PdfList extends JScrollPane implements IPdfComponent {
 
     private final Lst list;
 
-    public JList getList() {
+    public JList<String> getList() {
         return list;
     }
 
     public PdfList() {
-
-        list = new Lst(new DefaultListModel());
+        list = new Lst(new DefaultListModel<>());
 
         setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -83,11 +82,13 @@ public class PdfList extends JScrollPane implements IPdfComponent {
     }
 }
 
-class Lst extends JList {
+class Lst extends JList<String> {
 
-    public Lst(final DefaultListModel defaultListModel) {
+    private static final float FONT_SIZE = 11f;
+
+    Lst(final DefaultListModel<String> defaultListModel) {
         super(defaultListModel);
-        setFont(FontHandler.getInstance().getDefaultFont().deriveFont(11f));
+        setFont(FontHandler.getInstance().getDefaultFont().deriveFont(FONT_SIZE));
     }
 
 }

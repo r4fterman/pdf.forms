@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -31,15 +31,21 @@
 */
 package org.pdf.forms.gui.properties.object.field;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
+import org.jdesktop.layout.GroupLayout;
+import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.IDesigner;
@@ -58,8 +64,10 @@ public class RadioButtonFieldPanel extends javax.swing.JPanel {
     private List<ButtonGroup> buttonGroups;
     private int type;
 
+    private JComboBox<String> buttonGroupBox;
+
     /**
-     * Creates new form RadioButtonFieldPanel
+     * Creates new form RadioButtonFieldPanel.
      */
     public RadioButtonFieldPanel() {
         initComponents();
@@ -73,13 +81,14 @@ public class RadioButtonFieldPanel extends javax.swing.JPanel {
     }
 
     private void initComponents() {
-        appearanceBox = new javax.swing.JComboBox<>();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        final JComboBox<String> appearanceBox = new JComboBox<>();
+        final JLabel jLabel1 = new JLabel();
+        final JLabel jLabel2 = new JLabel();
         buttonGroupBox = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
+        final JButton jButton1 = new JButton();
 
-        appearanceBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Underline", "Solid", "Sunken Box", "Custom..." }));
+        appearanceBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                "None", "Underline", "Solid", "Sunken Box", "Custom..." }));
         appearanceBox.setEnabled(false);
 
         jLabel1.setText("Apperance:");
@@ -87,48 +96,48 @@ public class RadioButtonFieldPanel extends javax.swing.JPanel {
 
         jLabel2.setText("Radio Button Group:");
 
-        buttonGroupBox.addActionListener(evt -> updateButtonGroup(evt));
+        buttonGroupBox.addActionListener(this::updateButtonGroup);
 
         jButton1.setText("Organise");
-        jButton1.addActionListener(evt -> organiseClicked(evt));
+        jButton1.addActionListener(this::organiseClicked);
 
-        final org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        final GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                                .add(layout.createParallelGroup(GroupLayout.LEADING, false)
                                         .add(layout.createSequentialGroup()
                                                 .add(jLabel1)
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                .add(appearanceBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 190, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(LayoutStyle.RELATED)
+                                                .add(appearanceBox, GroupLayout.PREFERRED_SIZE, 190, GroupLayout.PREFERRED_SIZE))
                                         .add(layout.createSequentialGroup()
                                                 .add(jLabel2)
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                .addPreferredGap(LayoutStyle.RELATED)
+                                                .add(layout.createParallelGroup(GroupLayout.LEADING)
                                                         .add(jButton1)
-                                                        .add(buttonGroupBox, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                                        .add(buttonGroupBox, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                                 .addContainerGap(140, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel1)
-                                        .add(appearanceBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(appearanceBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel2)
-                                        .add(buttonGroupBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                        .add(buttonGroupBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
                                 .add(jButton1)
                                 .addContainerGap(214, Short.MAX_VALUE))
         );
     }
 
-    private void organiseClicked(final java.awt.event.ActionEvent evt) {
+    private void organiseClicked(final ActionEvent evt) {
         final JDialog dialog = new JDialog();
         final IMainFrame mainFrame = designerPanel.getMainFrame();
         final List<IWidget> widgets = mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage()).getWidgets();
@@ -147,8 +156,8 @@ public class RadioButtonFieldPanel extends javax.swing.JPanel {
         setProperties(widgetsAndProperties);
     }
 
-    private void updateButtonGroup(final java.awt.event.ActionEvent evt) {
-        for (final Iterator it = widgetsAndProperties.keySet().iterator(); it.hasNext(); ) {
+    private void updateButtonGroup(final ActionEvent evt) {
+        for (final Iterator it = widgetsAndProperties.keySet().iterator(); it.hasNext();) {
 
             final IWidget widget;
             if (type == IWidget.RADIO_BUTTON) {
@@ -189,6 +198,8 @@ public class RadioButtonFieldPanel extends javax.swing.JPanel {
                 this.buttonGroups = page.getCheckBoxGroups();
 
                 break;
+            default:
+                break;
         }
 
         populateButtonGroups();
@@ -202,15 +213,23 @@ public class RadioButtonFieldPanel extends javax.swing.JPanel {
 
             final String buttonGroup = XMLUtils.getAttributeFromChildElement(fieldProperties, "Group Name");
 
-            if (buttonGroupToUse == null) { // this must be the first time round
+            if (buttonGroupToUse == null) {
+                // this must be the first time round
                 buttonGroupToUse = buttonGroup;
-            } else { // check for subsequent widgets
+            } else {
+                // check for subsequent widgets
                 if (!buttonGroupToUse.equals(buttonGroup)) {
                     buttonGroupToUse = "mixed";
                 }
             }
 
-            setComboValue(buttonGroupBox, buttonGroupToUse.equals("mixed") ? null : buttonGroupToUse);
+            final Object value;
+            if (buttonGroupToUse.equals("mixed")) {
+                value = null;
+            } else {
+                value = buttonGroupToUse;
+            }
+            setComboValue(buttonGroupBox, value);
         }
     }
 
@@ -240,11 +259,5 @@ public class RadioButtonFieldPanel extends javax.swing.JPanel {
 
         comboBox.addActionListener(listener);
     }
-
-    private javax.swing.JComboBox<String> appearanceBox;
-    private javax.swing.JComboBox<String> buttonGroupBox;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
 
 }

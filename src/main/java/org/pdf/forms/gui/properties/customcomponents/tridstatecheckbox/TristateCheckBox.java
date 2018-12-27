@@ -21,7 +21,7 @@ import javax.swing.plaf.ActionMapUIResource;
  * Maintenance tip - There were some tricks to getting this code
  * working:
  * <p/>
- * 1. You have to overwite addMouseListener() to do nothing
+ * 1. You have to overwrite addMouseListener() to do nothing
  * 2. You have to add a mouse event on mousePressed by calling
  * super.addMouseListener()
  * 3. You have to replace the UIActionMap for the keyboard event
@@ -35,11 +35,9 @@ import javax.swing.plaf.ActionMapUIResource;
  */
 public class TristateCheckBox extends JCheckBox {
     /**
-     * This is a type-safe enumerated type
+     * This is a type-safe enumerated type.
      */
     public static class State {
-        private State() {
-        }
     }
 
     public static final State NOT_SELECTED = new State() {
@@ -151,7 +149,7 @@ public class TristateCheckBox extends JCheckBox {
      * Decorator, because we are extending functionality and
      * "decorating" the original model with a more powerful model.
      */
-    private class TristateDecorator implements ButtonModel {
+    private final class TristateDecorator implements ButtonModel {
         private final ButtonModel other;
 
         private TristateDecorator(final ButtonModel other) {
@@ -167,7 +165,8 @@ public class TristateCheckBox extends JCheckBox {
                 other.setArmed(false);
                 setPressed(false);
                 setSelected(true);
-            } else { // either "null" or DONT_CARE
+            } else {
+                // either "null" or DONT_CARE
                 other.setArmed(true);
                 setPressed(true);
                 setSelected(true);

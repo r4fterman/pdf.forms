@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -31,33 +31,40 @@
 */
 package org.pdf.forms.gui.windows;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
+import org.jdesktop.layout.GroupLayout;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.ButtonGroup;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.RadioButtonWidget;
 import org.w3c.dom.Element;
 
-public class RadioButtonGroupOrganiser extends javax.swing.JPanel {
-    private List radioButtonGroups;
-    private JDialog parentDialog;
-    private List widgetsOnPage;
-    private int type;
+public class RadioButtonGroupOrganiser extends JPanel {
+    private final List<ButtonGroup> radioButtonGroups;
+    private final JDialog parentDialog;
+    private final List<IWidget> widgetsOnPage;
+    private final int type;
+
+    private JList<String> buttonGroupsList;
 
     /**
-     * Creates new form RadioButtonGroupOrganiser
+     * Creates new form RadioButtonGroupOrganiser.
      */
     public RadioButtonGroupOrganiser(
-            JDialog parentDialog,
-            List radioButtonGroups,
-            List widgetsOnPage,
-            int type) {
+            final JDialog parentDialog,
+            final List radioButtonGroups,
+            final List widgetsOnPage,
+            final int type) {
         this.parentDialog = parentDialog;
         this.radioButtonGroups = radioButtonGroups;
         this.widgetsOnPage = widgetsOnPage;
@@ -69,81 +76,64 @@ public class RadioButtonGroupOrganiser extends javax.swing.JPanel {
     }
 
     private void populateButtonGroupsList() {
-        DefaultListModel model = (DefaultListModel) buttonGroupsList.getModel();
+        final DefaultListModel<String> model = (DefaultListModel) buttonGroupsList.getModel();
         model.removeAllElements();
 
-        for (Iterator it = radioButtonGroups.iterator(); it.hasNext(); ) {
-            ButtonGroup buttonGroup = (ButtonGroup) it.next();
+        for (final ButtonGroup buttonGroup : radioButtonGroups) {
             model.addElement(buttonGroup.getName());
         }
     }
 
     private void initComponents() {
-        jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        buttonGroupsList = new javax.swing.JList();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        final JLabel jLabel1 = new JLabel();
+        final JScrollPane jScrollPane1 = new JScrollPane();
+        buttonGroupsList = new JList<>();
+        final JButton jButton1 = new JButton();
+        final JButton jButton2 = new JButton();
+        final JButton jButton3 = new JButton();
+        final JButton jButton4 = new JButton();
 
         jLabel1.setText("Radio Button Groups");
 
-        buttonGroupsList.setModel(new DefaultListModel());
+        buttonGroupsList.setModel(new DefaultListModel<>());
         jScrollPane1.setViewportView(buttonGroupsList);
 
         jButton1.setText("Add ...");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addClicked(evt);
-            }
-        });
+        jButton1.addActionListener(this::addClicked);
 
         jButton2.setText("Remove");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeClicked(evt);
-            }
-        });
+        jButton2.addActionListener(this::removeClicked);
 
         jButton3.setText("Rename ...");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                renameClicked(evt);
-            }
-        });
+        jButton3.addActionListener(this::renameClicked);
 
         jButton4.setText("OK");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okClicked(evt);
-            }
-        });
+        jButton4.addActionListener(this::okClicked);
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        final GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
+                                .add(layout.createParallelGroup(GroupLayout.LEADING)
+                                        .add(jScrollPane1, GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
                                         .add(jLabel1))
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, jButton4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .add(jButton3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .add(jButton2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .add(jButton1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .add(layout.createParallelGroup(GroupLayout.LEADING, false)
+                                        .add(GroupLayout.TRAILING, jButton4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .add(jButton3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .add(jButton2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .add(jButton1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap())
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(jLabel1)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                .add(layout.createParallelGroup(GroupLayout.LEADING)
                                         .add(layout.createSequentialGroup()
                                                 .add(jButton1)
                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -152,23 +142,23 @@ public class RadioButtonGroupOrganiser extends javax.swing.JPanel {
                                                 .add(jButton3)
                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 154, Short.MAX_VALUE)
                                                 .add(jButton4))
-                                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE))
+                                        .add(jScrollPane1, GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE))
                                 .addContainerGap())
         );
     }
 
-    private void okClicked(java.awt.event.ActionEvent evt) {
+    private void okClicked(final java.awt.event.ActionEvent evt) {
         parentDialog.setVisible(false);
     }
 
-    private void renameClicked(java.awt.event.ActionEvent evt) {
-        Object selectedItem = buttonGroupsList.getSelectedValue();
+    private void renameClicked(final java.awt.event.ActionEvent evt) {
+        final String selectedItem = buttonGroupsList.getSelectedValue();
         if (selectedItem != null) {
-            String newName = JOptionPane.showInputDialog(parentDialog, "Enter new name", "Rename", JOptionPane.QUESTION_MESSAGE);
+            final String newName = JOptionPane.showInputDialog(parentDialog, "Enter new name", "Rename", JOptionPane.QUESTION_MESSAGE);
             if (newName != null) {
-                for (Iterator it = radioButtonGroups.iterator(); it.hasNext(); ) {
-                    ButtonGroup buttonGroup = (ButtonGroup) it.next();
-                    if (buttonGroup.getName().equals(newName)) { // name already exists
+                for (final ButtonGroup buttonGroup : radioButtonGroups) {
+                    if (buttonGroup.getName().equals(newName)) {
+                        // name already exists
                         JOptionPane.showMessageDialog(parentDialog, "A button group with name already exists");
                         return;
                     }
@@ -176,15 +166,13 @@ public class RadioButtonGroupOrganiser extends javax.swing.JPanel {
 
                 // if we are here then we are safe to rename
 
-                for (Iterator it = radioButtonGroups.iterator(); it.hasNext(); ) {
-                    ButtonGroup buttonGroup = (ButtonGroup) it.next();
+                for (final ButtonGroup buttonGroup : radioButtonGroups) {
                     if (buttonGroup.getName().equals(selectedItem)) {
                         buttonGroup.setName(newName);
 
-                        for (Iterator iter = widgetsOnPage.iterator(); iter.hasNext(); ) {
-                            IWidget widget = (IWidget) iter.next();
+                        for (final IWidget widget : widgetsOnPage) {
                             if (widget.getType() == IWidget.RADIO_BUTTON) {
-                                RadioButtonWidget rbw = (RadioButtonWidget) widget;
+                                final RadioButtonWidget rbw = (RadioButtonWidget) widget;
                                 if (rbw.getRadioButtonGroupName().equals(selectedItem)) {
                                     rbw.setRadioButtonGroupName(newName);
                                 }
@@ -200,8 +188,8 @@ public class RadioButtonGroupOrganiser extends javax.swing.JPanel {
         }
     }
 
-    private void removeClicked(java.awt.event.ActionEvent evt) {
-        Object selectedItem = buttonGroupsList.getSelectedValue();
+    private void removeClicked(final java.awt.event.ActionEvent evt) {
+        final String selectedItem = buttonGroupsList.getSelectedValue();
         if (selectedItem != null) {
 
             if (buttonGroupsList.getModel().getSize() == 1) {
@@ -209,19 +197,18 @@ public class RadioButtonGroupOrganiser extends javax.swing.JPanel {
                 return;
             }
 
-            for (Iterator it = radioButtonGroups.iterator(); it.hasNext(); ) {
-                ButtonGroup buttonGroup = (ButtonGroup) it.next();
+            for (final ButtonGroup buttonGroup : radioButtonGroups) {
                 if (buttonGroup.getName().equals(selectedItem)) {
                     radioButtonGroups.remove(buttonGroup);
 
-                    ButtonGroup lastGroup = (ButtonGroup) radioButtonGroups.get(radioButtonGroups.size() - 1);
-                    for (Iterator iter = widgetsOnPage.iterator(); iter.hasNext(); ) {
-                        RadioButtonWidget widget = (RadioButtonWidget) iter.next();
+                    final ButtonGroup lastGroup = radioButtonGroups.get(radioButtonGroups.size() - 1);
+                    for (final IWidget widget1 : widgetsOnPage) {
+                        final RadioButtonWidget widget = (RadioButtonWidget) widget1;
                         if (widget.getRadioButtonGroupName().equals(selectedItem)) {
                             widget.setRadioButtonGroupName(lastGroup.getName());
 
-                            Element objectProperties = widget.getProperties().getDocumentElement();
-                            Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default");
+                            final Element objectProperties = widget.getProperties().getDocumentElement();
+                            final Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default");
                             defaultElement.getAttributeNode("value").setValue("Off");
                             widget.setObjectProperties(objectProperties);
                         }
@@ -235,14 +222,13 @@ public class RadioButtonGroupOrganiser extends javax.swing.JPanel {
         }
     }
 
-    private void addClicked(java.awt.event.ActionEvent evt) {
-        ButtonGroup newButtonGroup = new ButtonGroup(type);
+    private void addClicked(final java.awt.event.ActionEvent evt) {
+        final ButtonGroup newButtonGroup = new ButtonGroup(type);
         String newGroupName = newButtonGroup.getName();
 
-        for (Iterator it = radioButtonGroups.iterator(); it.hasNext(); ) {
-            ButtonGroup buttonGroup = (ButtonGroup) it.next();
+        for (final ButtonGroup buttonGroup : radioButtonGroups) {
             if (buttonGroup.getName().equals(newGroupName)) {
-                int number = Integer.parseInt(newGroupName.charAt(newGroupName.length() - 1) + "");
+                final int number = Integer.parseInt(newGroupName.charAt(newGroupName.length() - 1) + "");
 
                 newGroupName = newGroupName.replaceAll(number + "", (number + 1) + "");
                 newButtonGroup.setName(newGroupName);
@@ -255,13 +241,5 @@ public class RadioButtonGroupOrganiser extends javax.swing.JPanel {
 
         populateButtonGroupsList();
     }
-
-    private javax.swing.JList buttonGroupsList;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
 
 }

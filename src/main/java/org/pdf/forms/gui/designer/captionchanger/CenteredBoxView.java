@@ -35,10 +35,11 @@ import javax.swing.text.BoxView;
 import javax.swing.text.Element;
 
 class CenteredBoxView extends BoxView {
-    public CenteredBoxView(
-            final Element elem,
+
+    CenteredBoxView(
+            final Element element,
             final int axis) {
-        super(elem, axis);
+        super(element, axis);
     }
 
     @Override
@@ -48,6 +49,7 @@ class CenteredBoxView extends BoxView {
             final int[] offsets,
             final int[] spans) {
         super.layoutMajorAxis(targetSpan, axis, offsets, spans);
+
         int textBlockHeight = 0;
         final int offset;
 

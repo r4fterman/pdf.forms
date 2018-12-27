@@ -47,9 +47,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * holds values stored in XML file on disk
+ * holds values stored in XML file on disk.
  */
-public class DesignerPropertiesFile extends PropertiesFile {
+public final class DesignerPropertiesFile extends PropertiesFile {
 
     private static DesignerPropertiesFile instance;
 
@@ -58,9 +58,8 @@ public class DesignerPropertiesFile extends PropertiesFile {
     }
 
     public static DesignerPropertiesFile getInstance() {
-        if (instance == null)
-        // it's ok, we can call this constructor
-        {
+        if (instance == null) {
+            // it's ok, we can call this constructor
             instance = new DesignerPropertiesFile(".properties.xml");
         }
 
@@ -71,7 +70,7 @@ public class DesignerPropertiesFile extends PropertiesFile {
         String[] recentDocuments;
 
         try {
-            final NodeList nl = doc.getElementsByTagName(type);
+            final NodeList nl = getDoc().getElementsByTagName(type);
             final List<String> fileNames = new ArrayList<>();
 
             if (nl != null && nl.getLength() > 0) {
@@ -85,17 +84,15 @@ public class DesignerPropertiesFile extends PropertiesFile {
             }
 
             //prune unwanted entries
-            while (fileNames.size() > noOfRecentDocs) {
+            while (fileNames.size() > getNoOfRecentDocs()) {
                 fileNames.remove(0);
             }
 
             Collections.reverse(fileNames);
 
-            recentDocuments = fileNames.toArray(new String[noOfRecentDocs]);
+            recentDocuments = fileNames.toArray(new String[getNoOfRecentDocs()]);
         } catch (final Exception e) {
-            //<start-full><start-demo>
             e.printStackTrace();
-            //<end-demo><end-full>
             LogWriter.writeLog("Exception " + e + " getting recent documents");
             return null;
         }
@@ -107,11 +104,11 @@ public class DesignerPropertiesFile extends PropertiesFile {
             final String file,
             final String type) {
         try {
-            final Element recentElement = (Element) doc.getElementsByTagName(type).item(0);
+            final Element recentElement = (Element) getDoc().getElementsByTagName(type).item(0);
 
             checkExists(file, recentElement);
 
-            final Element elementToAdd = doc.createElement("file");
+            final Element elementToAdd = getDoc().createElement("file");
             elementToAdd.setAttribute("name", file);
 
             recentElement.appendChild(elementToAdd);
@@ -121,9 +118,7 @@ public class DesignerPropertiesFile extends PropertiesFile {
             writeDoc();
         } catch (final Exception e) {
             LogWriter.writeLog("Exception " + e + " adding recent document to properties file");
-            //<start-full><start-demo>
             e.printStackTrace();
-            //<end-demo><end-full>
         }
     }
 
@@ -131,11 +126,11 @@ public class DesignerPropertiesFile extends PropertiesFile {
             final String name,
             final String path) {
         try {
-            final Element customFontsElement = (Element) doc.getElementsByTagName("customfonts").item(0);
+            final Element customFontsElement = (Element) getDoc().getElementsByTagName("customfonts").item(0);
 
             checkExists(name, customFontsElement);
 
-            final Element elementToAdd = doc.createElement("file");
+            final Element elementToAdd = getDoc().createElement("file");
             elementToAdd.setAttribute("name", name);
             elementToAdd.setAttribute("path", path);
 
@@ -144,9 +139,7 @@ public class DesignerPropertiesFile extends PropertiesFile {
             writeDoc();
         } catch (final Exception e) {
             LogWriter.writeLog("Exception " + e + " adding custom font to properties file");
-            //<start-full><start-demo>
             e.printStackTrace();
-            //<end-demo><end-full>
         }
     }
 
@@ -154,7 +147,7 @@ public class DesignerPropertiesFile extends PropertiesFile {
         final Map<String, String> customFonts = new HashMap<>();
 
         try {
-            final NodeList nl = doc.getElementsByTagName("customfonts");
+            final NodeList nl = getDoc().getElementsByTagName("customfonts");
 
             if (nl != null && nl.getLength() > 0) {
                 final NodeList allCustomFonts = ((Element) nl.item(0)).getElementsByTagName("*");
@@ -170,9 +163,7 @@ public class DesignerPropertiesFile extends PropertiesFile {
                 }
             }
         } catch (final Exception e) {
-            //<start-full><start-demo>
             e.printStackTrace();
-            //<end-demo><end-full>
             LogWriter.writeLog("Exception " + e + " getting custom fonts");
             return null;
         }
@@ -186,7 +177,7 @@ public class DesignerPropertiesFile extends PropertiesFile {
         //assume true and set to false if wrong
         boolean hasAllElements = true;
 
-        NodeList allElements = doc.getElementsByTagName("*");
+        NodeList allElements = getDoc().getElementsByTagName("*");
         List<String> elementsInTree = new ArrayList<>(allElements.getLength());
 
         for (int i = 0; i < allElements.getLength(); i++) {
@@ -196,17 +187,17 @@ public class DesignerPropertiesFile extends PropertiesFile {
         Element propertiesElement = null;
 
         if (elementsInTree.contains("properties")) {
-            propertiesElement = (Element) doc.getElementsByTagName("properties").item(0);
+            propertiesElement = (Element) getDoc().getElementsByTagName("properties").item(0);
         } else {
             final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             final DocumentBuilder db = dbf.newDocumentBuilder();
 
-            doc = db.newDocument();
+            setDoc(db.newDocument());
 
-            propertiesElement = doc.createElement("properties");
-            doc.appendChild(propertiesElement);
+            propertiesElement = getDoc().createElement("properties");
+            getDoc().appendChild(propertiesElement);
 
-            allElements = doc.getElementsByTagName("*");
+            allElements = getDoc().getElementsByTagName("*");
             elementsInTree = new ArrayList<>(allElements.getLength());
 
             for (int i = 0; i < allElements.getLength(); i++) {
@@ -217,21 +208,21 @@ public class DesignerPropertiesFile extends PropertiesFile {
         }
 
         if (!elementsInTree.contains("recentdesfiles")) {
-            final Element recentDes = doc.createElement("recentdesfiles");
+            final Element recentDes = getDoc().createElement("recentdesfiles");
             propertiesElement.appendChild(recentDes);
 
             hasAllElements = false;
         }
 
         if (!elementsInTree.contains("recentpdffiles")) {
-            final Element recentPDF = doc.createElement("recentpdffiles");
+            final Element recentPDF = getDoc().createElement("recentpdffiles");
             propertiesElement.appendChild(recentPDF);
 
             hasAllElements = false;
         }
 
         if (!elementsInTree.contains("customfonts")) {
-            final Element customFonts = doc.createElement("customfonts");
+            final Element customFonts = getDoc().createElement("customfonts");
             propertiesElement.appendChild(customFonts);
 
             hasAllElements = false;

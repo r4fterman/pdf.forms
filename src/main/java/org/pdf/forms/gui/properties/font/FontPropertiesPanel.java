@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -33,6 +33,7 @@ package org.pdf.forms.gui.properties.font;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,10 @@ import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 
+import org.jdesktop.layout.GroupLayout;
+import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.properties.customcomponents.colorcombobox.ColorCellRenderer;
@@ -58,10 +62,18 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
     private IDesigner designerPanel;
     private Map<IWidget, Element> widgetsAndProperties;
 
+    private javax.swing.JComboBox<Object> colorBox;
+    private javax.swing.JComboBox<String> currentlyEditingBox;
+    private javax.swing.JComboBox<String> fontNameBox;
+    private javax.swing.JComboBox<String> fontSizeBox;
+    private javax.swing.JComboBox<String> fontStyleBox;
+    private javax.swing.JComboBox<String> strikethroughBox;
+    private javax.swing.JComboBox<String> underlineBox;
+
     /**
-     * Creates new form FontPropertiesPanel
+     * Creates new form FontPropertiesPanel.
      */
-    public FontPropertiesPanel() {
+    FontPropertiesPanel() {
         initComponents();
     }
 
@@ -71,26 +83,29 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
 
     private void initComponents() {
 
-        final javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
-        currentlyEditingBox = new javax.swing.JComboBox<>();
-        final javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
-        final javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
-        final javax.swing.JLabel jLabel4 = new javax.swing.JLabel();
-        final javax.swing.JLabel jLabel5 = new javax.swing.JLabel();
-        final javax.swing.JLabel jLabel6 = new javax.swing.JLabel();
-        final javax.swing.JLabel jLabel7 = new javax.swing.JLabel();
+        final JLabel jLabel1 = new JLabel();
+        currentlyEditingBox = new JComboBox<>();
+        final JLabel jLabel2 = new JLabel();
+        final JLabel jLabel3 = new JLabel();
+        final JLabel jLabel4 = new JLabel();
+        final JLabel jLabel5 = new JLabel();
+        final JLabel jLabel6 = new JLabel();
+        final JLabel jLabel7 = new JLabel();
         final String[] fontFamilies = getFonts();
         fontNameBox = new JComboBox<>(fontFamilies);
-        fontStyleBox = new javax.swing.JComboBox<>();
-        underlineBox = new javax.swing.JComboBox<>();
-        strikethroughBox = new javax.swing.JComboBox<>();
-        colorBox = new javax.swing.JComboBox<>();
-        fontSizeBox = new javax.swing.JComboBox<>();
+        fontStyleBox = new JComboBox<>();
+        underlineBox = new JComboBox<>();
+        strikethroughBox = new JComboBox<>();
+        colorBox = new JComboBox<>();
+        fontSizeBox = new JComboBox<>();
 
         jLabel1.setText("Currently Editing:");
 
-        currentlyEditingBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Caption and Value", "Caption properties", "Value properties" }));
-        currentlyEditingBox.addActionListener(evt -> updateCurrentlyEditingBox(evt));
+        currentlyEditingBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                "Caption and Value",
+                "Caption properties",
+                "Value properties" }));
+        currentlyEditingBox.addActionListener(this::updateCurrentlyEditingBox);
 
         jLabel2.setText("Font:");
 
@@ -106,100 +121,120 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
 
         jLabel7.setText("Color:");
 
-        fontNameBox.addActionListener(evt -> updateFont(evt));
+        fontNameBox.addActionListener(this::updateFont);
 
-        fontStyleBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Plain", "Bold", "Italic", "Bold Italic" }));
-        fontStyleBox.addActionListener(evt -> updateFont(evt));
+        fontStyleBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                "Plain",
+                "Bold",
+                "Italic",
+                "Bold Italic" }));
+        fontStyleBox.addActionListener(this::updateFont);
 
-        underlineBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "No Underline", "Underline", "Double Underline", "Word Underline", "Word Double Underline" }));
+        underlineBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                "No Underline",
+                "Underline",
+                "Double Underline",
+                "Word Underline",
+                "Word Double Underline" }));
         underlineBox.setEnabled(false);
-        underlineBox.addActionListener(evt -> updateFont(evt));
+        underlineBox.addActionListener(this::updateFont);
 
-        strikethroughBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Off", "On" }));
+        strikethroughBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                "Off",
+                "On" }));
         strikethroughBox.setEnabled(false);
-        strikethroughBox.addActionListener(evt -> updateFont(evt));
+        strikethroughBox.addActionListener(this::updateFont);
 
         colorBox.setEditable(true);
         colorBox.setMaximumRowCount(5);
-        colorBox.setModel(new javax.swing.DefaultComboBoxModel(new Object[] { Color.black, Color.blue, Color.cyan, Color.green, Color.red, Color.white, Color.yellow, "Custom" }));
+        colorBox.setModel(new DefaultComboBoxModel<>(new Object[] {
+                Color.black,
+                Color.blue,
+                Color.cyan,
+                Color.green,
+                Color.red,
+                Color.white,
+                Color.yellow,
+                "Custom" }));
         final Color color = (Color) colorBox.getSelectedItem();
         editor = new ColorComboBoxEditor(color, colorBox);
         colorBox.setEditor(editor);
         colorBox.setRenderer(new ColorCellRenderer());
-        colorBox.addActionListener(evt -> updateColor(evt));
+        colorBox.addActionListener(this::updateColor);
 
         fontSizeBox.setEditable(true);
-        fontSizeBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "6", "8", "10", "12", "14", "16", "18", "20", "24", "28", "36", "48", "72" }));
-        fontSizeBox.addActionListener(evt -> updateFont(evt));
+        fontSizeBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                "6", "8", "10", "12", "14", "16", "18", "20", "24", "28", "36", "48", "72" }));
+        fontSizeBox.addActionListener(this::updateFont);
 
-        final org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        final GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                .add(layout.createParallelGroup(GroupLayout.LEADING)
                                         .add(layout.createSequentialGroup()
                                                 .add(jLabel4)
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 35, Short.MAX_VALUE)
-                                                .add(fontStyleBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 162, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(LayoutStyle.RELATED, 35, Short.MAX_VALUE)
+                                                .add(fontStyleBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
                                         .add(layout.createSequentialGroup()
                                                 .add(jLabel1)
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                .add(currentlyEditingBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 162, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(LayoutStyle.RELATED)
+                                                .add(currentlyEditingBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
                                         .add(layout.createSequentialGroup()
                                                 .add(jLabel7)
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 59, Short.MAX_VALUE)
-                                                .add(colorBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 162, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(LayoutStyle.RELATED, 59, Short.MAX_VALUE)
+                                                .add(colorBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
                                         .add(layout.createSequentialGroup()
                                                 .add(jLabel5)
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 39, Short.MAX_VALUE)
-                                                .add(underlineBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 162, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(LayoutStyle.RELATED, 39, Short.MAX_VALUE)
+                                                .add(underlineBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
                                         .add(layout.createSequentialGroup()
                                                 .add(jLabel6)
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 19, Short.MAX_VALUE)
-                                                .add(strikethroughBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 162, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                .addPreferredGap(LayoutStyle.RELATED, 19, Short.MAX_VALUE)
+                                                .add(strikethroughBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
+                                        .add(GroupLayout.TRAILING, layout.createSequentialGroup()
+                                                .add(layout.createParallelGroup(GroupLayout.LEADING)
                                                         .add(jLabel2)
                                                         .add(jLabel3))
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 40, Short.MAX_VALUE)
-                                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                                                        .add(fontNameBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 162, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                                        .add(fontSizeBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 162, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                                                .addPreferredGap(LayoutStyle.RELATED, 40, Short.MAX_VALUE)
+                                                .add(layout.createParallelGroup(GroupLayout.TRAILING)
+                                                        .add(fontNameBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE)
+                                                        .add(fontSizeBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))))
                                 .addContainerGap(140, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel1)
-                                        .add(currentlyEditingBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(currentlyEditingBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel2)
-                                        .add(fontNameBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(fontNameBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel3)
-                                        .add(fontSizeBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(fontSizeBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel4)
-                                        .add(fontStyleBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(fontStyleBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel5)
-                                        .add(underlineBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(underlineBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel6)
-                                        .add(strikethroughBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(strikethroughBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel7)
-                                        .add(colorBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                        .add(colorBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(113, Short.MAX_VALUE))
         );
     }
@@ -216,7 +251,7 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
         return fontFamilies;
     }
 
-    private void updateFont(final java.awt.event.ActionEvent evt) {
+    private void updateFont(final ActionEvent evt) {
         final Set<IWidget> widgets = widgetsAndProperties.keySet();
 
         for (final IWidget widget : widgets) {
@@ -256,16 +291,38 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
             setProperty(fontSizeBox.getSelectedItem(), captionFontSize, valueFontSize);
 
             int index = fontStyleBox.getSelectedIndex();
-            setProperty(index == -1 ? null : index + "", captionFontStyle, valueFontStyle);
+            String selectedIndex;
+            if (index == -1) {
+                selectedIndex = null;
+            } else {
+                selectedIndex = index + "";
+            }
+            setProperty(selectedIndex, captionFontStyle, valueFontStyle);
 
             index = underlineBox.getSelectedIndex();
-            setProperty(index == -1 ? null : index + "", captionUnderline, valueUnderline);
+            if (index == -1) {
+                selectedIndex = null;
+            } else {
+                selectedIndex = index + "";
+            }
+            setProperty(selectedIndex, captionUnderline, valueUnderline);
 
             index = strikethroughBox.getSelectedIndex();
-            setProperty(index == -1 ? null : index + "", captionStrikethrough, valueStrikethrough);
+            if (index == -1) {
+                selectedIndex = null;
+            } else {
+                selectedIndex = index + "";
+            }
+            setProperty(selectedIndex, captionStrikethrough, valueStrikethrough);
 
             final Color color = ((Color) colorBox.getSelectedItem());
-            setProperty(color == null ? null : color.getRGB() + "", captionColor, valueColor);
+            final String selectedColor;
+            if (color == null) {
+                selectedColor = null;
+            } else {
+                selectedColor = color.getRGB() + "";
+            }
+            setProperty(selectedColor, captionColor, valueColor);
 
             widget.setFontProperties(widgetsAndProperties.get(widget), currentlyEditingBox.getSelectedIndex());
         }
@@ -275,7 +332,7 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
         designerPanel.repaint();
     }
 
-    private void updateColor(final java.awt.event.ActionEvent evt) {
+    private void updateColor(final ActionEvent evt) {
         if ("Custom".equals(colorBox.getSelectedItem())) {
             final Color currentBackground = (Color) editor.getItem();
             final Color color = JColorChooser.showDialog(null, "Color Chooser", currentBackground);
@@ -307,19 +364,19 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
         }
     }
 
-    private void updateCurrentlyEditingBox(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateCurrentlyEditingBox
+    private void updateCurrentlyEditingBox(final ActionEvent evt) {
         setProperties(widgetsAndProperties, currentlyEditingBox.getSelectedIndex());
-    }//GEN-LAST:event_updateCurrentlyEditingBox
+    }
 
     public void updateAvailiableFonts() {
         final String[] fonts = getFonts();
-        final DefaultComboBoxModel model = new DefaultComboBoxModel(fonts);
+        final DefaultComboBoxModel model = new DefaultComboBoxModel<>(fonts);
         fontNameBox.setModel(model);
     }
 
     public void setProperties(
             final Map<IWidget, Element> widgetsAndProperties,
-            int currentlyEditing) {
+            final int currentlyEditing) {
         this.widgetsAndProperties = widgetsAndProperties;
 
         //        /** update the list of fonts just in case a new one has been added */
@@ -338,12 +395,13 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
             }
         }
 
+        int currentlyEditingIdx = currentlyEditing;
         if (!allowEditCaptionAndValue) {
-            currentlyEditing = 1;
+            currentlyEditingIdx = 1;
         }
 
         /* set the currently editing box */
-        currentlyEditingBox.setSelectedIndex(currentlyEditing);
+        currentlyEditingBox.setSelectedIndex(currentlyEditingIdx);
         currentlyEditingBox.setEnabled(allowEditCaptionAndValue);
 
         /* iterate through the widgets */
@@ -430,12 +488,54 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
             }
         }
 
-        setComboValue(fontNameBox, "mixed".equals(fontNameToUse) ? null : fontNameToUse);
-        setComboValue(fontSizeBox, "mixed".equals(fontSizeToUse) ? null : fontSizeToUse);
-        setComboValue(fontStyleBox, "mixed".equals(fontStyleToUse) ? null : Integer.valueOf(fontStyleToUse));
-        setComboValue(underlineBox, "mixed".equals(underlineToUse) ? null : Integer.valueOf(underlineToUse));
-        setComboValue(strikethroughBox, "mixed".equals(strikethroughToUse) ? null : Integer.valueOf(strikethroughToUse));
-        setComboValue(colorBox, "mixed".equals(colorToUse) ? null : new Color(Integer.parseInt(colorToUse)));
+        final String fontName;
+        if ("mixed".equals(fontNameToUse)) {
+            fontName = null;
+        } else {
+            fontName = fontNameToUse;
+        }
+
+        final String fontSize;
+        if ("mixed".equals(fontSizeToUse)) {
+            fontSize = null;
+        } else {
+            fontSize = fontSizeToUse;
+        }
+
+        final Integer fontStyle;
+        if ("mixed".equals(fontStyleToUse)) {
+            fontStyle = null;
+        } else {
+            fontStyle = Integer.valueOf(fontStyleToUse);
+        }
+
+        final Integer underline;
+        if ("mixed".equals(underlineToUse)) {
+            underline = null;
+        } else {
+            underline = Integer.valueOf(underlineToUse);
+        }
+
+        final Integer strikethrough;
+        if ("mixed".equals(strikethroughToUse)) {
+            strikethrough = null;
+        } else {
+            strikethrough = Integer.valueOf(strikethroughToUse);
+        }
+
+        final Color color;
+        if ("mixed".equals(colorToUse)) {
+            color = null;
+        } else {
+            color = new Color(Integer.parseInt(colorToUse));
+        }
+
+        setComboValue(fontNameBox, fontName);
+        setComboValue(fontSizeBox, fontSize);
+        setComboValue(fontStyleBox, fontStyle);
+        setComboValue(underlineBox, underline);
+        setComboValue(strikethroughBox, strikethrough);
+        setComboValue(colorBox, color);
     }
 
     private void setComboValue(
@@ -480,18 +580,12 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
                 propertyToUse = valueProperty;
 
                 break;
+            default:
+                break;
         }
 
         return propertyToUse;
     }
-
-    private javax.swing.JComboBox colorBox;
-    private javax.swing.JComboBox<String> currentlyEditingBox;
-    private javax.swing.JComboBox<String> fontNameBox;
-    private javax.swing.JComboBox<String> fontSizeBox;
-    private javax.swing.JComboBox<String> fontStyleBox;
-    private javax.swing.JComboBox<String> strikethroughBox;
-    private javax.swing.JComboBox<String> underlineBox;
 
 }
 

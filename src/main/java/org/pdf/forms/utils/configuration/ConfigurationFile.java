@@ -15,59 +15,65 @@ import org.jpedal.utils.LogWriter;
 import org.w3c.dom.Document;
 
 public abstract class ConfigurationFile {
-	
-	protected String separator=System.getProperty( "file.separator" );
-	protected String userDir=System.getProperty("user.dir");
 
-	protected String configDir = userDir + separator + "configuration";
-	protected String configFile = configDir + separator;
+    private final String separator = System.getProperty("file.separator");
+    private final String userDir = System.getProperty("user.dir");
 
-	protected Document doc;
-	
-	protected ConfigurationFile(String fileName) {
-		configFile += fileName;
-		
-		try{
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
+    private final String configDir = userDir + separator + "configuration";
+    private String configFile = configDir + separator;
 
-			boolean needNewFile = false;
-			
-			if(new File(configFile).exists()){
-				try{
+    private Document doc;
+
+    ConfigurationFile(final String fileName) {
+        configFile += fileName;
+
+        try {
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder db = dbf.newDocumentBuilder();
+
+            boolean needNewFile = false;
+
+            if (new File(configFile).exists()) {
+                try {
                     doc = db.parse(new File(configFile));
-				}catch(Exception e){
-					doc = db.newDocument();
-					needNewFile = true;
-					//<start-full><start-demo>
-					e.printStackTrace();
-					//<end-demo><end-full>
-				}
-			}else {
-				new File(configDir).mkdirs();
-				doc =  db.newDocument();
-				needNewFile = true;
-			}
-			
-			if(needNewFile){
-				writeDefaultConfiguration();
-				writeDoc();
-			}
-		}catch(Exception e){
-			LogWriter.writeLog("Exception " + e + " generating menu configuration file " + configFile);
-        	//<start-full><start-demo>
-        	e.printStackTrace();
-        	//<end-demo><end-full>
-		}
-	}
+                } catch (final Exception e) {
+                    doc = db.newDocument();
+                    needNewFile = true;
+                    //<start-full><start-demo>
+                    e.printStackTrace();
+                    //<end-demo><end-full>
+                }
+            } else {
+                new File(configDir).mkdirs();
+                doc = db.newDocument();
+                needNewFile = true;
+            }
 
-	protected void writeDoc() throws Exception{
-		InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
+            if (needNewFile) {
+                writeDefaultConfiguration();
+                writeDoc();
+            }
+        } catch (final Exception e) {
+            LogWriter.writeLog("Exception " + e + " generating menu configuration file " + configFile);
+            e.printStackTrace();
+        }
+    }
 
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
-		transformer.transform(new DOMSource(doc), new StreamResult(configFile));
-	}
-    
+    private void writeDoc() throws Exception {
+        final InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
+
+        final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        final Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
+        transformer.transform(new DOMSource(doc), new StreamResult(configFile));
+    }
+
+    public Document getDoc() {
+        return doc;
+    }
+
+    public void setDoc(final Document doc) {
+        this.doc = doc;
+    }
+
     protected abstract void writeDefaultConfiguration() throws Exception;
 }

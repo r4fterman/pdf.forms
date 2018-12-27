@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -51,10 +51,10 @@ import com.vlsolutions.swing.docking.Dockable;
 
 public class FontPropertiesTab extends JPanel implements Dockable {
 
-    private FontPropertiesPanel fontPanel = new FontPropertiesPanel();
-    private DockKey key = new DockKey("Font");
+    private final FontPropertiesPanel fontPanel = new FontPropertiesPanel();
+    private final DockKey key = new DockKey("Font");
 
-    public FontPropertiesTab(IDesigner designer) {
+    public FontPropertiesTab(final IDesigner designer) {
         fontPanel.setDesignerPanel(designer);
 
         setLayout(new BorderLayout());
@@ -62,21 +62,21 @@ public class FontPropertiesTab extends JPanel implements Dockable {
         setMinimumSize(new Dimension(0, 0));
     }
 
-    public void setProperties(Set<IWidget> widgets) {
+    public void setProperties(final Set<IWidget> widgets) {
         if (widgets.isEmpty() || (widgets.iterator().next() instanceof Page)) {
             removeAll();
         } else {
-            Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
+            final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
 
-            for (IWidget widget : widgets) {
+            for (final IWidget widget : widgets) {
                 if (widget.getType() == IWidget.IMAGE) {
                     removeAll();
                     return;
                 }
 
-                Document properties = widget.getProperties();
+                final Document properties = widget.getProperties();
 
-                Element layoutProperties = (Element) properties.getElementsByTagName("font").item(0);
+                final Element layoutProperties = (Element) properties.getElementsByTagName("font").item(0);
 
                 widgetsAndProperties.put(widget, layoutProperties);
             }
@@ -89,15 +89,17 @@ public class FontPropertiesTab extends JPanel implements Dockable {
         updateUI();
     }
 
+    @Override
     public DockKey getDockKey() {
         return key;
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }
 
-	public void updateAvailiableFonts() {
-		fontPanel.updateAvailiableFonts();
-	}
+    public void updateAvailiableFonts() {
+        fontPanel.updateAvailiableFonts();
+    }
 }

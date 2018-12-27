@@ -42,9 +42,11 @@ import org.pdf.forms.widgets.IWidget;
 
 public class PdfCaption extends JLabel implements IPdfComponent {
 
-    public PdfCaption(final String string) {
-        super(string);
-        setFont(FontHandler.getInstance().getDefaultFont().deriveFont(11f));
+    private static final float FONT_SIZE = 11f;
+
+    public PdfCaption(final String text) {
+        super(text);
+        setFont(FontHandler.getInstance().getDefaultFont().deriveFont(FONT_SIZE));
     }
 
     private boolean standardUnderline;
@@ -108,30 +110,32 @@ public class PdfCaption extends JLabel implements IPdfComponent {
     @Override
     public void setUnderlineType(final int type) {
         switch (type) {
-        case IWidget.UNDERLINE_SINGLE:
-            standardUnderline = true;
-            doubleUnderline = false;
-            wordUnderline = false;
+            case IWidget.UNDERLINE_SINGLE:
+                standardUnderline = true;
+                doubleUnderline = false;
+                wordUnderline = false;
 
-            break;
-        case IWidget.UNDERLINE_DOUBLE:
-            standardUnderline = true;
-            doubleUnderline = true;
-            wordUnderline = false;
+                break;
+            case IWidget.UNDERLINE_DOUBLE:
+                standardUnderline = true;
+                doubleUnderline = true;
+                wordUnderline = false;
 
-            break;
-        case IWidget.UNDERLINE_WORD_SINGLE:
-            standardUnderline = false;
-            doubleUnderline = false;
-            wordUnderline = true;
+                break;
+            case IWidget.UNDERLINE_WORD_SINGLE:
+                standardUnderline = false;
+                doubleUnderline = false;
+                wordUnderline = true;
 
-            break;
-        case IWidget.UNDERLINE_WORD_DOUBLE:
-            standardUnderline = false;
-            doubleUnderline = true;
-            wordUnderline = true;
+                break;
+            case IWidget.UNDERLINE_WORD_DOUBLE:
+                standardUnderline = false;
+                doubleUnderline = true;
+                wordUnderline = true;
 
-            break;
+                break;
+            default:
+                break;
         }
     }
 

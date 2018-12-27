@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -38,6 +38,7 @@ import org.pdf.forms.gui.properties.font.FontPropertiesTab;
 import org.pdf.forms.gui.properties.layout.LayoutPropertiesTab;
 import org.pdf.forms.gui.properties.object.ObjectPropertiesTab;
 import org.pdf.forms.gui.properties.paragraph.ParagraphPropertiesTab;
+import org.pdf.forms.widgets.IWidget;
 
 import com.vlsolutions.swing.docking.CompoundDockable;
 import com.vlsolutions.swing.docking.DockKey;
@@ -74,7 +75,7 @@ public class PropertiesCompound extends CompoundDockable {
         return key;
     }
 
-    public void setProperties(final Set widget) {
+    public void setProperties(final Set<IWidget> widget) {
         fontPropertiesTab.setProperties(widget);
         objectPropertiesTab.setProperties(widget);
         layoutPropertiesTab.setProperties(widget);

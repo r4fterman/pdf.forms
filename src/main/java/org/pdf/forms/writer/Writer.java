@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -707,6 +707,8 @@ public class Writer {
                 break;
             case "None":
                 return;
+            default:
+                return;
         }
 
         tf.setBorderColor(new GrayColor(Integer.parseInt(color)));
@@ -798,6 +800,8 @@ public class Writer {
                 case "keystroke":
                     eventToUse = PdfName.K;
                     break;
+                default:
+                    break;
             }
 
             final NodeList childNodes = element.getChildNodes();
@@ -822,7 +826,7 @@ public class Writer {
         }
 
         if (widget.isComponentSplit()) {
-            final Element captionElement = (Element) XMLUtils.getElementsFromNodeList(
+            final Element captionElement = XMLUtils.getElementsFromNodeList(
                     widget.getProperties().getElementsByTagName("layout")).get(0);
 
             final String location = XMLUtils.getPropertyElement(captionElement, "Position").getAttributeNode("value").getValue();
@@ -836,8 +840,12 @@ public class Writer {
         final Rectangle pdfCaptionBounds = convertJavaCoordsToPdfCoords(captionBounds, pageSize);
 
         // write out caption
-        final PdfContentByte cb = globalStamper == null ?
-                globalWriter.getDirectContent() : globalStamper.getOverContent(currentPage);
+        final PdfContentByte cb;
+        if (globalStamper == null) {
+            cb = globalWriter.getDirectContent();
+        } else {
+            cb = globalStamper.getOverContent(currentPage);
+        }
 
         cb.saveState();
         cb.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
@@ -885,9 +893,12 @@ public class Writer {
         final Rectangle pdfValueBounds = convertJavaCoordsToPdfCoords(imageBounds, pageSize);
 
         // write out caption
-        final PdfContentByte cb = globalStamper == null
-                ? globalWriter.getDirectContent()
-                : globalStamper.getOverContent(currentPage);
+        final PdfContentByte cb;
+        if (globalStamper == null) {
+            cb = globalWriter.getDirectContent();
+        } else {
+            cb = globalStamper.getOverContent(currentPage);
+        }
 
         cb.saveState();
         cb.concatCTM(1, 0, 0, 1, pdfValueBounds.getLeft(), pdfValueBounds.getTop() - imageBounds.height);

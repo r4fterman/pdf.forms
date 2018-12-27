@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -58,79 +58,87 @@ import org.pdf.forms.widgets.utils.WidgetSelection;
 
 public class DragableComponent implements DragGestureListener, DragSourceListener {
 
-    private DragSource dragSource;
-    private IDesigner designerPanel;
+    private final DragSource dragSource;
+    private final IDesigner designerPanel;
 
-    public DragableComponent(DragSource dragSource, IDesigner designerPanel) {
+    DragableComponent(
+            final DragSource dragSource,
+            final IDesigner designerPanel) {
         this.dragSource = dragSource;
         this.designerPanel = designerPanel;
     }
 
-    public void dragGestureRecognized(DragGestureEvent dge) {
+    @Override
+    public void dragGestureRecognized(final DragGestureEvent dge) {
         //designerPanel.setWidgetToAdd(IWidget.TEXT);
 
-        Transferable t = new StringSelection("aString");
+        final Transferable t = new StringSelection("aString");
         dragSource.startDrag(dge, null, t, this);
 
-//        Transferable t = new StringSelection("aString");
-//        dragSource.startDrag(dge, null, new Transferable(){
-//
-//            public DataFlavor[] getTransferDataFlavors() {
-//                return new DataFlavor[]{
-//                        new DataFlavor(IWidget.class, "X-designer/IWidget; class=<org.pdf.forms.widgets.IWidget>")
-//                };
-//            }
-//
-//            public boolean isDataFlavorSupported(DataFlavor dataFlavor) {
-//                return true;  //To change body of implemented methods use File | Settings | File Templates.
-//            }
-//
-//            public Object getTransferData(DataFlavor dataFlavor) throws UnsupportedFlavorException, IOException {
-//                return designerPanel.getSelectedWidgets();
-//            }
-//        }, this);
+        //        Transferable t = new StringSelection("aString");
+        //        dragSource.startDrag(dge, null, new Transferable(){
+        //
+        //            public DataFlavor[] getTransferDataFlavors() {
+        //                return new DataFlavor[]{
+        //                        new DataFlavor(IWidget.class, "X-designer/IWidget; class=<org.pdf.forms.widgets.IWidget>")
+        //                };
+        //            }
+        //
+        //            public boolean isDataFlavorSupported(DataFlavor dataFlavor) {
+        //                return true;  //To change body of implemented methods use File | Settings | File Templates.
+        //            }
+        //
+        //            public Object getTransferData(DataFlavor dataFlavor) throws UnsupportedFlavorException, IOException {
+        //                return designerPanel.getSelectedWidgets();
+        //            }
+        //        }, this);
     }
 
-    public void dragEnter(DragSourceDragEvent dsde) {
-        int widgetToAdd = designerPanel.getWidgetToAdd();
+    @Override
+    public void dragEnter(final DragSourceDragEvent dsde) {
+        final int widgetToAdd = designerPanel.getWidgetToAdd();
 
-        IWidget widget;
+        final IWidget widget;
         if (widgetToAdd == IWidget.RADIO_BUTTON) {
-            IMainFrame mainFrame = designerPanel.getMainFrame();
+            final IMainFrame mainFrame = designerPanel.getMainFrame();
             widget = WidgetFactory.createRadioButtonWidget(
                     mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage()), null);
 
         } else if (widgetToAdd == IWidget.CHECK_BOX) {
-            IMainFrame mainFrame = designerPanel.getMainFrame();
+            final IMainFrame mainFrame = designerPanel.getMainFrame();
             widget = WidgetFactory.createCheckBoxWidget(
                     mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage()), null);
         } else {
             widget = WidgetFactory.createWidget(widgetToAdd, (Rectangle) null);
         }
 
-        Set<IWidget> list = new HashSet<>();
-        if (widget != null)
+        final Set<IWidget> list = new HashSet<>();
+        if (widget != null) {
             list.add(widget);
+        }
 
         designerPanel.setSelectedWidgets(list);
 
         dsde.getDragSourceContext().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
-    public void dragOver(DragSourceDragEvent dsde) {
-        Point point = SwingUtilities.convertPoint(null, dsde.getLocation(), (Component) designerPanel);
+    @Override
+    public void dragOver(final DragSourceDragEvent dsde) {
+        final Point point = SwingUtilities.convertPoint(null, dsde.getLocation(), (Component) designerPanel);
         designerPanel.setDragBoxLocation(point);
         designerPanel.updateRulers(point);
     }
 
-    public void dropActionChanged(DragSourceDragEvent dsde) {
+    @Override
+    public void dropActionChanged(final DragSourceDragEvent dsde) {
     }
 
-    public void dragDropEnd(DragSourceDropEvent dsde) {
-        IWidget widget = designerPanel.getSelectedWidgets().iterator().next();
+    @Override
+    public void dragDropEnd(final DragSourceDropEvent dsde) {
+        final IWidget widget = designerPanel.getSelectedWidgets().iterator().next();
 
-        Dimension boxSize = widget.getBoxSize();
-        Point location = SwingUtilities.convertPoint(null, dsde.getLocation(), (Component) designerPanel);
+        final Dimension boxSize = widget.getBoxSize();
+        final Point location = SwingUtilities.convertPoint(null, dsde.getLocation(), (Component) designerPanel);
 
         widget.setX((location.x - boxSize.width / 2) + WidgetSelection.BOX_MARGIN);
         widget.setY((location.y - boxSize.height / 2) + WidgetSelection.BOX_MARGIN);
@@ -143,7 +151,7 @@ public class DragableComponent implements DragGestureListener, DragSourceListene
 
         designerPanel.repaint();
 
-        Set<IWidget> set = new HashSet<>();
+        final Set<IWidget> set = new HashSet<>();
         set.add(widget);
 
         designerPanel.getMainFrame().setPropertiesCompound(set);
@@ -152,7 +160,8 @@ public class DragableComponent implements DragGestureListener, DragSourceListene
         designerPanel.setWidgetToAdd(IWidget.NONE);
     }
 
-    public void dragExit(DragSourceEvent dse) {
+    @Override
+    public void dragExit(final DragSourceEvent dse) {
         dse.getDragSourceContext().setCursor(null);
         designerPanel.setDragBoxLocation(null);
     }

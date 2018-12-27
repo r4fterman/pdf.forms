@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -52,19 +52,20 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
     public static final int RESIZE_SPLIT_HORIZONTAL_CURSOR = 5;
     public static final int RESIZE_SPLIT_VERTICAL_CURSOR = 6;
 
-    private IDesigner designerPanel;
+    private final IDesigner designerPanel;
 
-    private DesignerSelectionBox selectionBox;
-    private WidgetSelection widgetSelection;
+    private final DesignerSelectionBox selectionBox;
+    private final WidgetSelection widgetSelection;
 
-    public DesignerMouseMotionListener(IDesigner designerPanel) {
+    public DesignerMouseMotionListener(final IDesigner designerPanel) {
         this.designerPanel = designerPanel;
 
         this.widgetSelection = designerPanel.getWidgetSelection();
         this.selectionBox = designerPanel.getSelectionBox();
     }
 
-    public void mouseDragged(MouseEvent e) {
+    @Override
+    public void mouseDragged(final MouseEvent e) {
         designerPanel.updateRulers(new Point(e.getX(), e.getY()));
 
         if (designerPanel.getWidgetToAdd() == IWidget.NONE) {
@@ -74,11 +75,13 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
              */
             if (designerPanel.getSelectedWidgets().isEmpty()) {
                 selectionBox.updateSize(e);
-            } else { // A widget(s) is being resized 
+            } else {
+                // A widget(s) is being resized
                 moveAndResizeSelectedWidget(e);
 
-                if (!designerPanel.isResizing() && !designerPanel.isResizingSplitComponent())
+                if (!designerPanel.isResizing() && !designerPanel.isResizingSplitComponent()) {
                     designerPanel.setCurrentlyDraging(true);
+                }
             }
         } else {
             selectionBox.updateSize(e);
@@ -87,11 +90,11 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
         designerPanel.repaint();
     }
 
-
-    public void mouseMoved(MouseEvent e) {
+    @Override
+    public void mouseMoved(final MouseEvent e) {
         designerPanel.updateRulers(new Point(e.getX(), e.getY()));
 
-        Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
+        final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
 
         /*
          * if we're resizing, or adding a new component, then dont change the cursor here,
@@ -99,7 +102,7 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
          */
         if (!(designerPanel.isResizing() || designerPanel.getWidgetToAdd() != IWidget.NONE)) {
 
-//            int resizeType = widgetSelection.getResizeType((int) (e.getX() / scale), (int) (e.getY() / scale), selectedWidgets); //@scale
+            //            int resizeType = widgetSelection.getResizeType((int) (e.getX() / scale), (int) (e.getY() / scale), selectedWidgets); //@scale
             int resizeType = widgetSelection.getResizeType(e.getX(), e.getY(), selectedWidgets);
 
             designerPanel.setResizeType(resizeType);
@@ -133,28 +136,31 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
                     resizeType = Cursor.S_RESIZE_CURSOR;
                     break;
                 }
+                default:
+                    break;
             }
 
             designerPanel.setCursor(new Cursor(resizeType));
         }
     }
 
-    private void moveAndResizeSelectedWidget(MouseEvent e) {
+    private void moveAndResizeSelectedWidget(final MouseEvent e) {
 
-        int resizeType = designerPanel.getResizeType();
-        Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
+        final int resizeType = designerPanel.getResizeType();
+        final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
 
         //IWidget w= (IWidget) selectedWidgets.iterator().next();
-        Set<IWidget> widgetsToUse = widgetSelection.getFlatternedWidgets(selectedWidgets); //w.getType() == IWidget.GROUP ? w.getWidgetsInGroup() : selectedWidgets;
+        final Set<IWidget> widgetsToUse = widgetSelection.getFlatternedWidgets(selectedWidgets); //w.getType() == IWidget.GROUP ? w.getWidgetsInGroup() : selectedWidgets;
 
-        if (resizeType == DesignerMouseMotionListener.DEFAULT_CURSOR) // move a selection or single widget
+        // move a selection or single widget
+        if (resizeType == DesignerMouseMotionListener.DEFAULT_CURSOR) {
             widgetSelection.moveWidgets(widgetsToUse, e.getX(), e.getY());
-        else
+        } else {
             widgetSelection.resizeWidgets(widgetsToUse, designerPanel, e.getX(), e.getY(), resizeType);
-
+        }
 
         designerPanel.getMainFrame().setPropertiesCompound(widgetsToUse);
         designerPanel.getMainFrame().setPropertiesToolBar(widgetsToUse);
-
     }
+
 }

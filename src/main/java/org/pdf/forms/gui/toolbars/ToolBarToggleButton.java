@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -40,19 +40,19 @@ import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 
 /**
- * Swing specific implementation of GUIButton interface
+ * Swing specific implementation of GUIButton interface.
  */
 public class ToolBarToggleButton extends JToggleButton {
 
-    public ToolBarToggleButton() {
+    ToolBarToggleButton() {
         super();
     }
 
-    public ToolBarToggleButton(final String string) {
-        super(string);
+    public ToolBarToggleButton(final String text) {
+        super(text);
     }
 
-    public void init(
+    void init(
             final String path,
             final String toolTip) {
         /* bookmarks icon */
@@ -70,7 +70,7 @@ public class ToolBarToggleButton extends JToggleButton {
     }
 
     /**
-     * create a pressed look of the <b>icon</b> and added it to the pressed Icon of <b>button</b>
+     * Create a pressed look of the <b>icon</b> and added it to the pressed Icon of <b>button</b>.
      */
     private void createPressedLook(
             final AbstractButton button,

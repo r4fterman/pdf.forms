@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -58,6 +58,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class DefaultTransferHandler extends TransferHandler {
+
     private final Commands currentCommands;
     private final IDesigner designerPanel;
 
@@ -112,8 +113,8 @@ public class DefaultTransferHandler extends TransferHandler {
                     /* get the URL from the text data */
                     final String url = getURL(textData);
 
-                    if (url.indexOf("file:/") != url.lastIndexOf("file:/")) // make sure only one url is in the String
-                    {
+                    // make sure only one url is in the String
+                    if (url.indexOf("file:/") != url.lastIndexOf("file:/")) {
                         JOptionPane.showMessageDialog(src, "You may only import 1 file at a time");
                     } else {
                         openFile(url, src);
@@ -122,7 +123,8 @@ public class DefaultTransferHandler extends TransferHandler {
                 } else if (listFlavor != null) { // this is most likely a file being dragged in
                     final List list = (List) transferable.getTransferData(listFlavor);
                     //System.out.println("list = " + list);
-                    if (list.size() == 1) { // we can process
+                    if (list.size() == 1) {
+                        // we can process
                         final File file = (File) list.get(0);
                         openFile(file.getAbsolutePath(), src);
                     } else {
@@ -177,6 +179,7 @@ public class DefaultTransferHandler extends TransferHandler {
                     currentCommands.openDesignerFile(file);
                 } else if (isImage) {
                     //currentCommands.openFile(file);
+                    System.out.println("DefaultTransferHandler.openFile");
                 } else {
                     JOptionPane.showMessageDialog(src, "You may only import a valid PDF, des file or image");
                 }
@@ -206,14 +209,14 @@ public class DefaultTransferHandler extends TransferHandler {
      * @throws SAXException
      * @throws IOException
      */
-    private String getURL(String textData) throws ParserConfigurationException, SAXException, IOException {
+    private String getURL(final String textData) throws ParserConfigurationException, SAXException, IOException {
         if (!textData.startsWith("http://") && !textData.startsWith("file://")) { // its not a url so it must be a file
             final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             final DocumentBuilder db = dbf.newDocumentBuilder();
             final Document doc = db.parse(new ByteArrayInputStream(textData.getBytes()));
 
             final Element a = (Element) doc.getElementsByTagName("a").item(0);
-            textData = getHrefAttribute(a);
+            return getHrefAttribute(a);
         }
 
         return textData;
@@ -232,7 +235,7 @@ public class DefaultTransferHandler extends TransferHandler {
     private String readTextDate(final Reader r) throws IOException {
         final BufferedReader br = new BufferedReader(r);
 
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         String line = br.readLine();
         while (line != null) {
             builder.append(line);
@@ -244,7 +247,7 @@ public class DefaultTransferHandler extends TransferHandler {
     }
 
     /**
-     * Returns the URL held in the href attribute from an element
+     * Returns the URL held in the href attribute from an element.
      *
      * @param element
      *         the element containing the href attribute

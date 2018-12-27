@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -47,10 +47,10 @@ import com.vlsolutions.swing.docking.Dockable;
 
 public class ObjectPropertiesTab extends JPanel implements Dockable {
 
-    private ObjectPropertiesPanel objectPanel = new ObjectPropertiesPanel();
-    private DockKey key = new DockKey("Object");
+    private final ObjectPropertiesPanel objectPanel = new ObjectPropertiesPanel();
+    private final DockKey key = new DockKey("Object");
 
-    public ObjectPropertiesTab(IDesigner designer) {
+    public ObjectPropertiesTab(final IDesigner designer) {
 
         objectPanel.setDesignerPanel(designer);
 
@@ -59,26 +59,20 @@ public class ObjectPropertiesTab extends JPanel implements Dockable {
         setMinimumSize(new Dimension(0, 0));
     }
 
-    public void setProperties(Set<IWidget> widgets) {
+    public void setProperties(final Set<IWidget> widgets) {
         removeAll();
 
         if (!widgets.isEmpty()) {
             boolean mixed = false;
             int type = -1;
-            for (Object o   : widgets) {
-                if (o instanceof IWidget) {
-                    IWidget widget = (IWidget) o;
-
-                    if (type == -1) {
-                        type = widget.getType();
-                    } else {
-                        if (type != widget.getType()) {
-                            mixed = true;
-                            break;
-                        }
+            for (final IWidget widget : widgets) {
+                if (type == -1) {
+                    type = widget.getType();
+                } else {
+                    if (type != widget.getType()) {
+                        mixed = true;
+                        break;
                     }
-                } else { // the page is selected
-                    type = IWidget.NONE;
                 }
 
             }
@@ -89,18 +83,17 @@ public class ObjectPropertiesTab extends JPanel implements Dockable {
                 objectPanel.setProperties(widgets, type);
                 add(objectPanel);
             }
-        } /*else { // if no widgets selected, assume the page is selected
-        	objectPanel.setProperties(widgets, IWidget.NONE);
-            add(objectPanel);
-        }*/
+        }
 
         updateUI();
     }
 
+    @Override
     public DockKey getDockKey() {
         return key;
     }
 
+    @Override
     public Component getComponent() {
         return this;
     }

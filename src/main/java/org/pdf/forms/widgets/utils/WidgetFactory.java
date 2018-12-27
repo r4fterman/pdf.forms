@@ -71,7 +71,7 @@ public class WidgetFactory {
 
     private static Element root;
 
-    private static JFrame w = new JFrame();
+    private static final JFrame FRAME = new JFrame();
 
     public static JLabel createResizedComponent(
             final JComponent comp,
@@ -84,17 +84,17 @@ public class WidgetFactory {
             final Page page,
             final Rectangle bounds,
             final String groupName) {
-        IWidget widget = createWidget(IWidget.CHECK_BOX, bounds);
+        final IWidget widget = createWidget(IWidget.CHECK_BOX, bounds);
 
         ButtonGroup cbg;
         if (groupName == null) {
-            List checkBoxGroups = page.getCheckBoxGroups();
+            final List<ButtonGroup> checkBoxGroups = page.getCheckBoxGroups();
             cbg = new ButtonGroup(IWidget.CHECK_BOX);
             checkBoxGroups.add(cbg);
         } else {
             cbg = page.getCheckBoxGroup(groupName);
             if (cbg == null) {
-                List checkBoxGroups = page.getCheckBoxGroups();
+                final List<ButtonGroup> checkBoxGroups = page.getCheckBoxGroups();
                 cbg = new ButtonGroup(IWidget.CHECK_BOX, groupName);
                 checkBoxGroups.add(cbg);
             }
@@ -113,15 +113,15 @@ public class WidgetFactory {
     public static IWidget createRadioButtonWidget(
             final Page page,
             final Rectangle bounds) {
-        IWidget widget = createWidget(IWidget.RADIO_BUTTON, bounds);
+        final IWidget widget = createWidget(IWidget.RADIO_BUTTON, bounds);
 
-        List radioButtonGroups = page.getRadioButtonGroups();
-        ButtonGroup rbg;
+        final List<ButtonGroup> radioButtonGroups = page.getRadioButtonGroups();
+        final ButtonGroup rbg;
         if (radioButtonGroups.isEmpty()) {
             rbg = new ButtonGroup(IWidget.RADIO_BUTTON);
             radioButtonGroups.add(rbg);
         } else {
-            rbg = (ButtonGroup) radioButtonGroups.get(radioButtonGroups.size() - 1);
+            rbg = radioButtonGroups.get(radioButtonGroups.size() - 1);
         }
 
         ((RadioButtonWidget) widget).setRadioButtonGroupName(rbg.getName());
@@ -154,7 +154,7 @@ public class WidgetFactory {
             final Element root) {
         WidgetFactory.root = root;
 
-        IWidget widget = createWidget(widgetToAdd);
+        final IWidget widget = createWidget(widgetToAdd);
 
         WidgetFactory.root = null;
 
@@ -165,50 +165,50 @@ public class WidgetFactory {
         IWidget w = null;
 
         switch (widgetToAdd) {
-        case IWidget.TEXT_FIELD:
-            w = WidgetFactory.createTextField();
-            break;
-        case IWidget.TEXT:
-            w = WidgetFactory.createLabel();
-            break;
-        case IWidget.BUTTON:
-            w = WidgetFactory.createButton();
-            break;
-        case IWidget.RADIO_BUTTON:
-            w = WidgetFactory.createRadioButton();
-            break;
-        case IWidget.CHECK_BOX:
-            w = WidgetFactory.createCheckBox();
-            break;
-        case IWidget.COMBO_BOX:
-            w = WidgetFactory.createComboBox();
-            break;
-        case IWidget.LIST_BOX:
-            w = WidgetFactory.createListBox();
-            break;
-        case IWidget.IMAGE:
-            w = WidgetFactory.createImageWidget();
-            break;
-        default:
-            System.out.println("Manual exit because of imposible sitation " +
-                    "in WidgetFactory, trying to add widget type = " + widgetToAdd);
+            case IWidget.TEXT_FIELD:
+                w = WidgetFactory.createTextField();
+                break;
+            case IWidget.TEXT:
+                w = WidgetFactory.createLabel();
+                break;
+            case IWidget.BUTTON:
+                w = WidgetFactory.createButton();
+                break;
+            case IWidget.RADIO_BUTTON:
+                w = WidgetFactory.createRadioButton();
+                break;
+            case IWidget.CHECK_BOX:
+                w = WidgetFactory.createCheckBox();
+                break;
+            case IWidget.COMBO_BOX:
+                w = WidgetFactory.createComboBox();
+                break;
+            case IWidget.LIST_BOX:
+                w = WidgetFactory.createListBox();
+                break;
+            case IWidget.IMAGE:
+                w = WidgetFactory.createImageWidget();
+                break;
+            default:
+                System.out.println("Manual exit because of imposible sitation in WidgetFactory, trying to add widget type = " + widgetToAdd);
 
-            new Exception().printStackTrace();
-            //System.exit(1);
+                new Exception().printStackTrace();
+                //System.exit(1);
 
-            break;
+                break;
         }
 
         return w;
     }
 
     private static IWidget createImageWidget() {
-        JLabel image = new JLabel();
-        image.setBackground(new Color(255, 255, 255));
+        final JLabel image = new JLabel();
+        image.setBackground(Color.WHITE);
 
-        int[] size = getSize(150, 150);
+        final int[] size = getSize(150, 150);
 
-        int width = size[0], height = size[1];
+        final int width = size[0];
+        final int height = size[1];
 
         if (root == null) {
             return new ImageWidget(IWidget.IMAGE, image, getComponentAsLabel(image, width, height));
@@ -218,11 +218,12 @@ public class WidgetFactory {
     }
 
     private static IWidget createTextField() {
-        SplitComponent tf = new SplitComponent("Text Field", new PdfTextField("Text Field"), SplitComponent.CAPTION_LEFT);
+        final SplitComponent tf = new SplitComponent("Text Field", new PdfTextField("Text Field"), SplitComponent.CAPTION_LEFT);
 
-        int[] size = getSize(150, 20);
+        final int[] size = getSize(150, 20);
 
-        int width = size[0], height = size[1];
+        final int width = size[0];
+        final int height = size[1];
 
         if (root == null) {
             return new TextFieldWidget(IWidget.TEXT_FIELD, tf, getComponentAsLabel(tf, width, height));
@@ -232,12 +233,13 @@ public class WidgetFactory {
     }
 
     private static IWidget createLabel() {
-        PdfCaption label = new PdfCaption("Text");
+        final PdfCaption label = new PdfCaption("Text");
         label.setBackground(IDesigner.PAGE_COLOR);
 
-        int[] size = getSize(100, 20);
+        final int[] size = getSize(100, 20);
 
-        int width = size[0], height = size[1];
+        final int width = size[0];
+        final int height = size[1];
 
         if (root == null) {
             return new TextWidget(IWidget.TEXT, label, getComponentAsLabel(label, width, height));
@@ -247,13 +249,14 @@ public class WidgetFactory {
     }
 
     private static IWidget createCheckBox() {
-        int[] size = getSize(100, 20);
-        int width = size[0], height = size[1];
+        final int[] size = getSize(100, 20);
+        final int width = size[0];
+        final int height = size[1];
 
-        PdfCheckBox cb = new PdfCheckBox();
+        final PdfCheckBox cb = new PdfCheckBox();
         cb.setBackground(IDesigner.PAGE_COLOR);
 
-        SplitComponent checkBox = new SplitComponent("Check Box", cb, SplitComponent.CAPTION_RIGHT);
+        final SplitComponent checkBox = new SplitComponent("Check Box", cb, SplitComponent.CAPTION_RIGHT);
 
         if (root == null) {
             return new CheckBoxWidget(IWidget.CHECK_BOX, checkBox, getComponentAsLabel(checkBox, width, height));
@@ -263,13 +266,14 @@ public class WidgetFactory {
     }
 
     private static IWidget createComboBox() {
-        PdfComboBox c = new PdfComboBox();
+        final PdfComboBox c = new PdfComboBox();
 
-        SplitComponent combo = new SplitComponent("Drop-down list", c, SplitComponent.CAPTION_LEFT);
+        final SplitComponent combo = new SplitComponent("Drop-down list", c, SplitComponent.CAPTION_LEFT);
 
-        int[] size = getSize(200, 20);
+        final int[] size = getSize(200, 20);
 
-        int width = size[0], height = size[1];
+        final int width = size[0];
+        final int height = size[1];
 
         if (root == null) {
             return new ComboBoxWidget(IWidget.COMBO_BOX, combo, getComponentAsLabel(combo, width, height));
@@ -279,12 +283,13 @@ public class WidgetFactory {
     }
 
     private static IWidget createListBox() {
-        PdfList list = new PdfList();
-        SplitComponent scroll = new SplitComponent("List", list, SplitComponent.CAPTION_TOP);
+        final PdfList list = new PdfList();
+        final SplitComponent scroll = new SplitComponent("List", list, SplitComponent.CAPTION_TOP);
 
-        int[] size = getSize(100, 100);
+        final int[] size = getSize(100, 100);
 
-        int width = size[0], height = size[1];
+        final int width = size[0];
+        final int height = size[1];
 
         if (root == null) {
             return new ListBoxWidget(IWidget.LIST_BOX, scroll, getComponentAsLabel(scroll, width, height));
@@ -294,11 +299,12 @@ public class WidgetFactory {
     }
 
     private static IWidget createButton() {
-        PdfButton button = new PdfButton("Button");
+        final PdfButton button = new PdfButton("Button");
 
-        int[] size = getSize(100, 50);
+        final int[] size = getSize(100, 50);
 
-        int width = size[0], height = size[1];
+        final int width = size[0];
+        final int height = size[1];
 
         if (root == null) {
             return new ButtonWidget(IWidget.BUTTON, button, getComponentAsLabel(button, width, height));
@@ -308,14 +314,15 @@ public class WidgetFactory {
     }
 
     private static IWidget createRadioButton() {
-        PdfRadioButton rb = new PdfRadioButton();
+        final PdfRadioButton rb = new PdfRadioButton();
         rb.setBackground(IDesigner.PAGE_COLOR);
 
-        SplitComponent radioButton = new SplitComponent("Radio Button", rb, SplitComponent.CAPTION_RIGHT);
+        final SplitComponent radioButton = new SplitComponent("Radio Button", rb, SplitComponent.CAPTION_RIGHT);
 
-        int[] size = getSize(200, 20);
+        final int[] size = getSize(200, 20);
 
-        int width = size[0], height = size[1];
+        final int width = size[0];
+        final int height = size[1];
 
         if (root == null) {
             return new RadioButtonWidget(IWidget.RADIO_BUTTON, radioButton, getComponentAsLabel(radioButton, width, height));
@@ -342,7 +349,9 @@ public class WidgetFactory {
             WidgetFactory.bounds = null;
         }
 
-        return new int[] { width, height };
+        return new int[] {
+                width, height
+        };
     }
 
     private static JLabel getComponentAsLabel(
@@ -352,21 +361,21 @@ public class WidgetFactory {
 
         comp.setSize(width, height);
 
-        w.getContentPane().setLayout(null);
-        w.getContentPane().add(comp);
-        w.pack();
+        FRAME.getContentPane().setLayout(null);
+        FRAME.getContentPane().add(comp);
+        FRAME.pack();
 
-        JLabel l = new JLabel(new ImageIcon(createImage(comp)));
+        final JLabel l = new JLabel(new ImageIcon(createImage(comp)));
         l.setSize(width, height);
         return l;
     }
 
     private static BufferedImage createImage(final JComponent component) {
-        Dimension d = component.getSize();
-        Rectangle region = new Rectangle(0, 0, d.width, d.height);
+        final Dimension d = component.getSize();
+        final Rectangle region = new Rectangle(0, 0, d.width, d.height);
         component.setOpaque(true);
-        BufferedImage image = new BufferedImage(region.width, region.height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2d = image.createGraphics();
+        final BufferedImage image = new BufferedImage(region.width, region.height, BufferedImage.TYPE_INT_RGB);
+        final Graphics2D g2d = image.createGraphics();
         g2d.setClip(region);
         component.paint(g2d);
         g2d.dispose();

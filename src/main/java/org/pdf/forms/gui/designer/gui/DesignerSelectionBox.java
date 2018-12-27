@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -123,7 +123,10 @@ public class DesignerSelectionBox {
         if (currentRect != null) {
             //g2.setPaint(Color.green);
 
-            final float[] dashPattern = { 1, 1 };
+            final float[] dashPattern = {
+                    1,
+                    1
+            };
             g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
                     BasicStroke.JOIN_MITER, 1,
                     dashPattern, 0));

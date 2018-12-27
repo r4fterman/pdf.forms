@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -49,6 +49,8 @@ import org.pdf.forms.widgets.IWidget;
 
 public class PdfTextField extends JTextField implements IPdfComponent {
 
+    private static final float FONT_SIZE = 11f;
+
     private boolean standardUnderline;
     private boolean isStrikethrough;
     private boolean doubleUnderline;
@@ -61,21 +63,22 @@ public class PdfTextField extends JTextField implements IPdfComponent {
 
         setText(captionText);
 
-        setFont(FontHandler.getInstance().getDefaultFont().deriveFont(11f));
+        setFont(FontHandler.getInstance().getDefaultFont().deriveFont(FONT_SIZE));
     }
 
+    @Override
     public void paintComponent(final Graphics g) {
         super.paintComponent(g);
 
-        String text = getText();
+        final String text = getText();
 
-        FontMetrics f = getFontMetrics(getFont());
+        final FontMetrics f = getFontMetrics(getFont());
 
-        Rectangle2D textBounds = f.getStringBounds(text, g);
+        final Rectangle2D textBounds = f.getStringBounds(text, g);
 
         int x = getInsets().left;
         int y = getHeight() / 2 + (int) (textBounds.getHeight() / 2);
-        int w = (int) textBounds.getWidth() + x;
+        final int w = (int) textBounds.getWidth() + x;
 
         if (standardUnderline) {
 
@@ -86,12 +89,12 @@ public class PdfTextField extends JTextField implements IPdfComponent {
             }
 
         } else if (wordUnderline) {
-            int startX = x;
+            final int startX = x;
 
             for (int i = 0; i < text.length(); i++) {
-                char currentChar = text.charAt(i);
+                final char currentChar = text.charAt(i);
 
-                int charWidth = f.charWidth(currentChar);
+                final int charWidth = f.charWidth(currentChar);
 
                 if (currentChar != ' ') {
                     g.drawLine(x, y, x + charWidth, y);
@@ -116,39 +119,44 @@ public class PdfTextField extends JTextField implements IPdfComponent {
         }
     }
 
+    @Override
     public void setUnderlineType(final int type) {
         switch (type) {
-        case IWidget.UNDERLINE_SINGLE:
-            standardUnderline = true;
-            doubleUnderline = false;
-            wordUnderline = false;
+            case IWidget.UNDERLINE_SINGLE:
+                standardUnderline = true;
+                doubleUnderline = false;
+                wordUnderline = false;
 
-            break;
-        case IWidget.UNDERLINE_DOUBLE:
-            standardUnderline = true;
-            doubleUnderline = true;
-            wordUnderline = false;
+                break;
+            case IWidget.UNDERLINE_DOUBLE:
+                standardUnderline = true;
+                doubleUnderline = true;
+                wordUnderline = false;
 
-            break;
-        case IWidget.UNDERLINE_WORD_SINGLE:
-            standardUnderline = false;
-            doubleUnderline = false;
-            wordUnderline = true;
+                break;
+            case IWidget.UNDERLINE_WORD_SINGLE:
+                standardUnderline = false;
+                doubleUnderline = false;
+                wordUnderline = true;
 
-            break;
-        case IWidget.UNDERLINE_WORD_DOUBLE:
-            standardUnderline = false;
-            doubleUnderline = true;
-            wordUnderline = true;
+                break;
+            case IWidget.UNDERLINE_WORD_DOUBLE:
+                standardUnderline = false;
+                doubleUnderline = true;
+                wordUnderline = true;
 
-            break;
+                break;
+            default:
+                break;
         }
     }
 
+    @Override
     public void setStikethrough(final boolean isStrikethrough) {
         this.isStrikethrough = isStrikethrough;
     }
 
+    @Override
     public void setVerticalAlignment(final int alignment) {
 
         if (alignment == SwingConstants.CENTER) {
@@ -157,33 +165,37 @@ public class PdfTextField extends JTextField implements IPdfComponent {
         }
 
         setUI(new BasicTextFieldUI() {
+            @Override
             public View create(final Element element) {
                 return new FieldView(element) {
+                    @Override
                     protected Shape adjustAllocation(final Shape shape) {
                         if (shape == null) {
                             return null;
                         }
 
                         Rectangle bounds = shape.getBounds();
-                        int height = bounds.height;
-                        int y = bounds.y;
-                        int vspan = (int) getPreferredSpan(Y_AXIS);
-                        int hspan = (int) getPreferredSpan(X_AXIS);
+                        final int height = bounds.height;
+                        final int y = bounds.y;
+                        final int vspan = (int) getPreferredSpan(Y_AXIS);
+                        final int hspan = (int) getPreferredSpan(X_AXIS);
 
                         bounds = (Rectangle) super.adjustAllocation(shape);
 
                         //this if-statement is where we adjust the vertical alignment
                         if (height != vspan) {
-                            int slop = bounds.height - vspan;
+                            final int slop = bounds.height - vspan;
 
                             switch (alignment) {
-                            case SwingConstants.TOP:
-                                bounds.y = y;
-                                break;
+                                case SwingConstants.TOP:
+                                    bounds.y = y;
+                                    break;
 
-                            case SwingConstants.BOTTOM:
-                                bounds.y = height - vspan;
-                                break;
+                                case SwingConstants.BOTTOM:
+                                    bounds.y = height - vspan;
+                                    break;
+                                default:
+                                    break;
                             }
 
                             bounds.height -= slop;
@@ -196,6 +208,7 @@ public class PdfTextField extends JTextField implements IPdfComponent {
         });
     }
 
+    @Override
     public void setHorizontalAlignment(final int alignment) {
         super.setHorizontalAlignment(alignment);
     }

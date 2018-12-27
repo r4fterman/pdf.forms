@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -31,11 +31,16 @@
 */
 package org.pdf.forms.gui.properties.object.binding;
 
+import java.awt.event.FocusEvent;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
+import org.jdesktop.layout.GroupLayout;
+import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
@@ -47,8 +52,11 @@ public class BindingPanel extends JPanel {
     private Map<IWidget, Element> widgetsAndProperties;
     private IDesigner designerPanel;
 
+    private JTextField arrayField;
+    private JTextField nameField;
+
     /**
-     * Creates new form TextFieldBindingPanel
+     * Creates new form TextFieldBindingPanel.
      */
     public BindingPanel() {
         initComponents();
@@ -59,47 +67,47 @@ public class BindingPanel extends JPanel {
     }
 
     private void initComponents() {
-        jLabel1 = new javax.swing.JLabel();
-        nameField = new javax.swing.JTextField();
-        arrayField = new javax.swing.JTextField();
+        final JLabel jLabel1 = new JLabel();
+        nameField = new JTextField();
+        arrayField = new JTextField();
 
         jLabel1.setText("Name:");
 
         nameField.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
-            public void focusLost(final java.awt.event.FocusEvent evt) {
+            public void focusLost(final FocusEvent evt) {
                 updateName(evt);
             }
         });
 
         arrayField.setEnabled(false);
 
-        final org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        final GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(jLabel1)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 152, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(arrayField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 36, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(nameField, GroupLayout.PREFERRED_SIZE, 152, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(arrayField, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap(162, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel1)
-                                        .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(arrayField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                        .add(nameField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                        .add(arrayField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(268, Short.MAX_VALUE))
         );
     }
 
-    private void updateName(final java.awt.event.FocusEvent evt) {
+    private void updateName(final FocusEvent evt) {
         final Set<IWidget> widgets = widgetsAndProperties.keySet();
 
         final String name = nameField.getText();
@@ -150,9 +158,5 @@ public class BindingPanel extends JPanel {
             nameField.setEnabled(false);
         }
     }
-
-    private javax.swing.JTextField arrayField;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JTextField nameField;
 
 }

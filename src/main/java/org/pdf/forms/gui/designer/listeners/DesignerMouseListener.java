@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -161,12 +161,12 @@ public class DesignerMouseListener implements MouseListener {
                 widget.setResizeWidthRatio(widget.getBoxSize().getWidth() / (selectionBoxBounds.getWidth()));
 
                 widget.setResizeFromTopRatio(
-                        (widget.getY() - (selectionBoxBounds.getY() + WidgetSelection.BOX_MARGIN)) /
-                                selectionBoxBounds.getHeight());
+                        (widget.getY() - (selectionBoxBounds.getY() + WidgetSelection.BOX_MARGIN))
+                                / selectionBoxBounds.getHeight());
 
                 widget.setResizeFromLeftRatio(
-                        (widget.getX() - (selectionBoxBounds.getX() + WidgetSelection.BOX_MARGIN)) /
-                                selectionBoxBounds.getWidth());
+                        (widget.getX() - (selectionBoxBounds.getX() + WidgetSelection.BOX_MARGIN))
+                                / selectionBoxBounds.getWidth());
 
                 //                widget.setLastX((int) (widget.getX() * scale - x)); @scale
                 //                widget.setLastY((int) (widget.getY() * scale - y)); @scale

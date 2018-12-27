@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -55,16 +55,23 @@ import com.vlsolutions.swing.docking.Dockable;
 public class LibraryPanel extends JPanel implements Dockable {
 
     private final DockKey key = new DockKey("Library");
-    private final JList list;
+    private final JList<String> list;
     private final ListSelectionListener listener;
-    private final LibraryPanel.LibraryPanelCellRenderer libraryPanelCellRenderer = new LibraryPanelCellRenderer();
 
     public LibraryPanel(final IDesigner designer) {
         setLayout(new BorderLayout());
 
-        list = new JList(new String[] { "Text Field", "Text", "Button", "Radio Button",
-                "Check Box", "Drop-down List", "List Box", "Image" });
+        list = new JList<>(new String[] {
+                "Text Field",
+                "Text",
+                "Button",
+                "Radio Button",
+                "Check Box",
+                "Drop-down List",
+                "List Box",
+                "Image" });
 
+        final LibraryPanelCellRenderer libraryPanelCellRenderer = new LibraryPanelCellRenderer();
         list.setCellRenderer(libraryPanelCellRenderer);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 

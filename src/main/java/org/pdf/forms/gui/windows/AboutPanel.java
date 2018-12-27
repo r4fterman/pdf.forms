@@ -1,4 +1,4 @@
-/**
+/*
  * ===========================================
  * PDF Forms Designer
  * ===========================================
@@ -42,28 +42,31 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.jdesktop.layout.GroupLayout;
 import org.jpedal.utils.BrowserLauncher;
 
 public class AboutPanel extends javax.swing.JPanel {
 
-    /** Creates new form AboutPanel */
+    /**
+     * Creates new form AboutPanel.
+     */
     public AboutPanel() {
         initComponents();
     }
 
     private void initComponents() {
 
-        jLabel2 = getURLLabel(this, "http://pdfformsdesigne.sourceforge.net");
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = getURLLabel(this, "http://www.jpedal.org");
-        jLabel11 = getURLLabel(this, "http://www.vlsolutions.com/en/products/docking/");
-        jLabel12 = getURLLabel(this, "http://www.lowagie.com/iText/");
-        jLabel13 = getURLLabel(this, "https://swing-layout.dev.java.net/");
+        final JLabel jLabel2 = getURLLabel(this, "http://pdfformsdesigne.sourceforge.net");
+        final JLabel jLabel4 = new JLabel();
+        final JLabel jLabel5 = new JLabel();
+        final JLabel jLabel6 = new JLabel();
+        final JLabel jLabel7 = new JLabel();
+        final JLabel jLabel8 = new JLabel();
+        final JLabel jLabel9 = new JLabel();
+        final JLabel jLabel10 = getURLLabel(this, "http://www.jpedal.org");
+        final JLabel jLabel11 = getURLLabel(this, "http://www.vlsolutions.com/en/products/docking/");
+        final JLabel jLabel12 = getURLLabel(this, "http://www.lowagie.com/iText/");
+        final JLabel jLabel13 = getURLLabel(this, "https://swing-layout.dev.java.net/");
 
         jLabel2.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -95,19 +98,19 @@ public class AboutPanel extends javax.swing.JPanel {
 
         jLabel13.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        final GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(jLabel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
-                                        .add(jLabel4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+                                .add(layout.createParallelGroup(GroupLayout.LEADING)
+                                        .add(jLabel2, GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+                                        .add(jLabel4, GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
                                         .add(jLabel5)
                                         .add(layout.createSequentialGroup()
                                                 .add(10, 10, 10)
-                                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                .add(layout.createParallelGroup(GroupLayout.LEADING)
                                                         .add(layout.createSequentialGroup()
                                                                 .add(jLabel7)
                                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -127,7 +130,7 @@ public class AboutPanel extends javax.swing.JPanel {
                                 .addContainerGap())
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(jLabel4)
@@ -136,27 +139,27 @@ public class AboutPanel extends javax.swing.JPanel {
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(jLabel5)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel6)
                                         .add(jLabel10))
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel7)
                                         .add(jLabel11))
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel8)
                                         .add(jLabel12))
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel9)
                                         .add(jLabel13))
-                                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame();
+    public static void main(final String[] args) {
+        final JFrame frame = new JFrame();
         frame.getContentPane().add(new AboutPanel());
         frame.pack();
         frame.setVisible(true);
@@ -169,20 +172,23 @@ public class AboutPanel extends javax.swing.JPanel {
         url.setForeground(Color.blue);
 
         url.addMouseListener(new MouseListener() {
-            public void mouseEntered(MouseEvent e) {
+            @Override
+            public void mouseEntered(final MouseEvent e) {
                 details.setCursor(new Cursor(Cursor.HAND_CURSOR));
                 url.setText("<html><center><a href=" + website + ">" + website + "</a></center>");
             }
 
-            public void mouseExited(MouseEvent e) {
+            @Override
+            public void mouseExited(final MouseEvent e) {
                 details.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 url.setText("<html><center>" + website);
             }
 
-            public void mouseClicked(MouseEvent e) {
+            @Override
+            public void mouseClicked(final MouseEvent e) {
                 try {
                     BrowserLauncher.openURL(website);
-                } catch (IOException e1) {
+                } catch (final IOException e1) {
                     JOptionPane.showMessageDialog(null, "Error loading webpage");
                     //<start-full><start-demo>
                     e1.printStackTrace();
@@ -190,25 +196,15 @@ public class AboutPanel extends javax.swing.JPanel {
                 }
             }
 
-            public void mousePressed(MouseEvent e) {
+            @Override
+            public void mousePressed(final MouseEvent e) {
             }
 
-            public void mouseReleased(MouseEvent e) {
+            @Override
+            public void mouseReleased(final MouseEvent e) {
             }
         });
         return url;
     }
-
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
 
 }

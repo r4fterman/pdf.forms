@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -39,6 +39,7 @@ import org.jpedal.examples.simpleviewer.gui.swing.SwingCombo;
 import org.jpedal.examples.simpleviewer.gui.swing.SwingMenuItem;
 
 public class CommandListener implements ActionListener {
+
     private final Commands commands;
 
     public CommandListener(final Commands commands) {
@@ -48,15 +49,15 @@ public class CommandListener implements ActionListener {
     @Override
     public void actionPerformed(final ActionEvent actionEvent) {
         final Object source = actionEvent.getSource();
-        int ID = 0;
+        int id = 0;
         if (source instanceof GUIButton) {
-            ID = ((GUIButton) source).getID();
+            id = ((GUIButton) source).getID();
         } else if (source instanceof SwingMenuItem) {
-            ID = ((SwingMenuItem) source).getID();
+            id = ((SwingMenuItem) source).getID();
         } else if (source instanceof SwingCombo) {
-            ID = ((SwingCombo) source).getID();
+            id = ((SwingCombo) source).getID();
         }
 
-        commands.executeCommand(ID);
+        commands.executeCommand(id);
     }
 }

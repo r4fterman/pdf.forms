@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -78,7 +78,9 @@ public interface IMainFrame {
 
     void setTotalNoOfDisplayedPages(int totalNoOfDisplayedPages);
 
-    void addPageToHierarchyPanel(int pdfPage, Page newPage);
+    void addPageToHierarchyPanel(
+            int pdfPage,
+            Page newPage);
 
     void updateHierarchyPanelUI();
 
@@ -86,29 +88,36 @@ public interface IMainFrame {
 
     void updateHierarchy();
 
-    void setDockableVisible(String dockable, boolean visible);
+    void setDockableVisible(
+            String dockable,
+            boolean visible);
 
-	void setDesignerCompoundContent(int content);
-	
-	int getDesignerCompoundContent();
+    void setDesignerCompoundContent(int content);
 
-	DesignerCompound getDesignerCompound();
+    int getDesignerCompoundContent();
 
-	double getCurrentSelectedScaling();
+    DesignerCompound getDesignerCompound();
 
-	double getCurrentScaling();
+    double getCurrentSelectedScaling();
 
-	void setCurrentSelectedScaling(double scaling);
+    double getCurrentScaling();
 
-	void updateAvailiableFonts();
+    void setCurrentSelectedScaling(double scaling);
 
-	void addWidgetToPage(IWidget widget);
+    void updateAvailiableFonts();
 
-    int getNextArrayNumberForName(String name, IWidget widget);
+    void addWidgetToPage(IWidget widget);
+
+    int getNextArrayNumberForName(
+            String name,
+            IWidget widget);
 
     void handleArrayNumberOnWidgetDeletion(Set<IWidget> selectedWidgets);
 
-	WidgetArrays getWidgetArrays();
+    WidgetArrays getWidgetArrays();
 
-	void renameWidget(String oldName, String name, IWidget widget);
+    void renameWidget(
+            String oldName,
+            String name,
+            IWidget widget);
 }

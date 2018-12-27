@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -43,13 +43,14 @@ import javax.swing.JTextField;
 import javax.swing.event.EventListenerList;
 
 public class ColorComboBoxEditor implements ComboBoxEditor {
-    protected final JTextField editor;
+
+    private final JTextField editor;
 
     private final transient EventListenerList listenerList = new EventListenerList();
 
     public ColorComboBoxEditor(
             final Color initialColor,
-            final JComboBox colorBox) {
+            final JComboBox<Object> colorBox) {
         editor = new JTextField("");
         editor.setBackground(initialColor);
         editor.setEditable(false);

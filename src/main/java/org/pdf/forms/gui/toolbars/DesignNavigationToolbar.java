@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -63,13 +63,15 @@ public class DesignNavigationToolbar extends NavigationToolbar {
                 designer.displayDesignerPage(designer.getTotalNoOfPages());
                 break;
             case SETPAGE:
-                final int page = Integer.parseInt(currentPageBox.getText());
+                final int page = Integer.parseInt(getCurrentPageBox().getText());
 
                 if (page >= 1 && page <= designer.getTotalNoOfPages()) {
                     designer.displayDesignerPage(page);
                 } else {
-                    currentPageBox.setText(designer.getDesignerCurrentPage() + "");
+                    getCurrentPageBox().setText(designer.getDesignerCurrentPage() + "");
                 }
+                break;
+            default:
                 break;
         }
     }

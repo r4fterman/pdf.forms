@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -44,23 +44,22 @@ import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public class WidgetAlignmentAndOrderToolbar extends VLToolBar {
 
-    private List<JButton> buttonsList = new ArrayList<>();
+    private final List<JButton> buttonsList = new ArrayList<>();
 
     public WidgetAlignmentAndOrderToolbar(final IDesigner designer) {
+        final String[] alignButtons = WidgetAlignmentAndOrder.getAlignButtons();
+        final String[] layoutButtons = WidgetAlignmentAndOrder.getOrderButtons();
 
-        String[] alignButtons = WidgetAlignmentAndOrder.getAlignButtons();
-        String[] layoutButtons = WidgetAlignmentAndOrder.getOrderButtons();
-
-        String[] buttons = concat(alignButtons, layoutButtons);
+        final String[] buttons = concat(alignButtons, layoutButtons);
 
         for (final String url : buttons) {
             if (url.equals("Seperator")) {
                 addSeparator();
             } else {
-                String[] splitFilename = url.split("/");
+                final String[] splitFilename = url.split("/");
                 final String type = splitFilename[splitFilename.length - 1].split("\\.")[0];
 
-                JButton button = new JButton();
+                final JButton button = new JButton();
                 button.setIcon(new ImageIcon(getClass().getResource(url)));
                 button.setToolTipText(type);
                 button.addActionListener(e -> WidgetAlignmentAndOrder.alignAndOrder(designer, type));
@@ -73,17 +72,17 @@ public class WidgetAlignmentAndOrderToolbar extends VLToolBar {
     }
 
     private String[] concat(
-            String[] array1,
-            String[] array2) {
+            final String[] array1,
+            final String[] array2) {
 
-        String[] res = new String[array1.length + array2.length];
+        final String[] res = new String[array1.length + array2.length];
         System.arraycopy(array1, 0, res, 0, array1.length);
         System.arraycopy(array2, 0, res, array1.length, array2.length);
 
         return res;
     }
 
-    public void setState(boolean enabled) {
+    public void setState(final boolean enabled) {
         for (final JButton button : buttonsList) {
             button.setEnabled(enabled);
         }

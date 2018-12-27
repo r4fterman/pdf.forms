@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -33,7 +33,6 @@ package org.pdf.forms.gui.toolbars;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -56,8 +55,8 @@ import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public class WidgetPropertiesToolBar extends VLToolBar {
     private final ButtonGroup alignmentGroup;
-    private final JComboBox fontBox;
-    private final JComboBox fontSize;
+    private final JComboBox<String> fontBox;
+    private final JComboBox<String> fontSize;
     private final ToolBarToggleButton fontBold;
     private final ToolBarToggleButton fontItalic;
     private final ToolBarToggleButton alignLeft;
@@ -76,47 +75,29 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         for (int i = 0; i < fonts.length; i++) {
             fontFamilies[i] = fonts[i].getFontName();
         }
-        fontBox = new JComboBox(fontFamilies);
+        fontBox = new JComboBox<>(fontFamilies);
         fontBox.setPreferredSize(new Dimension(160, 24));
-        fontBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent actionEvent) {
-                updateFont();
-            }
-        });
+        fontBox.addActionListener(actionEvent -> updateFont());
         add(fontBox);
 
-        fontSize = new JComboBox(new String[] { "6", "8", "10", "12", "14", "16", "18", "20", "24", "28", "36", "48", "72" });
+        fontSize = new JComboBox<>(new String[] {
+                "6", "8", "10", "12", "14", "16", "18", "20", "24", "28", "36", "48", "72"
+        });
         fontSize.setEditable(true);
         fontSize.setPreferredSize(new Dimension(60, 24));
-        fontSize.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent actionEvent) {
-                updateFont();
-            }
-        });
+        fontSize.addActionListener(actionEvent -> updateFont());
         add(fontSize);
 
         addSeparator();
 
         fontBold = new ToolBarToggleButton();
         fontBold.init("/org/pdf/forms/res/Bold.gif", "Bold");
-        fontBold.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent actionEvent) {
-                updateFont();
-            }
-        });
+        fontBold.addActionListener(actionEvent -> updateFont());
         add(fontBold);
 
         fontItalic = new ToolBarToggleButton();
         fontItalic.init("/org/pdf/forms/res/Italic.gif", "Italic");
-        fontItalic.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent actionEvent) {
-                updateFont();
-            }
-        });
+        fontItalic.addActionListener(actionEvent -> updateFont());
         add(fontItalic);
 
         final ToolBarToggleButton fontUnderline = new ToolBarToggleButton();
@@ -128,32 +109,17 @@ public class WidgetPropertiesToolBar extends VLToolBar {
 
         alignLeft = new ToolBarToggleButton();
         alignLeft.init("/org/pdf/forms/res/Paragraph Align Left.gif", "Align Left");
-        alignLeft.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent actionEvent) {
-                updateAlignment("left");
-            }
-        });
+        alignLeft.addActionListener(actionEvent -> updateAlignment("left"));
         add(alignLeft);
 
         alignCenter = new ToolBarToggleButton();
         alignCenter.init("/org/pdf/forms/res/Paragraph Align Center.gif", "Align Center");
-        alignCenter.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent actionEvent) {
-                updateAlignment("center");
-            }
-        });
+        alignCenter.addActionListener(actionEvent -> updateAlignment("center"));
         add(alignCenter);
 
         alignRight = new ToolBarToggleButton();
         alignRight.init("/org/pdf/forms/res/Paragraph Align Right.gif", "Align Right");
-        alignRight.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent actionEvent) {
-                updateAlignment("right");
-            }
-        });
+        alignRight.addActionListener(actionEvent -> updateAlignment("right"));
         add(alignRight);
 
         alignmentGroup = new ButtonGroup();
@@ -260,7 +226,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
 
         /* iterate through the widgets */
         for (final IWidget widget : widgetsAndProperties.keySet()) {
-            final Element fontProperties = (Element) widgetsAndProperties.get(widget);
+            final Element fontProperties = widgetsAndProperties.get(widget);
 
             /* get caption properties */
             final Element caption = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
@@ -274,7 +240,6 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             final String valueFontStyle;
 
             if (widget.allowEditCaptionAndValue()) {
-
                 /* get value properties */
                 final Element value = (Element) fontProperties.getElementsByTagName("font_value").item(0);
 
@@ -313,8 +278,22 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             }
         }
 
-        setComboValue(fontBox, "mixed".equals(fontNameToUse) ? null : fontNameToUse);
-        setComboValue(fontSize, "mixed".equals(fontSizeToUse) ? null : fontSizeToUse);
+        final String fontName;
+        if ("mixed".equals(fontNameToUse)) {
+            fontName = null;
+        } else {
+            fontName = fontNameToUse;
+        }
+
+        final String fontSize;
+        if ("mixed".equals(fontSizeToUse)) {
+            fontSize = null;
+        } else {
+            fontSize = fontSizeToUse;
+        }
+
+        setComboValue(fontBox, fontName);
+        setComboValue(this.fontSize, fontSize);
 
         //setComboValue(fontStyleBox, fontStyleToUse.equals("mixed") ? null : new Integer(fontStyleToUse));
 
@@ -332,6 +311,8 @@ public class WidgetPropertiesToolBar extends VLToolBar {
                 case IWidget.STYLE_BOLDITALIC:
                     fontBold.setSelected(true);
                     fontItalic.setSelected(true);
+                    break;
+                default:
                     break;
             }
         }
@@ -352,7 +333,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
 
         /* iterate through the widgets */
         for (final IWidget widget : widgetsAndProperties.keySet()) {
-            final Element paragraphPropertiesElement = (Element) widgetsAndProperties.get(widget);
+            final Element paragraphPropertiesElement = widgetsAndProperties.get(widget);
 
             /* get caption properties */
             final Element captionElement =

@@ -7,7 +7,7 @@
  * (C) Copyright 2006-2008..
  * Lead Developer: Simon Barnett (n6vale@googlemail.com)
  *
- * 	This file is part of the PDF Forms Designer
+ * This file is part of the PDF Forms Designer
  *
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public
@@ -100,10 +100,11 @@ public class CaptionChanger {
     }
 
     private String getAlignment(final String captionText) {
+        final String align = "align";
 
-        int start = captionText.indexOf("align");
+        int start = captionText.indexOf(align);
         if (start != -1) {
-            start += 6;
+            start += align.length();
             int end = start;
 
             while (captionText.charAt(end) != '>') {
@@ -129,7 +130,12 @@ public class CaptionChanger {
     private void setCaptionText() {
         String captionText = textArea.getText();
 
-        final String alignment = this.alignment == null ? "" : "<p align=" + this.alignment + ">";
+        final String alignment;
+        if (this.alignment == null) {
+            alignment = "";
+        } else {
+            alignment = "<p align=" + this.alignment + ">";
+        }
         captionText = "<html>" + alignment + captionText.replaceAll(STRING_LINE_BREAK, HTML_LINE_BREAK);
 
         final Document properties = selectedWidget.getProperties();

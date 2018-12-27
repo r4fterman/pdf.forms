@@ -56,8 +56,8 @@ public class WriterTest {
 
     @Test
     public void testWriter() throws Exception {
-        Document document = new Document(PageSize.A4, 50, 50, 50, 50);
-        PdfWriter writer = PdfWriter
+        final Document document = new Document(PageSize.A4, 50, 50, 50, 50);
+        final PdfWriter writer = PdfWriter
                 .getInstance(document, new FileOutputStream(testFolder.newFile()));
         document.open();
 
@@ -69,16 +69,16 @@ public class WriterTest {
         bt.setTextColor(getBaseColor(Color.yellow));
         bt.setBorderWidth(BaseField.BORDER_WIDTH_THICK);
         bt.setChecked(false);
-        PdfFormField f1 = bt.getRadioField();
+        final PdfFormField f1 = bt.getRadioField();
         bt.setOnValue("v2");
         bt.setChecked(true);
         bt.setBox(new Rectangle(100, 300, 200, 400));
-        PdfFormField f2 = bt.getRadioField();
+        final PdfFormField f2 = bt.getRadioField();
         bt.setChecked(false);
-        PdfFormField top = bt.getRadioGroup(true, false);
+        final PdfFormField top = bt.getRadioGroup(true, false);
         bt.setOnValue("v3");
         bt.setBox(new Rectangle(100, 500, 200, 600));
-        PdfFormField f3 = bt.getRadioField();
+        final PdfFormField f3 = bt.getRadioField();
         top.addKid(f1);
         top.addKid(f2);
         top.addKid(f3);
@@ -88,12 +88,12 @@ public class WriterTest {
         bt.setBorderWidth(BaseField.BORDER_WIDTH_THIN);
         bt.setBorderColor(getBaseColor(Color.black));
         bt.setBackgroundColor(getBaseColor(Color.white));
-        PdfFormField ck = bt.getCheckField();
+        final PdfFormField ck = bt.getCheckField();
         writer.addAnnotation(ck);
         document.close();
     }
 
-    private BaseColor getBaseColor(Color color) {
+    private BaseColor getBaseColor(final Color color) {
         return new GrayColor(color.getRGB());
     }
 }

@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -31,11 +31,21 @@
 */
 package org.pdf.forms.gui.properties.object.value;
 
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
+import org.jdesktop.layout.GroupLayout;
+import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Element;
@@ -43,14 +53,16 @@ import org.w3c.dom.Element;
 public class SimpleValuePanel extends JPanel {
     private Map<IWidget, Element> widgetsAndProperties;
 
-    private int type;
+    private JTextField defaultTextBox;
+    private JLabel jLabel1;
+    private JLabel jLabel3;
+    private JScrollPane jScrollPane1;
+    private JComboBox<String> typeBox;
 
     /**
-     * Creates new form TextFieldValuePanel
+     * Creates new form TextFieldValuePanel.
      */
-    public SimpleValuePanel(int type) {
-        this.type = type;
-
+    public SimpleValuePanel(final int type) {
         initComponents();
 
         if (type == IWidget.TEXT_FIELD) {
@@ -66,26 +78,28 @@ public class SimpleValuePanel extends JPanel {
     }
 
     private void initComponents() {
-        jLabel1 = new javax.swing.JLabel();
-        typeBox = new javax.swing.JComboBox();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        defaultTextBox = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        emptyMessageBox = new javax.swing.JTextArea();
+        jLabel1 = new JLabel();
+        typeBox = new JComboBox<>();
+        final JLabel jLabel2 = new JLabel();
+        jLabel3 = new JLabel();
+        defaultTextBox = new JTextField();
+        jScrollPane1 = new JScrollPane();
+        final JTextArea emptyMessageBox = new JTextArea();
 
         jLabel1.setText("Type:");
         jLabel1.setEnabled(false);
 
-        typeBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "User Entered - Optional", "User Entered - Recommended", "User Entered - Required", "Read Only" }));
+        typeBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                "User Entered - Optional", "User Entered - Recommended", "User Entered - Required", "Read Only" }));
         typeBox.setEnabled(false);
 
         jLabel2.setText("Default:");
 
         jLabel3.setText("Empty Message:");
 
-        defaultTextBox.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
+        defaultTextBox.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(final FocusEvent evt) {
                 updateDefaultText(evt);
             }
         });
@@ -95,80 +109,80 @@ public class SimpleValuePanel extends JPanel {
         emptyMessageBox.setEnabled(false);
         jScrollPane1.setViewportView(emptyMessageBox);
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        final GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                                .add(layout.createParallelGroup(GroupLayout.LEADING, false)
                                         .add(layout.createSequentialGroup()
                                                 .add(jLabel1)
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                .add(typeBox, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                                                .addPreferredGap(LayoutStyle.RELATED)
+                                                .add(typeBox, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .add(GroupLayout.TRAILING, layout.createSequentialGroup()
                                                 .add(10, 10, 10)
-                                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                .add(layout.createParallelGroup(GroupLayout.LEADING)
                                                         .add(jLabel3)
                                                         .add(layout.createSequentialGroup()
                                                                 .add(jLabel2)
-                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                .add(defaultTextBox, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
-                                                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 218, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                                                                .addPreferredGap(LayoutStyle.RELATED)
+                                                                .add(defaultTextBox, GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
+                                                        .add(jScrollPane1, GroupLayout.PREFERRED_SIZE, 218, GroupLayout.PREFERRED_SIZE))))
                                 .add(172, 172, 172))
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel1)
-                                        .add(typeBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(typeBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel2)
-                                        .add(defaultTextBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                        .add(defaultTextBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
                                 .add(jLabel3)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(jScrollPane1, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap(178, Short.MAX_VALUE))
         );
     }
 
-    private void updateDefaultText(java.awt.event.FocusEvent evt) {
-        Set<IWidget> widgets = widgetsAndProperties.keySet();
+    private void updateDefaultText(final FocusEvent evt) {
+        final Set<IWidget> widgets = widgetsAndProperties.keySet();
 
-        String defaultText = defaultTextBox.getText();
+        final String defaultText = defaultTextBox.getText();
 
-        for (IWidget widget : widgets) {
+        for (final IWidget widget : widgets) {
             if (defaultText != null && !defaultText.equals("mixed")) {
-                Element widgetProperties = (Element) widgetsAndProperties.get(widget);
+                final Element widgetProperties = widgetsAndProperties.get(widget);
 
-                Element defaultTextElement = XMLUtils.getPropertyElement(widgetProperties, "Default");
+                final Element defaultTextElement = XMLUtils.getPropertyElement(widgetProperties, "Default");
 
                 defaultTextElement.getAttributeNode("value").setValue(defaultText);
             }
 
-            widget.setObjectProperties((Element) widgetsAndProperties.get(widget));
+            widget.setObjectProperties(widgetsAndProperties.get(widget));
         }
 
         //designerPanel.repaint();
     }
 
-    public void setProperties(Map<IWidget, Element> widgetsAndProperties) {
+    public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
         this.widgetsAndProperties = widgetsAndProperties;
 
         String defaultTextToUse = null;
 
         /* iterate through the widgets */
-        for (IWidget widget : widgetsAndProperties.keySet()) {
-            Element objectPropertiesElement = widgetsAndProperties.get(widget);
+        for (final IWidget widget : widgetsAndProperties.keySet()) {
+            final Element objectPropertiesElement = widgetsAndProperties.get(widget);
 
             /* add value properties */
-            Element valueProperties = (Element) objectPropertiesElement.getElementsByTagName("value").item(0);
+            final Element valueProperties = (Element) objectPropertiesElement.getElementsByTagName("value").item(0);
 
-            String defaultText = XMLUtils.getAttributeFromChildElement(valueProperties, "Default");
+            final String defaultText = XMLUtils.getAttributeFromChildElement(valueProperties, "Default");
 
             if (defaultTextToUse == null) {
                 defaultTextToUse = defaultText;
@@ -178,15 +192,14 @@ public class SimpleValuePanel extends JPanel {
                 }
             }
 
-            defaultTextBox.setText(defaultTextToUse.equals("mixed") ? "mixed" : defaultTextToUse);
+            final String mixed;
+            if (defaultTextToUse.equals("mixed")) {
+                mixed = "mixed";
+            } else {
+                mixed = defaultTextToUse;
+            }
+            defaultTextBox.setText(mixed);
         }
     }
 
-    private javax.swing.JTextField defaultTextBox;
-    private javax.swing.JTextArea emptyMessageBox;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JComboBox typeBox;
 }

@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -55,19 +55,20 @@ public class SplitComponent extends JPanel {
     public static final int CAPTION_NONE = 4;
 
     public static final int DIVIDER_SIZE = 5;
+    private static final int SPACER = 10;
 
-    private PdfCaption caption;
-    protected JComponent value;
+    private final PdfCaption caption;
+    private JComponent value;
 
     private JComponent component;
-    private JPanel valuePanel;
-    private JPanel captionPanel;
+    private final JPanel valuePanel;
+    private final JPanel captionPanel;
     private int captionPosition;
 
     public SplitComponent(
-           final  String captionText,
-           final  JComponent value,
-           final  int captionPosition) {
+            final String captionText,
+            final JComponent value,
+            final int captionPosition) {
 
         setLayout(new BorderLayout());
 
@@ -94,12 +95,14 @@ public class SplitComponent extends JPanel {
         setCaptionPosition(captionPosition);
     }
 
+    @Override
     public void setBorder(final Border border) {
         if (value != null) {
             value.setBorder(border);
         }
     }
 
+    @Override
     public void setBackground(final Color color) {
         if (value != null) {
             value.setBackground(color);
@@ -117,61 +120,61 @@ public class SplitComponent extends JPanel {
             component.add(valuePanel, BorderLayout.CENTER);
         } else {
             component = new JSplitPane();
-            JSplitPane sp = (JSplitPane) component;
+            final JSplitPane sp = (JSplitPane) component;
 
             switch (position) {
-            case SplitComponent.CAPTION_LEFT:
+                case SplitComponent.CAPTION_LEFT:
 
-                sp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+                    sp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 
-                sp.setLeftComponent(captionPanel);
-                sp.setRightComponent(valuePanel);
+                    sp.setLeftComponent(captionPanel);
+                    sp.setRightComponent(valuePanel);
 
-                sp.setResizeWeight(0);
+                    sp.setResizeWeight(0);
 
-                sp.setDividerLocation((int) caption.getPreferredSize().getWidth() + 10);
+                    sp.setDividerLocation((int) caption.getPreferredSize().getWidth() + SPACER);
 
-                break;
+                    break;
 
-            case SplitComponent.CAPTION_TOP:
+                case SplitComponent.CAPTION_TOP:
 
-                sp.setOrientation(JSplitPane.VERTICAL_SPLIT);
+                    sp.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
-                sp.setTopComponent(captionPanel);
-                sp.setBottomComponent(valuePanel);
+                    sp.setTopComponent(captionPanel);
+                    sp.setBottomComponent(valuePanel);
 
-                sp.setResizeWeight(0);
+                    sp.setResizeWeight(0);
 
-                sp.setDividerLocation((int) caption.getPreferredSize().getHeight());
+                    sp.setDividerLocation((int) caption.getPreferredSize().getHeight());
 
-                break;
+                    break;
 
-            case SplitComponent.CAPTION_RIGHT:
+                case SplitComponent.CAPTION_RIGHT:
 
-                sp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+                    sp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 
-                sp.setRightComponent(captionPanel);
-                sp.setLeftComponent(valuePanel);
+                    sp.setRightComponent(captionPanel);
+                    sp.setLeftComponent(valuePanel);
 
-                sp.setResizeWeight(1);
+                    sp.setResizeWeight(1);
 
-                sp.setDividerLocation((int) value.getPreferredSize().getWidth());
+                    sp.setDividerLocation((int) value.getPreferredSize().getWidth());
 
-                break;
+                    break;
 
-            case SplitComponent.CAPTION_BOTTOM:
+                case SplitComponent.CAPTION_BOTTOM:
 
-                sp.setOrientation(JSplitPane.VERTICAL_SPLIT);
+                    sp.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
-                sp.setTopComponent(valuePanel);
-                sp.setBottomComponent(captionPanel);
+                    sp.setTopComponent(valuePanel);
+                    sp.setBottomComponent(captionPanel);
 
-                sp.setResizeWeight(1);
+                    sp.setResizeWeight(1);
 
-                break;
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
 
             }
 
@@ -185,11 +188,11 @@ public class SplitComponent extends JPanel {
     }
 
     private void setSplitPaneDividerColor(final JSplitPane splitPane) {
-        SplitPaneUI splitUI = splitPane.getUI();
+        final SplitPaneUI splitUI = splitPane.getUI();
         if (splitUI instanceof BasicSplitPaneUI) { // obviously this will not work if the ui doen't extend Basic...
-            int divSize = splitPane.getDividerSize();
-            BasicSplitPaneDivider div = ((BasicSplitPaneUI) splitUI).getDivider();
-            Border divBorder = div.getBorder();
+            final int divSize = splitPane.getDividerSize();
+            final BasicSplitPaneDivider div = ((BasicSplitPaneUI) splitUI).getDivider();
+            final Border divBorder = div.getBorder();
             Border newBorder = null;
             Border colorBorder = null;
 
@@ -197,7 +200,7 @@ public class SplitComponent extends JPanel {
             int insetsv = 0;
 
             if (divBorder != null) {
-                Insets i = divBorder.getBorderInsets(div);
+                final Insets i = divBorder.getBorderInsets(div);
                 insetsh = i.left + i.right;
                 insetsv = i.top + i.bottom;
             }

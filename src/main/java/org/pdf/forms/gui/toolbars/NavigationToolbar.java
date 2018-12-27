@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -43,18 +43,19 @@ import javax.swing.JTextField;
 import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public abstract class NavigationToolbar extends VLToolBar {
-    protected static final int FIRSTPAGE = 0;
-    protected static final int FBACKPAGE = 1;
-    protected static final int BACKPAGE = 2;
-    protected static final int FORWARDPAGE = 3;
-    protected static final int FFORWARDPAGE = 4;
-    protected static final int LASTPAGE = 5;
-    protected static final int SETPAGE = 6;
 
-    protected JTextField currentPageBox = new JTextField(4);
+    static final int FIRSTPAGE = 0;
+    static final int FBACKPAGE = 1;
+    static final int BACKPAGE = 2;
+    static final int FORWARDPAGE = 3;
+    static final int FFORWARDPAGE = 4;
+    static final int LASTPAGE = 5;
+    static final int SETPAGE = 6;
+
     private final JLabel totalNoOfPages = new JLabel();
+    private final JTextField currentPageBox = new JTextField(4);
 
-    public NavigationToolbar() {
+    NavigationToolbar() {
         totalNoOfPages.setText("of 1");
         currentPageBox.setText("1");
 
@@ -118,5 +119,9 @@ public abstract class NavigationToolbar extends VLToolBar {
         button.addActionListener(actionEvent -> executeCommand(type));
 
         add(button);
+    }
+
+    JTextField getCurrentPageBox() {
+        return currentPageBox;
     }
 }

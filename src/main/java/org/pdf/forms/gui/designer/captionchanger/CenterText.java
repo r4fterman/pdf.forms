@@ -43,6 +43,7 @@ import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 
 class CenterText extends StyledEditorKit {
+
     @Override
     public ViewFactory getViewFactory() {
         return new StyledViewFactory();
@@ -50,25 +51,27 @@ class CenterText extends StyledEditorKit {
 
     static class StyledViewFactory implements ViewFactory {
         @Override
-        public View create(final Element elem) {
-            final String kind = elem.getName();
+        public View create(final Element element) {
+            final String kind = element.getName();
             if (kind != null) {
                 switch (kind) {
                     case AbstractDocument.ContentElementName:
-                        return new LabelView(elem);
+                        return new LabelView(element);
                     case AbstractDocument.ParagraphElementName:
-                        return new ParagraphView(elem);
+                        return new ParagraphView(element);
                     case AbstractDocument.SectionElementName:
-                        return new CenteredBoxView(elem, View.Y_AXIS);
+                        return new CenteredBoxView(element, View.Y_AXIS);
                     case StyleConstants.ComponentElementName:
-                        return new ComponentView(elem);
+                        return new ComponentView(element);
                     case StyleConstants.IconElementName:
-                        return new IconView(elem);
+                        return new IconView(element);
+                    default:
+                        break;
                 }
             }
 
-            //	default to text display
-            return new LabelView(elem);
+            // default to text display
+            return new LabelView(element);
         }
     }
 }

@@ -1,6 +1,8 @@
 package org.pdf.forms;
 
-import java.awt.*;
+import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
@@ -9,12 +11,13 @@ import java.util.Optional;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import org.pdf.forms.gui.VLFrame;
 import org.pdf.forms.gui.windows.SplashWindow;
 
-public class Application {
+public final class Application {
 
     private static final String DEFAULT_VERSION = "0.8b05";
 

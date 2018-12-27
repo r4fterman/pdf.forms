@@ -56,8 +56,13 @@ public class JavaScriptEditorPanel extends javax.swing.JPanel implements Dockabl
 
     private Set<IWidget> widgets;
 
+    private javax.swing.JComboBox<String> eventBox;
+    private javax.swing.JComboBox<String> languageBox;
+    private javax.swing.JComboBox<String> runAtBox;
+    private javax.swing.JTextArea scriptBox;
+
     /**
-     * Creates new form JavaScriptEditorPanel
+     * Creates new form JavaScriptEditorPanel.
      */
     public JavaScriptEditorPanel() {
         key.setFloatEnabled(true);
@@ -65,17 +70,17 @@ public class JavaScriptEditorPanel extends javax.swing.JPanel implements Dockabl
     }
 
     private void initComponents() {
-        jScrollPane1 = new javax.swing.JScrollPane();
+        final javax.swing.JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
         scriptBox = new javax.swing.JTextArea();
-        jLabel1 = new javax.swing.JLabel();
-        eventBox = new javax.swing.JComboBox();
-        jLabel2 = new javax.swing.JLabel();
-        languageBox = new javax.swing.JComboBox();
-        jLabel3 = new javax.swing.JLabel();
-        runAtBox = new javax.swing.JComboBox();
-        jSeparator3 = new javax.swing.JSeparator();
-        saveButton = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JSeparator();
+        final javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
+        eventBox = new javax.swing.JComboBox<>();
+        final javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
+        languageBox = new javax.swing.JComboBox<>();
+        final javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
+        runAtBox = new javax.swing.JComboBox<>();
+        final javax.swing.JSeparator jSeparator3 = new javax.swing.JSeparator();
+        final javax.swing.JButton saveButton = new javax.swing.JButton();
+        final javax.swing.JSeparator jSeparator1 = new javax.swing.JSeparator();
 
         scriptBox.setColumns(20);
         scriptBox.setRows(5);
@@ -84,32 +89,28 @@ public class JavaScriptEditorPanel extends javax.swing.JPanel implements Dockabl
 
         jLabel1.setText("Show:");
 
-        eventBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                eventChanged(evt);
-            }
-        });
+        eventBox.addActionListener(this::eventChanged);
 
         jLabel2.setText("Language:");
 
-        languageBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "JavaScript" }));
+        languageBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {
+                "JavaScript"
+        }));
 
         jLabel3.setText("Run At:");
 
-        runAtBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Client" }));
+        runAtBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {
+                "Client"
+        }));
 
         jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         saveButton.setText("Save");
-        saveButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveClicked(evt);
-            }
-        });
+        saveButton.addActionListener(this::saveClicked);
 
         jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        final org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -207,10 +208,10 @@ public class JavaScriptEditorPanel extends javax.swing.JPanel implements Dockabl
     }
 
     private void saveJavaScript(final Document document) {
-        final Element javaScriptPropertiesElement = (Element) XMLUtils.getElementsFromNodeList(
+        final Element javaScriptPropertiesElement = XMLUtils.getElementsFromNodeList(
                 document.getElementsByTagName("javascript")).get(0);
 
-        final Element currentElement = (Element) XMLUtils.getElementsFromNodeList(
+        final Element currentElement = XMLUtils.getElementsFromNodeList(
                 javaScriptPropertiesElement.getElementsByTagName((String) eventBox.getSelectedItem())).get(0);
 
         Text currentTextNode = (Text) currentElement.getChildNodes().item(0);
@@ -281,20 +282,6 @@ public class JavaScriptEditorPanel extends javax.swing.JPanel implements Dockabl
 
         key.setName("Script Editor");
     }
-
-    // Variables declaration - do not modify
-    private javax.swing.JComboBox eventBox;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JComboBox languageBox;
-    private javax.swing.JComboBox runAtBox;
-    private javax.swing.JButton saveButton;
-    private javax.swing.JTextArea scriptBox;
-    // End of variables declaration
 
     @Override
     public DockKey getDockKey() {

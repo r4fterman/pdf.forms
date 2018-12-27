@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -114,7 +114,7 @@ public class PropertyChanger {
     public static void updateSizeAndPosition(
             final Set<IWidget> widgetSelection,
             final Integer[] props) {
-        //todo can we change the props parameter type to int[]?
+        //TODO can we change the props parameter type to int[]?
 
         for (final IWidget widget : widgetSelection) {
             final Document properties = widget.getProperties();

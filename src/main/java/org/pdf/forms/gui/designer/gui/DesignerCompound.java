@@ -66,14 +66,14 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
     public static final int DESIGNER = 0;
     public static final int PREVIEW = 1;
 
-    private DockKey key = new DockKey("Designer");
+    private final DockKey key = new DockKey("Designer");
 
-    private NavigationToolbar designToolBar = new DesignNavigationToolbar(this);
-    private NavigationToolbar previewToolBar = new PreviewNavigationToolbar(this);
+    private final NavigationToolbar designToolBar = new DesignNavigationToolbar(this);
+    private final NavigationToolbar previewToolBar = new PreviewNavigationToolbar(this);
 
     private final IMainFrame mainFrame;
 
-    private PdfDecoder decodePDF = new PdfDecoder();
+    private final PdfDecoder decodePDF = new PdfDecoder();
 
     private int currentPdfPage = 1;
     private double previewScaling = 1;
@@ -143,8 +143,7 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
 
                     final Set<String> fontSubstitutions = writer.getFontSubstitutions();
                     if (!fontSubstitutions.isEmpty()) {
-                        StringBuilder builder = new StringBuilder("<html>The following fonts cannot be embedded due to licensing<br/" +
-                                "restrictions, so they have been substituted with Helvetica.<br/<br/");
+                        final StringBuilder builder = new StringBuilder("<html>The following fonts cannot be embedded due to licensing<br/>restrictions, so they have been substituted with Helvetica.<br/<br/");
 
                         for (final String font : fontSubstitutions) {
                             builder.append(font).append("<br/");
@@ -162,7 +161,8 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
                     e1.printStackTrace();
                 }
 
-                previewToolBar.setCurrentPage(currentPdfPage = 1);
+                this.currentPdfPage = 1;
+                previewToolBar.setCurrentPage(currentPdfPage);
                 previewToolBar.setTotalNoOfPages(decodePDF.getPageCount());
             }
         });
@@ -199,9 +199,7 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
     @Override
     public void displayPreviewPage(final int page) {
         try {
-
             if (page > 0 && page <= decodePDF.getPageCount()) {
-
                 decodePDF.setPageParameters(1, page);
                 decodePDF.decodePage(page);
 
@@ -210,7 +208,7 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
                 previewToolBar.setCurrentPage(page);
             }
         } catch (final Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
 
         updateUI();
@@ -241,10 +239,10 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
     public void previewZoom(final double scaling) {
         previewScaling = scaling;
 
-        //		decodePDF.setPageParameters((float) previewScaling, currentPdfPage);
-        //		decodePDF.invalidate();
-        //		decodePDF.updateUI();
-        //		repaint();
+        //  decodePDF.setPageParameters((float) previewScaling, currentPdfPage);
+        //  decodePDF.invalidate();
+        //  decodePDF.updateUI();
+        //  repaint();
 
         try {
             decodePDF.closePdfFile();

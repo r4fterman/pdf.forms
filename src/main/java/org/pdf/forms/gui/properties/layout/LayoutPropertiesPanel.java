@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -31,16 +31,30 @@
 */
 package org.pdf.forms.gui.properties.layout;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 
+import org.jdesktop.layout.GroupLayout;
+import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.Rule;
@@ -58,8 +72,18 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
     private Map<IWidget, Element> widgetsAndProperties;
 
     private final int units = (int) (Rule.INCH / 2.54);
+    // todo tidy up this from netbeans
+    private JComboBox<String> anchorLocationBox;
+    private ButtonGroup buttonGroup1;
+    private JComboBox<String> captionLocationBox;
+    private JTextField heightBox;
+    private JTextField widthBox;
+    private JTextField xBox;
+    private JCheckBox xExpandToFitBox;
+    private JTextField yBox;
+    private JCheckBox yExpandToFitBox;
 
-    public LayoutPropertiesPanel() {
+    LayoutPropertiesPanel() {
         initComponents();
     }
 
@@ -68,61 +92,61 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
     }
 
     private void initComponents() {
-        buttonGroup1 = new javax.swing.ButtonGroup();
-        jFileChooser1 = new javax.swing.JFileChooser();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        xBox = new javax.swing.JTextField();
-        widthBox = new javax.swing.JTextField();
+        buttonGroup1 = new ButtonGroup();
+        final JFileChooser jFileChooser1 = new JFileChooser();
+        final JPanel jPanel1 = new JPanel();
+        final JLabel jLabel1 = new JLabel();
+        final JLabel jLabel2 = new JLabel();
+        xBox = new JTextField();
+        widthBox = new JTextField();
         xExpandToFitBox = new TristateCheckBox("Expand to fit", TristateCheckBox.NOT_SELECTED, this);
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        heightBox = new javax.swing.JTextField();
-        yBox = new javax.swing.JTextField();
+        final JLabel jLabel3 = new JLabel();
+        final JLabel jLabel4 = new JLabel();
+        heightBox = new JTextField();
+        yBox = new JTextField();
         yExpandToFitBox = new TristateCheckBox("Expand to fit", TristateCheckBox.NOT_SELECTED, this);
-        jLabel5 = new javax.swing.JLabel();
-        anchorLocationBox = new javax.swing.JComboBox<>();
-        rotate0 = new javax.swing.JToggleButton();
-        rotate90 = new javax.swing.JToggleButton();
-        rotate180 = new javax.swing.JToggleButton();
-        rotate270 = new javax.swing.JToggleButton();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        leftMargingBox = new javax.swing.JTextField();
-        rightMarginBox = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        topMarginBox = new javax.swing.JTextField();
-        bottomMarginBox = new javax.swing.JTextField();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel10 = new javax.swing.JLabel();
-        captionLocationBox = new javax.swing.JComboBox<>();
-        jLabel11 = new javax.swing.JLabel();
-        reserveBox = new javax.swing.JTextField();
+        final JLabel jLabel5 = new JLabel();
+        anchorLocationBox = new JComboBox<>();
+        final JToggleButton rotate0 = new JToggleButton();
+        final JToggleButton rotate90 = new JToggleButton();
+        final JToggleButton rotate180 = new JToggleButton();
+        final JToggleButton rotate270 = new JToggleButton();
+        final JPanel jPanel2 = new JPanel();
+        final JLabel jLabel6 = new JLabel();
+        final JLabel jLabel7 = new JLabel();
+        final JTextField leftMargingBox = new JTextField();
+        final JTextField rightMarginBox = new JTextField();
+        final JLabel jLabel8 = new JLabel();
+        final JLabel jLabel9 = new JLabel();
+        final JTextField topMarginBox = new JTextField();
+        final JTextField bottomMarginBox = new JTextField();
+        final JPanel jPanel3 = new JPanel();
+        final JLabel jLabel10 = new JLabel();
+        captionLocationBox = new JComboBox<>();
+        final JLabel jLabel11 = new JLabel();
+        final JTextField reserveBox = new JTextField();
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Size & Position"));
+        jPanel1.setBorder(BorderFactory.createTitledBorder("Size & Position"));
         jLabel1.setText("X:");
 
         jLabel2.setText("Width:");
 
-        xBox.addFocusListener(new java.awt.event.FocusAdapter() {
+        xBox.addFocusListener(new FocusAdapter() {
             @Override
-            public void focusLost(final java.awt.event.FocusEvent evt) {
+            public void focusLost(final FocusEvent evt) {
                 updateSizeAndPosition(evt);
             }
         });
 
-        widthBox.addFocusListener(new java.awt.event.FocusAdapter() {
+        widthBox.addFocusListener(new FocusAdapter() {
             @Override
-            public void focusLost(final java.awt.event.FocusEvent evt) {
+            public void focusLost(final FocusEvent evt) {
                 updateSizeAndPosition(evt);
             }
         });
 
         xExpandToFitBox.setText("Expand to fit");
-        xExpandToFitBox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        xExpandToFitBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         xExpandToFitBox.setEnabled(false);
         xExpandToFitBox.setMargin(new java.awt.Insets(0, 0, 0, 0));
 
@@ -130,128 +154,129 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
 
         jLabel4.setText("Height:");
 
-        heightBox.addFocusListener(new java.awt.event.FocusAdapter() {
+        heightBox.addFocusListener(new FocusAdapter() {
             @Override
-            public void focusLost(final java.awt.event.FocusEvent evt) {
+            public void focusLost(final FocusEvent evt) {
                 updateSizeAndPosition(evt);
             }
         });
 
-        yBox.addFocusListener(new java.awt.event.FocusAdapter() {
+        yBox.addFocusListener(new FocusAdapter() {
             @Override
-            public void focusLost(final java.awt.event.FocusEvent evt) {
+            public void focusLost(final FocusEvent evt) {
                 updateSizeAndPosition(evt);
             }
         });
 
         yExpandToFitBox.setText("Expand to fit");
-        yExpandToFitBox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        yExpandToFitBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         yExpandToFitBox.setEnabled(false);
         yExpandToFitBox.setMargin(new java.awt.Insets(0, 0, 0, 0));
 
         jLabel5.setText("Anchor:");
         jLabel5.setEnabled(false);
 
-        anchorLocationBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Top Left", "Top Middle", "Top Right", "Middle Left", "Center", "Middle Right", "Middle Right", "Bottom Middle", "Bottom Right" }));
+        anchorLocationBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                "Top Left", "Top Middle", "Top Right", "Middle Left", "Center", "Middle Right", "Middle Right", "Bottom Middle", "Bottom Right" }));
         anchorLocationBox.setEnabled(false);
-        anchorLocationBox.addActionListener(evt -> updateAnchor(evt));
+        anchorLocationBox.addActionListener(this::updateAnchor);
 
         buttonGroup1.add(rotate0);
-        rotate0.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/pdf/forms/res/Anchor Rotation 0.png")));
+        rotate0.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Anchor Rotation 0.png")));
         rotate0.setEnabled(false);
         rotate0.setName("0");
-        rotate0.addActionListener(evt -> updateRotation(evt));
+        rotate0.addActionListener(this::updateRotation);
 
         buttonGroup1.add(rotate90);
-        rotate90.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/pdf/forms/res/Anchor Rotation 90.png")));
+        rotate90.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Anchor Rotation 90.png")));
         rotate90.setEnabled(false);
         rotate90.setName("90");
-        rotate90.addActionListener(evt -> updateRotation(evt));
+        rotate90.addActionListener(this::updateRotation);
 
         buttonGroup1.add(rotate180);
-        rotate180.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/pdf/forms/res/Anchor Rotation 180.png")));
+        rotate180.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Anchor Rotation 180.png")));
         rotate180.setEnabled(false);
         rotate180.setName("180");
-        rotate180.addActionListener(evt -> updateRotation(evt));
+        rotate180.addActionListener(this::updateRotation);
 
         buttonGroup1.add(rotate270);
-        rotate270.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/pdf/forms/res/Anchor Rotation 270.png")));
+        rotate270.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Anchor Rotation 270.png")));
         rotate270.setEnabled(false);
         rotate270.setName("270");
-        rotate270.addActionListener(evt -> updateRotation(evt));
+        rotate270.addActionListener(this::updateRotation);
 
-        final org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        final GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-                jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
                         .add(jPanel1Layout.createSequentialGroup()
-                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                .add(jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
                                         .add(jPanel1Layout.createSequentialGroup()
                                                 .addContainerGap()
                                                 .add(xExpandToFitBox))
                                         .add(jPanel1Layout.createSequentialGroup()
-                                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                .add(jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
                                                         .add(jLabel2)
-                                                        .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 50, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                                        .add(xBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                                        .add(widthBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                                                        .add(jLabel1, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(LayoutStyle.RELATED)
+                                                .add(jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
+                                                        .add(xBox, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
+                                                        .add(widthBox, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE))))
                                 .add(25, 25, 25)
-                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                .add(jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
                                         .add(jPanel1Layout.createSequentialGroup()
-                                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                                .add(jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
                                                         .add(jLabel4)
-                                                        .add(jLabel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 50, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                                        .add(yBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                                        .add(heightBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                                        .add(jLabel3, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(LayoutStyle.RELATED)
+                                                .add(jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
+                                                        .add(yBox, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
+                                                        .add(heightBox, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)))
                                         .add(jPanel1Layout.createSequentialGroup()
                                                 .add(10, 10, 10)
                                                 .add(yExpandToFitBox))))
                         .add(jPanel1Layout.createSequentialGroup()
                                 .add(jLabel5)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(anchorLocationBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(rotate0, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(rotate90, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(rotate180, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(rotate270, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(anchorLocationBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(rotate0, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(rotate90, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(rotate180, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(rotate270, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
-                jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
                         .add(jPanel1Layout.createSequentialGroup()
-                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(jPanel1Layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel1)
                                         .add(jLabel3)
-                                        .add(xBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(yBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(xBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                        .add(yBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(jPanel1Layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel2)
                                         .add(jLabel4)
-                                        .add(widthBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(heightBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(widthBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                        .add(heightBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(jPanel1Layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(xExpandToFitBox)
                                         .add(yExpandToFitBox))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 15, Short.MAX_VALUE)
-                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .addPreferredGap(LayoutStyle.RELATED, 15, Short.MAX_VALUE)
+                                .add(jPanel1Layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel5)
-                                        .add(anchorLocationBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(rotate0, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(rotate90, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(rotate180, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(rotate270, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                        .add(anchorLocationBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                        .add(rotate0, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                                        .add(rotate90, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                                        .add(rotate180, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                                        .add(rotate270, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)))
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Margins"));
+        jPanel2.setBorder(BorderFactory.createTitledBorder("Margins"));
         jLabel6.setText("Left:");
         jLabel6.setEnabled(false);
 
@@ -272,103 +297,104 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
 
         bottomMarginBox.setEnabled(false);
 
-        final org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
+        final GroupLayout jPanel2Layout = new GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
-                jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                jPanel2Layout.createParallelGroup(GroupLayout.LEADING)
                         .add(jPanel2Layout.createSequentialGroup()
-                                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                .add(jPanel2Layout.createParallelGroup(GroupLayout.LEADING)
                                         .add(jLabel6)
                                         .add(jLabel7))
                                 .add(26, 26, 26)
-                                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(leftMargingBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(rightMarginBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .add(jPanel2Layout.createParallelGroup(GroupLayout.LEADING)
+                                        .add(leftMargingBox, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
+                                        .add(rightMarginBox, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE))
                                 .add(29, 29, 29)
-                                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                .add(jPanel2Layout.createParallelGroup(GroupLayout.LEADING)
                                         .add(jLabel8)
                                         .add(jLabel9))
                                 .add(19, 19, 19)
-                                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(topMarginBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(bottomMarginBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                .add(jPanel2Layout.createParallelGroup(GroupLayout.LEADING)
+                                        .add(topMarginBox, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
+                                        .add(bottomMarginBox, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)))
         );
         jPanel2Layout.setVerticalGroup(
-                jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                jPanel2Layout.createParallelGroup(GroupLayout.LEADING)
                         .add(jPanel2Layout.createSequentialGroup()
-                                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(jPanel2Layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel6)
-                                        .add(leftMargingBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(leftMargingBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                         .add(jLabel8)
-                                        .add(topMarginBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(topMarginBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(jPanel2Layout.createParallelGroup(GroupLayout.LEADING)
+                                        .add(jPanel2Layout.createParallelGroup(GroupLayout.BASELINE)
                                                 .add(jLabel9)
-                                                .add(bottomMarginBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                                .add(bottomMarginBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                         .add(jLabel7)
-                                        .add(rightMarginBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                        .add(rightMarginBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap())
         );
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Caption"));
+        jPanel3.setBorder(BorderFactory.createTitledBorder("Caption"));
         jLabel10.setText("Position:");
 
-        captionLocationBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Left", "Right", "Top", "Bottom", "None" }));
-        captionLocationBox.addActionListener(evt -> updateCaptionPosition(evt));
+        captionLocationBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                "Left", "Right", "Top", "Bottom", "None" }));
+        captionLocationBox.addActionListener(this::updateCaptionPosition);
 
         jLabel11.setText("Reserve:");
         jLabel11.setEnabled(false);
 
         reserveBox.setEnabled(false);
 
-        final org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
+        final GroupLayout jPanel3Layout = new GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
-                jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                jPanel3Layout.createParallelGroup(GroupLayout.LEADING)
                         .add(jPanel3Layout.createSequentialGroup()
                                 .add(jLabel10)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(captionLocationBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 68, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(captionLocationBox, GroupLayout.PREFERRED_SIZE, 68, GroupLayout.PREFERRED_SIZE)
                                 .add(22, 22, 22)
                                 .add(jLabel11)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(reserveBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 66, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(reserveBox, GroupLayout.PREFERRED_SIZE, 66, GroupLayout.PREFERRED_SIZE))
         );
         jPanel3Layout.setVerticalGroup(
-                jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                jPanel3Layout.createParallelGroup(GroupLayout.LEADING)
+                        .add(jPanel3Layout.createParallelGroup(GroupLayout.BASELINE)
                                 .add(jLabel10)
                                 .add(jLabel11)
-                                .add(captionLocationBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .add(reserveBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .add(captionLocationBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .add(reserveBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
         );
 
-        final org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        final GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                                        .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel2, 0, 266, Short.MAX_VALUE)
-                                        .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                                                .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
-                                                .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                .add(layout.createParallelGroup(GroupLayout.TRAILING)
+                                        .add(GroupLayout.LEADING, jPanel2, 0, 266, Short.MAX_VALUE)
+                                        .add(GroupLayout.LEADING, layout.createParallelGroup(GroupLayout.TRAILING, false)
+                                                .add(GroupLayout.LEADING, jPanel3, GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                                                .add(GroupLayout.LEADING, jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
                                 .add(142, 142, 142))
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
-                                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 73, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jPanel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(jPanel2, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(jPanel3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap(106, Short.MAX_VALUE))
         );
     }
 
-    private void updateCaptionPosition(final java.awt.event.ActionEvent evt) {
+    private void updateCaptionPosition(final ActionEvent evt) {
         final Set<IWidget> widgets = widgetsAndProperties.keySet();
 
         final Object captionPosition = captionLocationBox.getSelectedItem();
@@ -389,7 +415,7 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
 
     }
 
-    private void updateRotation(final java.awt.event.ActionEvent evt) {
+    private void updateRotation(final ActionEvent evt) {
         final Set<IWidget> widgets = widgetsAndProperties.keySet();
 
         final String alignment = ((JComponent) evt.getSource()).getName();
@@ -403,14 +429,14 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
         }
     }
 
-    private void updateAnchor(final java.awt.event.ActionEvent evt) {
+    private void updateAnchor(final ActionEvent evt) {
         final Set<IWidget> widgets = widgetsAndProperties.keySet();
 
         final Object anchor = anchorLocationBox.getSelectedItem();
 
         for (final IWidget widget : widgets) {
             if (anchor != null) {
-                final Element widgetProperties = (Element) widgetsAndProperties.get(widget);
+                final Element widgetProperties = widgetsAndProperties.get(widget);
 
                 final Element anchorElement = XMLUtils.getPropertyElement(widgetProperties, "Anchor");
 
@@ -420,7 +446,7 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
 
     }
 
-    private void updateSizeAndPosition(final java.awt.event.FocusEvent evt) {
+    private void updateSizeAndPosition(final FocusEvent evt) {
         final Integer[] props = new Integer[4];
 
         if (!xBox.getText().equals("mixed")) {
@@ -492,12 +518,24 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
 
             if (xExpandState != TristateCheckBox.DONT_CARE) {
                 final Element xExpand = sizeAndPosition.get(4);
-                xExpand.getAttributeNode("value").setValue(xExpandState == TristateCheckBox.SELECTED ? "true" : "false");
+                final String value;
+                if (xExpandState == TristateCheckBox.SELECTED) {
+                    value = "true";
+                } else {
+                    value = "false";
+                }
+                xExpand.getAttributeNode("value").setValue(value);
             }
 
             if (yExpandState != TristateCheckBox.DONT_CARE) {
                 final Element yExpand = sizeAndPosition.get(5);
-                yExpand.getAttributeNode("value").setValue(yExpandState == TristateCheckBox.SELECTED ? "true" : "false");
+                final String value;
+                if (yExpandState == TristateCheckBox.SELECTED) {
+                    value = "true";
+                } else {
+                    value = "false";
+                }
+                yExpand.getAttributeNode("value").setValue(value);
             }
         }
     }
@@ -616,7 +654,7 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
             xBox.setText("mixed");
         } else {
             double x = Integer.parseInt(xCordToUse);
-            x = round((x - IMainFrame.INSET) / units, 3);
+            x = round((x - IMainFrame.INSET) / units);
             xBox.setText(x + " cm");
         }
 
@@ -624,30 +662,36 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
             yBox.setText("mixed");
         } else {
             double y = Integer.parseInt(yCordToUse);
-            y = round((y - IMainFrame.INSET) / units, 3);
+            y = round((y - IMainFrame.INSET) / units);
             yBox.setText(y + " cm");
         }
 
-        if (widthToUse.equals("mixed")) {
+        if ("mixed".equals(widthToUse)) {
             widthBox.setText("mixed");
         } else {
             double width = Integer.parseInt(widthToUse);
-            width = round(width / units, 3);
+            width = round(width / units);
             widthBox.setText(width + " cm");
         }
 
-        if (heightToUse.equals("mixed")) {
+        if ("mixed".equals(heightToUse)) {
             heightBox.setText("mixed");
         } else {
             double height = Integer.parseInt(heightToUse);
-            height = round(height / units, 3);
+            height = round(height / units);
             heightBox.setText(height + " cm");
         }
 
         //        ((TristateCheckBox) xExpandToFitBox).setState(xExpandStateToUse);
         //        ((TristateCheckBox) yExpandToFitBox).setState(yExpandStateToUse);
 
-        anchorLocationBox.setSelectedItem("mixed".equals(anchorLocationToUse) ? null : anchorLocationToUse);
+        final Object selectedItem1;
+        if ("mixed".equals(anchorLocationToUse)) {
+            selectedItem1 = null;
+        } else {
+            selectedItem1 = anchorLocationToUse;
+        }
+        anchorLocationBox.setSelectedItem(selectedItem1);
 
         if ("mixed".equals(rotationToUse)) {
             buttonGroup1.setSelected(new JToggleButton("").getModel(), true);
@@ -664,7 +708,13 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
         }
 
         if (isComponentSplit) {
-            captionLocationBox.setSelectedItem("mixed".equals(captionPositionToUse) ? null : captionPositionToUse);
+            final Object selectedItem;
+            if ("mixed".equals(captionPositionToUse)) {
+                selectedItem = null;
+            } else {
+                selectedItem = captionPositionToUse;
+            }
+            captionLocationBox.setSelectedItem(selectedItem);
         } else {
             captionLocationBox.setSelectedItem(null);
         }
@@ -692,52 +742,16 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
         //        reserveBox.setText(reserve);
     }
 
-    private double round(
-            double number,
-            final int decPlaces) {
+    private double round(final double number) {
 
-        final double exponential = Math.pow(10, decPlaces);
+        final double exponential = Math.pow(10, 3);
 
-        number *= exponential;
-        number = Math.round(number);
-        number /= exponential;
+        double value = number;
+        value *= exponential;
+        value = Math.round(value);
+        value /= exponential;
 
         return number;
     }
-
-    // todo tidy up this from netbeans
-    private javax.swing.JComboBox<String> anchorLocationBox;
-    private javax.swing.JTextField bottomMarginBox;
-    private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JComboBox<String> captionLocationBox;
-    private javax.swing.JTextField heightBox;
-    private javax.swing.JFileChooser jFileChooser1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JTextField leftMargingBox;
-    private javax.swing.JTextField reserveBox;
-    private javax.swing.JTextField rightMarginBox;
-    private javax.swing.JToggleButton rotate0;
-    private javax.swing.JToggleButton rotate180;
-    private javax.swing.JToggleButton rotate270;
-    private javax.swing.JToggleButton rotate90;
-    private javax.swing.JTextField topMarginBox;
-    private javax.swing.JTextField widthBox;
-    private javax.swing.JTextField xBox;
-    private javax.swing.JCheckBox xExpandToFitBox;
-    private javax.swing.JTextField yBox;
-    private javax.swing.JCheckBox yExpandToFitBox;
 
 }

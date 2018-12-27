@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -63,15 +63,13 @@ public class LayoutPropertiesTab extends JPanel implements Dockable {
         setMinimumSize(new Dimension(0, 0));
     }
 
-    public void setProperties(final Set widgets) {
+    public void setProperties(final Set<IWidget> widgets) {
         if (widgets.isEmpty() || (widgets.iterator().next() instanceof Page)) {
             removeAll();
         } else {
             final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
 
-            for (final Object widget1 : widgets) {
-                final IWidget widget = (IWidget) widget1;
-
+            for (final IWidget widget : widgets) {
                 final Document properties = widget.getProperties();
 
                 final Element layoutProperties = (Element) properties.getElementsByTagName("layout").item(0);

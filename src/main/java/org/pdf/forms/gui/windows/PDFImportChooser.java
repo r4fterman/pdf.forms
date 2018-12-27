@@ -1,4 +1,4 @@
-/**
+/*
 * ===========================================
 * PDF Forms Designer
 * ===========================================
@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -33,140 +33,139 @@ package org.pdf.forms.gui.windows;
 
 import java.awt.Component;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+
+import org.jdesktop.layout.GroupLayout;
 
 public class PDFImportChooser extends javax.swing.JDialog {
 
-    public static int IMPORT_NEW = 0;
-    public static int IMPORT_EXISTING = 1;
-    public static int IMPORT_CANCELED = 2;
+    public static final int IMPORT_NEW = 0;
+    public static final int IMPORT_EXISTING = 1;
 
     private int importType;
+    private JRadioButton importIntoExistingButton;
+    private JRadioButton importIntoNewButton;
 
     /**
-     * Creates new form PDFImportChooser
+     * Creates new form PDFImportChooser.
      */
-    public PDFImportChooser(Component parent) {
-		super((Frame) parent, "Import Type", true);
+    public PDFImportChooser(final Component parent) {
+        super((Frame) parent, "Import Type", true);
 
         initComponents();
 
         importIntoNewButton.setSelected(true);
-        
+
         setLocationRelativeTo(parent);
     }
 
     private void initComponents() {
-        buttonGroup1 = new javax.swing.ButtonGroup();
-        jLabel1 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
-        importIntoExistingButton = new javax.swing.JRadioButton();
-        importIntoNewButton = new javax.swing.JRadioButton();
-        cancelButton = new javax.swing.JButton();
-        okButton = new javax.swing.JButton();
+        final ButtonGroup buttonGroup1 = new ButtonGroup();
+        final JLabel jLabel1 = new JLabel();
+        final JPanel jPanel1 = new JPanel();
+        importIntoExistingButton = new JRadioButton();
+        importIntoNewButton = new JRadioButton();
+        final JButton cancelButton = new JButton();
+        final JButton okButton = new JButton();
 
         setResizable(false);
         jLabel1.setText("How would you like to import the PDF document?");
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Import Type"));
+        jPanel1.setBorder(BorderFactory.createTitledBorder("Import Type"));
         buttonGroup1.add(importIntoExistingButton);
         importIntoExistingButton.setSelected(true);
         importIntoExistingButton.setText("Import PDF into existing document");
-        importIntoExistingButton.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        importIntoExistingButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         importIntoExistingButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
 
         buttonGroup1.add(importIntoNewButton);
         importIntoNewButton.setText("Import PDF into new document");
-        importIntoNewButton.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        importIntoNewButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         importIntoNewButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
 
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        final GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-                jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
                         .add(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                .add(importIntoExistingButton)
-                                .add(importIntoNewButton))
-                        .addContainerGap(150, Short.MAX_VALUE))
+                                .addContainerGap()
+                                .add(jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
+                                        .add(importIntoExistingButton)
+                                        .add(importIntoNewButton))
+                                .addContainerGap(150, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
-                jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
                         .add(jPanel1Layout.createSequentialGroup()
-                        .add(importIntoExistingButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(importIntoNewButton))
+                                .add(importIntoExistingButton)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(importIntoNewButton))
         );
 
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelClicked(evt);
-            }
-        });
+        cancelButton.addActionListener(this::cancelClicked);
 
         okButton.setText("OK");
-        okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okClicked(evt);
-            }
-        });
+        okButton.addActionListener(this::okClicked);
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
+        final GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                                .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 65, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(cancelButton)
-                                .addContainerGap())
-                        .add(layout.createSequentialGroup()
-                                .add(jLabel1)
-                                .add(136, 136, 136))
-                        .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())))
+                                .addContainerGap()
+                                .add(layout.createParallelGroup(GroupLayout.LEADING)
+                                        .add(GroupLayout.TRAILING, layout.createSequentialGroup()
+                                                .add(okButton, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(cancelButton)
+                                                .addContainerGap())
+                                        .add(layout.createSequentialGroup()
+                                                .add(jLabel1)
+                                                .add(136, 136, 136))
+                                        .add(GroupLayout.TRAILING, layout.createSequentialGroup()
+                                                .add(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addContainerGap())))
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(jLabel1)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 17, Short.MAX_VALUE)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                                .add(cancelButton)
-                                .add(okButton))
-                        .addContainerGap())
+                                .addContainerGap()
+                                .add(jLabel1)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 17, Short.MAX_VALUE)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
+                                        .add(cancelButton)
+                                        .add(okButton))
+                                .addContainerGap())
         );
         pack();
     }
 
-    private void cancelClicked(java.awt.event.ActionEvent evt) {
-        importType = IMPORT_CANCELED;
+    private void cancelClicked(final ActionEvent evt) {
+        this.importType = 2;
         setVisible(false);
     }
 
-    private void okClicked(java.awt.event.ActionEvent evt) {
-        importType = importIntoExistingButton.isSelected() ? IMPORT_EXISTING : IMPORT_NEW;
+    private void okClicked(final ActionEvent evt) {
+        if (importIntoExistingButton.isSelected()) {
+            this.importType = IMPORT_EXISTING;
+        } else {
+            this.importType = IMPORT_NEW;
+        }
         setVisible(false);
     }
 
     public int getImportType() {
         return importType;
     }
-
-    private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton cancelButton;
-    private javax.swing.JRadioButton importIntoExistingButton;
-    private javax.swing.JRadioButton importIntoNewButton;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JButton okButton;
 
 }

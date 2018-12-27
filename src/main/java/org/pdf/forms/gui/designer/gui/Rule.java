@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -46,18 +46,16 @@ public class Rule extends JComponent {
     public static final int INCH = Toolkit.getDefaultToolkit().getScreenResolution();
     public static final int HORIZONTAL = 0;
     public static final int VERTICAL = 1;
-    public static final int SIZE = 20;
+    private static final int SIZE = 20;
 
     public static final double DPI = 72;
 
-    public boolean isMetric;
+    private boolean isMetric;
 
     private final int orientation;
     private int increment;
-    private int units;
     private final int start;
     private final int end;
-    private int tickLength;
     private int incrementsPerUnit;
     private int markerLocation;
 
@@ -89,6 +87,7 @@ public class Rule extends JComponent {
     }
 
     private void setIncrementAndUnits() {
+        int units;
         if (isMetric) {
 
             incrementsPerUnit = 10;
@@ -140,6 +139,7 @@ public class Rule extends JComponent {
         String text;
 
         for (int i = start; i < end; i += increment) {
+            int tickLength;
             if (incrementCount % incrementsPerUnit == 0) {
                 tickLength = 13;
                 text = numberCount + "";

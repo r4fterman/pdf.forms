@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -57,18 +57,18 @@ public class CheckBoxIcon implements Icon {
             final Component c,
             final Graphics g,
             final int x,
-            int y) {
+            final int y) {
         final Graphics2D g2 = (Graphics2D) g;
 
         final JCheckBox checkBox = (JCheckBox) c;
 
         final int height = c.getHeight();
         if (checkBox.isSelected()) {
-            y = (height / 2) - (onImage.getHeight(null) / 2);
-            g2.drawImage(onImage, 0, y, null);
+            int y1 = (height / 2) - (onImage.getHeight(null) / 2);
+            g2.drawImage(onImage, 0, y1, null);
         } else {
-            y = (height / 2) - (offImage.getHeight(null) / 2);
-            g2.drawImage(offImage, 0, y, null);
+            int y1 = (height / 2) - (offImage.getHeight(null) / 2);
+            g2.drawImage(offImage, 0, y1, null);
         }
     }
 

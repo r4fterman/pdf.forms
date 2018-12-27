@@ -58,20 +58,20 @@ import org.w3c.dom.Node;
 public class GroupWidget implements IWidget {
 
     private List<IWidget> widgetsInGroup;
-    private int type = IWidget.GROUP;
-    private Icon icon;
+    private final int type = IWidget.GROUP;
+    private final Icon icon;
     private static int nextWidgetNumber = 1;
     private String widgetName;
 
     private Document properties;
-    private Element widgetsElement;
+    private final Element widgetsElement;
 
     private Element setupProperties() {
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder db = dbf.newDocumentBuilder();
             properties = db.newDocument();
-        } catch (ParserConfigurationException e) {
+        } catch (final ParserConfigurationException e) {
             e.printStackTrace();
         }
 
@@ -81,12 +81,12 @@ public class GroupWidget implements IWidget {
     public GroupWidget() {
         icon = new ImageIcon(getClass().getResource("/org/pdf/forms/res/Group.gif"));
 
-        String widgetName = "Group" + nextWidgetNumber;
+        final String widgetName = "Group" + nextWidgetNumber;
         nextWidgetNumber++;
 
         this.widgetName = widgetName;
 
-        Element rootElement = setupProperties();
+        final Element rootElement = setupProperties();
 
         XMLUtils.addBasicProperty(properties, "type", "GROUP", rootElement);
         XMLUtils.addBasicProperty(properties, "name", widgetName, rootElement);
@@ -94,42 +94,48 @@ public class GroupWidget implements IWidget {
         widgetsElement = XMLUtils.createAndAppendElement(properties, "widgets", rootElement);
     }
 
+    @Override
     public List<IWidget> getWidgetsInGroup() {
         return widgetsInGroup;
     }
 
+    @Override
     public void setWidgetsInGroup(final List<IWidget> widgetsInGroup) {
         this.widgetsInGroup = widgetsInGroup;
 
-        List widgets = XMLUtils.getElementsFromNodeList(widgetsElement.getChildNodes());
+        final List widgets = XMLUtils.getElementsFromNodeList(widgetsElement.getChildNodes());
 
         for (final Object widget1 : widgets) {
-            Element widget = (Element) widget1;
-            Node parent = widget.getParentNode();
+            final Element widget = (Element) widget1;
+            final Node parent = widget.getParentNode();
             parent.removeChild(widget);
         }
 
         for (final IWidget widget : widgetsInGroup) {
-            Document widgetProperties = widget.getProperties();
+            final Document widgetProperties = widget.getProperties();
 
-            Element widgetRoot = widgetProperties.getDocumentElement();
+            final Element widgetRoot = widgetProperties.getDocumentElement();
 
             widgetsElement.appendChild(properties.importNode(widgetRoot, true));
         }
     }
 
+    @Override
     public Rectangle getBounds() {
         return WidgetSelection.getMultipleWidgetBounds(new HashSet<>(widgetsInGroup));
     }
 
+    @Override
     public int getType() {
         return type;
     }
 
+    @Override
     public String getWidgetName() {
         return widgetName;
     }
 
+    @Override
     public Icon getIcon() {
         return icon;
     }
@@ -138,160 +144,200 @@ public class GroupWidget implements IWidget {
         this.widgetName = widgetName;
     }
 
+    @Override
     public Document getProperties() {
         return properties;
     }
 
     ////////////////////////////////////////////////////////////////////////
 
+    @Override
     public void setAllProperties() {
 
     }
 
+    @Override
     public int getArrayNumber() {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void setParagraphProperties(
             final Element paragraphProperties,
             final int currentlyEditing) {
     }
 
+    @Override
     public void setLayoutProperties(final Element paragraphProperties) {
     }
 
+    @Override
     public void setFontProperties(
             final Element parentElement,
             final int currentlyEditing) {
     }
 
-    public void setCaptionProperties(Element captionProperties) {
+    @Override
+    public void setCaptionProperties(final Element captionProperties) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public JComponent getWidget() {
         return null;
     }
 
+    @Override
     public void setPosition(
             final int x,
             final int y) {
     }
 
+    @Override
     public void setX(final int x) {
     }
 
+    @Override
     public void setY(final int y) {
     }
 
+    @Override
     public int getX() {
         return 0;
     }
 
+    @Override
     public int getY() {
         return 0;
     }
 
+    @Override
     public int getWidth() {
         return 0;
     }
 
+    @Override
     public int getHeight() {
         return 0;
     }
 
+    @Override
     public void setSize(
             final int width,
             final int height) {
     }
 
+    @Override
     public int getResizeTypeForSplitComponent(
             final int mouseX,
             final int mouseY) {
         return 0;
     }
 
+    @Override
     public boolean allowEditCaptionAndValue() {
         return false;
     }
 
+    @Override
     public boolean allowEditOfCaptionOnClick() {
         return false;
     }
 
+    @Override
     public Dimension getBoxSize() {
         return null;
     }
 
+    @Override
     public int getWidgetType() {
         return type;
     }
 
+    @Override
     public JComponent getValueComponent() {
         return null;
     }
 
+    @Override
     public PdfCaption getCaptionComponent() {
         return null;
     }
 
+    @Override
     public void setLastX(final int lastX) {
     }
 
+    @Override
     public void setLastY(final int lastY) {
     }
 
+    @Override
     public int getLastX() {
         return 0;
     }
 
+    @Override
     public int getLastY() {
         return 0;
     }
 
+    @Override
     public Point getAbsoluteLocationsOfCaption() {
         return null;
     }
 
+    @Override
     public Point getAbsoluteLocationsOfValue() {
         return null;
     }
 
+    @Override
     public boolean isComponentSplit() {
         return false;
     }
 
+    @Override
     public double getResizeHeightRatio() {
         return 0;
     }
 
+    @Override
     public double getResizeWidthRatio() {
         return 0;
     }
 
+    @Override
     public void setResizeHeightRatio(final double resizeHeightRatio) {
     }
 
+    @Override
     public void setResizeWidthRatio(final double resizeWidthRation) {
     }
 
+    @Override
     public double getResizeFromTopRatio() {
         return 0;
     }
 
+    @Override
     public double getResizeFromLeftRatio() {
         return 0;
     }
 
+    @Override
     public void setResizeFromTopRatio(final double resizeHeightRatio) {
     }
 
+    @Override
     public void setResizeFromLeftRatio(final double resizeWidthRation) {
     }
 
+    @Override
     public void setObjectProperties(final Element parentElement) {
     }
 
+    @Override
     public void setBorderAndBackgroundProperties(final Element borderProperties) {
     }
 

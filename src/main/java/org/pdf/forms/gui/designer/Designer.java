@@ -1,4 +1,4 @@
-/**
+/*
  * ===========================================
  * PDF Forms Designer
  * ===========================================
@@ -43,7 +43,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -191,7 +190,7 @@ public class Designer extends PdfDecoder implements IDesigner {
         final Graphics2D g2 = (Graphics2D) g;
 
         final AffineTransform transform = g2.getTransform();
-        //		transform.scale(scale, scale); @scale
+        //  transform.scale(scale, scale); @scale
         g2.setTransform(transform);
 
         /*
@@ -210,7 +209,7 @@ public class Designer extends PdfDecoder implements IDesigner {
         if (selectedWidgets.isEmpty()) {
             selectedWidget = null;
         } else {
-            selectedWidget = (IWidget) selectedWidgets.iterator().next();
+            selectedWidget = selectedWidgets.iterator().next();
         }
 
         /*
@@ -249,7 +248,9 @@ public class Designer extends PdfDecoder implements IDesigner {
         final int dragBoxX = dragBoxMouseLocation.x - (boxSize.width / 2);
         final int dragBoxY = dragBoxMouseLocation.y - (boxSize.height / 2);
 
-        final float[] dashPattern = { 1, 1 };
+        final float[] dashPattern = {
+                1,
+                1 };
         g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 1,
                 dashPattern, 0));
@@ -278,16 +279,16 @@ public class Designer extends PdfDecoder implements IDesigner {
             double width = (double) boxSize.width / (double) units;
             double height = (double) boxSize.height / (double) units;
 
-            width = round(width, 3);
-            height = round(height, 3);
+            width = round(width);
+            height = round(height);
 
             text = width + "cm x " + height + "cm";
         } else {
             double xLocation = (double) (boxSize.x - inset) / (double) units;
             double yLocation = (double) (boxSize.y - inset) / (double) units;
 
-            xLocation = round(xLocation, 3);
-            yLocation = round(yLocation, 3);
+            xLocation = round(xLocation);
+            yLocation = round(yLocation);
 
             text = xLocation + "cm , " + yLocation + "cm";
         }
@@ -305,17 +306,16 @@ public class Designer extends PdfDecoder implements IDesigner {
         g2.translate(-translateX, -translateY);
     }
 
-    private double round(
-            double number,
-            final int decPlaces) {
+    private double round(final double number) {
 
-        final double exponential = Math.pow(10, decPlaces);
+        final double exponential = Math.pow(10, 3);
 
-        number *= exponential;
-        number = Math.round(number);
-        number /= exponential;
+        double value = number;
+        value *= exponential;
+        value = Math.round(value);
+        value /= exponential;
 
-        return number;
+        return value;
     }
 
     @Override
@@ -329,7 +329,8 @@ public class Designer extends PdfDecoder implements IDesigner {
 
         currentlyOpenPDF = null;
 
-        pageHeight = pageWidth = 0;
+        pageHeight = 0;
+        pageWidth = 0;
 
         closePdfFile();
 
@@ -355,7 +356,7 @@ public class Designer extends PdfDecoder implements IDesigner {
 
         widgets = page.getWidgets();
 
-        //		widgetsInAddedOrder = page.getWidgetsInAddedOrder();
+        //  widgetsInAddedOrder = page.getWidgetsInAddedOrder();
 
         selectedWidgets.clear();
 
@@ -398,8 +399,8 @@ public class Designer extends PdfDecoder implements IDesigner {
                 //
                 //                    for (Iterator it = widgestList.iterator(); it.hasNext();) {
                 //                        IWidget widget = (IWidget) it.next();
-                //						if (widget != null)
-                //							addWidget(widget);
+                //      if (widget != null)
+                //       addWidget(widget);
                 //                    }
                 //
                 //                    page.setWidgetsAddedToDesigner(true);
@@ -413,19 +414,18 @@ public class Designer extends PdfDecoder implements IDesigner {
     }
 
     //    private void setDisplayForms(boolean displayForms) {
-    //		this.displayForms = displayForms;
-    //	}
+    //  this.displayForms = displayForms;
+    // }
 
     @Override
     public IWidget getWidgetAt(
             final int x,
             final int y) {
 
-        for (final ListIterator iter = widgets.listIterator(widgets.size()); iter.hasPrevious(); ) {
-            final IWidget widget = (IWidget) iter.previous();
+        for (int i = widgets.size() - 1; i > 0; i--) {
+            final IWidget widget = widgets.get(i);
 
-            if (widget.getBounds().contains(x, y))//if (widget.getBounds().contains(x / scale, y / scale)) @scale
-            {
+            if (widget.getBounds().contains(x, y)) {
                 return widget;
             }
         }
@@ -450,13 +450,13 @@ public class Designer extends PdfDecoder implements IDesigner {
             final int index,
             final IWidget w) {
         widgets.add(index, w);
-        //		widgetsInAddedOrder.add(w);
+        //  widgetsInAddedOrder.add(w);
     }
 
     @Override
     public void removeSelectedWidgets() {
         this.widgets.removeAll(selectedWidgets);
-        //		this.widgetsInAddedOrder.removeAll(selectedWidgets);
+        //  this.widgetsInAddedOrder.removeAll(selectedWidgets);
 
         removeWidgetsFromHierarchy(selectedWidgets);
     }
@@ -470,10 +470,10 @@ public class Designer extends PdfDecoder implements IDesigner {
     @Override
     public void removeWidget(
             final IWidget widgetToRemove,
-            final List widgets) {
+            final List<IWidget> widgets) {
 
-        for (final Iterator it = widgets.iterator(); it.hasNext(); ) {
-            final IWidget w = (IWidget) it.next();
+        for (final Iterator<IWidget> it = widgets.iterator(); it.hasNext();) {
+            final IWidget w = it.next();
 
             if (w.getType() == IWidget.GROUP) {
                 removeWidget(widgetToRemove, w.getWidgetsInGroup());

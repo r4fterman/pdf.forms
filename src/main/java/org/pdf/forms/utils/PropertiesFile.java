@@ -50,7 +50,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * holds values stored in XML file on disk
+ * holds values stored in XML file on disk.
  */
 public abstract class PropertiesFile {
 
@@ -59,11 +59,11 @@ public abstract class PropertiesFile {
 
     private String configFile = userDir + separator;
 
-    protected Document doc;
+    private Document doc;
 
-    protected int noOfRecentDocs = 6;
+    private final int noOfRecentDocs = 6;
 
-    public PropertiesFile(final String fileName) {
+    PropertiesFile(final String fileName) {
 
         configFile += fileName;
 
@@ -93,15 +93,13 @@ public abstract class PropertiesFile {
 
         } catch (final Exception e) {
             LogWriter.writeLog("Exception " + e + " generating properties file");
-            //<start-full><start-demo>
             e.printStackTrace();
-            //<end-demo><end-full>
         }
     }
 
     public abstract boolean checkAllElementsPresent() throws Exception;
 
-    protected void writeDoc() throws Exception {
+    void writeDoc() throws Exception {
         final InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
 
         final TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -109,7 +107,7 @@ public abstract class PropertiesFile {
         transformer.transform(new DOMSource(doc), new StreamResult(configFile));
     }
 
-    protected void removeOldFiles(final Element recentElement) throws Exception {
+    void removeOldFiles(final Element recentElement) {
         final NodeList allRecentDocs = recentElement.getElementsByTagName("*");
 
         while (allRecentDocs.getLength() > noOfRecentDocs) {
@@ -117,9 +115,9 @@ public abstract class PropertiesFile {
         }
     }
 
-    protected void checkExists(
+    void checkExists(
             final String file,
-            final Element recentElement) throws Exception {
+            final Element recentElement) {
         final NodeList allRecentDocs = recentElement.getElementsByTagName("*");
 
         for (int i = 0; i < allRecentDocs.getLength(); i++) {
@@ -134,7 +132,7 @@ public abstract class PropertiesFile {
     }
 
     public String getValue(final String elementName) {
-        NamedNodeMap attrs;
+        final NamedNodeMap attrs;
         try {
             final NodeList nl = doc.getElementsByTagName(elementName);
             final Element element = (Element) nl.item(0);
@@ -144,9 +142,7 @@ public abstract class PropertiesFile {
             attrs = element.getAttributes();
 
         } catch (final Exception e) {
-            //<start-full><start-demo>
             e.printStackTrace();
-            //<end-demo><end-full>
             LogWriter.writeLog("Exception " + e + " generating properties file");
             return "";
         }
@@ -154,9 +150,6 @@ public abstract class PropertiesFile {
         return attrs.getNamedItem("value").getNodeValue();
     }
 
-    /* (non-Javadoc)
-     * @see org.jpedal.examples.simpleviewer.utils.PropertiesFile#setValue(java.lang.String, java.lang.String)
-     */
     public void setValue(
             final String elementName,
             final String newValue) {
@@ -168,13 +161,23 @@ public abstract class PropertiesFile {
             writeDoc();
         } catch (final Exception e) {
             LogWriter.writeLog("Exception " + e + " setting value in properties file");
-            //<start-full><start-demo>
             e.printStackTrace();
-            //<end-demo><end-full>
         }
     }
 
     public int getNoRecentDocumentsToDisplay() {
         return this.noOfRecentDocs;
+    }
+
+    public Document getDoc() {
+        return doc;
+    }
+
+    public void setDoc(final Document doc) {
+        this.doc = doc;
+    }
+
+    public int getNoOfRecentDocs() {
+        return noOfRecentDocs;
     }
 }

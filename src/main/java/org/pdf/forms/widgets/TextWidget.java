@@ -53,19 +53,19 @@ public class TextWidget extends Widget implements IWidget {
             final JComponent component) {
         super(type, baseComponent, component, "/org/pdf/forms/res/Text.gif");
 
-        isComponentSplit = false;
-        allowEditCaptionAndValue = false;
-        allowEditOfCaptionOnClick = true;
+        setComponentSplit(false);
+        setAllowEditCaptionAndValue(false);
+        setAllowEditOfCaptionOnClick(true);
 
         final String widgetName = "Text" + nextWidgetNumber;
         nextWidgetNumber++;
 
-        this.widgetName = widgetName;
+        setWidgetName(widgetName);
 
         final Element rootElement = setupProperties();
 
-        XMLUtils.addBasicProperty(properties, "type", "TEXT", rootElement);
-        XMLUtils.addBasicProperty(properties, "name", widgetName, rootElement);
+        XMLUtils.addBasicProperty(getProperties(), "type", "TEXT", rootElement);
+        XMLUtils.addBasicProperty(getProperties(), "name", widgetName, rootElement);
 
         addProperties(rootElement);
     }
@@ -78,22 +78,22 @@ public class TextWidget extends Widget implements IWidget {
 
         super(type, baseComponent, component, "/org/pdf/forms/res/Text.gif");
 
-        isComponentSplit = false;
-        allowEditCaptionAndValue = false;
-        allowEditOfCaptionOnClick = true;
+        setComponentSplit(false);
+        setAllowEditCaptionAndValue(false);
+        setAllowEditOfCaptionOnClick(true);
 
-        this.widgetName = XMLUtils.getAttributeFromChildElement(root, "Name");
+        setWidgetName(XMLUtils.getAttributeFromChildElement(root, "Name"));
 
         final Element rootElement = setupProperties();
-        final Node newRoot = properties.importNode(root, true);
+        final Node newRoot = getProperties().importNode(root, true);
 
-        properties.replaceChild(newRoot, rootElement);
+        getProperties().replaceChild(newRoot, rootElement);
 
         setAllProperties();
     }
 
     private void addProperties(final Element rootElement) {
-        final Element propertiesElement = XMLUtils.createAndAppendElement(properties, "properties", rootElement);
+        final Element propertiesElement = XMLUtils.createAndAppendElement(getProperties(), "properties", rootElement);
 
         addFontProperties(propertiesElement);
 
@@ -109,68 +109,68 @@ public class TextWidget extends Widget implements IWidget {
     }
 
     private void addCaptionProperties(final Element propertiesElement) {
-        final Element captionElement = XMLUtils.createAndAppendElement(properties, "caption_properties", propertiesElement);
-        XMLUtils.addBasicProperty(properties, "Text", "Text", captionElement);
+        final Element captionElement = XMLUtils.createAndAppendElement(getProperties(), "caption_properties", propertiesElement);
+        XMLUtils.addBasicProperty(getProperties(), "Text", "Text", captionElement);
     }
 
     private void addFontProperties(final Element propertiesElement) {
-        final Element fontElement = XMLUtils.createAndAppendElement(properties, "font", propertiesElement);
+        final Element fontElement = XMLUtils.createAndAppendElement(getProperties(), "font", propertiesElement);
 
-        final Element caption = XMLUtils.createAndAppendElement(properties, "font_caption", fontElement);
-        XMLUtils.addBasicProperty(properties, "Font Name", FontHandler.getInstance().getDefaultFont().getFontName(), caption);
-        XMLUtils.addBasicProperty(properties, "Font Size", "11", caption);
-        XMLUtils.addBasicProperty(properties, "Font Style", "0", caption);
-        XMLUtils.addBasicProperty(properties, "Underline", "0", caption);
-        XMLUtils.addBasicProperty(properties, "Strikethrough", "0", caption);
-        XMLUtils.addBasicProperty(properties, "Color", Color.BLACK.getRGB() + "", caption);
+        final Element caption = XMLUtils.createAndAppendElement(getProperties(), "font_caption", fontElement);
+        XMLUtils.addBasicProperty(getProperties(), "Font Name", FontHandler.getInstance().getDefaultFont().getFontName(), caption);
+        XMLUtils.addBasicProperty(getProperties(), "Font Size", "11", caption);
+        XMLUtils.addBasicProperty(getProperties(), "Font Style", "0", caption);
+        XMLUtils.addBasicProperty(getProperties(), "Underline", "0", caption);
+        XMLUtils.addBasicProperty(getProperties(), "Strikethrough", "0", caption);
+        XMLUtils.addBasicProperty(getProperties(), "Color", Color.BLACK.getRGB() + "", caption);
     }
 
     private void addObjectProperties(final Element propertiesElement) {
-        final Element objectElement = XMLUtils.createAndAppendElement(properties, "object", propertiesElement);
+        final Element objectElement = XMLUtils.createAndAppendElement(getProperties(), "object", propertiesElement);
 
-        final Element fieldElement = XMLUtils.createAndAppendElement(properties, "field", objectElement);
-        XMLUtils.addBasicProperty(properties, "Presence", "Visible", fieldElement);
+        final Element fieldElement = XMLUtils.createAndAppendElement(getProperties(), "field", objectElement);
+        XMLUtils.addBasicProperty(getProperties(), "Presence", "Visible", fieldElement);
     }
 
     private void addLayoutProperties(final Element propertiesElement) {
-        final Element layoutElement = XMLUtils.createAndAppendElement(properties, "layout", propertiesElement);
+        final Element layoutElement = XMLUtils.createAndAppendElement(getProperties(), "layout", propertiesElement);
 
-        final Element sizeAndPositionElement = XMLUtils.createAndAppendElement(properties, "sizeandposition", layoutElement);
-        XMLUtils.addBasicProperty(properties, "X", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Width", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Y", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Height", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Expand to fit", "false", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Expand to fit", "false", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Anchor", "Top Left", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Rotation", "0", sizeAndPositionElement);
+        final Element sizeAndPositionElement = XMLUtils.createAndAppendElement(getProperties(), "sizeandposition", layoutElement);
+        XMLUtils.addBasicProperty(getProperties(), "X", "", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Width", "", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Y", "", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Height", "", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Expand to fit", "false", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Expand to fit", "false", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Anchor", "Top Left", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Rotation", "0", sizeAndPositionElement);
 
-        final Element margins = XMLUtils.createAndAppendElement(properties, "margins", layoutElement);
-        XMLUtils.addBasicProperty(properties, "Left", "2", margins);
-        XMLUtils.addBasicProperty(properties, "Right", "4", margins);
-        XMLUtils.addBasicProperty(properties, "Top", "2", margins);
-        XMLUtils.addBasicProperty(properties, "Bottom", "4", margins);
+        final Element margins = XMLUtils.createAndAppendElement(getProperties(), "margins", layoutElement);
+        XMLUtils.addBasicProperty(getProperties(), "Left", "2", margins);
+        XMLUtils.addBasicProperty(getProperties(), "Right", "4", margins);
+        XMLUtils.addBasicProperty(getProperties(), "Top", "2", margins);
+        XMLUtils.addBasicProperty(getProperties(), "Bottom", "4", margins);
     }
 
     private void addBorderProperties(final Element propertiesElement) {
-        final Element borderElement = XMLUtils.createAndAppendElement(properties, "border", propertiesElement);
+        final Element borderElement = XMLUtils.createAndAppendElement(getProperties(), "border", propertiesElement);
 
-        final Element borders = XMLUtils.createAndAppendElement(properties, "borders", borderElement);
-        XMLUtils.addBasicProperty(properties, "Border Style", "None", borders);
-        XMLUtils.addBasicProperty(properties, "Border Width", "1", borders);
-        XMLUtils.addBasicProperty(properties, "Border Color", Color.BLACK.getRGB() + "", borders);
+        final Element borders = XMLUtils.createAndAppendElement(getProperties(), "borders", borderElement);
+        XMLUtils.addBasicProperty(getProperties(), "Border Style", "None", borders);
+        XMLUtils.addBasicProperty(getProperties(), "Border Width", "1", borders);
+        XMLUtils.addBasicProperty(getProperties(), "Border Color", Color.BLACK.getRGB() + "", borders);
 
-        final Element backgorundFill = XMLUtils.createAndAppendElement(properties, "backgroundfill", borderElement);
-        XMLUtils.addBasicProperty(properties, "Style", "Solid", backgorundFill);
-        XMLUtils.addBasicProperty(properties, "Fill Color", Color.WHITE.getRGB() + "", backgorundFill);
+        final Element backgorundFill = XMLUtils.createAndAppendElement(getProperties(), "backgroundfill", borderElement);
+        XMLUtils.addBasicProperty(getProperties(), "Style", "Solid", backgorundFill);
+        XMLUtils.addBasicProperty(getProperties(), "Fill Color", Color.WHITE.getRGB() + "", backgorundFill);
     }
 
     private void addParagraphProperties(final Element propertiesElement) {
-        final Element paragraphElement = XMLUtils.createAndAppendElement(properties, "paragraph", propertiesElement);
+        final Element paragraphElement = XMLUtils.createAndAppendElement(getProperties(), "paragraph", propertiesElement);
 
-        final Element value = XMLUtils.createAndAppendElement(properties, "paragraph_caption", paragraphElement);
-        XMLUtils.addBasicProperty(properties, "Horizontal Alignment", "left", value);
-        XMLUtils.addBasicProperty(properties, "Vertical Alignment", "center", value);
+        final Element value = XMLUtils.createAndAppendElement(getProperties(), "paragraph_caption", paragraphElement);
+        XMLUtils.addBasicProperty(getProperties(), "Horizontal Alignment", "left", value);
+        XMLUtils.addBasicProperty(getProperties(), "Vertical Alignment", "center", value);
     }
 
     @Override
@@ -178,7 +178,7 @@ public class TextWidget extends Widget implements IWidget {
             final Element paragraphPropertiesElement,
             final int currentlyEditing) {
 
-        final IPdfComponent text = (IPdfComponent) baseComponent;
+        final IPdfComponent text = (IPdfComponent) getBaseComponent();
 
         final Element paragraphCaptionElement =
                 (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
@@ -197,7 +197,7 @@ public class TextWidget extends Widget implements IWidget {
             final Element fontProperties,
             final int currentlyEditing) {
 
-        final IPdfComponent text = (IPdfComponent) baseComponent;
+        final IPdfComponent text = (IPdfComponent) getBaseComponent();
 
         final Element captionProperties = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
 
@@ -208,7 +208,7 @@ public class TextWidget extends Widget implements IWidget {
 
     @Override
     public void setCaptionProperties(final Element captionProperties) {
-        final Element captionElement = (Element) properties.getElementsByTagName("caption_properties").item(0);
+        final Element captionElement = (Element) getProperties().getElementsByTagName("caption_properties").item(0);
 
         final String captionText = XMLUtils.getAttributeFromChildElement(captionElement, "Text");
 
@@ -219,7 +219,7 @@ public class TextWidget extends Widget implements IWidget {
 
     @Override
     public PdfCaption getCaptionComponent() {
-        return (PdfCaption) baseComponent;
+        return (PdfCaption) getBaseComponent();
     }
 
     @Override

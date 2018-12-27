@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -58,15 +58,21 @@ public interface IDesigner {
 
     void displayPage(Page page);
 
-    IWidget getWidgetAt(int x, int y);
+    IWidget getWidgetAt(
+            int x,
+            int y);
 
     void addWidget(IWidget widget);
 
-    void addWidget(int index, IWidget w);
+    void addWidget(
+            int index,
+            IWidget w);
 
     void removeSelectedWidgets();
 
-    void removeWidget(IWidget widgetToRemove, List widgets);
+    void removeWidget(
+            IWidget widgetToRemove,
+            List<IWidget> widgets);
 
     Set<IWidget> getSelectedWidgets();
 
@@ -112,7 +118,11 @@ public interface IDesigner {
 
     int getHeight();
 
-    void repaint(int x, int y, int width, int height);
+    void repaint(
+            int x,
+            int y,
+            int width,
+            int height);
 
     Component add(Component component);
 
@@ -124,7 +134,7 @@ public interface IDesigner {
 
     void close();
 
-	void updateUI();
+    void updateUI();
 
     void setTransferHandler(TransferHandler newHandler);
 

@@ -44,9 +44,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- * holds values stored in XML file on disk
+ * holds values stored in XML file on disk.
  */
-public class CustomWidgetsFile extends PropertiesFile {
+public final class CustomWidgetsFile extends PropertiesFile {
 
     private static CustomWidgetsFile instance;
 
@@ -55,9 +55,8 @@ public class CustomWidgetsFile extends PropertiesFile {
     }
 
     public static CustomWidgetsFile getInstance() {
-        if (instance == null)
-        // it's ok, we can call this constructor
-        {
+        if (instance == null) {
+            // it's ok, we can call this constructor
             instance = new CustomWidgetsFile(".custom_components.xml");
         }
 
@@ -70,7 +69,7 @@ public class CustomWidgetsFile extends PropertiesFile {
         //assume true and set to false if wrong
         boolean hasAllElements = true;
 
-        final NodeList allElements = doc.getElementsByTagName("*");
+        final NodeList allElements = getDoc().getElementsByTagName("*");
         final List<String> elementsInTree = new ArrayList<>(allElements.getLength());
 
         for (int i = 0; i < allElements.getLength(); i++) {
@@ -81,10 +80,10 @@ public class CustomWidgetsFile extends PropertiesFile {
             final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             final DocumentBuilder db = dbf.newDocumentBuilder();
 
-            doc = db.newDocument();
+            setDoc(db.newDocument());
 
-            final Element customComponentElement = doc.createElement("custom_components");
-            doc.appendChild(customComponentElement);
+            final Element customComponentElement = getDoc().createElement("custom_components");
+            getDoc().appendChild(customComponentElement);
 
             hasAllElements = false;
         }
@@ -93,7 +92,7 @@ public class CustomWidgetsFile extends PropertiesFile {
     }
 
     public boolean isNameTaken(final String name) {
-        final List components = XMLUtils.getElementsFromNodeList(doc.getElementsByTagName("custom_component"));
+        final List components = XMLUtils.getElementsFromNodeList(getDoc().getElementsByTagName("custom_component"));
 
         for (final Object component : components) {
             final Element element = (Element) component;
@@ -111,16 +110,16 @@ public class CustomWidgetsFile extends PropertiesFile {
             final String name,
             final Set<IWidget> selectedWidgets) {
 
-        final Element customComponentElement = XMLUtils.createAndAppendElement(doc, "custom_component", doc.getDocumentElement());
+        final Element customComponentElement = XMLUtils.createAndAppendElement(getDoc(), "custom_component", getDoc().getDocumentElement());
 
-        XMLUtils.addBasicProperty(doc, "name", name, customComponentElement);
+        XMLUtils.addBasicProperty(getDoc(), "name", name, customComponentElement);
 
         for (final IWidget widget : selectedWidgets) {
             final Document widgetProperties = widget.getProperties();
 
             final Element widgetRoot = widgetProperties.getDocumentElement();
 
-            customComponentElement.appendChild(doc.importNode(widgetRoot, true));
+            customComponentElement.appendChild(getDoc().importNode(widgetRoot, true));
         }
 
         try {

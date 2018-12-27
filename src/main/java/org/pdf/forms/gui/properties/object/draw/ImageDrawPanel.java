@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -31,14 +31,23 @@
 */
 package org.pdf.forms.gui.properties.object.draw;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 
+import org.jdesktop.layout.GroupLayout;
+import org.jdesktop.layout.LayoutStyle;
 import org.jpedal.examples.simpleviewer.utils.FileFilterer;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
@@ -51,73 +60,77 @@ public class ImageDrawPanel extends javax.swing.JPanel {
 
     private IDesigner designerPanel;
 
+    private JTextField imageLocationBox;
+    private JComboBox<String> sizingBox;
+
     /**
-     * Creates new form Image
+     * Creates new form Image.
      */
     public ImageDrawPanel() {
         initComponents();
     }
 
     private void initComponents() {
-        jLabel1 = new javax.swing.JLabel();
-        imageLocationBox = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
+        final JLabel jLabel1 = new JLabel();
+        imageLocationBox = new JTextField();
+        final JButton jButton1 = new JButton();
+        final JLabel jLabel2 = new JLabel();
         sizingBox = new javax.swing.JComboBox<>();
 
         jLabel1.setText("Location:");
 
-        imageLocationBox.addFocusListener(new java.awt.event.FocusAdapter() {
+        imageLocationBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(final java.awt.event.FocusEvent evt) {
                 updateImageLocation(evt);
             }
         });
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/pdf/forms/res/open.gif")));
-        jButton1.addActionListener(evt -> loadImageFileChooser(evt));
+        jButton1.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/open.gif")));
+        jButton1.addActionListener(this::loadImageFileChooser);
 
         jLabel2.setText("Sizing:");
 
-        sizingBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Stretch Image To Fit", "Use Image Size" }));
-        sizingBox.addActionListener(evt -> updateSizing(evt));
+        sizingBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                "Stretch Image To Fit", "Use Image Size" }));
+        sizingBox.addActionListener(this::updateSizing);
 
-        final org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        final GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                .add(layout.createParallelGroup(GroupLayout.LEADING)
                                         .add(jLabel1)
                                         .add(jLabel2))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(GroupLayout.LEADING, false)
                                         .add(layout.createSequentialGroup()
-                                                .add(imageLocationBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 182, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                .add(jButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                        .add(sizingBox, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .add(imageLocationBox, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(LayoutStyle.RELATED)
+                                                .add(jButton1, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
+                                        .add(sizingBox, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap(19, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(jButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 20, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(layout.createParallelGroup(GroupLayout.LEADING)
+                                        .add(jButton1, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+                                        .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                                 .add(jLabel1)
-                                                .add(imageLocationBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                                .add(imageLocationBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
                                 .add(14, 14, 14)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel2)
-                                        .add(sizingBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                        .add(sizingBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(42, Short.MAX_VALUE))
         );
     }
 
-    private void updateSizing(final java.awt.event.ActionEvent evt) {
+    private void updateSizing(final ActionEvent evt) {
         final Set<IWidget> widgets = widgetsAndProperties.keySet();
 
         final String sizing = (String) sizingBox.getSelectedItem();
@@ -137,13 +150,14 @@ public class ImageDrawPanel extends javax.swing.JPanel {
         designerPanel.repaint();
     }
 
-    private void loadImageFileChooser(final java.awt.event.ActionEvent evt) {
+    private void loadImageFileChooser(final ActionEvent evt) {
         final String path = imageLocationBox.getText();
         final JFileChooser chooser = new JFileChooser(path);
 
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        final String[] images = new String[] { "gif", "jpeg", "png" }; // gif jpeg png
+        final String[] images = new String[] {
+                "gif", "jpeg", "png" }; // gif jpeg png
         chooser.addChoosableFileFilter(new FileFilterer(images, "Images (gif, jpeg, png)"));
 
         final int state = chooser.showOpenDialog(null);
@@ -206,7 +220,14 @@ public class ImageDrawPanel extends javax.swing.JPanel {
             }
 
             imageLocationBox.setText(locationToUse);
-            setComboValue(sizingBox, sizingToUse.equals("mixed") ? null : sizingToUse);
+
+            final String value;
+            if (sizingToUse.equals("mixed")) {
+                value = null;
+            } else {
+                value = sizingToUse;
+            }
+            setComboValue(sizingBox, value);
         }
     }
 
@@ -228,11 +249,5 @@ public class ImageDrawPanel extends javax.swing.JPanel {
     public void setDesignerPanel(final IDesigner designerPanel) {
         this.designerPanel = designerPanel;
     }
-
-    private javax.swing.JTextField imageLocationBox;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JComboBox<String> sizingBox;
 
 }

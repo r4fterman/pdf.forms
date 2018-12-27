@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -22,8 +22,6 @@
     You should have received a copy of the GNU General Public
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
 *
 * ---------------
 * PdfButton.java
@@ -42,9 +40,11 @@ import org.pdf.forms.widgets.IWidget;
 
 public class PdfButton extends JButton implements IPdfComponent {
 
+    private static final float FONT_SIZE = 11f;
+
     public PdfButton(final String string) {
         super(string);
-        setFont(FontHandler.getInstance().getDefaultFont().deriveFont(11f));
+        setFont(FontHandler.getInstance().getDefaultFont().deriveFont(FONT_SIZE));
 
         /* needed so the background color of the button can be set */
         setContentAreaFilled(false);
@@ -112,30 +112,32 @@ public class PdfButton extends JButton implements IPdfComponent {
     @Override
     public void setUnderlineType(final int type) {
         switch (type) {
-        case IWidget.UNDERLINE_SINGLE:
-            standardUnderline = true;
-            doubleUnderline = false;
-            wordUnderline = false;
+            case IWidget.UNDERLINE_SINGLE:
+                standardUnderline = true;
+                doubleUnderline = false;
+                wordUnderline = false;
 
-            break;
-        case IWidget.UNDERLINE_DOUBLE:
-            standardUnderline = true;
-            doubleUnderline = true;
-            wordUnderline = false;
+                break;
+            case IWidget.UNDERLINE_DOUBLE:
+                standardUnderline = true;
+                doubleUnderline = true;
+                wordUnderline = false;
 
-            break;
-        case IWidget.UNDERLINE_WORD_SINGLE:
-            standardUnderline = false;
-            doubleUnderline = false;
-            wordUnderline = true;
+                break;
+            case IWidget.UNDERLINE_WORD_SINGLE:
+                standardUnderline = false;
+                doubleUnderline = false;
+                wordUnderline = true;
 
-            break;
-        case IWidget.UNDERLINE_WORD_DOUBLE:
-            standardUnderline = false;
-            doubleUnderline = true;
-            wordUnderline = true;
+                break;
+            case IWidget.UNDERLINE_WORD_DOUBLE:
+                standardUnderline = false;
+                doubleUnderline = true;
+                wordUnderline = true;
 
-            break;
+                break;
+            default:
+                break;
         }
     }
 

@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -79,18 +79,18 @@ public class HierarchyTreeCellRenderer extends DefaultTreeCellRenderer {
     @Override
     public Component getTreeCellRendererComponent(
             final JTree tree,
-            Object value,
+            final Object value,
             final boolean isSelected,
             final boolean expanded,
             final boolean leaf,
             final int row,
             final boolean hasFocus) {
 
-        value = ((DefaultMutableTreeNode) value).getUserObject();
+        final Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
 
         String s = "";
-        if (value instanceof IWidget) {
-            final IWidget w = (IWidget) value;
+        if (userObject instanceof IWidget) {
+            final IWidget w = (IWidget) userObject;
 
             s = w.getWidgetName();
 
@@ -100,15 +100,15 @@ public class HierarchyTreeCellRenderer extends DefaultTreeCellRenderer {
             }
 
             icon = w.getIcon();
-        } else if (value instanceof Page) {
-            final Page page = (Page) value;
+        } else if (userObject instanceof Page) {
+            final Page page = (Page) userObject;
 
             s = page.getPageName();
             final URL resource = getClass().getResource("/org/pdf/forms/res/Page.gif");
             icon = new ImageIcon(resource);
 
-        } else if (value.equals("Document Root")) {
-            s = value.toString();
+        } else if (userObject.equals("Document Root")) {
+            s = userObject.toString();
             final URL resource = getClass().getResource("/org/pdf/forms/res/Form.gif");
             icon = new ImageIcon(resource);
         }

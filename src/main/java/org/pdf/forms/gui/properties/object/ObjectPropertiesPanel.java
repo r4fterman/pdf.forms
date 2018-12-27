@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -55,11 +55,11 @@ import org.w3c.dom.Element;
 
 public class ObjectPropertiesPanel extends JPanel {
 
+    private final JTabbedPane tabs = new JTabbedPane();
+
     private IDesigner designerPanel;
 
-    private JTabbedPane tabs = new JTabbedPane();
-
-    public ObjectPropertiesPanel(/*DesignerPanel designerPanel*/) {
+    ObjectPropertiesPanel() {
         setLayout(new BorderLayout());
 
         //tabs.setBorder(BorderFactory.createBevelBorder(5,Color.yellow,Color.yellow));
@@ -67,134 +67,146 @@ public class ObjectPropertiesPanel extends JPanel {
         add(tabs);
     }
 
-    public void setDesignerPanel(IDesigner designerPanel) {
+    public void setDesignerPanel(final IDesigner designerPanel) {
         this.designerPanel = designerPanel;
     }
 
-    public void setProperties(Set<IWidget> widgets, int type) {
+    public void setProperties(
+            final Set<IWidget> widgets,
+            final int type) {
         removeTabs();
 
         if (type == IWidget.NONE) {
-        	Page page = (Page) widgets.iterator().next();
+            final Page page = (Page) widgets.iterator().next();
 
-        	//TODO make it so you can change a PDF size too
-        	if(page.getPdfFileLocation() == null){ // its a simple page and not a PDF page so we can change its size
-        		PagePanel pagePanel = new PagePanel(designerPanel);
-        		pagePanel.setProperties(widgets);
+            //TODO make it so you can change a PDF size too
+            if (page.getPdfFileLocation() == null) {
+                // its a simple page and not a PDF page so we can change its size
+                final PagePanel pagePanel = new PagePanel(designerPanel);
+                pagePanel.setProperties(widgets);
 
-        		tabs.add("Page", pagePanel);
-        	}
-		} else {
-			Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
-            for (IWidget widget : widgets) {
-                Document properties = widget.getProperties();
+                tabs.add("Page", pagePanel);
+            }
+        } else {
+            final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
+            for (final IWidget widget : widgets) {
+                final Document properties = widget.getProperties();
 
-                Element objectProperties = (Element) properties.getElementsByTagName("object").item(0);
+                final Element objectProperties = (Element) properties.getElementsByTagName("object").item(0);
 
                 widgetsAndProperties.put(widget, objectProperties);
             }
-			BindingPanel bindingPanel = new BindingPanel();
-			bindingPanel.setDesignerPanel(designerPanel);
-			switch (type) {
-			case IWidget.TEXT_FIELD: {
-                TextFieldFieldPanel textFieldFieldPanel = new TextFieldFieldPanel();
-                textFieldFieldPanel.setProperties(widgetsAndProperties);
+            final BindingPanel bindingPanel = new BindingPanel();
+            bindingPanel.setDesignerPanel(designerPanel);
 
-                SimpleValuePanel simpleValuePanel = new SimpleValuePanel(IWidget.TEXT_FIELD);
-                simpleValuePanel.setProperties(widgetsAndProperties);
+            switch (type) {
+                case IWidget.TEXT_FIELD: {
+                    final TextFieldFieldPanel textFieldFieldPanel = new TextFieldFieldPanel();
+                    textFieldFieldPanel.setProperties(widgetsAndProperties);
 
-                bindingPanel.setProperties(widgetsAndProperties);
+                    final SimpleValuePanel simpleValuePanel = new SimpleValuePanel(IWidget.TEXT_FIELD);
+                    simpleValuePanel.setProperties(widgetsAndProperties);
 
-                tabs.add("Field", textFieldFieldPanel);
-                tabs.add("Value", simpleValuePanel);
-                tabs.add("Binding", bindingPanel);
+                    bindingPanel.setProperties(widgetsAndProperties);
 
-                break;
-            } case IWidget.BUTTON: {
-                SimpleValuePanel simpleValuePanel = new SimpleValuePanel(IWidget.BUTTON);
-                simpleValuePanel.setProperties(widgetsAndProperties);
+                    tabs.add("Field", textFieldFieldPanel);
+                    tabs.add("Value", simpleValuePanel);
+                    tabs.add("Binding", bindingPanel);
 
-                bindingPanel.setProperties(widgetsAndProperties);
+                    break;
+                }
+                case IWidget.BUTTON: {
+                    final SimpleValuePanel simpleValuePanel = new SimpleValuePanel(IWidget.BUTTON);
+                    simpleValuePanel.setProperties(widgetsAndProperties);
 
-                tabs.add("Value", simpleValuePanel);
-                tabs.add("Binding", bindingPanel);
+                    bindingPanel.setProperties(widgetsAndProperties);
 
-                break;
-            } case IWidget.COMBO_BOX: {
-                ListFieldPanel fieldPanel = new ListFieldPanel(IWidget.COMBO_BOX);
-                fieldPanel.setDesignerPanel(designerPanel);
-                fieldPanel.setProperties(widgetsAndProperties);
+                    tabs.add("Value", simpleValuePanel);
+                    tabs.add("Binding", bindingPanel);
 
-                ValuePanel valuePanel = new ValuePanel();
-                valuePanel.setDesignerPanel(designerPanel);
-                valuePanel.setProperties(widgetsAndProperties);
+                    break;
+                }
+                case IWidget.COMBO_BOX: {
+                    final ListFieldPanel fieldPanel = new ListFieldPanel(IWidget.COMBO_BOX);
+                    fieldPanel.setDesignerPanel(designerPanel);
+                    fieldPanel.setProperties(widgetsAndProperties);
 
-                bindingPanel.setProperties(widgetsAndProperties);
+                    final ValuePanel valuePanel = new ValuePanel();
+                    valuePanel.setDesignerPanel(designerPanel);
+                    valuePanel.setProperties(widgetsAndProperties);
 
-                tabs.add("Field", fieldPanel);
-                tabs.add("Value", valuePanel);
-                tabs.add("Binding", bindingPanel);
+                    bindingPanel.setProperties(widgetsAndProperties);
 
-                break;
-            } case IWidget.LIST_BOX: {
-                ListFieldPanel fieldPanel = new ListFieldPanel(IWidget.LIST_BOX);
-                fieldPanel.setDesignerPanel(designerPanel);
-                fieldPanel.setProperties(widgetsAndProperties);
+                    tabs.add("Field", fieldPanel);
+                    tabs.add("Value", valuePanel);
+                    tabs.add("Binding", bindingPanel);
 
-                ValuePanel valuePanel = new ValuePanel();
-                valuePanel.setDesignerPanel(designerPanel);
-                valuePanel.setProperties(widgetsAndProperties);
+                    break;
+                }
+                case IWidget.LIST_BOX: {
+                    final ListFieldPanel fieldPanel = new ListFieldPanel(IWidget.LIST_BOX);
+                    fieldPanel.setDesignerPanel(designerPanel);
+                    fieldPanel.setProperties(widgetsAndProperties);
 
-                bindingPanel.setProperties(widgetsAndProperties);
+                    final ValuePanel valuePanel = new ValuePanel();
+                    valuePanel.setDesignerPanel(designerPanel);
+                    valuePanel.setProperties(widgetsAndProperties);
 
-                tabs.add("Field", fieldPanel);
-                tabs.add("Value", valuePanel);
-                tabs.add("Binding", bindingPanel);
+                    bindingPanel.setProperties(widgetsAndProperties);
 
-                break;
-            } case IWidget.CHECK_BOX: {
-                RadioButtonFieldPanel radioButtonFieldPanel = new RadioButtonFieldPanel();
-                radioButtonFieldPanel.setDesignerPanel(designerPanel, type);
-                radioButtonFieldPanel.setProperties(widgetsAndProperties);
+                    tabs.add("Field", fieldPanel);
+                    tabs.add("Value", valuePanel);
+                    tabs.add("Binding", bindingPanel);
 
-                ValuePanel valuePanel = new ValuePanel();
-                valuePanel.setDesignerPanel(designerPanel);
-                valuePanel.setProperties(widgetsAndProperties);
+                    break;
+                }
+                case IWidget.CHECK_BOX: {
+                    final RadioButtonFieldPanel radioButtonFieldPanel = new RadioButtonFieldPanel();
+                    radioButtonFieldPanel.setDesignerPanel(designerPanel, type);
+                    radioButtonFieldPanel.setProperties(widgetsAndProperties);
 
-                bindingPanel.setProperties(widgetsAndProperties);
+                    final ValuePanel valuePanel = new ValuePanel();
+                    valuePanel.setDesignerPanel(designerPanel);
+                    valuePanel.setProperties(widgetsAndProperties);
 
-                tabs.add("Field", radioButtonFieldPanel);
-                tabs.add("Value", valuePanel);
-                tabs.add("Binding", bindingPanel);
+                    bindingPanel.setProperties(widgetsAndProperties);
 
-                break;
-            } case IWidget.RADIO_BUTTON: {
-                RadioButtonFieldPanel radioButtonFieldPanel = new RadioButtonFieldPanel();
-                radioButtonFieldPanel.setDesignerPanel(designerPanel, type);
-                radioButtonFieldPanel.setProperties(widgetsAndProperties);
+                    tabs.add("Field", radioButtonFieldPanel);
+                    tabs.add("Value", valuePanel);
+                    tabs.add("Binding", bindingPanel);
 
-                ValuePanel valuePanel = new ValuePanel();
-                valuePanel.setDesignerPanel(designerPanel);
-                valuePanel.setProperties(widgetsAndProperties);
+                    break;
+                }
+                case IWidget.RADIO_BUTTON: {
+                    final RadioButtonFieldPanel radioButtonFieldPanel = new RadioButtonFieldPanel();
+                    radioButtonFieldPanel.setDesignerPanel(designerPanel, type);
+                    radioButtonFieldPanel.setProperties(widgetsAndProperties);
 
-                bindingPanel.setProperties(widgetsAndProperties);
+                    final ValuePanel valuePanel = new ValuePanel();
+                    valuePanel.setDesignerPanel(designerPanel);
+                    valuePanel.setProperties(widgetsAndProperties);
 
-                tabs.add("Field", radioButtonFieldPanel);
-                tabs.add("Value", valuePanel);
-                tabs.add("Binding", bindingPanel);
+                    bindingPanel.setProperties(widgetsAndProperties);
 
-                break;
-            } case IWidget.IMAGE:
+                    tabs.add("Field", radioButtonFieldPanel);
+                    tabs.add("Value", valuePanel);
+                    tabs.add("Binding", bindingPanel);
 
-				ImageDrawPanel imageDrawPanel = new ImageDrawPanel();
-				imageDrawPanel.setDesignerPanel(designerPanel);
-				imageDrawPanel.setProperties(widgetsAndProperties);
+                    break;
+                }
+                case IWidget.IMAGE:
 
-				tabs.add("Draw", imageDrawPanel);
+                    final ImageDrawPanel imageDrawPanel = new ImageDrawPanel();
+                    imageDrawPanel.setDesignerPanel(designerPanel);
+                    imageDrawPanel.setProperties(widgetsAndProperties);
 
-				break;
-			}
-		}
+                    tabs.add("Draw", imageDrawPanel);
+
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     private void removeTabs() {

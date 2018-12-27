@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -41,7 +41,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellEditor;
 
 public class HierarchyTreeCellEditor extends DefaultTreeCellEditor implements TreeCellEditor {
-    private Object value;
 
     public HierarchyTreeCellEditor(
             final JTree tree,
@@ -57,8 +56,6 @@ public class HierarchyTreeCellEditor extends DefaultTreeCellEditor implements Tr
             final boolean expanded,
             final boolean leaf,
             final int row) {
-        this.value = value;
-
         final Container tf = (Container) super.getTreeCellEditorComponent(tree, value, isSelected, expanded, leaf, row);
         ((JTextField) tf.getComponent(0)).setText(renderer.getText());
 

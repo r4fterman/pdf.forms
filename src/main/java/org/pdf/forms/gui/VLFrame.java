@@ -83,8 +83,6 @@ import com.vlsolutions.swing.docking.Dockable;
 import com.vlsolutions.swing.docking.DockableState;
 import com.vlsolutions.swing.docking.DockingConstants;
 import com.vlsolutions.swing.docking.DockingDesktop;
-import com.vlsolutions.swing.docking.event.DockableStateWillChangeEvent;
-import com.vlsolutions.swing.docking.event.DockableStateWillChangeListener;
 import com.vlsolutions.swing.docking.event.DockingActionCloseEvent;
 import com.vlsolutions.swing.docking.event.DockingActionEvent;
 import com.vlsolutions.swing.docking.event.DockingActionListener;
@@ -154,10 +152,7 @@ public class VLFrame extends JFrame implements IMainFrame {
     private int designerCompoundContent = DesignerCompound.DESIGNER;
 
     /**
-     * Default and only frame constructor
-     *
-     * @param splashWindow
-     * @param version
+     * Default and only frame constructor.
      */
     public VLFrame(
             final SplashWindow splashWindow,
@@ -343,7 +338,12 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     private void setTotalState(final boolean state) {
-        final Set<IWidget> setToUse = state ? designer.getSelectedWidgets() : new HashSet<>();
+        final Set<IWidget> setToUse;
+        if (state) {
+            setToUse = designer.getSelectedWidgets();
+        } else {
+            setToUse = new HashSet<>();
+        }
         setPropertiesCompound(setToUse);
         setPropertiesToolBar(setToUse);
 
@@ -411,31 +411,32 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     @Override
-    public void setPropertiesToolBar(Set<IWidget> widgets) {
+    public void setPropertiesToolBar(final Set<IWidget> widgets) {
         menuConfiguration.setProperties(widgets);
 
-        widgets = getFlatternedWidgets(widgets);
+        final Set<IWidget> flattenWidgets = getFlatternedWidgets(widgets);
 
-        propertiesToolBar.setProperties(widgets);
-        widgetAlignmentAndOrderToolbar.setState(!widgets.isEmpty());
+        propertiesToolBar.setProperties(flattenWidgets);
+        widgetAlignmentAndOrderToolbar.setState(!flattenWidgets.isEmpty());
     }
 
     @Override
-    public void setPropertiesCompound(Set<IWidget> widgets) {
-        widgets = getFlatternedWidgets(widgets);
+    public void setPropertiesCompound(final Set<IWidget> tlwwidgets) {
+        final Set<IWidget> flatteWidgets = getFlatternedWidgets(tlwwidgets);
 
-        PropertyChanger.updateSizeAndPosition(widgets);
+        PropertyChanger.updateSizeAndPosition(flatteWidgets);
 
-        if (widgets.isEmpty() && formsDocument != null) {
-//            widgets.add(formsDocument.getPage(currentPage));
+        if (flatteWidgets.isEmpty() && formsDocument != null) {
+            //            widgets.add(formsDocument.getPage(currentPage));
+            System.out.println();
         }
 
-        propertiesCompound.setProperties(widgets);
+        propertiesCompound.setProperties(flatteWidgets);
 
-        Set<IWidget> newSet = new HashSet<>(widgets);
-        if (widgets.isEmpty()) {
+        Set<IWidget> newSet = new HashSet<>(flatteWidgets);
+        if (flatteWidgets.isEmpty()) {
             newSet = new HashSet<>();
-//            newSet.add(formsDocument);
+            //newSet.add(formsDocument);
         }
 
         javaScriptEditor.setScript(newSet);
@@ -546,15 +547,12 @@ public class VLFrame extends JFrame implements IMainFrame {
         //desk.setDockableHeight(libraryPanel, 150);
 
         // listen to dockable state changes before they are commited
-        desk.addDockableStateWillChangeListener(new DockableStateWillChangeListener() {
-            @Override
-            public void dockableStateWillChange(final DockableStateWillChangeEvent event) {
-                final DockableState current = event.getCurrentState();
-                if (current.getDockable() == designerCompound) {
-                    if (event.getFutureState().isClosed()) {
-                        // we are facing a closing of the editorPanel
-                        event.cancel(); // refuse it
-                    }
+        desk.addDockableStateWillChangeListener(event -> {
+            final DockableState current = event.getCurrentState();
+            if (current.getDockable() == designerCompound) {
+                if (event.getFutureState().isClosed()) {
+                    // we are facing a closing of the editorPanel
+                    event.cancel(); // refuse it
                 }
             }
         });
@@ -573,7 +571,7 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     /**
-     * Save the current workspace into an instance byte array
+     * Save the current workspace into an instance byte array.
      */
     private void saveWorkspace() {
         try {
@@ -588,7 +586,7 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     /**
-     * Reloads a saved workspace
+     * Reloads a saved workspace.
      */
     private void loadWorkspace() {
         try {

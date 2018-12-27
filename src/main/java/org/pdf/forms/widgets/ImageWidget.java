@@ -48,8 +48,8 @@ public class ImageWidget extends Widget implements IWidget {
 
     private static int nextWidgetNumber = 1;
 
-    private final static int STRETCH = 0;
-    private final static int FULL_SIZE = 1;
+    private static final int STRETCH = 0;
+    private static final int FULL_SIZE = 1;
 
     private Image currentImage;
 
@@ -61,19 +61,19 @@ public class ImageWidget extends Widget implements IWidget {
             final JComponent component) {
         super(type, baseComponent, component, "/org/pdf/forms/res/Image.gif");
 
-        isComponentSplit = false;
-        allowEditCaptionAndValue = false;
-        allowEditOfCaptionOnClick = false;
+        setComponentSplit(false);
+        setAllowEditCaptionAndValue(false);
+        setAllowEditOfCaptionOnClick(false);
 
-        String widgetName = "Image" + nextWidgetNumber;
+        final String widgetName = "Image" + nextWidgetNumber;
         nextWidgetNumber++;
 
-        this.widgetName = widgetName;
+        setWidgetName(widgetName);
 
-        Element rootElement = setupProperties();
+        final Element rootElement = setupProperties();
 
-        XMLUtils.addBasicProperty(properties, "type", "IMAGE", rootElement);
-        XMLUtils.addBasicProperty(properties, "name", widgetName, rootElement);
+        XMLUtils.addBasicProperty(getProperties(), "type", "IMAGE", rootElement);
+        XMLUtils.addBasicProperty(getProperties(), "name", widgetName, rootElement);
 
         addProperties(rootElement);
     }
@@ -86,21 +86,21 @@ public class ImageWidget extends Widget implements IWidget {
 
         super(type, baseComponent, component, "/org/pdf/forms/res/Image.gif");
 
-        isComponentSplit = false;
-        allowEditCaptionAndValue = false;
+        setComponentSplit(false);
+        setAllowEditCaptionAndValue(false);
 
-        this.widgetName = XMLUtils.getAttributeFromChildElement(root, "Name");
+        setWidgetName(XMLUtils.getAttributeFromChildElement(root, "Name"));
 
-        Element rootElement = setupProperties();
-        Node newRoot = properties.importNode(root, true);
+        final Element rootElement = setupProperties();
+        final Node newRoot = getProperties().importNode(root, true);
 
-        properties.replaceChild(newRoot, rootElement);
+        getProperties().replaceChild(newRoot, rootElement);
 
         setAllProperties();
     }
 
     private void addProperties(final Element rootElement) {
-        Element propertiesElement = XMLUtils.createAndAppendElement(properties, "properties", rootElement);
+        final Element propertiesElement = XMLUtils.createAndAppendElement(getProperties(), "properties", rootElement);
 
         addObjectProperties(propertiesElement);
 
@@ -108,45 +108,47 @@ public class ImageWidget extends Widget implements IWidget {
     }
 
     private void addLayoutProperties(final Element propertiesElement) {
-        Element layoutElement = XMLUtils.createAndAppendElement(properties, "layout", propertiesElement);
+        final Element layoutElement = XMLUtils.createAndAppendElement(getProperties(), "layout", propertiesElement);
 
-        Element sizeAndPositionElement = XMLUtils.createAndAppendElement(properties, "sizeandposition", layoutElement);
-        XMLUtils.addBasicProperty(properties, "X", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Width", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Y", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Height", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Expand to fit", "false", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Expand to fit", "false", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Anchor", "Top Left", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(properties, "Rotation", "0", sizeAndPositionElement);
+        final Element sizeAndPositionElement = XMLUtils.createAndAppendElement(getProperties(), "sizeandposition", layoutElement);
+        XMLUtils.addBasicProperty(getProperties(), "X", "", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Width", "", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Y", "", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Height", "", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Expand to fit", "false", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Expand to fit", "false", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Anchor", "Top Left", sizeAndPositionElement);
+        XMLUtils.addBasicProperty(getProperties(), "Rotation", "0", sizeAndPositionElement);
 
-        Element margins = XMLUtils.createAndAppendElement(properties, "margins", layoutElement);
-        XMLUtils.addBasicProperty(properties, "Left", "2", margins);
-        XMLUtils.addBasicProperty(properties, "Right", "4", margins);
-        XMLUtils.addBasicProperty(properties, "Top", "2", margins);
-        XMLUtils.addBasicProperty(properties, "Bottom", "4", margins);
+        final Element margins = XMLUtils.createAndAppendElement(getProperties(), "margins", layoutElement);
+        XMLUtils.addBasicProperty(getProperties(), "Left", "2", margins);
+        XMLUtils.addBasicProperty(getProperties(), "Right", "4", margins);
+        XMLUtils.addBasicProperty(getProperties(), "Top", "2", margins);
+        XMLUtils.addBasicProperty(getProperties(), "Bottom", "4", margins);
     }
 
     private void addObjectProperties(final Element propertiesElement) {
-        Element objectElement = XMLUtils.createAndAppendElement(properties, "object", propertiesElement);
+        final Element objectElement = XMLUtils.createAndAppendElement(getProperties(), "object", propertiesElement);
 
-        Element fieldElement = XMLUtils.createAndAppendElement(properties, "field", objectElement);
-        XMLUtils.addBasicProperty(properties, "Presence", "Visible", fieldElement);
+        final Element fieldElement = XMLUtils.createAndAppendElement(getProperties(), "field", objectElement);
+        XMLUtils.addBasicProperty(getProperties(), "Presence", "Visible", fieldElement);
 
-        Element drawElement = XMLUtils.createAndAppendElement(properties, "draw", objectElement);
-        XMLUtils.addBasicProperty(properties, "Location", "", drawElement);
-        XMLUtils.addBasicProperty(properties, "Sizing", "Stretch Image To Fit", drawElement);
+        final Element drawElement = XMLUtils.createAndAppendElement(getProperties(), "draw", objectElement);
+        XMLUtils.addBasicProperty(getProperties(), "Location", "", drawElement);
+        XMLUtils.addBasicProperty(getProperties(), "Sizing", "Stretch Image To Fit", drawElement);
     }
 
-    public void setLayoutProperties(Element layoutProperties) {
+    @Override
+    public void setLayoutProperties(final Element layoutProperties) {
         setSizeAndPosition(layoutProperties);
     }
 
+    @Override
     public void setObjectProperties(final Element objectElement) {
-        Element drawElement = (Element) objectElement.getElementsByTagName("draw").item(0);
+        final Element drawElement = (Element) objectElement.getElementsByTagName("draw").item(0);
 
-        String location = XMLUtils.getAttributeFromChildElement(drawElement, "Location");
-        String sizing = XMLUtils.getAttributeFromChildElement(drawElement, "Sizing");
+        final String location = XMLUtils.getAttributeFromChildElement(drawElement, "Location");
+        final String sizing = XMLUtils.getAttributeFromChildElement(drawElement, "Sizing");
 
         if (sizing.equals("Stretch Image To Fit")) {
             this.sizing = STRETCH;
@@ -160,7 +162,7 @@ public class ImageWidget extends Widget implements IWidget {
             currentImage = null;
         }
 
-        JLabel imageLabel = (JLabel) baseComponent;
+        final JLabel imageLabel = (JLabel) getBaseComponent();
 
         if (currentImage == null) {
             imageLabel.setIcon(null);
@@ -175,10 +177,11 @@ public class ImageWidget extends Widget implements IWidget {
         setSize(getWidth(), getHeight());
     }
 
+    @Override
     public void setSize(
             final int width,
             final int height) {
-        JLabel imageLabel = (JLabel) baseComponent;
+        final JLabel imageLabel = (JLabel) getBaseComponent();
 
         if (currentImage == null) {
             imageLabel.setIcon(null);
@@ -190,6 +193,6 @@ public class ImageWidget extends Widget implements IWidget {
             }
         }
 
-        component = WidgetFactory.createResizedComponent(baseComponent, width, height);
+        setComponent(WidgetFactory.createResizedComponent(getBaseComponent(), width, height));
     }
 }

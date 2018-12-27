@@ -94,7 +94,13 @@ public class Page {
             final Element rootElement = XMLUtils.createAndAppendElement(pageProperties, "page", pageProperties);
 
             final boolean isPdfFile = pdfFileLocation != null;
-            XMLUtils.addBasicProperty(pageProperties, "pagetype", isPdfFile ? "pdfpage" : "simplepage", rootElement);
+            final String value;
+            if (isPdfFile) {
+                value = "pdfpage";
+            } else {
+                value = "simplepage";
+            }
+            XMLUtils.addBasicProperty(pageProperties, "pagetype", value, rootElement);
 
             XMLUtils.addBasicProperty(pageProperties, "pagename", pageName, rootElement);
 
@@ -133,7 +139,12 @@ public class Page {
     private void addButtonGroupsToPage(
             final Element radioButtonGroupsElement,
             final int type) {
-        final List<ButtonGroup> buttonGroups = type == IWidget.RADIO_BUTTON ? radioButtonGroups : checkBoxGroups;
+        final List<ButtonGroup> buttonGroups;
+        if (type == IWidget.RADIO_BUTTON) {
+            buttonGroups = radioButtonGroups;
+        } else {
+            buttonGroups = checkBoxGroups;
+        }
 
         for (final ButtonGroup buttonGroup : buttonGroups) {
             XMLUtils.addBasicProperty(pageProperties, "buttongroupname", buttonGroup.getName(), radioButtonGroupsElement);

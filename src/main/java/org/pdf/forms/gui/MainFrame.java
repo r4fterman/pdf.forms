@@ -80,8 +80,8 @@ public class MainFrame extends JFrame implements IMainFrame {
         verticalRuler.setPreferredHeight(Toolkit.getDefaultToolkit().getScreenSize().height);
 
         final IDesigner designerPanel = new Designer(INSET, horizontalRuler, verticalRuler, this, version);
-        //		designerPanel.addMouseListener(new DesignerMouseListener(designerPanel));
-        //		designerPanel.addMouseMotionListener(new DesignerMouseMotionListener(designerPanel));
+        //  designerPanel.addMouseListener(new DesignerMouseListener(designerPanel));
+        //  designerPanel.addMouseMotionListener(new DesignerMouseMotionListener(designerPanel));
 
         final JScrollPane scroll = new JScrollPane();
 

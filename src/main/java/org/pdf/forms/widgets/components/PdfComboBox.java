@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -37,9 +37,11 @@ import org.pdf.forms.fonts.FontHandler;
 
 public class PdfComboBox extends JComboBox implements IPdfComponent {
 
+    private static final float FONT_SIZE = 11f;
+
     public PdfComboBox() {
         setEditable(true);
-        setFont(FontHandler.getInstance().getDefaultFont().deriveFont(11f));
+        setFont(FontHandler.getInstance().getDefaultFont().deriveFont(FONT_SIZE));
     }
 
     @Override

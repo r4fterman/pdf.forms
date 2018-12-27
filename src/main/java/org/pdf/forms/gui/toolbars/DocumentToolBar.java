@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -71,7 +71,12 @@ public class DocumentToolBar extends VLToolBar {
         zoomIn.setEnabled(false);
         zoomComponents.add(zoomIn);
 
-        zoomBox = new SwingCombo(new String[] { "100%", "75%", "50%", "25%" });
+        zoomBox = new SwingCombo(new String[] {
+                "100%",
+                "75%",
+                "50%",
+                "25%"
+        });
         zoomBox.setEditable(true);
         zoomBox.setID(Commands.ZOOM);
         zoomBox.addActionListener(commandListener);

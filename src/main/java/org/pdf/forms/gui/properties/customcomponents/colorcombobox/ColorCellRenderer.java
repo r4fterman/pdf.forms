@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -40,7 +40,8 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-public class ColorCellRenderer implements ListCellRenderer {
+public class ColorCellRenderer implements ListCellRenderer<Object> {
+
     private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
     // width doesn't matter as combobox will size
@@ -59,7 +60,7 @@ public class ColorCellRenderer implements ListCellRenderer {
             renderer.setBackground((Color) value);
             renderer.setText("");
         } else {
-            //System.err.println("herererererer "+value);
+            System.err.println("herererererer " + value);
         }
 
         renderer.setPreferredSize(preferredSize);

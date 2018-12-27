@@ -46,12 +46,13 @@ class CTransferableTreePath implements Transferable {
 
     private final TreePath path;
 
-    private final DataFlavor[] flavors = { TREEPATH_FLAVOR };
+    private final DataFlavor[] flavors = {
+            TREEPATH_FLAVOR };
 
     /**
-     * Constructs a transferrable tree path object for the specified path.
+     * Constructs a transferable tree path object for the specified path.
      */
-    public CTransferableTreePath(final TreePath path) {
+    CTransferableTreePath(final TreePath path) {
         this.path = path;
     }
 
@@ -68,12 +69,11 @@ class CTransferableTreePath implements Transferable {
 
     @Override
     public synchronized Object getTransferData(final DataFlavor flavor) throws UnsupportedFlavorException {
-        if (flavor.isMimeTypeEqual(TREEPATH_FLAVOR.getMimeType())) // DataFlavor.javaJVMLocalObjectMimeType))
-        {
+        if (flavor.isMimeTypeEqual(TREEPATH_FLAVOR.getMimeType())) {
+            // DataFlavor.javaJVMLocalObjectMimeType))
             return path;
         } else {
             throw new UnsupportedFlavorException(flavor);
         }
     }
 }
-	

@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -102,16 +102,15 @@ public class CTree extends JTree implements DragSourceListener, DragGestureListe
         ptOffset.setLocation(ptDragOrigin.x - raPath.x, ptDragOrigin.y - raPath.y);
 
         // Get the cell renderer (which is a JLabel) for the path being dragged
-        final JLabel lbl = (JLabel) getCellRenderer().getTreeCellRendererComponent
-                (
-                        this,                                             // tree
-                        path.getLastPathComponent(),                    // value
-                        false,                                            // isSelected	(dont want a colored background)
-                        isExpanded(path),                                 // isExpanded
-                        getModel().isLeaf(path.getLastPathComponent()), // isLeaf
-                        0,                                                 // row			(not important for rendering)
-                        false                                            // hasFocus		(dont want a focus rectangle)
-                );
+        final JLabel lbl = (JLabel) getCellRenderer().getTreeCellRendererComponent(
+                this,                                             // tree
+                path.getLastPathComponent(),                    // value
+                false,                                            // isSelected (dont want a colored background)
+                isExpanded(path),                                 // isExpanded
+                getModel().isLeaf(path.getLastPathComponent()), // isLeaf
+                0,                                                 // row   (not important for rendering)
+                false                                            // hasFocus  (dont want a focus rectangle)
+        );
         lbl.setSize((int) raPath.getWidth(), (int) raPath.getHeight()); // <-- The layout manager would normally do this
 
         // Get a buffered image of the selection for dragging a ghost image
@@ -125,7 +124,12 @@ public class CTree extends JTree implements DragSourceListener, DragGestureListe
         // Now paint a gradient UNDER the ghosted JLabel text (but not under the icon if any)
         // Note: this will need tweaking if your icon is not positioned to the left of the text
         final Icon icon = lbl.getIcon();
-        final int nStartOfText = (icon == null) ? 0 : icon.getIconWidth() + lbl.getIconTextGap();
+        final int nStartOfText;
+        if (icon == null) {
+            nStartOfText = 0;
+        } else {
+            nStartOfText = icon.getIconWidth() + lbl.getIconTextGap();
+        }
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OVER, 0.5f));    // Make the gradient ghostlike
         g2.setPaint(new GradientPaint(nStartOfText, 0, SystemColor.controlShadow,
                 getWidth(), 0, new Color(255, 255, 255, 0)));
@@ -152,7 +156,8 @@ public class CTree extends JTree implements DragSourceListener, DragGestureListe
     public void dragDropEnd(final DragSourceDropEvent e) {
         if (e.getDropSuccess()) {
             final int nAction = e.getDropAction();
-            if (nAction == DnDConstants.ACTION_MOVE) {    // The dragged item (_pathSource) has been inserted at the target selected by the user.
+            if (nAction == DnDConstants.ACTION_MOVE) {
+                // The dragged item (_pathSource) has been inserted at the target selected by the user.
                 // Now it is time to delete it from its original location.
                 //System.out.println("REMOVING: " + pathSource.getLastPathComponent());
 
@@ -216,11 +221,20 @@ public class CTree extends JTree implements DragSourceListener, DragGestureListe
         // row) visible as appropriate. If we're at the absolute top or
         // bottom, just return the first or last row respectively.
 
-        nRow = (pt.y + raOuter.y <= AUTOSCROLL_MARGIN)            // Is row at top of screen?
-                ?
-                (nRow <= 0 ? 0 : nRow - 1)                        // Yes, scroll up one row
-                :
-                (nRow < getRowCount() - 1 ? nRow + 1 : nRow);    // No, scroll down one row
+        // Is row at top of screen?
+        if (pt.y + raOuter.y <= AUTOSCROLL_MARGIN) {
+            // Yes, scroll up one row
+            if (nRow <= 0) {
+                nRow = 0;
+            } else {
+                nRow = nRow - 1;
+            }
+        } else {
+            // No, scroll down one row
+            if (nRow < getRowCount() - 1) {
+                nRow = nRow + 1;
+            }
+        }
 
         scrollRowToVisible(nRow);
     }

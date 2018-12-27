@@ -37,8 +37,12 @@ import java.io.File;
 import java.util.Map;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
 
 import org.jpedal.examples.simpleviewer.utils.FileFilterer;
 import org.pdf.forms.gui.IMainFrame;
@@ -46,16 +50,17 @@ import org.pdf.forms.utils.DesignerPropertiesFile;
 
 public class FontSelector extends javax.swing.JPanel {
 
-    private IMainFrame mainFrame;
-    private JDialog parent;
+    private final IMainFrame mainFrame;
+    private final JDialog parent;
+
+    private JList<String> fontsList;
 
     /**
-     * Creates new form FontSelector
-     * @param parentDialog
+     * Creates new form FontSelector.
      */
     public FontSelector(
-            IMainFrame mainFrame,
-            JDialog parentDialog) {
+            final IMainFrame mainFrame,
+            final JDialog parentDialog) {
         initComponents();
 
         this.parent = parentDialog;
@@ -65,35 +70,35 @@ public class FontSelector extends javax.swing.JPanel {
     }
 
     private void populateFontsAvailiable() {
-        Map<Font, String> fonts = FontHandler.getInstance().getFontFileMap();
+        final Map<Font, String> fonts = FontHandler.getInstance().getFontFileMap();
 
-        DefaultListModel model = new DefaultListModel();
+        final DefaultListModel<String> model = new DefaultListModel<>();
         fontsList.setModel(model);
 
-        for (Font font : fonts.keySet()) {
+        for (final Font font : fonts.keySet()) {
             model.addElement(font.getFontName() + " -> " + fonts.get(font));
         }
     }
 
     private void initComponents() {
 
-        javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        final JLabel jLabel1 = new JLabel();
+        final JScrollPane jScrollPane1 = new JScrollPane();
         fontsList = new javax.swing.JList<>();
-        javax.swing.JButton addFontButton = new javax.swing.JButton();
-        javax.swing.JButton okButton = new javax.swing.JButton();
+        final JButton addFontButton = new JButton();
+        final JButton okButton = new JButton();
 
         jLabel1.setText("Availiable Fonts:");
 
         jScrollPane1.setViewportView(fontsList);
 
         addFontButton.setText("Add Font");
-        addFontButton.addActionListener(evt -> addFontClicked(evt));
+        addFontButton.addActionListener(this::addFontClicked);
 
         okButton.setText("OK");
-        okButton.addActionListener(evt -> okClicked(evt));
+        okButton.addActionListener(this::okClicked);
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        final org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -125,16 +130,18 @@ public class FontSelector extends javax.swing.JPanel {
         );
     }
 
-    private void okClicked(java.awt.event.ActionEvent evt) {
+    private void okClicked(final java.awt.event.ActionEvent evt) {
         parent.setVisible(false);
     }
 
-    private void addFontClicked(java.awt.event.ActionEvent evt) {
+    private void addFontClicked(final java.awt.event.ActionEvent evt) {
         final JFileChooser chooser = new JFileChooser();
 
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        String[] ttf = new String[] { "ttf" };
+        final String[] ttf = new String[] {
+                "ttf"
+        };
         chooser.addChoosableFileFilter(new FileFilterer(ttf, "ttf (*.ttf)"));
 
         final int state = chooser.showOpenDialog((Component) mainFrame);
@@ -142,15 +149,12 @@ public class FontSelector extends javax.swing.JPanel {
         final File fileToOpen = chooser.getSelectedFile();
 
         if (fileToOpen != null && state == JFileChooser.APPROVE_OPTION) {
-            String name = FontHandler.getInstance().registerFont(fileToOpen);
+            final String name = FontHandler.getInstance().registerFont(fileToOpen);
             DesignerPropertiesFile.getInstance().addCustomFont(name, fileToOpen.getAbsolutePath());
 
             populateFontsAvailiable();
         }
 
     }
-
-    private javax.swing.JList<String> fontsList;
-    private javax.swing.JScrollPane jScrollPane1;
 
 }

@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -35,13 +35,14 @@ import org.pdf.forms.gui.designer.gui.PreviewNavigatable;
 
 public class PreviewNavigationToolbar extends NavigationToolbar {
 
-    private PreviewNavigatable designer;
+    private final PreviewNavigatable designer;
 
-    public PreviewNavigationToolbar(PreviewNavigatable designer) {
+    public PreviewNavigationToolbar(final PreviewNavigatable designer) {
         this.designer = designer;
     }
 
-    public void executeCommand(int type) {
+    @Override
+    public void executeCommand(final int type) {
         switch (type) {
             case FIRSTPAGE:
                 designer.displayPreviewPage(1);
@@ -62,13 +63,15 @@ public class PreviewNavigationToolbar extends NavigationToolbar {
                 designer.displayPreviewPage(designer.getPreviewCurrentPage());
                 break;
             case SETPAGE:
-                int page = Integer.parseInt(currentPageBox.getText());
+                final int page = Integer.parseInt(getCurrentPageBox().getText());
 
                 if (page >= 1 && page <= designer.getTotalNoOfPages()) {
                     designer.displayPreviewPage(page);
                 } else {
-                    currentPageBox.setText(designer.getPreviewCurrentPage() + "");
+                    getCurrentPageBox().setText(designer.getPreviewCurrentPage() + "");
                 }
+                break;
+            default:
                 break;
         }
     }

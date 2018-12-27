@@ -34,8 +34,6 @@ package org.pdf.forms.gui.commands;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -179,15 +177,15 @@ public class Commands {
                 System.exit(0);
                 break;
 
-            //            case ZOOM_IN:
-            //                zoom(mainFrame.getCurrentScaling() * (3d / 2d));
-            //                break;
-            //            case ZOOM:
-            //                zoom(mainFrame.getCurrentSelectedScaling() / 100d);
-            //                break;
-            //            case ZOOM_OUT:
-            //                zoom(mainFrame.getCurrentScaling() * (2d / 3d));
-            //                break;
+            // case ZOOM_IN:
+            //     zoom(mainFrame.getCurrentScaling() * (3d / 2d));
+            //     break;
+            // case ZOOM:
+            //     zoom(mainFrame.getCurrentSelectedScaling() / 100d);
+            //     break;
+            // case ZOOM_OUT:
+            //     zoom(mainFrame.getCurrentScaling() * (2d / 3d));
+            //     break;
 
             case INSERT_PAGE:
                 insertPage(595, 842);
@@ -195,9 +193,9 @@ public class Commands {
             case REMOVE_PAGE:
                 removePage();
                 break;
-            //            case ADDSELECTIONTOLIBRARY:
-            //                addSelectionToLibrary();
-            //                break;
+            // case ADDSELECTIONTOLIBRARY:
+            //     addSelectionToLibrary();
+            //     break;
 
             case GROUP:
                 group();
@@ -213,39 +211,41 @@ public class Commands {
             case ABOUT:
                 about();
                 break;
-            //            case BUGREPORT:
+            // case BUGREPORT:
             //
-            //            	LinkedHashMap pdfFilesAndSizes = mainFrame.getFormsDocument().getPdfFilesUsed();
+            //  LinkedHashMap pdfFilesAndSizes = mainFrame.getFormsDocument().getPdfFilesUsed();
             //
-            //            	LinkedHashMap filesAndSizes = new LinkedHashMap();
-            //            	Document documentProperties = mainFrame.getFormsDocument().getDocumentProperties();
+            //  LinkedHashMap filesAndSizes = new LinkedHashMap();
+            //  Document documentProperties = mainFrame.getFormsDocument().getDocumentProperties();
             //
-            //				try {
-            //					File designerFile = File.createTempFile("bugreport", ".des");
-            //					designerFile.deleteOnExit();
+            // try {
+            //  File designerFile = File.createTempFile("bugreport", ".des");
+            //  designerFile.deleteOnExit();
             //
-            //					writeXML(documentProperties, designerFile.getAbsolutePath());
+            //  writeXML(documentProperties, designerFile.getAbsolutePath());
             //
-            //					Double size = Double.valueOf(round((designerFile.length() / 1000d), 1));
-            //					System.out.println(designerFile.getAbsolutePath());
-            //					filesAndSizes.put("Designer File", size);
-            //				} catch (IOException e) {
-            //					e.printStackTrace();
-            //				}
+            //  Double size = Double.valueOf(round((designerFile.length() / 1000d), 1));
+            //  System.out.println(designerFile.getAbsolutePath());
+            //  filesAndSizes.put("Designer File", size);
+            // } catch (IOException e) {
+            //  e.printStackTrace();
+            // }
             //
-            //				filesAndSizes.putAll(pdfFilesAndSizes);
-            //				System.out.println(filesAndSizes);
+            // filesAndSizes.putAll(pdfFilesAndSizes);
+            // System.out.println(filesAndSizes);
             //
-            //				JDialog dialog = new JDialog((Frame) mainFrame, "Bug report", true);
+            // JDialog dialog = new JDialog((Frame) mainFrame, "Bug report", true);
             //
-            //				BugReportPanel bugReportPanel = new BugReportPanel(filesAndSizes, dialog);
+            // BugReportPanel bugReportPanel = new BugReportPanel(filesAndSizes, dialog);
             //
-            //            	dialog.add(bugReportPanel);
-            //            	dialog.pack();
-            //            	dialog.setLocationRelativeTo((Component) mainFrame);
-            //            	dialog.setVisible(true);
+            //  dialog.add(bugReportPanel);
+            //  dialog.pack();
+            //  dialog.setLocationRelativeTo((Component) mainFrame);
+            //  dialog.setVisible(true);
             //
-            //            	break;
+            //  break;
+            default:
+                break;
         }
     }
 
@@ -266,7 +266,7 @@ public class Commands {
         //      JMenuItem about = new JMenuItem("About");
         //      about.addActionListener(new ActionListener() {
         //          public void actionPerformed(ActionEvent actionEvent) {
-        //              JOptionPane.showMessageDialog((Component) mainFrame, new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
+        //   JOptionPane.showMessageDialog((Component) mainFrame, new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
         //          }
         //      });
         //      help.add(visitWebSite);
@@ -305,7 +305,8 @@ public class Commands {
         final JMenuItem[] recentDocuments;
         if (type.equals("recentdesfiles")) {
             recentDocuments = recentDesignerDocuments;
-        } else { // "recentpdffiles"
+        } else {
+            // "recentpdffiles"
             recentDocuments = recentImportedDocuments;
         }
 
@@ -331,19 +332,16 @@ public class Commands {
             }
 
             recentDocuments[i].setName(fileNameToAdd);
-            recentDocuments[i].addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(final ActionEvent e) {
-                    final JMenuItem item = (JMenuItem) e.getSource();
-                    final String fileName = item.getName();
+            recentDocuments[i].addActionListener(e -> {
+                final JMenuItem item = (JMenuItem) e.getSource();
+                final String fileName = item.getName();
 
-                    if (type.equals("recentdesfiles")) {
-                        openDesignerFile(fileName);
-                    } else { // "recentpdffiles"
-                        final int importType = aquirePDFImportType();
+                if (type.equals("recentdesfiles")) {
+                    openDesignerFile(fileName);
+                } else { // "recentpdffiles"
+                    final int importType = aquirePDFImportType();
 
-                        importPDF(importType, fileName);
-                    }
+                    importPDF(importType, fileName);
                 }
             });
 
@@ -361,7 +359,8 @@ public class Commands {
         final JMenuItem[] recentDocuments;
         if (type.equals("recentdesfiles")) {
             recentDocuments = recentDesignerDocuments;
-        } else { // "recentpdffiles"
+        } else {
+            // "recentpdffiles"
             recentDocuments = recentImportedDocuments;
         }
 
@@ -479,22 +478,21 @@ public class Commands {
         designerPanel.repaint();
     }
 
-    private double round(
-            double number,
-            final int decPlaces) {
-        final double exponential = Math.pow(10, decPlaces);
+    private double round(final double number) {
+        final double exponential = Math.pow(10, 2);
 
-        number *= exponential;
-        number = Math.round(number);
-        number /= exponential;
+        double value = number;
+        value *= exponential;
+        value = Math.round(value);
+        value /= exponential;
 
-        return number;
+        return value;
     }
 
     private void zoom(final double scaling) {
         if (mainFrame.getDesignerCompoundContent() == DesignerCompound.PREVIEW) {
 
-            mainFrame.setCurrentSelectedScaling(round(scaling * 100, 2));
+            mainFrame.setCurrentSelectedScaling(round(scaling * 100));
 
             final DesignerCompound desgnerCompound = mainFrame.getDesignerCompound();
             desgnerCompound.previewZoom(scaling);
@@ -510,7 +508,10 @@ public class Commands {
 
         while (!finished) {
             final JFileChooser chooser = new JFileChooser();
-            chooser.addChoosableFileFilter(new FileFilterer(new String[] { "pdf" }, "pdf (*.pdf)"));
+            chooser.addChoosableFileFilter(new FileFilterer(new String[] {
+                    "pdf"
+            },
+                    "pdf (*.pdf)"));
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
             final int approved = chooser.showSaveDialog(null);
@@ -562,9 +563,11 @@ public class Commands {
         final Document documentProperties = mainFrame.getFormsDocument().getDocumentProperties();
 
         final String currentDesignerFileName = mainFrame.getCurrentDesignerFileName();
-        if (currentDesignerFileName.equals("Untitled")) { // saving for the first time
+        if (currentDesignerFileName.equals("Untitled")) {
+            // saving for the first time
             saveDesignerFileAs(documentProperties);
-        } else { // saving an already saved file
+        } else {
+            // saving an already saved file
             writeXML(documentProperties, currentDesignerFileName);
         }
     }
@@ -576,7 +579,10 @@ public class Commands {
 
         while (!finished) {
             final JFileChooser chooser = new JFileChooser();
-            chooser.addChoosableFileFilter(new FileFilterer(new String[] { "des" }, "des (*.des)"));
+            chooser.addChoosableFileFilter(new FileFilterer(new String[] {
+                    "des"
+            },
+                    "des (*.des)"));
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
             final int approved = chooser.showSaveDialog(null);
@@ -616,18 +622,18 @@ public class Commands {
             final Document documentProperties,
             final String fileName) {
         //        try {
-        //            InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
+        // InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
         //
-        //            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        //            Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
-        //            transformer.transform(new DOMSource(documentProperties), new StreamResult(mainFrame.getCurrentDesignerFileName()));
+        // TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        // Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
+        // transformer.transform(new DOMSource(documentProperties), new StreamResult(mainFrame.getCurrentDesignerFileName()));
         //        } catch (TransformerException e) {
-        //            e.printStackTrace();
+        // e.printStackTrace();
         //        }
 
         try {
             final Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            //            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            // transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
             //initialize StreamResult with File object to save to file
             transformer.transform(new DOMSource(documentProperties), new StreamResult(fileName));
@@ -661,7 +667,9 @@ public class Commands {
 
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        final String[] des = new String[] { "des" };
+        final String[] des = new String[] {
+                "des"
+        };
         chooser.addChoosableFileFilter(new FileFilterer(des, "des (*.des)"));
 
         final int state = chooser.showOpenDialog((Component) mainFrame);
@@ -710,11 +718,13 @@ public class Commands {
                 final int value2 = Integer.parseInt(XMLUtils.getAttributeByIndex(pageData, 1));
 
                 final Page newPage;
-                if (pageType.equals("pdfpage")) { // PDF page
+                if (pageType.equals("pdfpage")) {
+                    // PDF page
                     final String pdfFileToUse = changedFiles.get(value1);
                     //todo check for skiped PDF files
                     newPage = new Page(pageName, pdfFileToUse, value2);
-                } else { // simple page
+                } else {
+                    // simple page
                     newPage = new Page(pageName, Integer.parseInt(value1), value2);
                 }
 
@@ -759,14 +769,16 @@ public class Commands {
         importPDF(importType, file);
     }
 
-    //todo dont allow import of a pdf into a closed document
     private void importPDF() {
+        // TODO dont allow import of a pdf into a closed document
         final int importType = aquirePDFImportType();
 
         final JFileChooser chooser = new JFileChooser();
 
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        final String[] pdf = new String[] { "pdf" };
+        final String[] pdf = new String[] {
+                "pdf"
+        };
         chooser.addChoosableFileFilter(new FileFilterer(pdf, "Pdf (*.pdf)"));
 
         final int state = chooser.showOpenDialog((Component) mainFrame);
@@ -795,19 +807,19 @@ public class Commands {
         }
 
         try {
-            //            final JDialog dialog= new JDialog((Frame) mainFrame, true);
-            //            SwingUtilities.invokeLater(new Runnable() {
-            //                public void run() {
-            //                    JPanel panel = new JPanel();
-            //                    panel.setLayout(new BorderLayout());
-            //                    panel.add(new JLabel(("Calculating size of import")));
-            //                    //dialog.setUndecorated(true);
-            //                    dialog.add(panel);
-            //                    dialog.pack();
-            //                    dialog.setLocationRelativeTo((Component) mainFrame);
-            //                    dialog.setVisible(true);
-            //                }
-            //            });
+            // final JDialog dialog= new JDialog((Frame) mainFrame, true);
+            // SwingUtilities.invokeLater(new Runnable() {
+            //     public void run() {
+            //         JPanel panel = new JPanel();
+            //         panel.setLayout(new BorderLayout());
+            //         panel.add(new JLabel(("Calculating size of import")));
+            //         //dialog.setUndecorated(true);
+            //         dialog.add(panel);
+            //         dialog.pack();
+            //         dialog.setLocationRelativeTo((Component) mainFrame);
+            //         dialog.setVisible(true);
+            //     }
+            // });
 
             final PdfDecoder pdfDecoder = new PdfDecoder();
 
@@ -818,12 +830,12 @@ public class Commands {
             }
 
             final int pageCount = pdfDecoder.getPageCount();
-            //            SwingUtilities.invokeLater(new Runnable() {
-            //                public void run() {
-            //                    System.out.println("setting visable = false");
-            //                    dialog.setVisible(false);
-            //                }
-            //            });
+            // SwingUtilities.invokeLater(new Runnable() {
+            //     public void run() {
+            //         System.out.println("setting visable = false");
+            //         dialog.setVisible(false);
+            //     }
+            // });
 
             final ProgressMonitor progressDialog = new ProgressMonitor((Component) mainFrame, "", "", 0, pageCount);
             progressDialog.setMillisToDecideToPopup(0);
@@ -849,7 +861,10 @@ public class Commands {
                             final List<IWidget> widgetsOnPage = new ArrayList<>();
                             isCancelled = decodePDFPage(pdfPath, pdfDecoder, progressDialog, pdfPageNumber, newPage, widgetsOnPage);
 
-                            final Object[] properties = { pdfPageNumber, newPage, widgetsOnPage };
+                            final Object[] properties = {
+                                    pdfPageNumber,
+                                    newPage,
+                                    widgetsOnPage };
                             pages.add(properties);
 
                             if (isCancelled) {
@@ -869,7 +884,10 @@ public class Commands {
                             final List<IWidget> widgetsOnPage = new ArrayList<>();
                             isCancelled = decodePDFPage(pdfPath, pdfDecoder, progressDialog, pdfPageNumber, newPage, widgetsOnPage);
 
-                            final Object[] properties = { currentLastPage, newPage, widgetsOnPage };
+                            final Object[] properties = {
+                                    currentLastPage,
+                                    newPage,
+                                    widgetsOnPage };
                             pages.add(properties);
 
                             if (isCancelled) {
@@ -897,7 +915,7 @@ public class Commands {
 
                         setTotalPages();
 
-                        //							mainFrame.setCurrentPage(finalCurrentLastPage);
+                        //    mainFrame.setCurrentPage(finalCurrentLastPage);
                         mainFrame.displayPage(mainFrame.getCurrentPage());
 
                         progressDialog.close();
@@ -922,7 +940,12 @@ public class Commands {
             final Element page,
             final Page newPage,
             final int type) {
-        final String groupName = type == IWidget.RADIO_BUTTON ? "radiobuttongroups" : "checkboxgroups";
+        final String groupName;
+        if (type == IWidget.RADIO_BUTTON) {
+            groupName = "radiobuttongroups";
+        } else {
+            groupName = "checkboxgroups";
+        }
 
         final Element radioButtonGroupsElement = (Element) page.getElementsByTagName(groupName).item(0);
 
@@ -984,22 +1007,21 @@ public class Commands {
     }
 
     private void decodePDFPage(
-            PdfDecoder pdfDecoder,
+            final PdfDecoder pdfDecoder,
             final String pdfPath,
             final int pdfPageNumber,
             final Page newPage,
             final List<IWidget> widgetsOnPage) {
-
         try {
-            pdfDecoder = new PdfDecoder();
+            final PdfDecoder decoder = new PdfDecoder();
 
             if (pdfPath.startsWith("http:") || pdfPath.startsWith("file:")) {
-                pdfDecoder.openPdfFileFromURL(pdfPath);
+                decoder.openPdfFileFromURL(pdfPath);
             } else {
-                pdfDecoder.openPdfFile(pdfPath);
+                decoder.openPdfFile(pdfPath);
             }
 
-            pdfDecoder.decodePage(pdfPageNumber);
+            decoder.decodePage(pdfPageNumber);
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -1031,8 +1053,8 @@ public class Commands {
         mainFrame.setCurrentDesignerFileName("");
         mainFrame.setTitle("PDF Forms Designer Version " + version);
 
-        mainFrame.setPropertiesCompound(new HashSet());
-        mainFrame.setPropertiesToolBar(new HashSet());
+        mainFrame.setPropertiesCompound(new HashSet<>());
+        mainFrame.setPropertiesToolBar(new HashSet<>());
 
         setPanelsState(false);
 
@@ -1043,8 +1065,7 @@ public class Commands {
 
         final int noOfPages = mainFrame.getTotalNoOfPages();
         if (noOfPages == 1) {
-            JOptionPane.showMessageDialog((Component) mainFrame, "You cannot remove the last page", "Last Page",
-                    JOptionPane.OK_OPTION);
+            JOptionPane.showMessageDialog((Component) mainFrame, "You cannot remove the last page", "Last Page", JOptionPane.ERROR_MESSAGE);
 
             return;
         }

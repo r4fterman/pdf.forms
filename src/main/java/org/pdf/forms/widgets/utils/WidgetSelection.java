@@ -35,8 +35,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -55,11 +53,13 @@ public class WidgetSelection {
 
     public static final int BOX_MARGIN = 3;
     private static final int RESIZE_NODE_SIZE = 4;
+    private static final int WIDTH = 22;
+    private static final int HEIGHT = 22;
     private Rectangle selectionBoxBounds = new Rectangle();
     private int lastY;
     private int lastX;
-    private JButton groupButton = new JButton();
-    private JButton unGroupButton = new JButton();
+    private final JButton groupButton = new JButton();
+    private final JButton unGroupButton = new JButton();
 
     public WidgetSelection(
             final IDesigner designerPanel,
@@ -71,27 +71,23 @@ public class WidgetSelection {
             final IDesigner designerPanel,
             final String version) {
         groupButton.setVisible(false);
-        groupButton.setSize(22, 22);
+        groupButton.setSize(WIDTH, HEIGHT);
         groupButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Grouped.gif")));
         groupButton.setToolTipText("Group Selection");
 
-        groupButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Commands commands = new Commands(designerPanel.getMainFrame(), version);
-                commands.executeCommand(Commands.GROUP);
-            }
+        groupButton.addActionListener(e -> {
+            final Commands commands = new Commands(designerPanel.getMainFrame(), version);
+            commands.executeCommand(Commands.GROUP);
         });
 
         unGroupButton.setVisible(false);
-        unGroupButton.setSize(22, 22);
+        unGroupButton.setSize(WIDTH, HEIGHT);
         unGroupButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Ungrouped.gif")));
         unGroupButton.setToolTipText("Ungroup Selection");
 
-        unGroupButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Commands commands = new Commands(designerPanel.getMainFrame(), version);
-                commands.executeCommand(Commands.UNGROUP);
-            }
+        unGroupButton.addActionListener(e -> {
+            final Commands commands = new Commands(designerPanel.getMainFrame(), version);
+            commands.executeCommand(Commands.UNGROUP);
         });
 
         designerPanel.add(groupButton);
@@ -99,11 +95,11 @@ public class WidgetSelection {
     }
 
     private void resizeWidgets(final IWidget selectedWidget) {
-        double resizeWidthRatio = selectedWidget.getResizeWidthRatio();
-        double resizeHeightRatio = selectedWidget.getResizeHeightRatio();
+        final double resizeWidthRatio = selectedWidget.getResizeWidthRatio();
+        final double resizeHeightRatio = selectedWidget.getResizeHeightRatio();
 
-        double resizeFromLeftRatio = selectedWidget.getResizeFromLeftRatio();
-        double resizeFromTopRatio = selectedWidget.getResizeFromTopRatio();
+        final double resizeFromLeftRatio = selectedWidget.getResizeFromLeftRatio();
+        final double resizeFromTopRatio = selectedWidget.getResizeFromTopRatio();
 
         selectedWidget.setSize((int) Math.round(selectionBoxBounds.width * resizeWidthRatio) - (BOX_MARGIN * 2),
                 (int) Math.round(selectionBoxBounds.height * resizeHeightRatio) - (BOX_MARGIN * 2));
@@ -132,7 +128,7 @@ public class WidgetSelection {
     }
 
     /**
-     * Draws a selection box for a single widget
+     * Draws a selection box for a single widget.
      *
      * @param g2
      *         the g2 to draw the selection box onto
@@ -150,7 +146,7 @@ public class WidgetSelection {
         groupButton.setVisible(false);
         unGroupButton.setVisible(false);
 
-        Rectangle localSelectionBoxBounds = widget.getBounds();
+        final Rectangle localSelectionBoxBounds = widget.getBounds();
 
         localSelectionBoxBounds.setLocation(widget.getX() - BOX_MARGIN, widget.getY() - BOX_MARGIN);
 
@@ -166,7 +162,7 @@ public class WidgetSelection {
     }
 
     /**
-     * Draws a selection box around a set of selected widgets
+     * Draws a selection box around a set of selected widgets.
      *
      * @param g2
      *         the g2 to draw the selection box onto
@@ -177,15 +173,15 @@ public class WidgetSelection {
      */
     public void drawMulitipleSelectionBox(
             final Graphics2D g2,
-            final Set selectedWidgets,
+            final Set<IWidget> selectedWidgets,
             final boolean drawNodes) {
 
         groupButton.setVisible(false);
         unGroupButton.setVisible(false);
 
-        Set flatternedWidgets = getFlatternedWidgets(selectedWidgets);
+        final Set<IWidget> flatternedWidgets = getFlatternedWidgets(selectedWidgets);
 
-        Rectangle multipleWidgetBounds = getMultipleWidgetBounds(flatternedWidgets);
+        final Rectangle multipleWidgetBounds = getMultipleWidgetBounds(flatternedWidgets);
 
         selectionBoxBounds = new Rectangle(multipleWidgetBounds.x - BOX_MARGIN, multipleWidgetBounds.y - BOX_MARGIN,
                 multipleWidgetBounds.width + (BOX_MARGIN * 2), multipleWidgetBounds.height + (BOX_MARGIN * 2));
@@ -201,8 +197,8 @@ public class WidgetSelection {
         g2.translate(-multipleWidgetBounds.x, -multipleWidgetBounds.y);
 
         if (drawNodes) {
-            JButton button;
-            if (selectedWidgets.size() == 1 && ((IWidget) selectedWidgets.iterator().next()).getType() == IWidget.GROUP) {
+            final JButton button;
+            if (selectedWidgets.size() == 1 && selectedWidgets.iterator().next().getType() == IWidget.GROUP) {
                 button = unGroupButton;
             } else {
                 button = groupButton;
@@ -218,18 +214,18 @@ public class WidgetSelection {
     public int getResizeType(
             final int mouseX,
             final int mouseY,
-            final Set selectedWidgets) {
+            final Set<IWidget> selectedWidgets) {
 
         if (selectionBoxBounds == null || selectedWidgets.isEmpty()) {
             return DesignerMouseMotionListener.DEFAULT_CURSOR;
         }
 
-        int widgetX = selectionBoxBounds.x;
-        int widgetY = selectionBoxBounds.y;
+        final int widgetX = selectionBoxBounds.x;
+        final int widgetY = selectionBoxBounds.y;
 
         int resizeType;
 
-        IWidget selectedWidget = (IWidget) selectedWidgets.iterator().next();
+        final IWidget selectedWidget = selectedWidgets.iterator().next();
 
         /*
          * if just one widget is selected, and it is split, check to see if the cursor is over
@@ -278,14 +274,13 @@ public class WidgetSelection {
     }
 
     public void moveWidgets(
-            final Set selectedWidgets,
+            final Set<IWidget> selectedWidgets,
             final int mouseX,
             final int mouseY) {
-        for (final Object widget : selectedWidgets) {
-            IWidget selectedWidget = (IWidget) widget;
+        for (final IWidget selectedWidget : selectedWidgets) {
 
-            int lastX = selectedWidget.getLastX();
-            int lastY = selectedWidget.getLastY();
+            final int lastX = selectedWidget.getLastX();
+            final int lastY = selectedWidget.getLastY();
 
             //double scale = designerPanel.getScale(); @scale
             //            selectedWidget.setX((int) ((lastX + mouseX) / scale));
@@ -297,7 +292,7 @@ public class WidgetSelection {
     }
 
     public void resizeWidgets(
-            final Set selectedWidgets,
+            final Set<IWidget> selectedWidgets,
             final IDesigner designerPanel,
             final int mouseX,
             final int mouseY,
@@ -306,131 +301,126 @@ public class WidgetSelection {
         //        double scale = designerPanel.getScale(); @scale
 
         switch (resizeType) {
-        case DesignerMouseMotionListener.SE_RESIZE_CURSOR: {
+            case DesignerMouseMotionListener.SE_RESIZE_CURSOR: {
 
-            //                int x = (int) (selectionBoxBounds.x * scale); @scale
-            //                int y = (int) (selectionBoxBounds.y * scale); @scale
+                //                int x = (int) (selectionBoxBounds.x * scale); @scale
+                //                int y = (int) (selectionBoxBounds.y * scale); @scale
 
-            int x = selectionBoxBounds.x;
-            int y = selectionBoxBounds.y;
+                final int x = selectionBoxBounds.x;
+                final int y = selectionBoxBounds.y;
 
-            selectionBoxBounds.setSize(mouseX - x, mouseY - y);
+                selectionBoxBounds.setSize(mouseX - x, mouseY - y);
 
-            for (final Object widget : selectedWidgets) {
-                IWidget selectedWidget = (IWidget) widget;
+                for (final IWidget selectedWidget : selectedWidgets) {
+                    resizeWidgets(selectedWidget);
+                }
 
-                resizeWidgets(selectedWidget);
+                designerPanel.setIsResizing(true);
+
+                break;
+
             }
+            case DesignerMouseMotionListener.NE_RESIZE_CURSOR: {
+                final int x = selectionBoxBounds.x;
+                final int height = selectionBoxBounds.height;
 
-            designerPanel.setIsResizing(true);
+                int dy = selectionBoxBounds.y;
+                selectionBoxBounds.setLocation(selectionBoxBounds.x, lastY + mouseY);
+                dy -= selectionBoxBounds.getY();
 
-            break;
+                selectionBoxBounds.setSize(mouseX - x, height + dy);
 
-        }
-        case DesignerMouseMotionListener.NE_RESIZE_CURSOR: {
-            int x = selectionBoxBounds.x;
-            int height = selectionBoxBounds.height;
+                for (final Object widget : selectedWidgets) {
+                    final IWidget selectedWidget = (IWidget) widget;
 
-            int dy = selectionBoxBounds.y;
-            selectionBoxBounds.setLocation(selectionBoxBounds.x, lastY + mouseY);
-            dy -= selectionBoxBounds.getY();
+                    resizeWidgets(selectedWidget);
+                }
 
-            selectionBoxBounds.setSize(mouseX - x, height += dy);
+                designerPanel.setIsResizing(true);
 
-            for (final Object widget : selectedWidgets) {
-                IWidget selectedWidget = (IWidget) widget;
-
-                resizeWidgets(selectedWidget);
+                break;
             }
+            case DesignerMouseMotionListener.SW_RESIZE_CURSOR: {
+                final int y = selectionBoxBounds.y;
+                final int width = selectionBoxBounds.width;
 
-            designerPanel.setIsResizing(true);
+                int dx = selectionBoxBounds.x;
+                selectionBoxBounds.setLocation(lastX + mouseX, selectionBoxBounds.y);
+                dx -= selectionBoxBounds.getX();
 
-            break;
-        }
-        case DesignerMouseMotionListener.SW_RESIZE_CURSOR: {
-            int y = selectionBoxBounds.y;
-            int width = selectionBoxBounds.width;
+                selectionBoxBounds.setSize(width + dx, mouseY - y);
 
-            int dx = selectionBoxBounds.x;
-            selectionBoxBounds.setLocation(lastX + mouseX, selectionBoxBounds.y);
-            dx -= selectionBoxBounds.getX();
+                for (final IWidget widget : selectedWidgets) {
+                    resizeWidgets(widget);
+                }
 
-            selectionBoxBounds.setSize(width += dx, mouseY - y);
+                designerPanel.setIsResizing(true);
 
-            for (final Object widget : selectedWidgets) {
-                IWidget selectedWidget = (IWidget) widget;
-
-                resizeWidgets(selectedWidget);
+                break;
             }
+            case DesignerMouseMotionListener.NW_RESIZE_CURSOR: {
+                final int width = selectionBoxBounds.width;
+                final int height = selectionBoxBounds.height;
 
-            designerPanel.setIsResizing(true);
+                int dy = selectionBoxBounds.y;
+                selectionBoxBounds.setLocation(selectionBoxBounds.x, lastY + mouseY);
+                dy -= selectionBoxBounds.getY();
 
-            break;
-        }
-        case DesignerMouseMotionListener.NW_RESIZE_CURSOR: {
-            int width = selectionBoxBounds.width;
-            int height = selectionBoxBounds.height;
+                int dx = selectionBoxBounds.x;
+                selectionBoxBounds.setLocation(lastX + mouseX, selectionBoxBounds.y);
+                dx -= selectionBoxBounds.getX();
 
-            int dy = selectionBoxBounds.y;
-            selectionBoxBounds.setLocation(selectionBoxBounds.x, lastY + mouseY);
-            dy -= selectionBoxBounds.getY();
+                selectionBoxBounds.setSize(width + dx, height + dy);
 
-            int dx = selectionBoxBounds.x;
-            selectionBoxBounds.setLocation(lastX + mouseX, selectionBoxBounds.y);
-            dx -= selectionBoxBounds.getX();
+                for (final Object widget : selectedWidgets) {
+                    final IWidget selectedWidget = (IWidget) widget;
 
-            selectionBoxBounds.setSize(width += dx, height += dy);
+                    resizeWidgets(selectedWidget);
+                }
 
-            for (final Object widget : selectedWidgets) {
-                IWidget selectedWidget = (IWidget) widget;
+                designerPanel.setIsResizing(true);
 
-                resizeWidgets(selectedWidget);
+                break;
             }
+            case DesignerMouseMotionListener.RESIZE_SPLIT_HORIZONTAL_CURSOR: {
+                final int x = selectionBoxBounds.x;
 
-            designerPanel.setIsResizing(true);
+                final IWidget selectedWidget = selectedWidgets.iterator().next();
 
-            break;
-        }
-        case DesignerMouseMotionListener.RESIZE_SPLIT_HORIZONTAL_CURSOR: {
-            int x = selectionBoxBounds.x;
+                final Document properties = selectedWidget.getProperties();
+                final Element captionProperties = XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties")).get(0);
 
-            IWidget selectedWidget = (IWidget) selectedWidgets.iterator().next();
+                final Element divisorLocationElement = XMLUtils.getPropertyElement(captionProperties, "Divisor Location");
 
-            Document properties = selectedWidget.getProperties();
-            Element captionProperties =
-                    (Element) XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties")).get(0);
+                divisorLocationElement.getAttributeNode("value").setValue(String.valueOf(mouseX - x));
 
-            Element divisorLocationElement = XMLUtils.getPropertyElement(captionProperties, "Divisor Location");
+                selectedWidget.setCaptionProperties(captionProperties);
+                //                selectedWidget.setDivisorLocation(mouseX - x);
 
-            divisorLocationElement.getAttributeNode("value").setValue(String.valueOf(mouseX - x));
+                designerPanel.setIsResizingSplitComponent(true);
+                break;
+            }
+            case DesignerMouseMotionListener.RESIZE_SPLIT_VERTICAL_CURSOR: {
+                final int y = selectionBoxBounds.y;
 
-            selectedWidget.setCaptionProperties(captionProperties);
-            //                selectedWidget.setDivisorLocation(mouseX - x);
+                final IWidget selectedWidget = selectedWidgets.iterator().next();
 
-            designerPanel.setIsResizingSplitComponent(true);
-            break;
-        }
-        case DesignerMouseMotionListener.RESIZE_SPLIT_VERTICAL_CURSOR: {
-            int y = selectionBoxBounds.y;
+                final Document properties = selectedWidget.getProperties();
+                final Element captionProperties =
+                        XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties")).get(0);
 
-            IWidget selectedWidget = (IWidget) selectedWidgets.iterator().next();
+                final Element divisorLocationElement = XMLUtils.getPropertyElement(captionProperties, "Divisor Location");
 
-            Document properties = selectedWidget.getProperties();
-            Element captionProperties =
-                    (Element) XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties")).get(0);
+                divisorLocationElement.getAttributeNode("value").setValue(String.valueOf(mouseY - y));
 
-            Element divisorLocationElement = XMLUtils.getPropertyElement(captionProperties, "Divisor Location");
+                selectedWidget.setCaptionProperties(captionProperties);
+                //                selectedWidget.setDivisorLocation(mouseY - y);
 
-            divisorLocationElement.getAttributeNode("value").setValue(String.valueOf(mouseY - y));
-
-            selectedWidget.setCaptionProperties(captionProperties);
-            //                selectedWidget.setDivisorLocation(mouseY - y);
-
-            designerPanel.setIsResizingSplitComponent(true);
-            break;
-        }
-        default:
-            System.out.println(resizeType + " Manual exit because of imposible sitation in " + getClass());
+                designerPanel.setIsResizingSplitComponent(true);
+                break;
+            }
+            default:
+                System.out.println(resizeType + " Manual exit because of imposible sitation in " + getClass());
         }
     }
 
@@ -453,11 +443,11 @@ public class WidgetSelection {
     }
 
     public Set<IWidget> getFlatternedWidgets(final Set<IWidget> widgets) {
-        Set<IWidget> set = new HashSet<>();
+        final Set<IWidget> set = new HashSet<>();
 
         for (final IWidget widget : widgets) {
             if (widget.getType() == IWidget.GROUP) {
-                set.addAll(getFlatternedWidgets(new HashSet(widget.getWidgetsInGroup())));
+                set.addAll(getFlatternedWidgets(new HashSet<>(widget.getWidgetsInGroup())));
             } else {
                 set.add(widget);
             }
@@ -466,13 +456,15 @@ public class WidgetSelection {
         return set;
     }
 
-    public static Rectangle getMultipleWidgetBounds(final Set selectedWidgets) {
-        int leftPoint = 0, topPoint = 0, rightPoint = 0, bottomPoint = 0;
+    public static Rectangle getMultipleWidgetBounds(final Set<IWidget> selectedWidgets) {
+        int leftPoint = 0;
+        int topPoint = 0;
+        int rightPoint = 0;
+        int bottomPoint = 0;
         boolean firstIteration = true;
 
-        for (final Object widget1 : selectedWidgets) {
-            IWidget widget = (IWidget) widget1;
-            Rectangle widgetBounds = widget.getBounds();
+        for (final IWidget widget : selectedWidgets) {
+            final Rectangle widgetBounds = widget.getBounds();
 
             if (firstIteration) {
                 leftPoint = widgetBounds.x;
@@ -482,10 +474,10 @@ public class WidgetSelection {
 
                 firstIteration = false;
             } else {
-                int currentLeftPoint = widgetBounds.x;
-                int currentRightPoint = currentLeftPoint + widgetBounds.width;
-                int currentTopPoint = widgetBounds.y;
-                int currentBottomPoint = currentTopPoint + widgetBounds.height;
+                final int currentLeftPoint = widgetBounds.x;
+                final int currentRightPoint = currentLeftPoint + widgetBounds.width;
+                final int currentTopPoint = widgetBounds.y;
+                final int currentBottomPoint = currentTopPoint + widgetBounds.height;
 
                 if (currentLeftPoint < leftPoint) {
                     leftPoint = currentLeftPoint;

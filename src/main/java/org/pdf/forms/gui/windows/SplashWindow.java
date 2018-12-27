@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+* This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -35,26 +35,28 @@ import java.awt.BorderLayout;
 
 import javax.swing.JWindow;
 
-public class SplashWindow extends JWindow //612, 350
-{
-    private SplashPanel splashPanel;
+public class SplashWindow extends JWindow {
 
-	public SplashWindow(final String version) {
-        splashPanel = new SplashPanel(version);
-        
+    private final SplashPanel splashPanel;
+
+    public SplashWindow(final String version) {
+        this.splashPanel = new SplashPanel(version);
+
         getContentPane().add(splashPanel, BorderLayout.CENTER);
-        
-        setSize(717,275);
+
+        setSize(717, 275);
         setLocationRelativeTo(null);
-        
+
         setVisible(true);
     }
-	
-    public void setStatusMaximum(int max){
-    	splashPanel.setStatusMaximum(max);
+
+    public void setStatusMaximum(final int max) {
+        splashPanel.setStatusMaximum(max);
     }
-    
-    public void setProgress(int progress, String text){
-    	splashPanel.setProgress(progress, text);
+
+    public void setProgress(
+            final int progress,
+            final String text) {
+        splashPanel.setProgress(progress, text);
     }
 }

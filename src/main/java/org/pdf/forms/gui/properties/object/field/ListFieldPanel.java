@@ -7,7 +7,7 @@
 * (C) Copyright 2006-2008..
 * Lead Developer: Simon Barnett (n6vale@googlemail.com)
 *
-* 	This file is part of the PDF Forms Designer
+*  This file is part of the PDF Forms Designer
 *
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public
@@ -31,6 +31,8 @@
 */
 package org.pdf.forms.gui.properties.object.field;
 
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,8 +40,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.jdesktop.layout.GroupLayout;
+import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBox;
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBoxParent;
@@ -52,13 +65,19 @@ public class ListFieldPanel extends javax.swing.JPanel implements TristateCheckB
     private Map<IWidget, Element> widgetsAndProperties;
     private IDesigner designerPanel;
 
-    private final String[] HEADINGS = { "Text" };
+    private final String[] HEADINGS = {
+            "Text" };
 
     private final MyTableModel tableModel;
-    private final int type;
+    private JButton addButton;
+    private JCheckBox allowCustomTextEntryBox;
+    private JButton downButton;
+    private JTable itemsTable;
+    private JLabel listLabel;
+    private JButton removeButton;
+    private JButton upButton;
 
     public ListFieldPanel(final int type) {
-        this.type = type;
         tableModel = new MyTableModel();
 
         initComponents();
@@ -71,117 +90,119 @@ public class ListFieldPanel extends javax.swing.JPanel implements TristateCheckB
     }
 
     private void initComponents() {
-        final javax.swing.JLabel jLabel1;
-        final javax.swing.JLabel jLabel3;
-        final javax.swing.JScrollPane jScrollPane3;
+        final JLabel jLabel1;
+        final JLabel jLabel3;
+        final JScrollPane jScrollPane3;
 
-        jLabel1 = new javax.swing.JLabel();
-        appearanceBox = new javax.swing.JComboBox<>();
-        listLabel = new javax.swing.JLabel();
-        addButton = new javax.swing.JButton();
-        removeButton = new javax.swing.JButton();
-        upButton = new javax.swing.JButton();
-        downButton = new javax.swing.JButton();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        itemsTable = new javax.swing.JTable();
-        jLabel3 = new javax.swing.JLabel();
-        presenceBox = new javax.swing.JComboBox<>();
+        jLabel1 = new JLabel();
+        final JComboBox<String> appearanceBox = new JComboBox<>();
+        listLabel = new JLabel();
+        addButton = new JButton();
+        removeButton = new JButton();
+        upButton = new JButton();
+        downButton = new JButton();
+        jScrollPane3 = new JScrollPane();
+        itemsTable = new JTable();
+        jLabel3 = new JLabel();
+        final JComboBox<String> presenceBox = new JComboBox<>();
         allowCustomTextEntryBox = new TristateCheckBox("Allow Custom Text Entry", TristateCheckBox.NOT_SELECTED, this);
 
         jLabel1.setText("Appearance:");
         jLabel1.setEnabled(false);
 
-        appearanceBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Underline", "Solid", "Sunken Box", "Custom..." }));
+        appearanceBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                "None", "Underline", "Solid", "Sunken Box", "Custom..." }));
         appearanceBox.setSelectedIndex(3);
         appearanceBox.setEnabled(false);
 
         listLabel.setText("List Items:");
 
-        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/pdf/forms/res/plus.gif")));
-        addButton.addActionListener(evt -> addRow(evt));
+        addButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/plus.gif")));
+        addButton.addActionListener(this::addRow);
 
-        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/pdf/forms/res/Cross.gif")));
-        removeButton.addActionListener(evt -> removeRow(evt));
+        removeButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Cross.gif")));
+        removeButton.addActionListener(this::removeRow);
 
-        upButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/pdf/forms/res/Up.gif")));
-        upButton.addActionListener(evt -> moveUp(evt));
+        upButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Up.gif")));
+        upButton.addActionListener(this::moveUp);
 
-        downButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/pdf/forms/res/Down.gif")));
-        downButton.addActionListener(evt -> moveDown(evt));
+        downButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Down.gif")));
+        downButton.addActionListener(this::moveDown);
 
         itemsTable.setModel(tableModel);
         jScrollPane3.setViewportView(itemsTable);
 
         jLabel3.setText("Presence:");
 
-        presenceBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Visible" }));
+        presenceBox.setModel(new DefaultComboBoxModel<>(new String[] {
+                "Visible" }));
 
         allowCustomTextEntryBox.setText("Allow Custom Text Entry");
-        allowCustomTextEntryBox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        allowCustomTextEntryBox.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        allowCustomTextEntryBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        allowCustomTextEntryBox.setMargin(new Insets(0, 0, 0, 0));
 
-        final org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        final GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                .add(layout.createParallelGroup(GroupLayout.LEADING)
                                         .add(layout.createSequentialGroup()
                                                 .add(10, 10, 10)
-                                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                                                        .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane3, 0, 0, Short.MAX_VALUE)
+                                                .add(layout.createParallelGroup(GroupLayout.TRAILING, false)
+                                                        .add(GroupLayout.LEADING, jScrollPane3, 0, 0, Short.MAX_VALUE)
                                                         .add(layout.createSequentialGroup()
-                                                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                                                                        .add(org.jdesktop.layout.GroupLayout.LEADING, listLabel)
-                                                                        .add(org.jdesktop.layout.GroupLayout.LEADING, allowCustomTextEntryBox))
-                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                .add(addButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                .add(removeButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                .add(upButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                                                .add(layout.createParallelGroup(GroupLayout.TRAILING)
+                                                                        .add(GroupLayout.LEADING, listLabel)
+                                                                        .add(GroupLayout.LEADING, allowCustomTextEntryBox))
+                                                                .addPreferredGap(LayoutStyle.RELATED)
+                                                                .add(addButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(LayoutStyle.RELATED)
+                                                                .add(removeButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(LayoutStyle.RELATED)
+                                                                .add(upButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
                                                                 .add(6, 6, 6)
-                                                                .add(downButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                                                .add(downButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)))
                                                 .addContainerGap())
-                                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                        .add(layout.createParallelGroup(GroupLayout.LEADING)
                                                 .add(layout.createSequentialGroup()
                                                         .add(jLabel1)
-                                                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                        .add(appearanceBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 198, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                                .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                                                        .addPreferredGap(LayoutStyle.RELATED)
+                                                        .add(appearanceBox, GroupLayout.PREFERRED_SIZE, 198, GroupLayout.PREFERRED_SIZE))
+                                                .add(GroupLayout.TRAILING, layout.createSequentialGroup()
                                                         .add(jLabel3)
-                                                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                        .addPreferredGap(LayoutStyle.RELATED)
                                                         .add(presenceBox, 0, 135, Short.MAX_VALUE)
                                                         .add(84, 84, 84)))))
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel1)
-                                        .add(appearanceBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                        .add(listLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 24, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(downButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 24, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(addButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 24, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(removeButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 24, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                        .add(upButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 24, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 150, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                        .add(appearanceBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(GroupLayout.LEADING)
+                                        .add(listLabel, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+                                        .add(downButton, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+                                        .add(addButton, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+                                        .add(removeButton, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+                                        .add(upButton, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(jScrollPane3, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.RELATED)
                                 .add(allowCustomTextEntryBox)
                                 .add(23, 23, 23)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(jLabel3)
-                                        .add(presenceBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .add(presenceBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }
 
-    private void moveDown(final java.awt.event.ActionEvent evt) {
+    private void moveDown(final ActionEvent evt) {
         final int selectedRow = itemsTable.getSelectedRow();
 
         if (selectedRow != -1 && selectedRow != tableModel.getRowCount() - 1) {
@@ -191,7 +212,7 @@ public class ListFieldPanel extends javax.swing.JPanel implements TristateCheckB
         updateItems();
     }
 
-    private void moveUp(final java.awt.event.ActionEvent evt) {
+    private void moveUp(final ActionEvent evt) {
         final int selectedRow = itemsTable.getSelectedRow();
 
         if (selectedRow > 0) {
@@ -201,7 +222,7 @@ public class ListFieldPanel extends javax.swing.JPanel implements TristateCheckB
         updateItems();
     }
 
-    private void removeRow(final java.awt.event.ActionEvent evt) {
+    private void removeRow(final ActionEvent evt) {
         final int selectedRow = itemsTable.getSelectedRow();
 
         if (selectedRow != -1) {
@@ -211,7 +232,7 @@ public class ListFieldPanel extends javax.swing.JPanel implements TristateCheckB
         updateItems();
     }
 
-    private void addRow(final java.awt.event.ActionEvent evt) {
+    private void addRow(final ActionEvent evt) {
         int selectedRow = itemsTable.getSelectedRow();
 
         if (selectedRow == -1) {
@@ -270,7 +291,8 @@ public class ListFieldPanel extends javax.swing.JPanel implements TristateCheckB
             final Element objectProperties = widgetsAndProperties.get(widget);
 
             /* add field properties */
-            if (widgetsAndProperties.size() == 1) { // only 1 widget is currently selected
+            if (widgetsAndProperties.size() == 1) {
+                // only 1 widget is currently selected
                 final Element itemElement = (Element) objectProperties.getElementsByTagName("items").item(0);
 
                 final List<Element> itemsList = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
@@ -332,20 +354,16 @@ public class ListFieldPanel extends javax.swing.JPanel implements TristateCheckB
 
             if (allowCustomTextEntryState != TristateCheckBox.DONT_CARE) {
                 final Element allowMultipleLines = fieldProperties.get(2);
-                allowMultipleLines.getAttributeNode("value").setValue(allowCustomTextEntryState == TristateCheckBox.SELECTED ? "true" : "false");
+                final String value;
+                if (allowCustomTextEntryState == TristateCheckBox.SELECTED) {
+                    value = "true";
+                } else {
+                    value = "false";
+                }
+                allowMultipleLines.getAttributeNode("value").setValue(value);
             }
         }
     }
-
-    private javax.swing.JButton addButton;
-    private javax.swing.JCheckBox allowCustomTextEntryBox;
-    private javax.swing.JComboBox<String> appearanceBox;
-    private javax.swing.JButton downButton;
-    private javax.swing.JTable itemsTable;
-    private javax.swing.JLabel listLabel;
-    private javax.swing.JComboBox<String> presenceBox;
-    private javax.swing.JButton removeButton;
-    private javax.swing.JButton upButton;
 
     class MyTableModel extends AbstractTableModel {
 
@@ -353,7 +371,7 @@ public class ListFieldPanel extends javax.swing.JPanel implements TristateCheckB
 
         private int rows;
 
-        public void insertRow(final int selectedRow) {
+        void insertRow(final int selectedRow) {
             final Map<String, Object> map = new HashMap<>();
             if (selectedRow != -1) {
                 for (final String heading : HEADINGS) {
@@ -367,7 +385,7 @@ public class ListFieldPanel extends javax.swing.JPanel implements TristateCheckB
             fireTableDataChanged();
         }
 
-        public void moveRow(
+        void moveRow(
                 final int index,
                 final int move) {
             final Map<String, Object> item = values.remove(index);
@@ -377,7 +395,7 @@ public class ListFieldPanel extends javax.swing.JPanel implements TristateCheckB
             fireTableDataChanged();
         }
 
-        public void deleteRow(final int selectedRow) {
+        void deleteRow(final int selectedRow) {
             values.remove(selectedRow);
 
             rows--;
