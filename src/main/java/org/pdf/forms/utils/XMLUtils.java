@@ -129,9 +129,9 @@ public class XMLUtils {
     }
 
     private static String getAttribute(
-            final List<Element> list,
+            final List<Element> elements,
             final int index) {
-        final Element element = list.get(index);
+        final Element element = elements.get(index);
         final NamedNodeMap attrs = element.getAttributes();
 
         final Node item = attrs.getNamedItem("value");
@@ -139,9 +139,9 @@ public class XMLUtils {
     }
 
     private static String getAttributeByName(
-            final List<Element> list,
+            final List<Element> elements,
             final String attributeName) {
-        for (final Element element : list) {
+        for (final Element element : elements) {
             final String value = getAttributeFromElement(element, attributeName);
             if (value != null) {
                 return value;

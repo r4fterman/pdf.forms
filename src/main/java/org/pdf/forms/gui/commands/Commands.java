@@ -537,7 +537,7 @@ public class Commands {
                 final Writer writer = new Writer(mainFrame);
 
                 final int noOfPages = mainFrame.getTotalNoOfPages();
-                final List[] widgets = new ArrayList[noOfPages];
+                final List<IWidget>[] widgets = new ArrayList[noOfPages];
 
                 final FormsDocument documentProperties = mainFrame.getFormsDocument();
 

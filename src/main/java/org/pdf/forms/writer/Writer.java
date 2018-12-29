@@ -109,19 +109,18 @@ public class Writer {
 
     public void write(
             final File fileToWriteTo,
-            final List[] widgets,
+            final List<IWidget>[] widgets,
             final org.w3c.dom.Document properties) {
         fontSubstitutions = new HashSet<>();
 
-        final List pages = XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("page"));
+        final List<Element> pages = XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("page"));
 
         final Element rootElement = properties.getDocumentElement();
-        final List elementsFromNodeList = XMLUtils.getElementsFromNodeList(rootElement.getElementsByTagName("javascript"));
+        final List<Element> elementsFromNodeList = XMLUtils.getElementsFromNodeList(rootElement.getElementsByTagName("javascript"));
 
         Map<PdfName, String> eventsAndScripts = null;
         if (!elementsFromNodeList.isEmpty()) {
-            final Element javaScriptElement = (Element) elementsFromNodeList.get(0);
-
+            final Element javaScriptElement = elementsFromNodeList.get(0);
             eventsAndScripts = getEventAndScriptMap(javaScriptElement);
         }
         final String documentJavaScript = getDocumentJavaScript(eventsAndScripts);

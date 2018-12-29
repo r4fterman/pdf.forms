@@ -1,4 +1,4 @@
-/**
+/*
  * ===========================================
  * PDF Forms Designer
  * ===========================================
@@ -31,12 +31,35 @@
  */
 package org.pdf.forms.writer;
 
-import java.awt.Color;
-import java.io.FileOutputStream;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import java.awt.Color;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.easymock.EasyMockSupport;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.support.io.TempDirectory;
+import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.widgets.IWidget;
+import org.pdf.forms.widgets.utils.WidgetFactory;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -49,19 +72,43 @@ import com.itextpdf.text.pdf.PdfFormField;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.RadioCheckField;
 
-public class WriterTest {
+@ExtendWith(TempDirectory.class)
+class WriterTest extends EasyMockSupport {
 
-    @Rule
-    public final TemporaryFolder testFolder = new TemporaryFolder();
+    private Writer writer;
+
+    private IMainFrame mainFrame;
+
+    @BeforeEach
+    void setUp() {
+        this.mainFrame = createMock(IMainFrame.class);
+
+        this.writer = new Writer(mainFrame);
+    }
 
     @Test
-    public void testWriter() throws Exception {
+    void write_should_persist_ui_document(@TempDirectory.TempDir final Path path) throws Exception {
+        final String fileName = "/example.des";
+        final File file = getFile(fileName);
+        final org.w3c.dom.Document properties = readDocument(file);
+
+        final List<IWidget>[] widgets = buildWidgets();
+
+        final File outputFile = new File(path.toFile(), "output.des");
+        writer.write(outputFile, widgets, properties);
+
+        assertThat(outputFile.length(), is(41062L));
+    }
+
+    @Test
+    void testWriter(@TempDirectory.TempDir final Path path) throws Exception {
+        final File file = new File(path.toFile(), "output.des");
+
         final Document document = new Document(PageSize.A4, 50, 50, 50, 50);
-        final PdfWriter writer = PdfWriter
-                .getInstance(document, new FileOutputStream(testFolder.newFile()));
+        final PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(file));
         document.open();
 
-        RadioCheckField bt = new RadioCheckField(writer, new Rectangle(100, 100, 200, 200), "radio", "v1");
+        final RadioCheckField bt = new RadioCheckField(writer, new Rectangle(100, 100, 200, 200), "radio", "v1");
         bt.setCheckType(RadioCheckField.TYPE_CIRCLE);
         bt.setBackgroundColor(getBaseColor(Color.cyan));
         bt.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
@@ -83,17 +130,46 @@ public class WriterTest {
         top.addKid(f2);
         top.addKid(f3);
         writer.addAnnotation(top);
-        bt = new RadioCheckField(writer, new Rectangle(300, 300, 400, 400), "check1", "Yes");
-        bt.setCheckType(RadioCheckField.TYPE_CHECK);
-        bt.setBorderWidth(BaseField.BORDER_WIDTH_THIN);
-        bt.setBorderColor(getBaseColor(Color.black));
-        bt.setBackgroundColor(getBaseColor(Color.white));
-        final PdfFormField ck = bt.getCheckField();
+
+        final RadioCheckField bt2 = new RadioCheckField(writer, new Rectangle(300, 300, 400, 400), "check1", "Yes");
+        bt2.setCheckType(RadioCheckField.TYPE_CHECK);
+        bt2.setBorderWidth(BaseField.BORDER_WIDTH_THIN);
+        bt2.setBorderColor(getBaseColor(Color.black));
+        bt2.setBackgroundColor(getBaseColor(Color.white));
+        final PdfFormField ck = bt2.getCheckField();
         writer.addAnnotation(ck);
         document.close();
     }
 
     private BaseColor getBaseColor(final Color color) {
         return new GrayColor(color.getRGB());
+    }
+
+    private List<IWidget>[] buildWidgets() {
+        final List<IWidget>[] widgets = new ArrayList[2];
+        widgets[0] = widgetList();
+        widgets[1] = widgetList();
+
+        return widgets;
+    }
+
+    private List<IWidget> widgetList() {
+        final List<IWidget> widgetList = new ArrayList<>();
+        widgetList.add(WidgetFactory.createWidget(IWidget.TEXT_FIELD, (Element) null));
+        return widgetList;
+    }
+
+    private org.w3c.dom.Document readDocument(final File file) throws ParserConfigurationException, IOException, SAXException {
+        final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        final DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+
+        return documentBuilder.parse(file);
+    }
+
+    private File getFile(final String fileName) throws URISyntaxException {
+        final URL url = WriterTest.class.getResource(fileName);
+        assertThat("File not found: " + fileName, fileName, not(nullValue()));
+
+        return new File(url.toURI());
     }
 }

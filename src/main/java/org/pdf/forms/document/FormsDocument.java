@@ -121,11 +121,10 @@ public class FormsDocument {
     }
 
     public Document getDocumentProperties() {
-        final List pageNodes = XMLUtils.getElementsFromNodeList(documentProperties.getElementsByTagName("page"));
+        final List<Element> pageNodes = XMLUtils.getElementsFromNodeList(documentProperties.getElementsByTagName("page"));
 
         /* remove all pages from document so we can rebuild */
-        for (final Object node : pageNodes) {
-            final Element element = (Element) node;
+        for (final Element element : pageNodes) {
             final Node parent = element.getParentNode();
             parent.removeChild(element);
         }
