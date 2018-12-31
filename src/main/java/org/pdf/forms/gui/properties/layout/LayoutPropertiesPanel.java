@@ -83,6 +83,12 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
     private JTextField yBox;
     private JCheckBox yExpandToFitBox;
 
+    // called via reflection
+    private JToggleButton rotate0;
+    private JToggleButton rotate90;
+    private JToggleButton rotate180;
+    private JToggleButton rotate270;
+
     LayoutPropertiesPanel() {
         initComponents();
     }
@@ -107,10 +113,10 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
         yExpandToFitBox = new TristateCheckBox("Expand to fit", TristateCheckBox.NOT_SELECTED, this);
         final JLabel jLabel5 = new JLabel();
         anchorLocationBox = new JComboBox<>();
-        final JToggleButton rotate0 = new JToggleButton();
-        final JToggleButton rotate90 = new JToggleButton();
-        final JToggleButton rotate180 = new JToggleButton();
-        final JToggleButton rotate270 = new JToggleButton();
+        rotate0 = new JToggleButton();
+        rotate90 = new JToggleButton();
+        rotate180 = new JToggleButton();
+        rotate270 = new JToggleButton();
         final JPanel jPanel2 = new JPanel();
         final JLabel jLabel6 = new JLabel();
         final JLabel jLabel7 = new JLabel();
@@ -543,9 +549,13 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
     public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
         this.widgetsAndProperties = widgetsAndProperties;
 
-        String xCordToUse = null, yCordToUse = null, widthToUse = null, heightToUse = null;
+        String xCordToUse = null;
+        String yCordToUse = null;
+        String widthToUse = null;
+        String heightToUse = null;
         //        TristateCheckBox.State xExpandStateToUse = null, yExpandStateToUse = null;
-        String anchorLocationToUse = null, rotationToUse = null;
+        String anchorLocationToUse = null;
+        String rotationToUse = null;
         String captionPositionToUse = null;
 
         boolean isComponentSplit = false;

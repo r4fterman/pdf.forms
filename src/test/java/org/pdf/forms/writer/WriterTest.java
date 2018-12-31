@@ -38,13 +38,16 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -55,10 +58,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.support.io.TempDirectory;
-import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.gui.commands.Commands;
+import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.IWidget;
-import org.pdf.forms.widgets.utils.WidgetFactory;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.itextpdf.text.BaseColor;
@@ -75,29 +77,46 @@ import com.itextpdf.text.pdf.RadioCheckField;
 @ExtendWith(TempDirectory.class)
 class WriterTest extends EasyMockSupport {
 
+    private static final String DESIGNER_FILE = "/example.des";
     private Writer writer;
 
-    private IMainFrame mainFrame;
+    private Commands commands;
+    private MockMainFrame mainFrame;
 
     @BeforeEach
     void setUp() {
-        this.mainFrame = createMock(IMainFrame.class);
+        this.mainFrame = new MockMainFrame();
 
+        this.commands = new Commands(mainFrame, "DEV-TEST");
         this.writer = new Writer(mainFrame);
     }
 
     @Test
     void write_should_persist_ui_document(@TempDirectory.TempDir final Path path) throws Exception {
-        final String fileName = "/example.des";
-        final File file = getFile(fileName);
-        final org.w3c.dom.Document properties = readDocument(file);
+        final IDesigner designer = createMock(IDesigner.class);
+        mainFrame.setDesigner(designer);
+        designer.close();
 
-        final List<IWidget>[] widgets = buildWidgets();
+        replayAll();
+        final File source = getFile();
+        final File target = createTargetFile(path, source);
+
+        commands.openDesignerFile(target.getAbsolutePath());
 
         final File outputFile = new File(path.toFile(), "output.des");
-        writer.write(outputFile, widgets, properties);
+        final org.w3c.dom.Document properties = readDocument(source);
 
-        assertThat(outputFile.length(), is(41062L));
+        final List<IWidget> page1Widgets = mainFrame.getFormsDocument().getPage(1).getWidgets();
+        final List<IWidget> page2Widgets = mainFrame.getFormsDocument().getPage(2).getWidgets();
+        final Map<Integer, List<IWidget>> widgetsMap = Map.of(
+                0, page1Widgets,
+                1, page2Widgets
+        );
+
+        writer.write(outputFile, widgetsMap, properties);
+        verifyAll();
+
+        assertThat(outputFile.length(), is(15161L));
     }
 
     @Test
@@ -145,20 +164,6 @@ class WriterTest extends EasyMockSupport {
         return new GrayColor(color.getRGB());
     }
 
-    private List<IWidget>[] buildWidgets() {
-        final List<IWidget>[] widgets = new ArrayList[2];
-        widgets[0] = widgetList();
-        widgets[1] = widgetList();
-
-        return widgets;
-    }
-
-    private List<IWidget> widgetList() {
-        final List<IWidget> widgetList = new ArrayList<>();
-        widgetList.add(WidgetFactory.createWidget(IWidget.TEXT_FIELD, (Element) null));
-        return widgetList;
-    }
-
     private org.w3c.dom.Document readDocument(final File file) throws ParserConfigurationException, IOException, SAXException {
         final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         final DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -166,10 +171,19 @@ class WriterTest extends EasyMockSupport {
         return documentBuilder.parse(file);
     }
 
-    private File getFile(final String fileName) throws URISyntaxException {
-        final URL url = WriterTest.class.getResource(fileName);
-        assertThat("File not found: " + fileName, fileName, not(nullValue()));
+    private File getFile() throws URISyntaxException {
+        final URL url = WriterTest.class.getResource(DESIGNER_FILE);
+        assertThat("File not found: " + DESIGNER_FILE, DESIGNER_FILE, not(nullValue()));
 
         return new File(url.toURI());
+    }
+
+    private File createTargetFile(
+            @TempDirectory.TempDir final Path path,
+            final File source) throws IOException {
+        final File target = new File(path.toFile(), "example.des");
+        Files.copy(new FileInputStream(source), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        return target;
     }
 }

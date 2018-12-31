@@ -63,6 +63,14 @@ public class ParagraphPropertiesPanel extends JPanel {
     private JComboBox<String> currentlyEditingBox;
     private JToggleButton horizontalAlignJustify;
 
+    // called via reflection
+    private JToggleButton horizontalAlignLeft;
+    private JToggleButton horizontalAlignCenter;
+    private JToggleButton horizontalAlignRight;
+    private JToggleButton verticalAlignTop;
+    private JToggleButton verticalAlignCenter;
+    private JToggleButton verticalAlignBottom;
+
     /**
      * Creates new form ParagraphPropertiesPanel.
      */
@@ -83,14 +91,14 @@ public class ParagraphPropertiesPanel extends JPanel {
         buttonGroup2 = new ButtonGroup();
         jLabel1 = new JLabel();
         currentlyEditingBox = new JComboBox<>();
-        final JToggleButton horizontalAlignLeft = new JToggleButton();
-        final JToggleButton horizontalAlignCenter = new JToggleButton();
-        final JToggleButton horizontalAlignRight = new JToggleButton();
+        horizontalAlignLeft = new JToggleButton();
+        horizontalAlignCenter = new JToggleButton();
+        horizontalAlignRight = new JToggleButton();
         horizontalAlignJustify = new JToggleButton();
         jSeparator1 = new JSeparator();
-        final JToggleButton verticalAlignTop = new JToggleButton();
-        final JToggleButton verticalAlignCenter = new JToggleButton();
-        final JToggleButton verticalAlignBottom = new JToggleButton();
+        verticalAlignTop = new JToggleButton();
+        verticalAlignCenter = new JToggleButton();
+        verticalAlignBottom = new JToggleButton();
 
         jLabel1.setText("Currently Editing:");
 

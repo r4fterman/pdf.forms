@@ -86,6 +86,8 @@ import org.pdf.forms.writer.Writer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.google.common.collect.ImmutableMap;
+
 public class Commands {
 
     public static final int NEW = 77184; //"NEW".hashCode();
@@ -367,7 +369,9 @@ public class Commands {
         for (int i = 0; i < recentDocs.length; i++) {
             if (recentDocs[i] != null) {
                 final String shortenedFileName = getShortenedFileName(recentDocs[i]);
-
+                if (recentDocuments[i] == null) {
+                    recentDocuments[i] = new JMenuItem();
+                }
                 recentDocuments[i].setText(i + 1 + ": " + shortenedFileName);
                 if (recentDocuments[i].getText().equals(i + 1 + ": ")) {
                     recentDocuments[i].setVisible(false);
@@ -537,15 +541,15 @@ public class Commands {
                 final Writer writer = new Writer(mainFrame);
 
                 final int noOfPages = mainFrame.getTotalNoOfPages();
-                final List<IWidget>[] widgets = new ArrayList[noOfPages];
 
                 final FormsDocument documentProperties = mainFrame.getFormsDocument();
 
-                for (int i = 0; i < noOfPages; i++) {
-                    widgets[i] = documentProperties.getPage(i + 1).getWidgets();
+                final ImmutableMap.Builder<Integer, List<IWidget>> widgets = ImmutableMap.builder();
+                for (int pageNumber = 0; pageNumber < noOfPages; pageNumber++) {
+                    widgets.put(pageNumber, documentProperties.getPage(pageNumber + 1).getWidgets());
                 }
 
-                writer.write(file, widgets, documentProperties.getDocumentProperties());
+                writer.write(file, widgets.build(), documentProperties.getDocumentProperties());
 
                 finished = true;
             } else {

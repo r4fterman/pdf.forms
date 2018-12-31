@@ -36,7 +36,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -53,8 +52,10 @@ import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.toolbars.DesignNavigationToolbar;
 import org.pdf.forms.gui.toolbars.NavigationToolbar;
 import org.pdf.forms.gui.toolbars.PreviewNavigationToolbar;
+import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.writer.Writer;
 
+import com.google.common.collect.ImmutableMap;
 import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
 import com.vlsolutions.swing.toolbars.ToolBarConstraints;
@@ -130,16 +131,16 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
                     file.deleteOnExit();
 
                     final int noOfPages = mainFrame.getTotalNoOfPages();
-                    final List[] widgets = new ArrayList[noOfPages];
+                    final ImmutableMap.Builder<Integer, List<IWidget>> widgets = ImmutableMap.<Integer, List<IWidget>>builder();
 
                     final FormsDocument documentProperties = mainFrame.getFormsDocument();
 
-                    for (int i = 0; i < noOfPages; i++) {
-                        widgets[i] = documentProperties.getPage(i + 1).getWidgets();
+                    for (int pageNumber = 0; pageNumber < noOfPages; pageNumber++) {
+                        widgets.put(pageNumber, documentProperties.getPage(pageNumber + 1).getWidgets());
                     }
 
                     final Writer writer = new Writer(mainFrame);
-                    writer.write(file, widgets, documentProperties.getDocumentProperties());
+                    writer.write(file, widgets.build(), documentProperties.getDocumentProperties());
 
                     final Set<String> fontSubstitutions = writer.getFontSubstitutions();
                     if (!fontSubstitutions.isEmpty()) {
