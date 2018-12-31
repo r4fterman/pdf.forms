@@ -12,4 +12,9 @@ GNU General Public License (GPL)
     $>./run.sh
 
 # Build Status
+
 [![Build Status](https://travis-ci.org/r4fterman/pdf.forms.svg?branch=master)](https://travis-ci.org/r4fterman/pdf.forms)
+
+# Security Analyses
+
+[![Known Vulnerabilities](https://snyk.io/test/github/r4fterman/pdf.forms/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/r4fterman/pdf.forms?targetFile=pom.xml)
