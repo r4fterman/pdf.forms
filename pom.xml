@@ -26,12 +26,19 @@
             <artifactId>swing-layout</artifactId>
             <version>1.0.3</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.jpedal</groupId>-->
+            <!--<artifactId>jpedal-lgpl</artifactId>-->
+            <!--<version>1.0</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${basedir}/libs/jpedal.jar</systemPath>-->
+        <!--</dependency>-->
+
         <dependency>
-            <groupId>org.jpedal</groupId>
-            <artifactId>jpedal-lgpl</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/jpedal.jar</systemPath>
+            <!-- this artifact it located at Geomajas repository (http://maven.geomajas.org/) -->
+            <groupId>jpedal</groupId>
+            <artifactId>jpedal</artifactId>
+            <version>4.45-b-105</version>
         </dependency>
 
         <dependency>
