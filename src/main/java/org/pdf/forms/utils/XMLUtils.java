@@ -86,7 +86,10 @@ public class XMLUtils {
             final String nodeValue = nameNode.getNodeValue();
             if (nodeValue != null) {
                 if (nodeValue.equals(attributeName)) {
-                    return attrs.getNamedItem("value").getNodeValue();
+                    final Node namedItem = attrs.getNamedItem("value");
+                    if (namedItem != null) {
+                        return namedItem.getNodeValue();
+                    }
                 }
             }
         }
@@ -135,7 +138,11 @@ public class XMLUtils {
         final NamedNodeMap attrs = element.getAttributes();
 
         final Node item = attrs.getNamedItem("value");
-        return item.getNodeValue();
+        if (item != null) {
+            return item.getNodeValue();
+        }
+
+        return null;
     }
 
     private static String getAttributeByName(

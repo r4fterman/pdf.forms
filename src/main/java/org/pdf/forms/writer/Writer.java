@@ -109,16 +109,16 @@ public class Writer {
 
     public void write(
             final File fileToWriteTo,
-            final List<IWidget>[] widgets,
+            final Map<Integer, List<IWidget>> widgetsByPageNumber,
             final org.w3c.dom.Document properties) {
-        fontSubstitutions = new HashSet<>();
+        this.fontSubstitutions = new HashSet<>();
 
         final List<Element> pages = XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("page"));
 
         final Element rootElement = properties.getDocumentElement();
         final List<Element> elementsFromNodeList = XMLUtils.getElementsFromNodeList(rootElement.getElementsByTagName("javascript"));
 
-        Map<PdfName, String> eventsAndScripts = null;
+        Map<PdfName, String> eventsAndScripts = new HashMap<>();
         if (!elementsFromNodeList.isEmpty()) {
             final Element javaScriptElement = elementsFromNodeList.get(0);
             eventsAndScripts = getEventAndScriptMap(javaScriptElement);
@@ -141,25 +141,27 @@ public class Writer {
 
                 globalWriter = writer;
                 globalStamper = null;
-                addWidgets(writer, widgets[0], pageSize, pageSize, 0);
+                final List<IWidget> widgetsForFirstPage = widgetsByPageNumber.get(0);
+                addWidgets(writer, widgetsForFirstPage, pageSize, pageSize, 0);
 
-                if (widgets[0].isEmpty()) {
+                if (widgetsForFirstPage.isEmpty()) {
                     writer.setPageEmpty(false);
                 }
 
-                for (int i = 1; i < pages.size(); i++) {
-                    final int currentPage = i + 1;
+                for (int pageNumber = 1; pageNumber < pages.size(); pageNumber++) {
+                    final int currentPage = pageNumber + 1;
                     pageSize = getPageSize(pages, currentPage);
-
                     document.setPageSize(pageSize);
 
                     document.newPage();
 
                     globalWriter = writer;
                     globalStamper = null;
-                    addWidgets(writer, widgets[i], pageSize, pageSize, currentPage);
 
-                    if (widgets[i].isEmpty()) {
+                    final List<IWidget> widgetForPage = widgetsByPageNumber.get(pageNumber);
+                    addWidgets(writer, widgetForPage, pageSize, pageSize, currentPage);
+
+                    if (widgetForPage.isEmpty()) {
                         writer.setPageEmpty(false);
                     }
                 }
@@ -204,11 +206,12 @@ public class Writer {
 
                 final PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(fileToWriteTo));
 
-                for (int i = 0; i < pages.size(); i++) {
-                    final Element page = (Element) pages.get(i);
+                for (int pageNumber = 0; pageNumber < pages.size(); pageNumber++) {
+                    final Element page = pages.get(pageNumber);
 
-                    final int currentPage = i + 1;
+                    final int currentPage = pageNumber + 1;
 
+                    final List<IWidget> widgetList = widgetsByPageNumber.get(pageNumber);
                     if (isPdfPage(page)) { // this page has been imported
                         final AcroFields acroFields = stamper.getAcroFields();
                         acroFields.removeFieldsFromPage(currentPage);
@@ -217,14 +220,14 @@ public class Writer {
                         globalStamper = stamper;
 
                         //int pageHeight, int cropHeight, int cropX, int cropY
-                        addWidgets(stamper.getWriter(), widgets[i], reader.getPageSizeWithRotation(currentPage), reader.getCropBox(currentPage), currentPage);
+                        addWidgets(stamper.getWriter(), widgetList, reader.getPageSizeWithRotation(currentPage), reader.getCropBox(currentPage), currentPage);
                     } else { // this is a brand new page
                         stamper.insertPage(currentPage, getPageSize(pages, currentPage));
 
                         globalWriter = null;
                         globalStamper = stamper;
 
-                        addWidgets(stamper.getWriter(), widgets[i], getPageSize(pages, currentPage), reader.getCropBox(currentPage), currentPage);
+                        addWidgets(stamper.getWriter(), widgetList, getPageSize(pages, currentPage), reader.getCropBox(currentPage), currentPage);
                     }
                 }
 
@@ -300,7 +303,7 @@ public class Writer {
 
             final int widgetType = widget.getType();
 
-            final Map buttonGroup;
+            final Map<String, List<IWidget>> buttonGroup;
             final String groupName;
             if (widgetType == IWidget.RADIO_BUTTON) {
                 final RadioButtonWidget rbw = (RadioButtonWidget) widget;
@@ -312,11 +315,7 @@ public class Writer {
                 buttonGroup = checkBoxGroups;
             }
 
-            List<IWidget> buttonsInGroup = (List) buttonGroup.get(groupName);
-            if (buttonsInGroup == null) {
-                buttonsInGroup = new ArrayList<>();
-                buttonGroup.put(groupName, buttonsInGroup);
-            }
+            final List<IWidget> buttonsInGroup = buttonGroup.computeIfAbsent(groupName, k -> new ArrayList<>());
             buttonsInGroup.add(widget);
         }
 
@@ -377,7 +376,7 @@ public class Writer {
                     valueBounds.setLocation(actualLocation);
                     final Rectangle pdfValueBounds = convertJavaCoordsToPdfCoords(valueBounds, pageSize);
 
-                    final RadioCheckField check = new RadioCheckField(writer, pdfValueBounds, null, getName(widget));
+                    final RadioCheckField check = new RadioCheckField(writer, pdfValueBounds, getName(widget), "Yes");
                     check.setChecked(value.isSelected());
 
                     addBorder(widget, check);
@@ -424,7 +423,7 @@ public class Writer {
             final List elementsFromNodeList = XMLUtils.getElementsFromNodeList(
                     rootElement.getElementsByTagName("javascript"));
 
-            Map<PdfName, String> eventsAndScripts = null;
+            Map<PdfName, String> eventsAndScripts = new HashMap<>();
             if (!elementsFromNodeList.isEmpty()) {
                 final Element javaScriptElement = (Element) elementsFromNodeList.get(0);
 
