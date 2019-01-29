@@ -11,3 +11,6 @@ install: /bin/true
 
 script:
   - mvn clean install -Pci
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
