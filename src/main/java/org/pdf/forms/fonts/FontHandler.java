@@ -40,6 +40,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 
@@ -53,6 +55,8 @@ public final class FontHandler {
 
         return font1.compareToIgnoreCase(font2);
     });
+
+    private final Logger logger = LoggerFactory.getLogger(FontHandler.class);
 
     private FontHandler() {
         final String javaFontDir = System.getProperty("java.home") + "/lib/fonts";
@@ -82,12 +86,7 @@ public final class FontHandler {
         }
 
         //TODO need to check if file has moved, and if so offer user chance to browse
-        final Map<String, String> customFonts = DesignerPropertiesFile.getInstance().getCustomFonts();
-        for (final String name: customFonts.keySet()) {
-            final String path = customFonts.get(name);
-
-            registerFont(new File(path));
-        }
+        DesignerPropertiesFile.getInstance().getCustomFonts().forEach((key, value) -> registerFont(new File(value)));
     }
 
     private void registerDirectory(final String dir) {
@@ -112,7 +111,7 @@ public final class FontHandler {
                 registerFont(fontFile);
             }
         } catch (final Exception e) {
-            //empty on purpose
+            logger.info("Error registering directory", e);
         }
     }
 
@@ -130,7 +129,7 @@ public final class FontHandler {
 
             return f.getFontName();
         } catch (final Exception e) {
-            System.out.println("error reading font in FontHandler = " + file);
+            logger.error("Error reading font in FontHandler = " + file, e);
         }
 
         return null;

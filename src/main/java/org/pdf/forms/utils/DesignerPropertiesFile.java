@@ -1,34 +1,3 @@
-/*
- * ===========================================
- * PDF Forms Designer
- * ===========================================
- * <p>
- * Project Info:  http://pdfformsdesigne.sourceforge.net
- * (C) Copyright 2006-2008..
- * Lead Developer: Simon Barnett (n6vale@googlemail.com)
- * <p>
- * This file is part of the PDF Forms Designer
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * <p>
- * <p>
- * <p>
- * ---------------
- * DesignerPropertiesFile.java
- * ---------------
- */
 package org.pdf.forms.utils;
 
 import java.util.ArrayList;
@@ -40,18 +9,18 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.jpedal.utils.LogWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-/**
- * holds values stored in XML file on disk.
- */
 public final class DesignerPropertiesFile extends PropertiesFile {
 
     private static DesignerPropertiesFile instance;
+
+    private final Logger logger = LoggerFactory.getLogger(DesignerPropertiesFile.class);
 
     private DesignerPropertiesFile(final String fileName) {
         super(fileName);
@@ -67,7 +36,7 @@ public final class DesignerPropertiesFile extends PropertiesFile {
     }
 
     public String[] getRecentDocuments(final String type) {
-        String[] recentDocuments;
+        final String[] recentDocuments;
 
         try {
             final NodeList nl = getDoc().getElementsByTagName(type);
@@ -91,13 +60,11 @@ public final class DesignerPropertiesFile extends PropertiesFile {
             Collections.reverse(fileNames);
 
             recentDocuments = fileNames.toArray(new String[getNoOfRecentDocs()]);
+            return recentDocuments;
         } catch (final Exception e) {
-            e.printStackTrace();
-            LogWriter.writeLog("Exception " + e + " getting recent documents");
+            logger.error("Error getting recent documents", e);
             return null;
         }
-
-        return recentDocuments;
     }
 
     public void addRecentDocument(
@@ -117,8 +84,7 @@ public final class DesignerPropertiesFile extends PropertiesFile {
 
             writeDoc();
         } catch (final Exception e) {
-            LogWriter.writeLog("Exception " + e + " adding recent document to properties file");
-            e.printStackTrace();
+            logger.error("Error adding recent document to properties file", e);
         }
     }
 
@@ -138,8 +104,7 @@ public final class DesignerPropertiesFile extends PropertiesFile {
 
             writeDoc();
         } catch (final Exception e) {
-            LogWriter.writeLog("Exception " + e + " adding custom font to properties file");
-            e.printStackTrace();
+            logger.error("Error adding custom font to properties file", e);
         }
     }
 
@@ -162,13 +127,12 @@ public final class DesignerPropertiesFile extends PropertiesFile {
                     customFonts.put(name, path);
                 }
             }
+            return customFonts;
         } catch (final Exception e) {
-            e.printStackTrace();
-            LogWriter.writeLog("Exception " + e + " getting custom fonts");
-            return null;
+            logger.error("Exception " + e + " getting custom fonts");
+            return Collections.emptyMap();
         }
 
-        return customFonts;
     }
 
     @Override
@@ -184,8 +148,7 @@ public final class DesignerPropertiesFile extends PropertiesFile {
             elementsInTree.add(allElements.item(i).getNodeName());
         }
 
-        Element propertiesElement = null;
-
+        final Element propertiesElement;
         if (elementsInTree.contains("properties")) {
             propertiesElement = (Element) getDoc().getElementsByTagName("properties").item(0);
         } else {

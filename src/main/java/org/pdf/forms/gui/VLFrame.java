@@ -171,7 +171,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         final Rule verticalRuler = new Rule(IMainFrame.INSET, Rule.VERTICAL, true);
         verticalRuler.setPreferredHeight(Toolkit.getDefaultToolkit().getScreenSize().height);
 
-        this.commands = new Commands(this, version);
+        commands = new Commands(this, version);
         final CommandListener commandListener = new CommandListener(commands);
 
         designer = new Designer(IMainFrame.INSET, horizontalRuler, verticalRuler, this, version);
@@ -184,7 +184,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         libraryPanel = new LibraryPanel(designer);
         hierarchyPanel = new HierarchyPanel(designer);
 
-        this.formsDocument = new FormsDocument(version);
+        formsDocument = new FormsDocument(version);
 
         desk.addDockingActionListener(new DockingActionListener() {
             @Override
@@ -428,7 +428,6 @@ public class VLFrame extends JFrame implements IMainFrame {
 
         if (flatteWidgets.isEmpty() && formsDocument != null) {
             //            widgets.add(formsDocument.getPage(currentPage));
-            System.out.println();
         }
 
         propertiesCompound.setProperties(flatteWidgets);

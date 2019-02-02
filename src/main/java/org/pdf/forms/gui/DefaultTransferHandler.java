@@ -51,6 +51,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.IWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -59,10 +61,12 @@ import org.xml.sax.SAXException;
 
 public class DefaultTransferHandler extends TransferHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(DefaultTransferHandler.class);
+
     private final Commands currentCommands;
     private final IDesigner designerPanel;
 
-    public DefaultTransferHandler(
+    DefaultTransferHandler(
             final Commands currentCommands,
             final IDesigner designerPanel) {
         this.currentCommands = currentCommands;
@@ -105,8 +109,6 @@ public class DefaultTransferHandler extends TransferHandler {
                     /* acquire the text data from the reader. */
                     String textData = readTextDate(r);
 
-                    System.out.println("textData = " + textData);
-
                     /* need to remove all the 0 characters that will appear in the String when importing on Linux */
                     textData = removeChar(textData, (char) 0);
 
@@ -122,7 +124,6 @@ public class DefaultTransferHandler extends TransferHandler {
 
                 } else if (listFlavor != null) { // this is most likely a file being dragged in
                     final List list = (List) transferable.getTransferData(listFlavor);
-                    //System.out.println("list = " + list);
                     if (list.size() == 1) {
                         // we can process
                         final File file = (File) list.get(0);
@@ -132,10 +133,7 @@ public class DefaultTransferHandler extends TransferHandler {
                     }
                 }
             } catch (final Exception e) {
-                //<start-full><start-demo>
-                System.out.println("Caught exception decoding transfer:");
-                e.printStackTrace();
-                //<end-demo><end-full>
+                logger.error("Caught exception decoding transfer", e);
                 return false;
             }
 
@@ -173,13 +171,11 @@ public class DefaultTransferHandler extends TransferHandler {
                         || file.endsWith(".gif");
 
                 if (isPdf) {
-                    System.out.println("file = " + file);
                     currentCommands.importPDF(file);
                 } else if (isDes) {
                     currentCommands.openDesignerFile(file);
                 } else if (isImage) {
                     //currentCommands.openFile(file);
-                    System.out.println("DefaultTransferHandler.openFile");
                 } else {
                     JOptionPane.showMessageDialog(src, "You may only import a valid PDF, des file or image");
                 }

@@ -128,7 +128,7 @@ public class WidgetAlignmentAndOrder {
             final List<IWidget> widgets) {
 
         final int size = widgets.size() - 1;
-        final Set<IWidget> newSet = (Set) ((HashSet) selectedWidgets).clone();
+        final Set<IWidget> newSet = new HashSet<>(Set.copyOf(selectedWidgets));
 
         switch (type) {
             case WidgetAlignmentAndOrder.BRING_TO_FRONT:

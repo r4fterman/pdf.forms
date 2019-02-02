@@ -40,12 +40,17 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ColorCellRenderer implements ListCellRenderer<Object> {
 
-    private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+    private final Logger logger = LoggerFactory.getLogger(ColorCellRenderer.class);
 
     // width doesn't matter as combobox will size
     private final Dimension preferredSize = new Dimension(0, 20);
+
+    private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
     @Override
     public Component getListCellRendererComponent(
@@ -60,7 +65,7 @@ public class ColorCellRenderer implements ListCellRenderer<Object> {
             renderer.setBackground((Color) value);
             renderer.setText("");
         } else {
-            System.err.println("herererererer " + value);
+            logger.info("Unexpected list cell renderer value {}", value);
         }
 
         renderer.setPreferredSize(preferredSize);

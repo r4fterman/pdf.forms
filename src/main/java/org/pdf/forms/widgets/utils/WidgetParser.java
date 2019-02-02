@@ -109,7 +109,7 @@ public final class WidgetParser {
                         widgetsOnPage.add(widget);
 
                     } else if (isRadio) {
-                        System.out.println(">>>>>>>>>>>> RADIO");
+                        // radio button
                     } else {
                         //checkBox
                         addCheckBox(formObject, page, null, pageHeight, cropHeight, cropX, cropY, mainFrame, widgetsOnPage);

@@ -959,8 +959,6 @@ public class Commands {
             final String value = XMLUtils.getAttributeFromElement(buttonGroupElement, "buttongroupname");
             final ButtonGroup buttonGroup = new ButtonGroup(type);
 
-            System.out.println("value = " + value);
-
             buttonGroup.setName(value);
 
             if (type == IWidget.RADIO_BUTTON) {

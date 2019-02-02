@@ -85,8 +85,8 @@ public class MenuConfiguration extends ConfigurationFile {
         windowElement.setAttribute("visible", "true");
         menuConfigurationElement.appendChild(windowElement);
 
-        addItemToXMLTree(windowElement, "Visit Website", "WEBSITE", "true");
-        addItemToXMLTree(windowElement, "About", "ABOUT", "true");
+        addItemToXMLTree(windowElement, "Visit Website", "WEBSITE");
+        addItemToXMLTree(windowElement, "About", "ABOUT");
     }
 
     private void writeDefaultWindowMenuConfiguration(final Element menuConfigurationElement) {
@@ -95,20 +95,20 @@ public class MenuConfiguration extends ConfigurationFile {
         windowElement.setAttribute("visible", "true");
         menuConfigurationElement.appendChild(windowElement);
 
-        addItemToXMLTree(windowElement, "Toolbars", "TOOLBARS", "true");
-        addItemToXMLTree(windowElement, "Script Editor", "SCRIPT_EDITOR", "true");
-        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR", "true");
-        addItemToXMLTree(windowElement, "Hierarchy", "HIERARCHY", "true");
-        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR", "true");
-        addItemToXMLTree(windowElement, "Library", "LIBRARY", "true");
-        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR", "true");
-        addItemToXMLTree(windowElement, "Properties", "PROPERTIES", "true");
-        addItemToXMLTree(windowElement, "Layout", "LAYOUT", "true");
-        addItemToXMLTree(windowElement, "Border", "BORDER", "true");
-        addItemToXMLTree(windowElement, "Object", "OBJECT", "true");
-        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR", "true");
-        addItemToXMLTree(windowElement, "Font", "FONT", "true");
-        addItemToXMLTree(windowElement, "Paragraph", "PARAGRAPH", "true");
+        addItemToXMLTree(windowElement, "Toolbars", "TOOLBARS");
+        addItemToXMLTree(windowElement, "Script Editor", "SCRIPT_EDITOR");
+        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR");
+        addItemToXMLTree(windowElement, "Hierarchy", "HIERARCHY");
+        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR");
+        addItemToXMLTree(windowElement, "Library", "LIBRARY");
+        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR");
+        addItemToXMLTree(windowElement, "Properties", "PROPERTIES");
+        addItemToXMLTree(windowElement, "Layout", "LAYOUT");
+        addItemToXMLTree(windowElement, "Border", "BORDER");
+        addItemToXMLTree(windowElement, "Object", "OBJECT");
+        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR");
+        addItemToXMLTree(windowElement, "Font", "FONT");
+        addItemToXMLTree(windowElement, "Paragraph", "PARAGRAPH");
     }
 
     private void writeDefaultLayoutMenuConfiguration(final Element menuConfigurationElement) {
@@ -117,15 +117,15 @@ public class MenuConfiguration extends ConfigurationFile {
         layoutElement.setAttribute("visible", "true");
         menuConfigurationElement.appendChild(layoutElement);
 
-        addItemToXMLTree(layoutElement, "Align", "ALIGN", "true");
-        addItemToXMLTree(layoutElement, "Seperator", "SEPERATOR", "true");
-        addItemToXMLTree(layoutElement, "Group", "GROUP", "true");
-        addItemToXMLTree(layoutElement, "Ungroup", "UNGROUP", "true");
-        addItemToXMLTree(layoutElement, "Seperator", "SEPERATOR", "true");
-        addItemToXMLTree(layoutElement, "Bring to Front", "BRING_TO_FRONT", "true");
-        addItemToXMLTree(layoutElement, "Send to Back", "SEND_TO_BACK", "true");
-        addItemToXMLTree(layoutElement, "Bring Forwards", "BRING_FORWARDS", "true");
-        addItemToXMLTree(layoutElement, "Send Backwards", "SEND_BACKWARDS", "true");
+        addItemToXMLTree(layoutElement, "Align", "ALIGN");
+        addItemToXMLTree(layoutElement, "Seperator", "SEPERATOR");
+        addItemToXMLTree(layoutElement, "Group", "GROUP");
+        addItemToXMLTree(layoutElement, "Ungroup", "UNGROUP");
+        addItemToXMLTree(layoutElement, "Seperator", "SEPERATOR");
+        addItemToXMLTree(layoutElement, "Bring to Front", "BRING_TO_FRONT");
+        addItemToXMLTree(layoutElement, "Send to Back", "SEND_TO_BACK");
+        addItemToXMLTree(layoutElement, "Bring Forwards", "BRING_FORWARDS");
+        addItemToXMLTree(layoutElement, "Send Backwards", "SEND_BACKWARDS");
     }
 
     private void writeDefaultInsertMenuConfiguration(final Element menuConfigurationElement) {
@@ -134,8 +134,8 @@ public class MenuConfiguration extends ConfigurationFile {
         insertElement.setAttribute("visible", "true");
         menuConfigurationElement.appendChild(insertElement);
 
-        addItemToXMLTree(insertElement, "Insert Page", "INSERT_PAGE", "true");
-        addItemToXMLTree(insertElement, "Remove Page", "REMOVE_PAGE", "true");
+        addItemToXMLTree(insertElement, "Insert Page", "INSERT_PAGE");
+        addItemToXMLTree(insertElement, "Remove Page", "REMOVE_PAGE");
     }
 
     private void writeDefaultFileMenuConfiguration(final Element menuConfigurationElement) {
@@ -144,32 +144,31 @@ public class MenuConfiguration extends ConfigurationFile {
         fileElement.setAttribute("visible", "true");
         menuConfigurationElement.appendChild(fileElement);
 
-        addItemToXMLTree(fileElement, "New", "NEW", "true");
-        addItemToXMLTree(fileElement, "Open Designer File", "OPEN", "true");
-        addItemToXMLTree(fileElement, "Recently Designer Files", "RECENT_OPEN", "true");
-        addItemToXMLTree(fileElement, "Close", "CLOSE", "true");
-        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR", "true");
-        addItemToXMLTree(fileElement, "Import PDF Document", "IMPORT", "true");
-        addItemToXMLTree(fileElement, "Recently Imported PDF Documents", "RECENT_IMPORT", "true");
-        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR", "true");
-        addItemToXMLTree(fileElement, "Save Designer File", "SAVE_FILE", "true");
-        addItemToXMLTree(fileElement, "Save Designer File As", "SAVE_FILE_AS", "true");
-        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR", "true");
-        addItemToXMLTree(fileElement, "Publish PDF Document", "PUBLISH", "true");
-        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR", "true");
-        addItemToXMLTree(fileElement, "Font Management", "FONT_MANAGEMENT", "true");
-        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR", "true");
-        addItemToXMLTree(fileElement, "Exit", "EXIT", "true");
+        addItemToXMLTree(fileElement, "New", "NEW");
+        addItemToXMLTree(fileElement, "Open Designer File", "OPEN");
+        addItemToXMLTree(fileElement, "Recently Designer Files", "RECENT_OPEN");
+        addItemToXMLTree(fileElement, "Close", "CLOSE");
+        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR");
+        addItemToXMLTree(fileElement, "Import PDF Document", "IMPORT");
+        addItemToXMLTree(fileElement, "Recently Imported PDF Documents", "RECENT_IMPORT");
+        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR");
+        addItemToXMLTree(fileElement, "Save Designer File", "SAVE_FILE");
+        addItemToXMLTree(fileElement, "Save Designer File As", "SAVE_FILE_AS");
+        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR");
+        addItemToXMLTree(fileElement, "Publish PDF Document", "PUBLISH");
+        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR");
+        addItemToXMLTree(fileElement, "Font Management", "FONT_MANAGEMENT");
+        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR");
+        addItemToXMLTree(fileElement, "Exit", "EXIT");
     }
 
     private void addItemToXMLTree(
             final Element element,
             final String name,
-            final String command,
-            final String visible) {
+            final String command) {
         final Element item = getDoc().createElement("item");
         item.setAttribute("name", name);
-        item.setAttribute("visible", visible);
+        item.setAttribute("visible", "true");
         item.setAttribute("command", command);
         element.appendChild(item);
     }

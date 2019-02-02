@@ -63,15 +63,17 @@ import org.pdf.forms.widgets.components.PdfList;
 import org.pdf.forms.widgets.components.PdfRadioButton;
 import org.pdf.forms.widgets.components.PdfTextField;
 import org.pdf.forms.widgets.components.SplitComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class WidgetFactory {
 
-    private static Rectangle bounds;
-
-    private static Element root;
+    private static final Logger LOGGER = LoggerFactory.getLogger(WidgetFactory.class);
 
     private static final JFrame FRAME = new JFrame();
+    private static Rectangle bounds;
+    private static Element root;
 
     public static JLabel createResizedComponent(
             final JComponent comp,
@@ -190,11 +192,7 @@ public class WidgetFactory {
                 w = WidgetFactory.createImageWidget();
                 break;
             default:
-                System.out.println("Manual exit because of imposible sitation in WidgetFactory, trying to add widget type = " + widgetToAdd);
-
-                new Exception().printStackTrace();
-                //System.exit(1);
-
+                LOGGER.warn("Manual exit because of impossible situation in WidgetFactory, trying to add widget type {}", widgetToAdd);
                 break;
         }
 

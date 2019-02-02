@@ -46,6 +46,8 @@ import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -55,6 +57,9 @@ public class WidgetSelection {
     private static final int RESIZE_NODE_SIZE = 4;
     private static final int WIDTH = 22;
     private static final int HEIGHT = 22;
+
+    private final Logger logger = LoggerFactory.getLogger(WidgetSelection.class);
+
     private Rectangle selectionBoxBounds = new Rectangle();
     private int lastY;
     private int lastX;
@@ -420,7 +425,8 @@ public class WidgetSelection {
                 break;
             }
             default:
-                System.out.println(resizeType + " Manual exit because of imposible sitation in " + getClass());
+                logger.warn(resizeType + " Manual exit because of imposible sitation in {}", getClass());
+                break;
         }
     }
 
