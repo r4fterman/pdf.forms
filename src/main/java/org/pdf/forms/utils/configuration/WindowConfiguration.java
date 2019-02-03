@@ -1,5 +1,7 @@
 package org.pdf.forms.utils.configuration;
 
+import java.io.File;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -13,8 +15,8 @@ public class WindowConfiguration extends ConfigurationFile {
     public static final String HIERARCHY = "HIERARCHY";
     public static final String SCRIPT_EDITOR = "SCRIPT_EDITOR";
 
-    public WindowConfiguration() {
-        super("windows.xml");
+    public WindowConfiguration(final File configDir) {
+        super(new File(configDir, "windows.xml"));
     }
 
     public boolean isWindowVisible(final String windowCommand) {
@@ -35,10 +37,9 @@ public class WindowConfiguration extends ConfigurationFile {
 
     @Override
     protected void writeDefaultConfiguration() throws Exception {
-        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        final DocumentBuilder db = dbf.newDocumentBuilder();
+        final DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
-        setDoc(db.newDocument());
+        setDoc(documentBuilder.newDocument());
 
         final Element windowConfigurationElement = getDoc().createElement("window_configuration");
         getDoc().appendChild(windowConfigurationElement);
@@ -47,21 +48,19 @@ public class WindowConfiguration extends ConfigurationFile {
     }
 
     private void writeDefaultWindowConfiguration(final Element windowConfigurationElement) {
-        addItemToXMLTree(windowConfigurationElement, "Script Editor", SCRIPT_EDITOR, "true");
-        addItemToXMLTree(windowConfigurationElement, "Hierarchy", HIERARCHY, "true");
-        addItemToXMLTree(windowConfigurationElement, "Library", LIBRARY, "true");
-        addItemToXMLTree(windowConfigurationElement, "Properties", PROPERTIES, "true");
+        windowConfigurationElement.appendChild(createVisibleItem("Script Editor", SCRIPT_EDITOR));
+        windowConfigurationElement.appendChild(createVisibleItem("Hierarchy", HIERARCHY));
+        windowConfigurationElement.appendChild(createVisibleItem("Library", LIBRARY));
+        windowConfigurationElement.appendChild(createVisibleItem("Properties", PROPERTIES));
     }
 
-    private void addItemToXMLTree(
-            final Element element,
+    private Element createVisibleItem(
             final String name,
-            final String command,
-            final String visible) {
+            final String command) {
         final Element item = getDoc().createElement("window");
         item.setAttribute("name", name);
-        item.setAttribute("visible", visible);
+        item.setAttribute("visible", "true");
         item.setAttribute("command", command);
-        element.appendChild(item);
+        return item;
     }
 }

@@ -11,40 +11,39 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.jpedal.utils.LogWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 public abstract class ConfigurationFile {
 
-    private final String separator = System.getProperty("file.separator");
-    private final String userDir = System.getProperty("user.dir");
+    private final Logger logger = LoggerFactory.getLogger(ConfigurationFile.class);
 
-    private final String configDir = userDir + separator + "configuration";
-    private String configFile = configDir + separator;
+    private final File configFile;
 
     private Document doc;
 
-    ConfigurationFile(final String fileName) {
-        configFile += fileName;
-
+    ConfigurationFile(final File configFile) {
+        this.configFile = configFile;
         try {
             final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             final DocumentBuilder db = dbf.newDocumentBuilder();
 
             boolean needNewFile = false;
 
-            if (new File(configFile).exists()) {
+            if (configFile.exists() && configFile.canRead()) {
                 try {
-                    doc = db.parse(new File(configFile));
+                    doc = db.parse(configFile);
                 } catch (final Exception e) {
+                    logger.error("Error parsing config file " + configFile.getAbsolutePath(), e);
                     doc = db.newDocument();
                     needNewFile = true;
-                    //<start-full><start-demo>
-                    e.printStackTrace();
-                    //<end-demo><end-full>
                 }
             } else {
-                new File(configDir).mkdirs();
+                final String userDir = System.getProperty("user.dir");
+                final File configDir = new File(userDir, "configuration");
+
+                configDir.mkdirs();
                 doc = db.newDocument();
                 needNewFile = true;
             }
@@ -54,24 +53,23 @@ public abstract class ConfigurationFile {
                 writeDoc();
             }
         } catch (final Exception e) {
-            LogWriter.writeLog("Exception " + e + " generating menu configuration file " + configFile);
-            e.printStackTrace();
+            logger.error("Error generating menu configuration file " + configFile.getAbsolutePath(), e);
         }
     }
 
     private void writeDoc() throws Exception {
-        final InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
+        final InputStream stylesheet = getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
 
         final TransformerFactory transformerFactory = TransformerFactory.newInstance();
         final Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
         transformer.transform(new DOMSource(doc), new StreamResult(configFile));
     }
 
-    public Document getDoc() {
+    Document getDoc() {
         return doc;
     }
 
-    public void setDoc(final Document doc) {
+    void setDoc(final Document doc) {
         this.doc = doc;
     }
 

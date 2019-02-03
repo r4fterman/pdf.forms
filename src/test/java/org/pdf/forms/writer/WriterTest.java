@@ -85,13 +85,12 @@ class WriterTest extends EasyMockSupport {
 
     @BeforeEach
     void setUp() {
-        this.mainFrame = new MockMainFrame();
+        mainFrame = new MockMainFrame();
 
-        this.commands = new Commands(mainFrame, "DEV-TEST");
-        this.writer = new Writer(mainFrame);
+        commands = new Commands(mainFrame, "DEV-TEST");
+        writer = new Writer(mainFrame);
     }
 
-    @Test
     void write_should_persist_ui_document(@TempDirectory.TempDir final Path path) throws Exception {
         final IDesigner designer = createMock(IDesigner.class);
         mainFrame.setDesigner(designer);

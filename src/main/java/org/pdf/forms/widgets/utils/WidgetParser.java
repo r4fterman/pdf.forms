@@ -108,7 +108,7 @@ public final class WidgetParser {
 
                         widgetsOnPage.add(widget);
 
-                    } else if (isRadio) {
+                        //} else if (isRadio) {
                         // radio button
                     } else {
                         //checkBox

@@ -38,6 +38,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -178,8 +179,11 @@ public class VLFrame extends JFrame implements IMainFrame {
         final DefaultTransferHandler dth = new DefaultTransferHandler(commands, designer);
         designer.setTransferHandler(dth);
 
-        menuConfiguration = new MenuConfiguration(commandListener, designer, mainFrame);
-        windowConfiguration = new WindowConfiguration();
+        final String userDir = System.getProperty("user.dir");
+        final File configDir = new File(userDir, "configuration");
+
+        menuConfiguration = new MenuConfiguration(commandListener, designer, mainFrame, configDir);
+        windowConfiguration = new WindowConfiguration(configDir);
 
         libraryPanel = new LibraryPanel(designer);
         hierarchyPanel = new HierarchyPanel(designer);
@@ -426,9 +430,9 @@ public class VLFrame extends JFrame implements IMainFrame {
 
         PropertyChanger.updateSizeAndPosition(flatteWidgets);
 
-        if (flatteWidgets.isEmpty() && formsDocument != null) {
-            //            widgets.add(formsDocument.getPage(currentPage));
-        }
+        //        if (flatteWidgets.isEmpty() && formsDocument != null) {
+        //            widgets.add(formsDocument.getPage(currentPage));
+        //        }
 
         propertiesCompound.setProperties(flatteWidgets);
 

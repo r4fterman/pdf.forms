@@ -174,7 +174,7 @@ public class DefaultTransferHandler extends TransferHandler {
                     currentCommands.importPDF(file);
                 } else if (isDes) {
                     currentCommands.openDesignerFile(file);
-                } else if (isImage) {
+                    //} else if (isImage) {
                     //currentCommands.openFile(file);
                 } else {
                     JOptionPane.showMessageDialog(src, "You may only import a valid PDF, des file or image");

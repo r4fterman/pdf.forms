@@ -31,14 +31,17 @@
  */
 package org.pdf.forms.utils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.widgets.IWidget;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -50,21 +53,22 @@ public final class CustomWidgetsFile extends PropertiesFile {
 
     private static CustomWidgetsFile instance;
 
-    private CustomWidgetsFile(final String fileName) {
-        super(fileName);
+    private CustomWidgetsFile(final File customWidgetFile) {
+        super(customWidgetFile);
     }
 
-    public static CustomWidgetsFile getInstance() {
+    public static CustomWidgetsFile getInstance(final File configDir) {
         if (instance == null) {
-            // it's ok, we can call this constructor
-            instance = new CustomWidgetsFile(".custom_components.xml");
+            final File configFile = new File(configDir, ".custom_components.xml");
+
+            instance = new CustomWidgetsFile(configFile);
         }
 
         return instance;
     }
 
     @Override
-    public boolean checkAllElementsPresent() throws Exception {
+    public boolean checkAllElementsPresent() throws DOMException, ParserConfigurationException {
 
         //assume true and set to false if wrong
         boolean hasAllElements = true;
@@ -92,18 +96,9 @@ public final class CustomWidgetsFile extends PropertiesFile {
     }
 
     public boolean isNameTaken(final String name) {
-        final List components = XMLUtils.getElementsFromNodeList(getDoc().getElementsByTagName("custom_component"));
-
-        for (final Object component : components) {
-            final Element element = (Element) component;
-            final String nameAtt = XMLUtils.getAttributeFromChildElement(element, "name");
-
-            if (nameAtt.equals(name)) {
-                return true;
-            }
-        }
-
-        return false;
+        return XMLUtils.getElementsFromNodeList(getDoc().getElementsByTagName("custom_component")).stream()
+                .map(element -> XMLUtils.getAttributeFromChildElement(element, "name"))
+                .anyMatch(value -> value.equals(name));
     }
 
     public void addCustomWidget(
@@ -129,7 +124,8 @@ public final class CustomWidgetsFile extends PropertiesFile {
         }
     }
 
-    public List getCustomWidgets() {
-        return null;
+    @Override
+    void destroy() {
+        instance = null;
     }
 }

@@ -1,5 +1,6 @@
 package org.pdf.forms.utils.configuration;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,8 +49,9 @@ public class MenuConfiguration extends ConfigurationFile {
     public MenuConfiguration(
             final CommandListener commandListener,
             final IDesigner designer,
-            final IMainFrame mainFrame) {
-        super("menus.xml");
+            final IMainFrame mainFrame,
+            final File configDir) {
+        super(new File(configDir, "menus.xml"));
 
         this.commandListener = commandListener;
         this.designer = designer;

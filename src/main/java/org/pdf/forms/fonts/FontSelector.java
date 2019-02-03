@@ -63,7 +63,7 @@ public class FontSelector extends javax.swing.JPanel {
             final JDialog parentDialog) {
         initComponents();
 
-        this.parent = parentDialog;
+        parent = parentDialog;
         this.mainFrame = mainFrame;
 
         populateFontsAvailiable();
@@ -99,7 +99,7 @@ public class FontSelector extends javax.swing.JPanel {
         okButton.addActionListener(this::okClicked);
 
         final org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
-        this.setLayout(layout);
+        setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
@@ -150,7 +150,8 @@ public class FontSelector extends javax.swing.JPanel {
 
         if (fileToOpen != null && state == JFileChooser.APPROVE_OPTION) {
             final String name = FontHandler.getInstance().registerFont(fileToOpen);
-            DesignerPropertiesFile.getInstance().addCustomFont(name, fileToOpen.getAbsolutePath());
+            final File configDir = new File(System.getProperty("user.dir"));
+            DesignerPropertiesFile.getInstance(configDir).addCustomFont(name, fileToOpen.getAbsolutePath());
 
             populateFontsAvailiable();
         }

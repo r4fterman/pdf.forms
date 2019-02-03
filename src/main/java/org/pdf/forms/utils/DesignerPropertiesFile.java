@@ -1,5 +1,6 @@
 package org.pdf.forms.utils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +24,15 @@ public final class DesignerPropertiesFile extends PropertiesFile {
 
     private final Logger logger = LoggerFactory.getLogger(DesignerPropertiesFile.class);
 
-    private DesignerPropertiesFile(final String fileName) {
-        super(fileName);
+    private DesignerPropertiesFile(final File designerPropertiesFile) {
+        super(designerPropertiesFile);
     }
 
-    public static DesignerPropertiesFile getInstance() {
+    public static DesignerPropertiesFile getInstance(final File configDir) {
         if (instance == null) {
-            // it's ok, we can call this constructor
-            instance = new DesignerPropertiesFile(".properties.xml");
+            final File configFile = new File(configDir, ".properties.xml");
+
+            instance = new DesignerPropertiesFile(configFile);
         }
 
         return instance;
@@ -48,7 +51,8 @@ public final class DesignerPropertiesFile extends PropertiesFile {
                 for (int i = 0; i < allRecentDocs.getLength(); i++) {
                     final Node item = allRecentDocs.item(i);
                     final NamedNodeMap attrs = item.getAttributes();
-                    fileNames.add(attrs.getNamedItem("name").getNodeValue());
+                    final String name = attrs.getNamedItem("name").getNodeValue();
+                    fileNames.add(name);
                 }
             }
 
@@ -136,7 +140,7 @@ public final class DesignerPropertiesFile extends PropertiesFile {
     }
 
     @Override
-    public boolean checkAllElementsPresent() throws Exception {
+    public boolean checkAllElementsPresent() throws ParserConfigurationException {
 
         //assume true and set to false if wrong
         boolean hasAllElements = true;
@@ -192,5 +196,10 @@ public final class DesignerPropertiesFile extends PropertiesFile {
         }
 
         return hasAllElements;
+    }
+
+    @Override
+    void destroy() {
+        instance = null;
     }
 }

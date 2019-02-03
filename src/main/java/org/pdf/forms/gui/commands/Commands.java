@@ -144,7 +144,8 @@ public class Commands {
         this.mainFrame = mainFrame;
         this.version = version;
 
-        noOfRecentDocs = DesignerPropertiesFile.getInstance().getNoRecentDocumentsToDisplay();
+        final File configDir = new File(System.getProperty("user.dir"));
+        noOfRecentDocs = DesignerPropertiesFile.getInstance(configDir).getNoRecentDocumentsToDisplay();
         recentDesignerDocuments = new JMenuItem[noOfRecentDocs];
         recentImportedDocuments = new JMenuItem[noOfRecentDocs];
     }
@@ -279,7 +280,8 @@ public class Commands {
     }
 
     private void addSelectionToLibrary() {
-        final CustomWidgetsFile customWidgetsFile = CustomWidgetsFile.getInstance();
+        final File configDir = new File(System.getProperty("user.dir"));
+        final CustomWidgetsFile customWidgetsFile = CustomWidgetsFile.getInstance(configDir);
         boolean finished = false;
 
         String name = JOptionPane.showInputDialog((Component) mainFrame, "Enter a name for the new component", "New component name",
@@ -312,7 +314,8 @@ public class Commands {
             recentDocuments = recentImportedDocuments;
         }
 
-        final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance();
+        final File configDir = new File(System.getProperty("user.dir"));
+        final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configDir);
 
         final String[] recentDocs = properties.getRecentDocuments(type);
         if (recentDocs == null) {
@@ -763,7 +766,8 @@ public class Commands {
 
         mainFrame.setTitle(mainFrame.getCurrentDesignerFileName() + " - PDF Forms Designer Version " + version);
 
-        final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance();
+        final File configDir = new File(System.getProperty("user.dir"));
+        final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configDir);
         properties.addRecentDocument(designerFileToOpen, "recentdesfiles");
         updateRecentDocuments(properties.getRecentDocuments("recentdesfiles"), "recentdesfiles");
     }
@@ -931,7 +935,8 @@ public class Commands {
             };
             worker.start();
 
-            final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance();
+            final File configDir = new File(System.getProperty("user.dir"));
+            final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configDir);
             properties.addRecentDocument(pdfPath, "recentpdffiles");
             updateRecentDocuments(properties.getRecentDocuments("recentpdffiles"), "recentpdffiles");
 

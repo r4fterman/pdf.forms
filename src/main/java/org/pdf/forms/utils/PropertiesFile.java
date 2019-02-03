@@ -32,78 +32,75 @@
 package org.pdf.forms.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.jpedal.utils.LogWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
-/**
- * holds values stored in XML file on disk.
- */
 public abstract class PropertiesFile {
 
-    private final String separator = System.getProperty("file.separator");
-    private final String userDir = System.getProperty("user.dir");
+    private final Logger logger = LoggerFactory.getLogger(PropertiesFile.class);
 
-    private String configFile = userDir + separator;
+    private final File configFile;
 
     private Document doc;
 
     private final int noOfRecentDocs = 6;
 
-    PropertiesFile(final String fileName) {
-
-        configFile += fileName;
-
+    PropertiesFile(final File configFile) {
+        this.configFile = configFile;
         try {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-
-            if (new File(configFile).exists()) {
-                try {
-                    doc = db.parse(new File(configFile));
-                } catch (final Exception e) {
-                    doc = db.newDocument();
-                    //<start-full><start-demo>
-                    e.printStackTrace();
-                    //<end-demo><end-full>
-                }
-            } else {
-                doc = db.newDocument();
-            }
+            doc = readConfigFile(configFile);
 
             final boolean hasAllElements = checkAllElementsPresent();
-
             //only write out if needed
             if (!hasAllElements) {
                 writeDoc();
             }
-
-        } catch (final Exception e) {
-            LogWriter.writeLog("Exception " + e + " generating properties file");
-            e.printStackTrace();
+        } catch (final DOMException | ParserConfigurationException | TransformerException e) {
+            logger.error("Error generating properties file " + configFile.getAbsolutePath(), e);
         }
     }
 
-    public abstract boolean checkAllElementsPresent() throws Exception;
+    private Document readConfigFile(final File configFile) throws ParserConfigurationException {
+        final DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
-    void writeDoc() throws Exception {
-        final InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
+        if (configFile.exists() && configFile.canRead()) {
+            try {
+                return documentBuilder.parse(configFile);
+            } catch (final SAXException | IOException e) {
+                logger.error("Error parsing properties file " + configFile.getAbsolutePath(), e);
+            }
+        }
+        return documentBuilder.newDocument();
+    }
+
+    public abstract boolean checkAllElementsPresent() throws DOMException, ParserConfigurationException;
+
+    void writeDoc() throws TransformerException {
+        final InputStream stylesheet = getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
 
         final TransformerFactory transformerFactory = TransformerFactory.newInstance();
         final Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
+
         transformer.transform(new DOMSource(doc), new StreamResult(configFile));
     }
 
@@ -142,8 +139,7 @@ public abstract class PropertiesFile {
             attrs = element.getAttributes();
 
         } catch (final Exception e) {
-            e.printStackTrace();
-            LogWriter.writeLog("Exception " + e + " generating properties file");
+            logger.error("Error generating properties file", e);
             return "";
         }
 
@@ -160,24 +156,25 @@ public abstract class PropertiesFile {
 
             writeDoc();
         } catch (final Exception e) {
-            LogWriter.writeLog("Exception " + e + " setting value in properties file");
-            e.printStackTrace();
+            logger.error("Error setting value in properties file", e);
         }
     }
 
     public int getNoRecentDocumentsToDisplay() {
-        return this.noOfRecentDocs;
+        return noOfRecentDocs;
     }
 
-    public Document getDoc() {
+    Document getDoc() {
         return doc;
     }
 
-    public void setDoc(final Document doc) {
+    void setDoc(final Document doc) {
         this.doc = doc;
     }
 
-    public int getNoOfRecentDocs() {
+    int getNoOfRecentDocs() {
         return noOfRecentDocs;
     }
+
+    abstract void destroy();
 }

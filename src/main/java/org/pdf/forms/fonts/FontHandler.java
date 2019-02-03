@@ -32,8 +32,10 @@
 package org.pdf.forms.fonts;
 
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -74,42 +76,32 @@ public final class FontHandler {
                 "/Library/Fonts",
                 "/System/Library/Fonts"
         };
-        final List fontDirectories = ImmutableList.builder()
+        final List<String> fontDirectories = ImmutableList.<String>builder()
                 .addAll(Arrays.asList(fontDirectoriesWindows))
                 .addAll(Arrays.asList(fontDirectoriesUnix))
                 .add(javaFontDir)
                 .build();
 
-        for (final Object directory : fontDirectories) {
-            final String dir = (String) directory;
-            registerDirectory(dir);
-        }
+        fontDirectories.forEach(this::registerDirectory);
 
         //TODO need to check if file has moved, and if so offer user chance to browse
-        DesignerPropertiesFile.getInstance().getCustomFonts().forEach((key, value) -> registerFont(new File(value)));
+        final File configDir = new File(System.getProperty("user.dir"));
+        DesignerPropertiesFile.getInstance(configDir).getCustomFonts().forEach((key, value) -> registerFont(new File(value)));
     }
 
-    private void registerDirectory(final String dir) {
+    private void registerDirectory(final String fontDirectory) {
         try {
-            final File folder = new File(dir);
+            final File folder = new File(fontDirectory);
             if (!folder.exists() || !folder.isDirectory()) {
                 return;
             }
 
-            final File[] fontFiles = folder.listFiles();
+            final File[] fontFiles = folder.listFiles((directory, fileName) -> fileName.toLowerCase().endsWith(".ttf"));
             if (fontFiles == null) {
                 return;
             }
 
-            for (final File fontFile : fontFiles) {
-                final String name = fontFile.getPath().toLowerCase();
-
-                if (!name.endsWith("ttf")) {
-                    continue;
-                }
-
-                registerFont(fontFile);
-            }
+            Arrays.stream(fontFiles).forEach(this::registerFont);
         } catch (final Exception e) {
             logger.info("Error registering directory", e);
         }
@@ -123,13 +115,13 @@ public final class FontHandler {
         try {
             final String fontLocation = file.getPath();
             final FileInputStream fontStream = new FileInputStream(fontLocation);
-            final Font f = Font.createFont(java.awt.Font.TRUETYPE_FONT, fontStream);
+            final Font font = Font.createFont(java.awt.Font.TRUETYPE_FONT, fontStream);
 
-            FONT_FILE_MAP.put(f, fontLocation);
+            FONT_FILE_MAP.put(font, fontLocation);
 
-            return f.getFontName();
-        } catch (final Exception e) {
-            logger.error("Error reading font in FontHandler = " + file, e);
+            return font.getFontName();
+        } catch (final FontFormatException | IOException e) {
+            logger.error("Error reading font in FontHandler: " + file.getAbsolutePath(), e);
         }
 
         return null;
