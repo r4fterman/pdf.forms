@@ -18,3 +18,7 @@ GNU General Public License (GPL)
 # Security Analyses
 
 [![Known Vulnerabilities](https://snyk.io/test/github/r4fterman/pdf.forms/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/r4fterman/pdf.forms?targetFile=pom.xml)
+
+# Code Coverage
+
+[![codecov](https://codecov.io/gh/r4fterman/pdf.forms/branch/master/graph/badge.svg)](https://codecov.io/gh/r4fterman/pdf.forms)
