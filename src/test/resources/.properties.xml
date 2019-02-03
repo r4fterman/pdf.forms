@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+    <recentdesfiles>
+        <file name="c:\Benutzer\Foo\Bar\test.des"/>
+        <file name="/example/foo/bar/test.des"/>
+    </recentdesfiles>
+    <recentpdffiles>
+        <file name="c:\Benutzer\Foo\Bar\test.pdf"/>
+        <file name="/example/foo/bar/test.pdf"/>
+    </recentpdffiles>
+    <customfonts>
+        <font name="Helvetica" path="/path/to/font/helvetica"/>
+        <font name="Arial" path="/path/to/font/arial"/>
+    </customfonts>
+</properties>

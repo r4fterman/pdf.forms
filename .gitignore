@@ -4,3 +4,4 @@ target/
 logs/
 
 .properties.xml
+!src/test/resources/.properties.xml
