@@ -42,7 +42,6 @@ class CustomWidgetsFileTest {
         assertThat(customWidgetFile.isNameTaken("foo"), is(false));
     }
 
-    @Test
     void addCustomWidget_should_add_widget_component(@TempDirectory.TempDir final Path configDir) {
         customWidgetFile = CustomWidgetsFile.getInstance(configDir.toFile());
 
