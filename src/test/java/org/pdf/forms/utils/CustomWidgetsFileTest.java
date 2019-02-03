@@ -46,7 +46,11 @@ class CustomWidgetsFileTest {
     void addCustomWidget_should_add_widget_component(@TempDirectory.TempDir final Path configDir) {
         customWidgetFile = CustomWidgetsFile.getInstance(configDir.toFile());
 
-        customWidgetFile.addCustomWidget("foo", Set.of(new TextWidget(IWidget.TEXT, new PdfCaption("Text"), new JLabel("Text"))));
+        final PdfCaption pdfCaption = new PdfCaption("Text");
+        final JLabel jLabel = new JLabel("Text");
+        final TextWidget textWidget = new TextWidget(IWidget.TEXT, pdfCaption, jLabel);
+        final Set<IWidget> widgets = Set.of(textWidget);
+        customWidgetFile.addCustomWidget("foo", widgets);
 
         assertThat(customWidgetFile.isNameTaken("foo"), is(true));
     }
