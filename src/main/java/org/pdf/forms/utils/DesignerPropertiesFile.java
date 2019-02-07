@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.pdf.forms.gui.commands.RecentDocumentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -174,14 +175,14 @@ public final class DesignerPropertiesFile extends PropertiesFile {
             hasAllElements = false;
         }
 
-        if (!elementsInTree.contains("recentdesfiles")) {
+        if (!elementsInTree.contains(RecentDocumentType.RECENT_DES_FILES.getValue())) {
             final Element recentDes = getDoc().createElement("recentdesfiles");
             propertiesElement.appendChild(recentDes);
 
             hasAllElements = false;
         }
 
-        if (!elementsInTree.contains("recentpdffiles")) {
+        if (!elementsInTree.contains(RecentDocumentType.RECENT_PDF_FILES.getValue())) {
             final Element recentPDF = getDoc().createElement("recentpdffiles");
             propertiesElement.appendChild(recentPDF);
 

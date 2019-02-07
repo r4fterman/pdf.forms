@@ -83,6 +83,8 @@ import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.pdf.forms.widgets.utils.WidgetParser;
 import org.pdf.forms.writer.Writer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -90,7 +92,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class Commands {
 
-    public static final int NEW = 77184; //"NEW".hashCode();
+    public static final int NEW = 77184;
     public static final int OPEN = 2432586;
     public static final int RECENT_OPEN = 159636910;
     public static final int CLOSE = 64218584;
@@ -130,6 +132,8 @@ public class Commands {
     public static final int ZOOM_IN = 2759635;
     public static final int ZOOM = 608001297;
     public static final int ZOOM_OUT = 1668177090;
+
+    private final Logger logger = LoggerFactory.getLogger(Commands.class);
 
     private final IMainFrame mainFrame;
     private final String version;
@@ -259,11 +263,9 @@ public class Commands {
     private void visitWebsite() {
         try {
             BrowserLauncher.openURL("http://pdfformsdesigne.sourceforge.net");
-        } catch (final IOException e1) {
+        } catch (final IOException e) {
+            logger.error("Error loading webpage", e);
             JOptionPane.showMessageDialog(null, "Error loading webpage");
-            //<start-full><start-demo>
-            e1.printStackTrace();
-            //<end-demo><end-full>
         }
 
         //      JMenuItem about = new JMenuItem("About");
@@ -307,7 +309,7 @@ public class Commands {
             final String type,
             final JMenu file) {
         final JMenuItem[] recentDocuments;
-        if (type.equals("recentdesfiles")) {
+        if (type.equals(RecentDocumentType.RECENT_DES_FILES.getValue())) {
             recentDocuments = recentDesignerDocuments;
         } else {
             // "recentpdffiles"
@@ -341,7 +343,7 @@ public class Commands {
                 final JMenuItem item = (JMenuItem) e.getSource();
                 final String fileName = item.getName();
 
-                if (type.equals("recentdesfiles")) {
+                if (type.equals(RecentDocumentType.RECENT_DES_FILES.getValue())) {
                     openDesignerFile(fileName);
                 } else { // "recentpdffiles"
                     final int importType = aquirePDFImportType();
@@ -362,7 +364,7 @@ public class Commands {
         }
 
         final JMenuItem[] recentDocuments;
-        if (type.equals("recentdesfiles")) {
+        if (type.equals(RecentDocumentType.RECENT_DES_FILES.getValue())) {
             recentDocuments = recentDesignerDocuments;
         } else {
             // "recentpdffiles"
@@ -645,7 +647,7 @@ public class Commands {
             //initialize StreamResult with File object to save to file
             transformer.transform(new DOMSource(documentProperties), new StreamResult(fileName));
         } catch (final TransformerException e) {
-            e.printStackTrace();
+            logger.error("Cannot write xml file " + fileName, e);
         }
 
     }
@@ -755,7 +757,7 @@ public class Commands {
             }
 
         } catch (final Exception e) {
-            e.printStackTrace();
+            logger.error("Error reading designer file " + designerFileToOpen, e);
         }
 
         mainFrame.setCurrentPage(1);
@@ -768,8 +770,8 @@ public class Commands {
 
         final File configDir = new File(System.getProperty("user.dir"));
         final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configDir);
-        properties.addRecentDocument(designerFileToOpen, "recentdesfiles");
-        updateRecentDocuments(properties.getRecentDocuments("recentdesfiles"), "recentdesfiles");
+        properties.addRecentDocument(designerFileToOpen, RecentDocumentType.RECENT_DES_FILES.getValue());
+        updateRecentDocuments(properties.getRecentDocuments(RecentDocumentType.RECENT_DES_FILES.getValue()), RecentDocumentType.RECENT_DES_FILES.getValue());
     }
 
     public void importPDF(final String file) {
@@ -937,11 +939,11 @@ public class Commands {
 
             final File configDir = new File(System.getProperty("user.dir"));
             final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configDir);
-            properties.addRecentDocument(pdfPath, "recentpdffiles");
-            updateRecentDocuments(properties.getRecentDocuments("recentpdffiles"), "recentpdffiles");
+            properties.addRecentDocument(pdfPath, RecentDocumentType.RECENT_PDF_FILES.getValue());
+            updateRecentDocuments(properties.getRecentDocuments(RecentDocumentType.RECENT_PDF_FILES.getValue()), RecentDocumentType.RECENT_PDF_FILES.getValue());
 
         } catch (final PdfException e) {
-            e.printStackTrace();
+            logger.error("Error importing pdf file " + pdfPath, e);
         }
     }
 
@@ -1006,8 +1008,8 @@ public class Commands {
 
                 widgets.add(widget);
 
-            } catch (final Exception ex) {
-                ex.printStackTrace();
+            } catch (final Exception e) {
+                logger.error("Error getting widgets from xml", e);
             }
         }
         return widgets;
@@ -1030,7 +1032,7 @@ public class Commands {
 
             decoder.decodePage(pdfPageNumber);
         } catch (final Exception e) {
-            e.printStackTrace();
+            logger.error("Error decoding PDF page", e);
         }
 
         final PdfPageData pdfPageData = pdfDecoder.getPdfPageData();

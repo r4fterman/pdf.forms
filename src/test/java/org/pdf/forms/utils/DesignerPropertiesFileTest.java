@@ -17,6 +17,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.support.io.TempDirectory;
+import org.pdf.forms.gui.commands.RecentDocumentType;
 
 @ExtendWith(TempDirectory.class)
 class DesignerPropertiesFileTest {
@@ -34,7 +35,7 @@ class DesignerPropertiesFileTest {
     void getRecentDesDocuments_from_non_existing_properties_file_should_return_list_with_null_entries(@TempDirectory.TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
-        final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments("recentdesfiles");
+        final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments(RecentDocumentType.RECENT_DES_FILES.getValue());
 
         assertThat(recentDesFiles, is(notNullValue()));
 
@@ -55,7 +56,7 @@ class DesignerPropertiesFileTest {
         System.out.println("Config dir: " + configDir.getAbsolutePath());
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir);
 
-        final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments("recentdesfiles");
+        final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments(RecentDocumentType.RECENT_DES_FILES.getValue());
 
         assertThat(recentDesFiles, is(notNullValue()));
 
@@ -72,7 +73,7 @@ class DesignerPropertiesFileTest {
     void getRecentPdfDocuments_from_non_existing_properties_file_should_return_list_with_null_entries(@TempDirectory.TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
-        final String[] recentPdfFiles = designerPropertiesFile.getRecentDocuments("recentpdffiles");
+        final String[] recentPdfFiles = designerPropertiesFile.getRecentDocuments(RecentDocumentType.RECENT_PDF_FILES.getValue());
 
         assertThat(recentPdfFiles, is(notNullValue()));
 
@@ -89,10 +90,10 @@ class DesignerPropertiesFileTest {
     void addRecentDocument_to_DES_list_should_be_added_on_top(@TempDirectory.TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
-        designerPropertiesFile.addRecentDocument("/usr/local/example1.des", "recentdesfiles");
-        designerPropertiesFile.addRecentDocument("/usr/local/example2.des", "recentdesfiles");
+        designerPropertiesFile.addRecentDocument("/usr/local/example1.des", RecentDocumentType.RECENT_DES_FILES.getValue());
+        designerPropertiesFile.addRecentDocument("/usr/local/example2.des", RecentDocumentType.RECENT_DES_FILES.getValue());
 
-        final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments("recentdesfiles");
+        final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments(RecentDocumentType.RECENT_DES_FILES.getValue());
 
         assertThat(recentDesFiles, is(notNullValue()));
 
@@ -109,10 +110,10 @@ class DesignerPropertiesFileTest {
     void addRecentDocument_to_PDF_list_should_be_added_on_top(@TempDirectory.TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
-        designerPropertiesFile.addRecentDocument("/usr/local/example1.pdf", "recentpdffiles");
-        designerPropertiesFile.addRecentDocument("/usr/local/example2.pdf", "recentpdffiles");
+        designerPropertiesFile.addRecentDocument("/usr/local/example1.pdf", RecentDocumentType.RECENT_PDF_FILES.getValue());
+        designerPropertiesFile.addRecentDocument("/usr/local/example2.pdf", RecentDocumentType.RECENT_PDF_FILES.getValue());
 
-        final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments("recentpdffiles");
+        final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments(RecentDocumentType.RECENT_PDF_FILES.getValue());
 
         assertThat(recentDesFiles, is(notNullValue()));
 
