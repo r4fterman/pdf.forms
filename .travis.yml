@@ -22,4 +22,4 @@ script:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT ---coverage-input-type jacoco
+  - JACOCO_SOURCE_PATH=src/main/java ./cc-test-reporter format-coverage /target/coverage-reports/jacoco-ut.exec --input-type jacoco ./cc-test-reporter upload-coverage
