@@ -282,7 +282,10 @@
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <version>${jacoco.plugin.version}</version>
                         <configuration>
-                            <excludes>${exclude}</excludes>
+                            <destFile>${jacoco.execution.file}</destFile>
+                            <dataFile>${jacoco.execution.file}</dataFile>
+                            <outputDirectory>${project.build.directory}/coverage-reports</outputDirectory>
+                            <propertyName>surefireArgLine</propertyName>
                         </configuration>
                         <executions>
                             <execution>
@@ -290,10 +293,6 @@
                                 <goals>
                                     <goal>prepare-agent</goal>
                                 </goals>
-                                <configuration>
-                                    <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-                                    <propertyName>surefireArgLine</propertyName>
-                                </configuration>
                             </execution>
                             <execution>
                                 <id>post-unit-test</id>
@@ -301,10 +300,6 @@
                                 <goals>
                                     <goal>report</goal>
                                 </goals>
-                                <configuration>
-                                    <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-                                    <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

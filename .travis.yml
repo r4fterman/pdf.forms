@@ -21,5 +21,5 @@ script:
   - mvn clean install -Pci
 
 after_success:
-  - JACOCO_SOURCE_PATH=./src/main/java ./cc-test-reporter format-coverage ./target/coverage-reports/jacoco-ut.exec --input-type jacoco ./cc-test-reporter upload-coverage
+  - JACOCO_SOURCE_PATH=./src/main/java ./cc-test-reporter format-coverage ./target/coverage-reports/jacoco.xml --input-type jacoco ./cc-test-reporter upload-coverage
   - bash <(curl -s https://codecov.io/bash)
