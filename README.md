@@ -19,10 +19,7 @@ GNU General Public License (GPL)
 
 [![Known Vulnerabilities](https://snyk.io/test/github/r4fterman/pdf.forms/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/r4fterman/pdf.forms?targetFile=pom.xml)
 
-# Code Coverage
-
-[![codecov](https://codecov.io/gh/r4fterman/pdf.forms/branch/master/graph/badge.svg)](https://codecov.io/gh/r4fterman/pdf.forms)
-
 # Code Quality
 
+[![Test Coverage](https://api.codeclimate.com/v1/badges/5c6e403f1724b9e574ad/test_coverage)](https://codeclimate.com/github/r4fterman/pdf.forms/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5c6e403f1724b9e574ad/maintainability)](https://codeclimate.com/github/r4fterman/pdf.forms/maintainability)
