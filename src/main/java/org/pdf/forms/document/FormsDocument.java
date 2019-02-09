@@ -38,6 +38,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.pdf.forms.gui.commands.Version;
 import org.pdf.forms.utils.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -48,7 +49,7 @@ public class FormsDocument {
     private final List<Page> pages = new ArrayList<>();
     private Document documentProperties;
 
-    public FormsDocument(final String version) {
+    public FormsDocument(final Version version) {
         try {
             final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             final DocumentBuilder db = dbf.newDocumentBuilder();
@@ -143,8 +144,8 @@ public class FormsDocument {
 
     private void addVersion(
             final Element rootElement,
-            final String version) {
-        XMLUtils.addBasicProperty(documentProperties, "version", version, rootElement);
+            final Version version) {
+        XMLUtils.addBasicProperty(documentProperties, "version", version.getValue(), rootElement);
     }
 
     private void addJavaScript(final Element rootElement) {

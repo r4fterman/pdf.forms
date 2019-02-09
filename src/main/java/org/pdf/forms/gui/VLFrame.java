@@ -57,6 +57,7 @@ import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.commands.RecentDocumentType;
+import org.pdf.forms.gui.commands.Version;
 import org.pdf.forms.gui.designer.Designer;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.DesignerCompound;
@@ -158,7 +159,7 @@ public class VLFrame extends JFrame implements IMainFrame {
      */
     public VLFrame(
             final SplashWindow splashWindow,
-            final String version) {
+            final Version version) {
         addWindowListener(new FrameCloser());
 
         toolbarContainer = ToolBarContainer.createDefaultContainer(true, false, true, false);
@@ -498,8 +499,8 @@ public class VLFrame extends JFrame implements IMainFrame {
             menubar.add(menu);
         }
 
-        commands.recentDocumentsOption(RecentDocumentType.RECENT_DES_FILES.getValue(), menuConfiguration.getRecentDesignerFilesMenu());
-        commands.recentDocumentsOption(RecentDocumentType.RECENT_PDF_FILES.getValue(), menuConfiguration.getRecentImportedFilesMenu());
+        commands.recentDocumentsOption(RecentDocumentType.RECENT_DES_FILES, menuConfiguration.getRecentDesignerFilesMenu());
+        commands.recentDocumentsOption(RecentDocumentType.RECENT_PDF_FILES, menuConfiguration.getRecentImportedFilesMenu());
 
         setJMenuBar(menubar);
     }

@@ -42,6 +42,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import org.pdf.forms.gui.commands.Commands;
+import org.pdf.forms.gui.commands.Version;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
 import org.pdf.forms.utils.XMLUtils;
@@ -68,13 +69,13 @@ public class WidgetSelection {
 
     public WidgetSelection(
             final IDesigner designerPanel,
-            final String version) {
+            final Version version) {
         setupGroupingButtons(designerPanel, version);
     }
 
     private void setupGroupingButtons(
             final IDesigner designerPanel,
-            final String version) {
+            final Version version) {
         groupButton.setVisible(false);
         groupButton.setSize(WIDTH, HEIGHT);
         groupButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Grouped.gif")));

@@ -35,12 +35,14 @@ import java.awt.BorderLayout;
 
 import javax.swing.JWindow;
 
+import org.pdf.forms.gui.commands.Version;
+
 public class SplashWindow extends JWindow {
 
     private final SplashPanel splashPanel;
 
-    public SplashWindow(final String version) {
-        this.splashPanel = new SplashPanel(version);
+    public SplashWindow(final Version version) {
+        splashPanel = new SplashPanel(version);
 
         getContentPane().add(splashPanel, BorderLayout.CENTER);
 

@@ -52,6 +52,7 @@ import javax.swing.JToolTip;
 import org.jpedal.PdfDecoder;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.gui.commands.Version;
 import org.pdf.forms.gui.designer.captionchanger.CaptionChanger;
 import org.pdf.forms.gui.designer.gui.DesignerSelectionBox;
 import org.pdf.forms.gui.designer.gui.Rule;
@@ -110,14 +111,14 @@ public class Designer extends PdfDecoder implements IDesigner {
             final Rule horizontalRuler,
             final Rule verticalRuler,
             final IMainFrame mainFrame,
-            final String version) {
+            final Version version) {
 
         super();
 
         setBackground(BACKGROUND_COLOR);
 
-        this.selectionBox = new DesignerSelectionBox(this);
-        this.widgetSelection = new WidgetSelection(this, version);
+        selectionBox = new DesignerSelectionBox(this);
+        widgetSelection = new WidgetSelection(this, version);
 
         this.horizontalRuler = horizontalRuler;
         this.verticalRuler = verticalRuler;
@@ -352,7 +353,7 @@ public class Designer extends PdfDecoder implements IDesigner {
     @Override
     public void displayPage(final Page page) {
 
-        this.currentPage = page;
+        currentPage = page;
 
         widgets = page.getWidgets();
 
@@ -455,7 +456,7 @@ public class Designer extends PdfDecoder implements IDesigner {
 
     @Override
     public void removeSelectedWidgets() {
-        this.widgets.removeAll(selectedWidgets);
+        widgets.removeAll(selectedWidgets);
         //  this.widgetsInAddedOrder.removeAll(selectedWidgets);
 
         removeWidgetsFromHierarchy(selectedWidgets);
@@ -472,7 +473,7 @@ public class Designer extends PdfDecoder implements IDesigner {
             final IWidget widgetToRemove,
             final List<IWidget> widgets) {
 
-        for (final Iterator<IWidget> it = widgets.iterator(); it.hasNext();) {
+        for (final Iterator<IWidget> it = widgets.iterator(); it.hasNext(); ) {
             final IWidget w = it.next();
 
             if (w.getType() == IWidget.GROUP) {
@@ -567,7 +568,7 @@ public class Designer extends PdfDecoder implements IDesigner {
 
     @Override
     public void setDragBoxLocation(final Point dragBoxLocation) {
-        this.dragBoxMouseLocation = dragBoxLocation;
+        dragBoxMouseLocation = dragBoxLocation;
         repaint();
     }
 
@@ -583,7 +584,7 @@ public class Designer extends PdfDecoder implements IDesigner {
 
     @Override
     public void setIsResizingSplitComponent(final boolean isResizingSplitComponentSplitComponent) {
-        this.isResizingSplitComponent = isResizingSplitComponentSplitComponent;
+        isResizingSplitComponent = isResizingSplitComponentSplitComponent;
     }
 
     @Override

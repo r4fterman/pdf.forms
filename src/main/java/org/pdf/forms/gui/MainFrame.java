@@ -45,6 +45,7 @@ import javax.swing.UIManager;
 
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
+import org.pdf.forms.gui.commands.Version;
 import org.pdf.forms.gui.designer.Designer;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.DesignerCompound;
@@ -53,26 +54,29 @@ import org.pdf.forms.gui.library.LibraryPanel;
 import org.pdf.forms.gui.properties.font.FontPropertiesTab;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetArrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MainFrame extends JFrame implements IMainFrame {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
     private static final int INSET = 15;
 
     public static void main(final String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (final Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to set look & feel", e);
         }
 
-        new MainFrame("TEST");
+        new MainFrame(Version.DEV);
     }
 
     private final LibraryPanel palette;
 
     private final FontPropertiesTab properties;
 
-    public MainFrame(final String version) {
+    private MainFrame(final Version version) {
         final Rule horizontalRuler = new Rule(INSET, Rule.HORIZONTAL, true);
         horizontalRuler.setPreferredWidth(Toolkit.getDefaultToolkit().getScreenSize().width);
 

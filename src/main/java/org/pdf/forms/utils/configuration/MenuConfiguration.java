@@ -276,7 +276,6 @@ public class MenuConfiguration extends ConfigurationFile {
             final int command,
             final JMenu menu) {
         switch (command) {
-
             case Commands.NEW:
                 previewItems.add(addBasicMenuItem(name, command, menu));
                 break;

@@ -39,16 +39,18 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
+import org.pdf.forms.gui.commands.Version;
+
 class SplashPanel extends JPanel {
 
     /**
      * Creates new form SpashPanel.
      */
-    SplashPanel(final String version) {
+    SplashPanel(final Version version) {
         initComponents(version);
     }
 
-    private void initComponents(final String version) {
+    private void initComponents(final Version version) {
 
         final JLabel jLabel2 = new JLabel();
         final JLabel jLabel1 = new JLabel();

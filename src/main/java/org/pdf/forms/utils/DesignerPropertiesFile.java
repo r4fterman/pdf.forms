@@ -39,11 +39,9 @@ public final class DesignerPropertiesFile extends PropertiesFile {
         return instance;
     }
 
-    public String[] getRecentDocuments(final String type) {
-        final String[] recentDocuments;
-
+    public String[] getRecentDocuments(final RecentDocumentType type) {
         try {
-            final NodeList nl = getDoc().getElementsByTagName(type);
+            final NodeList nl = getDoc().getElementsByTagName(type.getValue());
             final List<String> fileNames = new ArrayList<>();
 
             if (nl != null && nl.getLength() > 0) {
@@ -64,8 +62,7 @@ public final class DesignerPropertiesFile extends PropertiesFile {
 
             Collections.reverse(fileNames);
 
-            recentDocuments = fileNames.toArray(new String[getNoOfRecentDocs()]);
-            return recentDocuments;
+            return fileNames.toArray(new String[getNoOfRecentDocs()]);
         } catch (final Exception e) {
             logger.error("Error getting recent documents", e);
             return null;
@@ -73,15 +70,15 @@ public final class DesignerPropertiesFile extends PropertiesFile {
     }
 
     public void addRecentDocument(
-            final String file,
-            final String type) {
+            final File file,
+            final RecentDocumentType type) {
         try {
-            final Element recentElement = (Element) getDoc().getElementsByTagName(type).item(0);
+            final Element recentElement = (Element) getDoc().getElementsByTagName(type.getValue()).item(0);
 
-            checkExists(file, recentElement);
+            checkExists(file.getAbsolutePath(), recentElement);
 
             final Element elementToAdd = getDoc().createElement("file");
-            elementToAdd.setAttribute("name", file);
+            elementToAdd.setAttribute("name", file.getAbsolutePath());
 
             recentElement.appendChild(elementToAdd);
 

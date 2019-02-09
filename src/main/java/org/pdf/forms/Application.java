@@ -6,20 +6,21 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.Optional;
-import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.pdf.forms.gui.VLFrame;
+import org.pdf.forms.gui.commands.Version;
 import org.pdf.forms.gui.windows.SplashWindow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class Application {
 
-    private static final String DEFAULT_VERSION = "0.8b05";
+    private Logger logger = LoggerFactory.getLogger(Application.class);
 
     public static void main(final String[] args) {
         final Application application = new Application();
@@ -30,29 +31,29 @@ public final class Application {
     }
 
     private void start() {
-        final String version = readManifest().map(this::getVersion).orElse(DEFAULT_VERSION);
+        final Version version = readManifest().map(this::getVersion).orElse(Version.CURRENT_VERSION);
 
         splashScreen(version);
     }
 
-    private void splashScreen(final String version) {
-        SplashWindow splashWindow = new SplashWindow(version);
+    private void splashScreen(final Version version) {
+        final SplashWindow splashWindow = new SplashWindow(version);
         splashWindow.setStatusMaximum(4);
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (final Exception e) {
+            logger.error("Fail setting look&feel", e);
         }
 
         splashWindow.setProgress(1, "Initializing window");
         final VLFrame frame = new VLFrame(splashWindow, version);
 
         // get local graphics environment
-        GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 
         // get maximum window bounds
-        Rectangle maximumWindowBounds = graphicsEnvironment.getMaximumWindowBounds();
+        final Rectangle maximumWindowBounds = graphicsEnvironment.getMaximumWindowBounds();
         frame.setSize(maximumWindowBounds.width, maximumWindowBounds.height);
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 
@@ -68,14 +69,15 @@ public final class Application {
             if (resources.hasMoreElements()) {
                 return Optional.of(new Manifest(resources.nextElement().openStream()));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (final IOException e) {
+            logger.error("Fail to read manifest file", e);
         }
         return Optional.empty();
     }
 
-    private String getVersion(final Manifest manifest) {
-        final Map<String, Attributes> manifestEntries = manifest.getEntries();
-        return Optional.ofNullable(manifest.getMainAttributes().getValue("Implementation-Version")).orElse(DEFAULT_VERSION);
+    private Version getVersion(final Manifest manifest) {
+        return Optional.ofNullable(manifest.getMainAttributes().getValue("Implementation-Version"))
+                .map(Version::of)
+                .orElse(Version.CURRENT_VERSION);
     }
 }

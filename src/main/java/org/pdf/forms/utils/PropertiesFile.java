@@ -113,7 +113,7 @@ public abstract class PropertiesFile {
     }
 
     void checkExists(
-            final String file,
+            final String filePath,
             final Element recentElement) {
         final NodeList allRecentDocs = recentElement.getElementsByTagName("*");
 
@@ -122,7 +122,7 @@ public abstract class PropertiesFile {
             final NamedNodeMap attrs = item.getAttributes();
             final String value = attrs.getNamedItem("name").getNodeValue();
 
-            if (value.equals(file)) {
+            if (value.equals(filePath)) {
                 recentElement.removeChild(item);
             }
         }
