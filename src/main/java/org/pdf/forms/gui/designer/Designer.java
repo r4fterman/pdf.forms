@@ -477,7 +477,8 @@ public class Designer extends PdfDecoder implements IDesigner {
             final IWidget widgetToRemove,
             final List<IWidget> widgets) {
 
-        for (final Iterator<IWidget> it = widgets.iterator(); it.hasNext(); ) {
+        final Iterator<IWidget> it = widgets.iterator();
+        while (it.hasNext()) {
             final IWidget w = it.next();
 
             if (w.getType() == IWidget.GROUP) {

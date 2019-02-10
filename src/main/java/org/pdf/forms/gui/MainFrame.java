@@ -57,7 +57,7 @@ import org.pdf.forms.widgets.utils.WidgetArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MainFrame extends JFrame implements IMainFrame {
+public final class MainFrame extends JFrame implements IMainFrame {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MainFrame.class);
     private static final int INSET = 15;

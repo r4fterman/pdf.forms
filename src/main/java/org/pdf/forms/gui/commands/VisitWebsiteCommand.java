@@ -6,6 +6,7 @@ import java.net.URI;
 
 import javax.swing.JOptionPane;
 
+import org.pdf.forms.gui.windows.AboutPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ class VisitWebsiteCommand implements Command {
     private void visitWebsite() {
         try {
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                Desktop.getDesktop().browse(URI.create("https://github.com/r4fterman/pdf.forms"));
+                Desktop.getDesktop().browse(URI.create(AboutPanel.PROJECT_WEBSITE));
             }
         } catch (final IOException e) {
             logger.error("Error loading webpage", e);

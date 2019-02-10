@@ -1,6 +1,6 @@
 package org.pdf.forms.gui.commands;
 
-public class Version {
+public final class Version {
 
     public static final Version DEV = new Version("DEV", "SNAPSHOT");
     public static final Version CURRENT_VERSION = new Version("0", "8b05");

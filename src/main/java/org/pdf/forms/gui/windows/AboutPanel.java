@@ -49,6 +49,9 @@ import org.slf4j.LoggerFactory;
 
 public class AboutPanel extends javax.swing.JPanel {
 
+    // TODO There should be some central configuration place for this
+    public static final String PROJECT_WEBSITE = "https://github.com/r4fterman/pdf.forms";
+
     private final Logger logger = LoggerFactory.getLogger(AboutPanel.class);
 
     public AboutPanel() {
@@ -57,7 +60,7 @@ public class AboutPanel extends javax.swing.JPanel {
 
     private void initComponents() {
 
-        final JLabel jLabel2 = getURLLabel(this, "http://pdfformsdesigne.sourceforge.net");
+        final JLabel jLabel2 = getURLLabel(this, PROJECT_WEBSITE);
         final JLabel jLabel4 = new JLabel();
         final JLabel jLabel5 = new JLabel();
         final JLabel jLabel6 = new JLabel();
@@ -100,7 +103,7 @@ public class AboutPanel extends javax.swing.JPanel {
         jLabel13.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
 
         final GroupLayout layout = new GroupLayout(this);
-        this.setLayout(layout);
+        setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()

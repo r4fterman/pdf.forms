@@ -86,7 +86,7 @@ class CDropTargetListener implements DropTargetListener {
     CDropTargetListener(
             final CTree cTreeRef,
             final IDesigner designer) {
-        this.cTree = cTreeRef;
+        cTree = cTreeRef;
         this.designer = designer;
 
         colorCueLine = new Color(
@@ -480,8 +480,10 @@ class CDropTargetListener implements DropTargetListener {
         items.add(theNode);
 
         // recursion
-        for (final Enumeration theChildren = theNode.children(); theChildren.hasMoreElements(); ) {
-            getFlattenedTreeNodes((TreeNode) theChildren.nextElement(), items);
+        final Enumeration<? extends TreeNode> children = theNode.children();
+        while (children.hasMoreElements()) {
+            final TreeNode treeNode = children.nextElement();
+            getFlattenedTreeNodes(treeNode, items);
         }
     }
 
