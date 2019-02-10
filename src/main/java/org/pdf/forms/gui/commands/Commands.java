@@ -106,7 +106,7 @@ public class Commands {
                 Map.entry(ADD_SELECTION_TO_LIBRARY, new AddSelectionToLibraryCommand(mainFrame)),
                 Map.entry(GROUP, new GroupElementsCommand(mainFrame)),
                 Map.entry(UNGROUP, new UnGroupElementsCommand(mainFrame)),
-                Map.entry(WEBSITE, new VisitWebsiteCommand(mainFrame)),
+                Map.entry(WEBSITE, new VisitWebsiteCommand()),
                 Map.entry(ABOUT, new ShowAboutCommand(mainFrame)),
                 Map.entry(BUG_REPORT, new FileBugReportCommand(mainFrame))
         );
