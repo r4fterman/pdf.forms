@@ -33,9 +33,11 @@ package org.pdf.forms.gui.windows;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.net.URI;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -43,7 +45,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.jdesktop.layout.GroupLayout;
-import org.jpedal.utils.BrowserLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,9 +68,9 @@ public class AboutPanel extends javax.swing.JPanel {
         final JLabel jLabel7 = new JLabel();
         final JLabel jLabel8 = new JLabel();
         final JLabel jLabel9 = new JLabel();
-        final JLabel jLabel10 = getURLLabel(this, "http://www.jpedal.org");
-        final JLabel jLabel11 = getURLLabel(this, "http://www.vlsolutions.com/en/products/docking/");
-        final JLabel jLabel12 = getURLLabel(this, "http://www.lowagie.com/iText/");
+        final JLabel jLabel10 = getURLLabel(this, "https://www.idrsolutions.com/jpedal/");
+        final JLabel jLabel11 = getURLLabel(this, "https://github.com/cmadsen/vldocking");
+        final JLabel jLabel12 = getURLLabel(this, "https://itextpdf.com");
         final JLabel jLabel13 = getURLLabel(this, "https://swing-layout.dev.java.net/");
 
         jLabel2.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
@@ -191,10 +192,12 @@ public class AboutPanel extends javax.swing.JPanel {
             @Override
             public void mouseClicked(final MouseEvent event) {
                 try {
-                    BrowserLauncher.openURL(website);
+                    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                        Desktop.getDesktop().browse(URI.create(website));
+                    }
                 } catch (final IOException e) {
-                    JOptionPane.showMessageDialog(null, "Error loading webpage");
                     logger.error("Error loading webpage", e);
+                    JOptionPane.showMessageDialog(null, "Error loading webpage");
                 }
             }
 
