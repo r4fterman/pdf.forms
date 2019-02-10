@@ -63,9 +63,13 @@ import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateC
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBoxParent;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*/ implements TristateCheckBoxParent {
+
+    private final Logger logger = LoggerFactory.getLogger(LayoutPropertiesPanel.class);
 
     private IDesigner designerPanel;
 
@@ -713,7 +717,7 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
                 final JToggleButton toggleButton = (JToggleButton) field.get(this);
                 toggleButton.setSelected(true);
             } catch (final Exception ex) {
-                ex.printStackTrace();
+                logger.error("set rotation button", ex);
             }
         }
 

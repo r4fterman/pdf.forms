@@ -73,7 +73,7 @@ class FileBugReportCommand implements Command {
         // Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
         // transformer.transform(new DOMSource(documentProperties), new StreamResult(mainFrame.getCurrentDesignerFileName()));
         //        } catch (TransformerException e) {
-        // e.printStackTrace();
+        // logger.error("writeXml", e);
         //        }
 
         try {

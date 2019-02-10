@@ -40,12 +40,16 @@ import javax.swing.JRadioButton;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.SplitComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class RadioButtonWidget extends Widget implements IWidget {
 
     private static int nextWidgetNumber = 1;
+
+    private final Logger logger = LoggerFactory.getLogger(RadioButtonWidget.class);
 
     public RadioButtonWidget(
             final int type,
@@ -57,12 +61,12 @@ public class RadioButtonWidget extends Widget implements IWidget {
         setAllowEditCaptionAndValue(false);
         setAllowEditOfCaptionOnClick(true);
 
-        String widgetName = "Radio Button" + nextWidgetNumber;
+        final String widgetName = "Radio Button" + nextWidgetNumber;
         nextWidgetNumber++;
 
         setWidgetName(widgetName);
 
-        Element rootElement = setupProperties();
+        final Element rootElement = setupProperties();
 
         XMLUtils.addBasicProperty(getProperties(), "type", "RADIO_BUTTON", rootElement);
         XMLUtils.addBasicProperty(getProperties(), "name", widgetName, rootElement);
@@ -84,12 +88,12 @@ public class RadioButtonWidget extends Widget implements IWidget {
         setAllowEditCaptionAndValue(false);
         setAllowEditOfCaptionOnClick(true);
 
-        Element bindingElement = XMLUtils.getElementsFromNodeList(root.getElementsByTagName("binding")).get(0);
+        final Element bindingElement = XMLUtils.getElementsFromNodeList(root.getElementsByTagName("binding")).get(0);
         setWidgetName(XMLUtils.getAttributeFromChildElement(bindingElement, "Name"));
         setArrayNumber(Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingElement, "Array Number")));
 
-        Element rootElement = setupProperties();
-        Node newRoot = getProperties().importNode(root, true);
+        final Element rootElement = setupProperties();
+        final Node newRoot = getProperties().importNode(root, true);
 
         getProperties().replaceChild(newRoot, rootElement);
 
@@ -97,7 +101,7 @@ public class RadioButtonWidget extends Widget implements IWidget {
     }
 
     private void addProperties(final Element rootElement) {
-        Element propertiesElement = XMLUtils.createAndAppendElement(getProperties(), "properties", rootElement);
+        final Element propertiesElement = XMLUtils.createAndAppendElement(getProperties(), "properties", rootElement);
 
         addFontProperties(propertiesElement);
 
@@ -113,15 +117,15 @@ public class RadioButtonWidget extends Widget implements IWidget {
     }
 
     private void addCaptionProperties(final Element propertiesElement) {
-        Element captionElement = XMLUtils.createAndAppendElement(getProperties(), "caption_properties", propertiesElement);
+        final Element captionElement = XMLUtils.createAndAppendElement(getProperties(), "caption_properties", propertiesElement);
         XMLUtils.addBasicProperty(getProperties(), "Text", "Radio Button", captionElement);
         XMLUtils.addBasicProperty(getProperties(), "Divisor Location", "", captionElement);
     }
 
     private void addFontProperties(final Element propertiesElement) {
-        Element fontElement = XMLUtils.createAndAppendElement(getProperties(), "font", propertiesElement);
+        final Element fontElement = XMLUtils.createAndAppendElement(getProperties(), "font", propertiesElement);
 
-        Element caption = XMLUtils.createAndAppendElement(getProperties(), "font_caption", fontElement);
+        final Element caption = XMLUtils.createAndAppendElement(getProperties(), "font_caption", fontElement);
         XMLUtils.addBasicProperty(getProperties(), "Font Name", FontHandler.getInstance().getDefaultFont().getFontName(), caption);
         XMLUtils.addBasicProperty(getProperties(), "Font Size", "11", caption);
         XMLUtils.addBasicProperty(getProperties(), "Font Style", "0", caption);
@@ -131,26 +135,26 @@ public class RadioButtonWidget extends Widget implements IWidget {
     }
 
     private void addObjectProperties(final Element propertiesElement) {
-        Element objectElement = XMLUtils.createAndAppendElement(getProperties(), "object", propertiesElement);
+        final Element objectElement = XMLUtils.createAndAppendElement(getProperties(), "object", propertiesElement);
 
-        Element fieldElement = XMLUtils.createAndAppendElement(getProperties(), "field", objectElement);
+        final Element fieldElement = XMLUtils.createAndAppendElement(getProperties(), "field", objectElement);
         XMLUtils.addBasicProperty(getProperties(), "Appearance", "Sunken Box", fieldElement);
         XMLUtils.addBasicProperty(getProperties(), "Group Name", "", fieldElement);
         XMLUtils.addBasicProperty(getProperties(), "Presence", "Visible", fieldElement);
 
-        Element valueElement = XMLUtils.createAndAppendElement(getProperties(), "value", objectElement);
+        final Element valueElement = XMLUtils.createAndAppendElement(getProperties(), "value", objectElement);
         XMLUtils.addBasicProperty(getProperties(), "Type", "User Entered - Optional", valueElement);
         XMLUtils.addBasicProperty(getProperties(), "Default", "Off", valueElement);
 
-        Element bindingElement = XMLUtils.createAndAppendElement(getProperties(), "binding", objectElement);
+        final Element bindingElement = XMLUtils.createAndAppendElement(getProperties(), "binding", objectElement);
         XMLUtils.addBasicProperty(getProperties(), "Name", getWidgetName(), bindingElement);
         XMLUtils.addBasicProperty(getProperties(), "Array Number", "0", bindingElement);
     }
 
     private void addLayoutProperties(final Element propertiesElement) {
-        Element layoutElement = XMLUtils.createAndAppendElement(getProperties(), "layout", propertiesElement);
+        final Element layoutElement = XMLUtils.createAndAppendElement(getProperties(), "layout", propertiesElement);
 
-        Element sizeAndPositionElement = XMLUtils.createAndAppendElement(getProperties(), "sizeandposition", layoutElement);
+        final Element sizeAndPositionElement = XMLUtils.createAndAppendElement(getProperties(), "sizeandposition", layoutElement);
         XMLUtils.addBasicProperty(getProperties(), "X", "", sizeAndPositionElement);
         XMLUtils.addBasicProperty(getProperties(), "Width", "", sizeAndPositionElement);
         XMLUtils.addBasicProperty(getProperties(), "Y", "", sizeAndPositionElement);
@@ -160,45 +164,46 @@ public class RadioButtonWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(getProperties(), "Anchor", "Top Left", sizeAndPositionElement);
         XMLUtils.addBasicProperty(getProperties(), "Rotation", "0", sizeAndPositionElement);
 
-        Element margins = XMLUtils.createAndAppendElement(getProperties(), "margins", layoutElement);
+        final Element margins = XMLUtils.createAndAppendElement(getProperties(), "margins", layoutElement);
         XMLUtils.addBasicProperty(getProperties(), "Left", "2", margins);
         XMLUtils.addBasicProperty(getProperties(), "Right", "4", margins);
         XMLUtils.addBasicProperty(getProperties(), "Top", "2", margins);
         XMLUtils.addBasicProperty(getProperties(), "Bottom", "4", margins);
 
-        Element caption = XMLUtils.createAndAppendElement(getProperties(), "caption", layoutElement);
+        final Element caption = XMLUtils.createAndAppendElement(getProperties(), "caption", layoutElement);
         XMLUtils.addBasicProperty(getProperties(), "Position", "Right", caption);
         XMLUtils.addBasicProperty(getProperties(), "Reserve", "4", caption);
     }
 
     private void addBorderProperties(final Element propertiesElement) {
-        Element borderElement = XMLUtils.createAndAppendElement(getProperties(), "border", propertiesElement);
+        final Element borderElement = XMLUtils.createAndAppendElement(getProperties(), "border", propertiesElement);
 
-        Element borders = XMLUtils.createAndAppendElement(getProperties(), "borders", borderElement);
+        final Element borders = XMLUtils.createAndAppendElement(getProperties(), "borders", borderElement);
         XMLUtils.addBasicProperty(getProperties(), "Border Style", "None", borders);
         XMLUtils.addBasicProperty(getProperties(), "Border Width", "1", borders);
         XMLUtils.addBasicProperty(getProperties(), "Border Color", Color.BLACK.getRGB() + "", borders);
 
-        Element backgorundFill = XMLUtils.createAndAppendElement(getProperties(), "backgroundfill", borderElement);
+        final Element backgorundFill = XMLUtils.createAndAppendElement(getProperties(), "backgroundfill", borderElement);
         XMLUtils.addBasicProperty(getProperties(), "Style", "Solid", backgorundFill);
         XMLUtils.addBasicProperty(getProperties(), "Fill Color", Color.WHITE.getRGB() + "", backgorundFill);
     }
 
     private void addParagraphProperties(final Element propertiesElement) {
-        Element paragraphElement = XMLUtils.createAndAppendElement(getProperties(), "paragraph", propertiesElement);
+        final Element paragraphElement = XMLUtils.createAndAppendElement(getProperties(), "paragraph", propertiesElement);
 
-        Element value = XMLUtils.createAndAppendElement(getProperties(), "paragraph_caption", paragraphElement);
+        final Element value = XMLUtils.createAndAppendElement(getProperties(), "paragraph_caption", paragraphElement);
         XMLUtils.addBasicProperty(getProperties(), "Horizontal Alignment", "left", value);
         XMLUtils.addBasicProperty(getProperties(), "Vertical Alignment", "center", value);
     }
 
+    @Override
     public void setParagraphProperties(
             final Element paragraphPropertiesElememt,
             final int currentlyEditing) {
 
-        SplitComponent radioButton = (SplitComponent) getBaseComponent();
+        final SplitComponent radioButton = (SplitComponent) getBaseComponent();
 
-        Element paragraphCaptionElement =
+        final Element paragraphCaptionElement =
                 (Element) paragraphPropertiesElememt.getElementsByTagName("paragraph_caption").item(0);
 
         setParagraphProperties(paragraphCaptionElement, radioButton.getCaption());
@@ -206,52 +211,55 @@ public class RadioButtonWidget extends Widget implements IWidget {
         setSize(getWidth(), getHeight());
     }
 
+    @Override
     public void setLayoutProperties(final Element layoutProperties) {
-        SplitComponent radioButton = (SplitComponent) getBaseComponent();
+        final SplitComponent radioButton = (SplitComponent) getBaseComponent();
 
         /* set the size and position of the TextField*/
         setSizeAndPosition(layoutProperties);
 
         /* set the location of the caption */
-        Element captionElement = (Element) layoutProperties.getElementsByTagName("caption").item(0);
+        final Element captionElement = (Element) layoutProperties.getElementsByTagName("caption").item(0);
 
-        String captionPosition = XMLUtils.getAttributeFromChildElement(captionElement, "Position");
+        final String captionPosition = XMLUtils.getAttributeFromChildElement(captionElement, "Position");
 
         /* use reflection to set the required rotation button selected */
         try {
-            Field field = radioButton.getClass().getDeclaredField("CAPTION_" + captionPosition.toUpperCase());
+            final Field field = radioButton.getClass().getDeclaredField("CAPTION_" + captionPosition.toUpperCase());
 
-            int position = field.getInt(this);
+            final int position = field.getInt(this);
             if (position != radioButton.getCaptionPosition()) {
                 radioButton.setCaptionPosition(position);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (final Exception e) {
+            logger.error("setLayoutProperties", e);
         }
 
         setSize(getWidth(), getHeight());
     }
 
+    @Override
     public void setFontProperties(
             final Element fontProperties,
             final int currentlyEditing) {
 
-        SplitComponent radioButton = (SplitComponent) getBaseComponent();
+        final SplitComponent radioButton = (SplitComponent) getBaseComponent();
 
-        Element captionProperties = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
+        final Element captionProperties = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
 
         setFontProperties(captionProperties, radioButton.getCaption());
 
         setSize(getWidth(), getHeight());
     }
 
+    @Override
     public void setObjectProperties(final Element objectProperties) {
 
-        JRadioButton radioButton = (JRadioButton) getValueComponent();
+        final JRadioButton radioButton = (JRadioButton) getValueComponent();
 
-        Element valueElement = (Element) objectProperties.getElementsByTagName("value").item(0);
+        final Element valueElement = (Element) objectProperties.getElementsByTagName("value").item(0);
 
-        String state = XMLUtils.getAttributeFromChildElement(valueElement, "Default");
+        final String state = XMLUtils.getAttributeFromChildElement(valueElement, "Default");
 
         radioButton.setSelected(state.equals("On"));
 
@@ -262,14 +270,14 @@ public class RadioButtonWidget extends Widget implements IWidget {
     }
 
     public void setRadioButtonGroupName(final String name) {
-        Element objectElement = XMLUtils.getElementsFromNodeList(getProperties().getElementsByTagName("object")).get(0);
-        Element groupNameProperty = XMLUtils.getPropertyElement(objectElement, "Group Name");
+        final Element objectElement = XMLUtils.getElementsFromNodeList(getProperties().getElementsByTagName("object")).get(0);
+        final Element groupNameProperty = XMLUtils.getPropertyElement(objectElement, "Group Name");
         groupNameProperty.getAttributeNode("value").setValue(name);
     }
 
     public String getRadioButtonGroupName() {
-        Element objectElement = XMLUtils.getElementsFromNodeList(getProperties().getElementsByTagName("object")).get(0);
-        Element groupNameProperty = XMLUtils.getPropertyElement(objectElement, "Group Name");
+        final Element objectElement = XMLUtils.getElementsFromNodeList(getProperties().getElementsByTagName("object")).get(0);
+        final Element groupNameProperty = XMLUtils.getPropertyElement(objectElement, "Group Name");
         return groupNameProperty.getAttributeNode("value").getValue();
     }
 }

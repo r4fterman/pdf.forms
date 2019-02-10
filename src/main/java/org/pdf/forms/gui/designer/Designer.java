@@ -62,10 +62,14 @@ import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetSelection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class Designer extends PdfDecoder implements IDesigner {
+
+    private final Logger logger = LoggerFactory.getLogger(Designer.class);
 
     private List<IWidget> widgets;
 
@@ -407,7 +411,7 @@ public class Designer extends PdfDecoder implements IDesigner {
                 //                    page.setWidgetsAddedToDesigner(true);
                 //                }
             } catch (final Exception e) {
-                e.printStackTrace();
+                logger.error("displayPage", e);
             }
         }
 

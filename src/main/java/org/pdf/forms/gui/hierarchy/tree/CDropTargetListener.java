@@ -65,11 +65,14 @@ import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.ButtonGroup;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.RadioButtonWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // DropTargetListener interface object...
 class CDropTargetListener implements DropTargetListener {
 
-    // Fields...
+    private final Logger logger = LoggerFactory.getLogger(CDropTargetListener.class);
+
     private TreePath pathLast = null;
     private final Rectangle2D raCueLine = new Rectangle2D.Float();
     private Rectangle2D raGhost = new Rectangle2D.Float();
@@ -424,7 +427,7 @@ class CDropTargetListener implements DropTargetListener {
 
                     break; // No need to check remaining flavors
                 } catch (final UnsupportedFlavorException | IOException ex) {
-                    ex.printStackTrace();
+                    logger.error("", ex);
                     e.dropComplete(false);
                     return;
                 }
@@ -477,17 +480,17 @@ class CDropTargetListener implements DropTargetListener {
         items.add(theNode);
 
         // recursion
-        for (final Enumeration theChildren = theNode.children(); theChildren.hasMoreElements();) {
+        for (final Enumeration theChildren = theNode.children(); theChildren.hasMoreElements(); ) {
             getFlattenedTreeNodes((TreeNode) theChildren.nextElement(), items);
         }
     }
 
     @Override
-    public void dropActionChanged(final DropTargetDragEvent e) {
-        if (isDragNotAcceptable(e)) {
-            e.rejectDrag();
+    public void dropActionChanged(final DropTargetDragEvent event) {
+        if (isDragNotAcceptable(event)) {
+            event.rejectDrag();
         } else {
-            e.acceptDrag(e.getDropAction());
+            event.acceptDrag(event.getDropAction());
         }
     }
 

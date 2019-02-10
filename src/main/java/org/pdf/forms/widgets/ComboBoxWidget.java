@@ -42,12 +42,16 @@ import javax.swing.JComponent;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.SplitComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class ComboBoxWidget extends Widget implements IWidget {
 
     private static int nextWidgetNumber = 1;
+
+    private final Logger logger = LoggerFactory.getLogger(ComboBoxWidget.class);
 
     public ComboBoxWidget(
             final int type,
@@ -245,8 +249,8 @@ public class ComboBoxWidget extends Widget implements IWidget {
             if (position != comboBox.getCaptionPosition()) {
                 comboBox.setCaptionPosition(position);
             }
-        } catch (final Exception ex) {
-            ex.printStackTrace();
+        } catch (final Exception e) {
+            logger.error("setLayoutProperties", e);
         }
 
         setSize(getWidth(), getHeight());

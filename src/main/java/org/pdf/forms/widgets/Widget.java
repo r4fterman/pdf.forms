@@ -62,10 +62,14 @@ import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.components.SplitComponent;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.pdf.forms.widgets.utils.WidgetSelection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class Widget {
+
+    private final Logger logger = LoggerFactory.getLogger(CheckBoxWidget.class);
 
     private JComponent component;
     private final JComponent baseComponent;
@@ -92,7 +96,7 @@ public class Widget {
             final JComponent baseComponent,
             final JComponent component,
             final String iconLocation) {
-        this.position = new Point(0, 0);
+        position = new Point(0, 0);
 
         this.type = type;
         this.component = component;
@@ -377,7 +381,7 @@ public class Widget {
             final DocumentBuilder db = dbf.newDocumentBuilder();
             properties = db.newDocument();
         } catch (final ParserConfigurationException e) {
-            e.printStackTrace();
+            logger.error("setupProperties", e);
         }
 
         return XMLUtils.createAndAppendElement(properties, "widget", properties);
@@ -471,7 +475,7 @@ public class Widget {
             alignment = field.getInt(this);
             component.setVerticalAlignment(alignment);
         } catch (final Exception e) {
-            e.printStackTrace();
+            logger.error("setParagraphProperties", e);
         }
 
         setSize(getWidth(), getHeight());
@@ -518,8 +522,8 @@ public class Widget {
     void setBindingProperties(final Element objectPropertiesElement) {
         final Element bindingPropertiesElement = (Element) objectPropertiesElement.getElementsByTagName("binding").item(0);
 
-        this.widgetName = XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Name");
-        this.arrayNumber = Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Array Number"));
+        widgetName = XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Name");
+        arrayNumber = Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Array Number"));
 
         setSize(getWidth(), getHeight());
     }

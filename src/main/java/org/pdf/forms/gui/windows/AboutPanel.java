@@ -44,12 +44,13 @@ import javax.swing.JPanel;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jpedal.utils.BrowserLauncher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AboutPanel extends javax.swing.JPanel {
 
-    /**
-     * Creates new form AboutPanel.
-     */
+    private final Logger logger = LoggerFactory.getLogger(AboutPanel.class);
+
     public AboutPanel() {
         initComponents();
     }
@@ -185,14 +186,12 @@ public class AboutPanel extends javax.swing.JPanel {
             }
 
             @Override
-            public void mouseClicked(final MouseEvent e) {
+            public void mouseClicked(final MouseEvent event) {
                 try {
                     BrowserLauncher.openURL(website);
-                } catch (final IOException e1) {
+                } catch (final IOException e) {
                     JOptionPane.showMessageDialog(null, "Error loading webpage");
-                    //<start-full><start-demo>
-                    e1.printStackTrace();
-                    //<end-demo><end-full>
+                    logger.error("Error loading webpage", e);
                 }
             }
 

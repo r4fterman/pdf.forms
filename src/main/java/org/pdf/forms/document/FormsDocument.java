@@ -40,13 +40,17 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.gui.commands.Version;
 import org.pdf.forms.utils.XMLUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class FormsDocument {
 
+    private final Logger logger = LoggerFactory.getLogger(FormsDocument.class);
     private final List<Page> pages = new ArrayList<>();
+
     private Document documentProperties;
 
     public FormsDocument(final Version version) {
@@ -61,7 +65,7 @@ public class FormsDocument {
             addVersion(rootElement, version); // todo we really need this to be generated each time the file is saved
             addJavaScript(rootElement);
         } catch (final ParserConfigurationException e) {
-            e.printStackTrace();
+            logger.error("Error creating new FormsDocument", e);
         }
     }
 
@@ -74,7 +78,7 @@ public class FormsDocument {
             final Node newRoot = documentProperties.importNode(loadedRoot, true);
             documentProperties.appendChild(newRoot);
         } catch (final ParserConfigurationException e) {
-            e.printStackTrace();
+            logger.error("Error creating new FormsDocument from element", e);
         }
     }
 

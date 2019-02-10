@@ -47,6 +47,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.utils.WidgetSelection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -56,6 +58,8 @@ import org.w3c.dom.Node;
  * implements IWidget (as all widgets must do) it does not extend Widget
  */
 public class GroupWidget implements IWidget {
+
+    private final Logger logger = LoggerFactory.getLogger(GroupWidget.class);
 
     private List<IWidget> widgetsInGroup;
     private final int type = IWidget.GROUP;
@@ -72,7 +76,7 @@ public class GroupWidget implements IWidget {
             final DocumentBuilder db = dbf.newDocumentBuilder();
             properties = db.newDocument();
         } catch (final ParserConfigurationException e) {
-            e.printStackTrace();
+            logger.error("setupProperties", e);
         }
 
         return XMLUtils.createAndAppendElement(properties, "widget", properties);

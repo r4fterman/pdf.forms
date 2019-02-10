@@ -42,27 +42,25 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.ButtonGroup;
 import org.pdf.forms.widgets.IWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class Page {
 
-    private final String pageName;
-
-    private List<IWidget> widgets = new ArrayList<>();
-
+    private final Logger logger = LoggerFactory.getLogger(Page.class);
     private final List<ButtonGroup> radioButtonGroups = new ArrayList<>();
     private final List<ButtonGroup> checkBoxGroups = new ArrayList<>();
 
-    private int height;
+    private final String pageName;
 
+    private List<IWidget> widgets = new ArrayList<>();
+    private int height;
     private int width;
     private String pdfFileLocation;
-
     private int pdfPageNumber;
-
     private Document pageProperties;
-
     private int rotation = 0;
 
     public Page(
@@ -79,8 +77,8 @@ public class Page {
             final String pageName,
             final String pdfFile,
             final int pdfPage) {
-        this.pdfFileLocation = pdfFile;
-        this.pdfPageNumber = pdfPage;
+        pdfFileLocation = pdfFile;
+        pdfPageNumber = pdfPage;
 
         this.pageName = pageName;
     }
@@ -130,7 +128,7 @@ public class Page {
             final Element checkBoxGroupsElement = XMLUtils.createAndAppendElement(pageProperties, "checkboxgroups", rootElement);
             addButtonGroupsToPage(checkBoxGroupsElement, IWidget.CHECK_BOX);
         } catch (final ParserConfigurationException e) {
-            e.printStackTrace();
+            logger.error("getPageProperties", e);
         }
 
         return pageProperties;
@@ -204,8 +202,8 @@ public class Page {
     }
 
     public void setSize(final Dimension size) {
-        this.width = size.width;
-        this.height = size.height;
+        width = size.width;
+        height = size.height;
     }
 
     public void setWidgets(final List<IWidget> widgets) {

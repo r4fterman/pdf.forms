@@ -52,10 +52,14 @@ import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.Rule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.itextpdf.text.PageSize;
 
 public class PagePanel extends javax.swing.JPanel {
+
+    private final Logger logger = LoggerFactory.getLogger(PagePanel.class);
 
     private final Dimension A4 = new Dimension(
             (int) PageSize.A4.getWidth(), (int) PageSize.A4.getHeight());
@@ -142,7 +146,7 @@ public class PagePanel extends javax.swing.JPanel {
         landscapeButton.addActionListener(this::orientationClicked);
 
         final GroupLayout layout = new GroupLayout(this);
-        this.setLayout(layout);
+        setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
@@ -239,7 +243,7 @@ public class PagePanel extends javax.swing.JPanel {
         try {
             height = Double.parseDouble(heightText);
         } catch (final NumberFormatException e) {
-            //e.printStackTrace();
+            logger.error("handleCustomPaper", e);
         }
         heightBox.setText(height + " cm");
 
@@ -252,7 +256,7 @@ public class PagePanel extends javax.swing.JPanel {
         try {
             width = Double.parseDouble(widthText);
         } catch (final NumberFormatException e) {
-            //e.printStackTrace();
+            logger.error("handleCustomPaper", e);
         }
         widthBox.setText(width + " cm");
 

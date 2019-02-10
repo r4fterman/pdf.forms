@@ -51,9 +51,13 @@ import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class ParagraphPropertiesPanel extends JPanel {
+
+    private final Logger logger = LoggerFactory.getLogger(ParagraphPropertiesPanel.class);
 
     private IDesigner designerPanel;
     private Map<IWidget, Element> widgetsAndProperties;
@@ -356,8 +360,8 @@ public class ParagraphPropertiesPanel extends JPanel {
                 final JToggleButton toggleButton = (JToggleButton) field.get(this);
                 toggleButton.setSelected(true);
             }
-        } catch (final Exception ex) {
-            ex.printStackTrace();
+        } catch (final Exception e) {
+            logger.error("Error set vertical align button", e);
         }
     }
 

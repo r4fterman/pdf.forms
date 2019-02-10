@@ -81,6 +81,8 @@ import org.pdf.forms.utils.configuration.MenuConfiguration;
 import org.pdf.forms.utils.configuration.WindowConfiguration;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetArrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vlsolutions.swing.docking.Dockable;
 import com.vlsolutions.swing.docking.DockableState;
@@ -94,6 +96,8 @@ import com.vlsolutions.swing.toolbars.ToolBarContainer;
 import com.vlsolutions.swing.toolbars.ToolBarPanel;
 
 public class VLFrame extends JFrame implements IMainFrame {
+
+    private final Logger logger = LoggerFactory.getLogger(VLFrame.class);
 
     private final IDesigner designer;
 
@@ -585,8 +589,8 @@ public class VLFrame extends JFrame implements IMainFrame {
             out.close();
             savedWorkpace = out.toByteArray();
             loadWorkspaceAction.setEnabled(true);
-        } catch (final IOException ioe) {
-            ioe.printStackTrace();
+        } catch (final IOException e) {
+            logger.error("saveWorkspace", e);
         }
     }
 
@@ -598,9 +602,8 @@ public class VLFrame extends JFrame implements IMainFrame {
             final ByteArrayInputStream in = new ByteArrayInputStream(savedWorkpace);
             desk.readXML(in);
             in.close();
-        } catch (final Exception ex) {
-            // catch all exceptions, including those of the SAXParser
-            ex.printStackTrace();
+        } catch (final Exception e) {
+            logger.error("loadWorkspace", e);
         }
     }
 
