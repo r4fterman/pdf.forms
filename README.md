@@ -7,6 +7,9 @@ Use this form field to let a customer fill out your PDF and print it with the fi
 
 GNU General Public License (GPL)
 
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fr4fterman%2Fpdf.forms.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fr4fterman%2Fpdf.forms?ref=badge_large)
+
 # Run
 
     $>./run.sh
@@ -14,6 +17,7 @@ GNU General Public License (GPL)
 # Build Status
 
 [![Build Status](https://travis-ci.org/r4fterman/pdf.forms.svg?branch=master)](https://travis-ci.org/r4fterman/pdf.forms)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fr4fterman%2Fpdf.forms.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fr4fterman%2Fpdf.forms?ref=badge_shield)
 
 # Security Analyses
 
