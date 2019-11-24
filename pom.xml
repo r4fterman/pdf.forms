@@ -15,13 +15,12 @@
         <library.folder>lib</library.folder>
 
         <maven.version>3.5.4</maven.version>
-        <java.version>10</java.version>
+        <java.version>13</java.version>
 
         <slf4j-release-version>1.7.25</slf4j-release-version>
         <log4j-release-version>1.2.17</log4j-release-version>
 
-        <junit.jupiter.version>5.4.0-M1</junit.jupiter.version>
-        <jacoco.plugin.version>0.8.2</jacoco.plugin.version>
+        <junit.jupiter.version>5.6.0-M1</junit.jupiter.version>
     </properties>
 
     <dependencies>
@@ -46,13 +45,13 @@
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
-            <version>5.5.13</version>
+            <version>5.5.13.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>27.0.1-jre</version>
+            <version>28.1-jre</version>
         </dependency>
 
         <dependency>
@@ -115,7 +114,7 @@
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
-            <version>4.0.2</version>
+            <version>4.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -124,7 +123,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -180,7 +179,7 @@
 
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.2.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -228,7 +227,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-checkstyle-plugin</artifactId>
-                        <version>3.0.0</version>
+                        <version>3.1.0</version>
                         <configuration>
                             <configLocation>checkstyle-configuration.xml</configLocation>
                             <encoding>${project.build.sourceEncoding}</encoding>
@@ -265,7 +264,7 @@
                     <plugin>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs-maven-plugin</artifactId>
-                        <version>3.1.10</version>
+                        <version>3.1.12.2</version>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
@@ -280,7 +279,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>${jacoco.plugin.version}</version>
+                        <version>0.8.5</version>
                         <configuration>
                             <destFile>${jacoco.execution.file}</destFile>
                             <dataFile>${jacoco.execution.file}</dataFile>

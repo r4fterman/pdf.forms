@@ -19,7 +19,7 @@ public interface PdfComponentWriter {
             IWidget widget,
             Rectangle pageSize,
             int currentPage,
-            final PdfWriter writer,
-            final Element rootElement,
-            final GlobalPdfWriter globalPdfWriter) throws IOException, DocumentException;
+            PdfWriter writer,
+            Element rootElement,
+            GlobalPdfWriter globalPdfWriter) throws IOException, DocumentException;
 }

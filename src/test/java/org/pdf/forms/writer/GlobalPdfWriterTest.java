@@ -19,7 +19,7 @@ class GlobalPdfWriterTest extends EasyMockSupport {
     private PdfStamper stamper;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         writer = createMock(PdfWriter.class);
         stamper = createMock(PdfStamper.class);
     }

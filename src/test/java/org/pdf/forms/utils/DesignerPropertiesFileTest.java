@@ -14,11 +14,10 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.support.io.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 
-@ExtendWith(TempDirectory.class)
 class DesignerPropertiesFileTest {
 
     private DesignerPropertiesFile designerPropertiesFile;
@@ -31,7 +30,7 @@ class DesignerPropertiesFileTest {
     }
 
     @Test
-    void getRecentDesDocuments_from_non_existing_properties_file_should_return_list_with_null_entries(@TempDirectory.TempDir final Path configDir) {
+    void getRecentDesDocuments_from_non_existing_properties_file_should_return_list_with_null_entries(@TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
         final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments("recentdesfiles");
@@ -47,6 +46,7 @@ class DesignerPropertiesFileTest {
         assertThat(recentDesFiles[5], is(nullValue()));
     }
 
+    @Disabled(value = "Does not work on headless Travis CI")
     void getRecentDesDocuments_from_existing_properties_file_should_return_list_with_entries() throws Exception {
         final URL url = DesignerPropertiesFileTest.class.getResource("/.properties.xml");
         assertThat(url, is(notNullValue()));
@@ -69,7 +69,7 @@ class DesignerPropertiesFileTest {
     }
 
     @Test
-    void getRecentPdfDocuments_from_non_existing_properties_file_should_return_list_with_null_entries(@TempDirectory.TempDir final Path configDir) {
+    void getRecentPdfDocuments_from_non_existing_properties_file_should_return_list_with_null_entries(@TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
         final String[] recentPdfFiles = designerPropertiesFile.getRecentDocuments("recentpdffiles");
@@ -86,7 +86,7 @@ class DesignerPropertiesFileTest {
     }
 
     @Test
-    void addRecentDocument_to_DES_list_should_be_added_on_top(@TempDirectory.TempDir final Path configDir) {
+    void addRecentDocument_to_DES_list_should_be_added_on_top(@TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
         designerPropertiesFile.addRecentDocument("/usr/local/example1.des", "recentdesfiles");
@@ -106,7 +106,7 @@ class DesignerPropertiesFileTest {
     }
 
     @Test
-    void addRecentDocument_to_PDF_list_should_be_added_on_top(@TempDirectory.TempDir final Path configDir) {
+    void addRecentDocument_to_PDF_list_should_be_added_on_top(@TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
         designerPropertiesFile.addRecentDocument("/usr/local/example1.pdf", "recentpdffiles");
@@ -126,7 +126,7 @@ class DesignerPropertiesFileTest {
     }
 
     @Test
-    void getCustomFonts_from_non_existing_properties_file_should_return_empty_map(@TempDirectory.TempDir final Path configDir) {
+    void getCustomFonts_from_non_existing_properties_file_should_return_empty_map(@TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
         final Map<String, String> customFonts = designerPropertiesFile.getCustomFonts();
@@ -148,7 +148,7 @@ class DesignerPropertiesFileTest {
     }
 
     @Test
-    void addCustomFont_should_store_font_name_and_path(@TempDirectory.TempDir final Path configDir) {
+    void addCustomFont_should_store_font_name_and_path(@TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
         designerPropertiesFile.addCustomFont("Courier", "/path/to/font/courier");
@@ -161,7 +161,7 @@ class DesignerPropertiesFileTest {
     }
 
     @Test
-    void checkAllElementsPresent(@TempDirectory.TempDir final Path configDir) throws Exception {
+    void checkAllElementsPresent(@TempDir final Path configDir) throws Exception {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
         assertThat(designerPropertiesFile.checkAllElementsPresent(), is(true));

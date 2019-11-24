@@ -89,7 +89,7 @@ public class Writer {
         if (pdfPages.isEmpty()) {
             // this is just a plain, hand made document
             final Document document = new Document(getPageSize(pages, 1));
-            try (final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                 final PdfWriter writer = PdfWriter.getInstance(document, baos);
                 document.open();
 
@@ -124,7 +124,7 @@ public class Writer {
             }
         } else {
             // we've got pages imported from other PDF's
-            try (final FileOutputStream fos = new FileOutputStream(fileToWriteTo)) {
+            try (FileOutputStream fos = new FileOutputStream(fileToWriteTo)) {
                 final PdfReader reader = createPdfReader(pages, pdfDocumentLayout);
 
                 final PdfStamper stamper = new PdfStamper(reader, fos);
@@ -165,7 +165,7 @@ public class Writer {
             final PdfDocumentLayout pdfDocumentLayout) throws DocumentException, IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        // TODO: use PdfCopy instead
+        //TODO: use PdfCopy instead
         final PdfCopyFields pdfCopyFields = new PdfCopyFields(baos);
 
         for (int i = 0; i < pages.size(); i++) {

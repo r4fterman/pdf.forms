@@ -181,7 +181,7 @@ public class JavaScriptEditorPanel extends javax.swing.JPanel implements Dockabl
             }
 
             if (widget instanceof FormsDocument) {
-                // TODO: widget is typed
+                //TODO: widget is typed
                 key.setName("Script Editor - Document");
                 final FormsDocument document = (FormsDocument) widget;
                 extractJavaScript(document.getDocument());

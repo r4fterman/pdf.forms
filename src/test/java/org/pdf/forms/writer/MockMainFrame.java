@@ -191,7 +191,7 @@ public class MockMainFrame implements IMainFrame {
 
     @Override
     public WidgetArrays getWidgetArrays() {
-        return null;
+        return new WidgetArrays();
     }
 
     @Override

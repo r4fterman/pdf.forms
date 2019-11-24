@@ -9,14 +9,13 @@ import java.util.Set;
 import javax.swing.JLabel;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.support.io.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.TextWidget;
 import org.pdf.forms.widgets.components.PdfCaption;
 
-@ExtendWith(TempDirectory.class)
 class CustomWidgetsFileTest {
 
     private CustomWidgetsFile customWidgetFile;
@@ -29,20 +28,21 @@ class CustomWidgetsFileTest {
     }
 
     @Test
-    void checkAllElementsPresent_should_return_true_for_new_created_properties_file(@TempDirectory.TempDir final Path configDir) throws Exception {
+    void checkAllElementsPresent_should_return_true_for_new_created_properties_file(@TempDir final Path configDir) throws Exception {
         customWidgetFile = CustomWidgetsFile.getInstance(configDir.toFile());
 
         assertThat(customWidgetFile.checkAllElementsPresent(), is(true));
     }
 
     @Test
-    void isNameTaken_should_always_return_false_on_new_created_properties_file(@TempDirectory.TempDir final Path configDir) {
+    void isNameTaken_should_always_return_false_on_new_created_properties_file(@TempDir final Path configDir) {
         customWidgetFile = CustomWidgetsFile.getInstance(configDir.toFile());
 
         assertThat(customWidgetFile.isNameTaken("foo"), is(false));
     }
 
-    void addCustomWidget_should_add_widget_component(@TempDirectory.TempDir final Path configDir) {
+    @Disabled(value = "Does not work on headless Travis CI")
+    void addCustomWidget_should_add_widget_component(@TempDir final Path configDir) {
         customWidgetFile = CustomWidgetsFile.getInstance(configDir.toFile());
 
         final PdfCaption pdfCaption = new PdfCaption("Text");

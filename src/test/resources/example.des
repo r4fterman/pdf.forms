@@ -1,11 +1,18 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><document>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document>
     <property name="version" value="0.8b05"/>
     <javascript>
         <initialize/>
     </javascript>
-    
-    
-<page><property name="pagetype" value="simplepage"/><property name="pagename" value="(page 1)"/><pagedata><property name="width" value="595"/><property name="height" value="842"/></pagedata><widget>
+
+    <page>
+        <property name="pagetype" value="simplepage"/>
+        <property name="pagename" value="(page 1)"/>
+        <pagedata>
+            <property name="width" value="595"/>
+            <property name="height" value="842"/>
+        </pagedata>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text9"/>
             <properties>
@@ -63,7 +70,8 @@
                     <property name="Text" value="&lt;html&gt;&lt;p align=left&gt;Dieser Bereich wird vom Übungsleiter ausgefüllt!&lt;br&gt;&lt;br&gt;&lt;br&gt;Sportart:"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text1"/>
             <properties>
@@ -121,7 +129,8 @@
                     <property name="Text" value="&lt;html&gt;&lt;p align=left&gt;Aufnahmeantrag"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field8"/>
             <properties>
@@ -217,7 +226,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text4"/>
             <properties>
@@ -275,7 +285,8 @@
                     <property name="Text" value="&lt;html&gt;(Bitte Rückseite beachten)"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text5"/>
             <properties>
@@ -333,7 +344,8 @@
                     <property name="Text" value="&lt;html&gt;Für jede Person (auch Kinder) ist ein gesonderter Aufnahmeantrag auszufüllen."/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text6"/>
             <properties>
@@ -391,7 +403,8 @@
                     <property name="Text" value="&lt;html&gt;Sportverein Berlin Verkehrsbetriebe 49 e.V."/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text8"/>
             <properties>
@@ -449,7 +462,8 @@
                     <property name="Text" value="&lt;html&gt;Wir weisen darauf hin, dass die vorstehendenen Angaben für die Mitgliederverwaltung in einer EDV-Anlage gespeichert werden."/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box1"/>
             <properties>
@@ -529,7 +543,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text3"/>
             <properties>
@@ -587,7 +602,8 @@
                     <property name="Text" value="&lt;html&gt;Geschlecht:"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box2"/>
             <properties>
@@ -667,7 +683,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field1"/>
             <properties>
@@ -763,7 +780,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field2"/>
             <properties>
@@ -859,7 +877,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field3"/>
             <properties>
@@ -955,7 +974,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field4"/>
             <properties>
@@ -1051,7 +1071,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field5"/>
             <properties>
@@ -1147,7 +1168,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field6"/>
             <properties>
@@ -1243,7 +1265,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field7"/>
             <properties>
@@ -1339,7 +1362,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field11"/>
             <properties>
@@ -1435,7 +1459,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text11"/>
             <properties>
@@ -1493,7 +1518,8 @@
                     <property name="Text" value="&lt;html&gt;Mit vorstehendem Antrag erkenne ich für den Fall der Aufnahme die Vereinssatzung und die Ordnungen an. Von den Anmerkungen auf der Rückseite habe ich Kenntnis genommen."/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text12"/>
             <properties>
@@ -1551,7 +1577,8 @@
                     <property name="Text" value="&lt;html&gt;Bei Kindern unter 18 Jahren und anderen (beschränkt) Geschäftsfähigen: Für den Fall der Aufnahme erkenne(n) ich/wir die Vereinssatzung und die Ordnungen an. Ich/Wir überehme(n) die persönliche Haftung für die Beitragsschuld des von mir/uns vertretenden Kindes. Von den Anmerkungen auf der Rückseite habe(n) ich/wir Kenntnis genommen."/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field13"/>
             <properties>
@@ -1647,7 +1674,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field14"/>
             <properties>
@@ -1743,7 +1771,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field19"/>
             <properties>
@@ -1839,7 +1868,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field21"/>
             <properties>
@@ -1935,7 +1965,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field15"/>
             <properties>
@@ -2031,7 +2062,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field16"/>
             <properties>
@@ -2127,7 +2159,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text13"/>
             <properties>
@@ -2185,7 +2218,8 @@
                     <property name="Text" value="&lt;html&gt;Mutter"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field17"/>
             <properties>
@@ -2281,7 +2315,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field18"/>
             <properties>
@@ -2377,7 +2412,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text14"/>
             <properties>
@@ -2435,7 +2471,8 @@
                     <property name="Text" value="&lt;html&gt;Vater"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field9"/>
             <properties>
@@ -2531,7 +2568,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field10"/>
             <properties>
@@ -2627,7 +2665,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="IMAGE"/>
             <property name="name" value="Image2"/>
             <properties>
@@ -2659,7 +2698,8 @@
                     </margins>
                 </layout>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box1"/>
             <properties>
@@ -2739,7 +2779,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box2"/>
             <properties>
@@ -2819,7 +2860,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box3"/>
             <properties>
@@ -2899,7 +2941,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box4"/>
             <properties>
@@ -2979,7 +3022,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box5"/>
             <properties>
@@ -3059,7 +3103,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box6"/>
             <properties>
@@ -3139,7 +3184,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box7"/>
             <properties>
@@ -3219,7 +3265,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box8"/>
             <properties>
@@ -3299,7 +3346,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box9"/>
             <properties>
@@ -3379,7 +3427,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box10"/>
             <properties>
@@ -3459,7 +3508,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box11"/>
             <properties>
@@ -3539,7 +3589,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="CHECK_BOX"/>
             <property name="name" value="Check Box12"/>
             <properties>
@@ -3619,7 +3670,8 @@
                 <mouseUp/>
                 <mouseDown/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text2"/>
             <properties>
@@ -3677,7 +3729,8 @@
                     <property name="Text" value="&lt;html&gt;Gläubiger-Identifikationsnummer: DE18BVB00000794366"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field1"/>
             <properties>
@@ -3773,7 +3826,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text3"/>
             <properties>
@@ -3831,7 +3885,39 @@
                     <property name="Text" value="&lt;html&gt;Hiermit beantrage(n) ich/wir die Aufnahme für mich/Sohn/Tochter/Pflegekind/Mündel in den"/>
                 </caption_properties>
             </properties>
-        </widget><radiobuttongroups><property name="buttongroupname" value="Radio Button Group1"/></radiobuttongroups><checkboxgroups><property name="buttongroupname" value="CheckBox Group1"/><property name="buttongroupname" value="CheckBox Group2"/><property name="buttongroupname" value="CheckBox Group3"/><property name="buttongroupname" value="CheckBox Group16"/><property name="buttongroupname" value="CheckBox Group17"/><property name="buttongroupname" value="CheckBox Group6"/><property name="buttongroupname" value="CheckBox Group7"/><property name="buttongroupname" value="CheckBox Group8"/><property name="buttongroupname" value="CheckBox Group9"/><property name="buttongroupname" value="CheckBox Group10"/><property name="buttongroupname" value="CheckBox Group11"/><property name="buttongroupname" value="CheckBox Group12"/><property name="buttongroupname" value="CheckBox Group13"/><property name="buttongroupname" value="CheckBox Group14"/><property name="buttongroupname" value="CheckBox Group15"/><property name="buttongroupname" value="CheckBox Group16"/><property name="buttongroupname" value="CheckBox Group17"/><property name="buttongroupname" value="CheckBox Group18"/></checkboxgroups></page><page><property name="pagetype" value="simplepage"/><property name="pagename" value="(page 2)"/><pagedata><property name="width" value="595"/><property name="height" value="842"/></pagedata><widget>
+        </widget>
+        <radiobuttongroups>
+            <property name="buttongroupname" value="Radio Button Group1"/>
+        </radiobuttongroups>
+        <checkboxgroups>
+            <property name="buttongroupname" value="CheckBox Group1"/>
+            <property name="buttongroupname" value="CheckBox Group2"/>
+            <property name="buttongroupname" value="CheckBox Group3"/>
+            <property name="buttongroupname" value="CheckBox Group16"/>
+            <property name="buttongroupname" value="CheckBox Group17"/>
+            <property name="buttongroupname" value="CheckBox Group6"/>
+            <property name="buttongroupname" value="CheckBox Group7"/>
+            <property name="buttongroupname" value="CheckBox Group8"/>
+            <property name="buttongroupname" value="CheckBox Group9"/>
+            <property name="buttongroupname" value="CheckBox Group10"/>
+            <property name="buttongroupname" value="CheckBox Group11"/>
+            <property name="buttongroupname" value="CheckBox Group12"/>
+            <property name="buttongroupname" value="CheckBox Group13"/>
+            <property name="buttongroupname" value="CheckBox Group14"/>
+            <property name="buttongroupname" value="CheckBox Group15"/>
+            <property name="buttongroupname" value="CheckBox Group16"/>
+            <property name="buttongroupname" value="CheckBox Group17"/>
+            <property name="buttongroupname" value="CheckBox Group18"/>
+        </checkboxgroups>
+    </page>
+    <page>
+        <property name="pagetype" value="simplepage"/>
+        <property name="pagename" value="(page 2)"/>
+        <pagedata>
+            <property name="width" value="595"/>
+            <property name="height" value="842"/>
+        </pagedata>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text1"/>
             <properties>
@@ -3889,7 +3975,8 @@
                     <property name="Text" value="&lt;html&gt;Anmerkungen zu dem umstehenden Aufnahmeantrag"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text2"/>
             <properties>
@@ -3947,7 +4034,8 @@
                     <property name="Text" value="&lt;html&gt;1. Der vollständig ausgefüllte Aufnahmeantrag ist zu senden an die Geschäftsstelle des Vereins"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text3"/>
             <properties>
@@ -4005,7 +4093,8 @@
                     <property name="Text" value="&lt;html&gt;&#9;SV BVG 49 e.V., Siegfriedstrasse 71, 10635 Berlin"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text4"/>
             <properties>
@@ -4063,7 +4152,8 @@
                     <property name="Text" value="&lt;html&gt;2. Nach Bearbeitung des Aufnahmeantrages erhalten Sie eine schriftliche Eintrittsbestätigung. Die Eintrittsbestätigung legen Sie bitte Ihrem Übungsleiter/Trainer vor."/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text6"/>
             <properties>
@@ -4121,7 +4211,8 @@
                     <property name="Text" value="&lt;html&gt;3. Zur Zeit wird folgender monatlicher Mitgliedsbeitrag in der Abteilung erhoben:"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field1"/>
             <properties>
@@ -4217,7 +4308,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text7"/>
             <properties>
@@ -4275,7 +4367,8 @@
                     <property name="Text" value="&lt;html&gt;EUR"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field2"/>
             <properties>
@@ -4371,7 +4464,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text8"/>
             <properties>
@@ -4429,7 +4523,8 @@
                     <property name="Text" value="&lt;html&gt;EUR"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field3"/>
             <properties>
@@ -4525,7 +4620,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text9"/>
             <properties>
@@ -4583,7 +4679,8 @@
                     <property name="Text" value="&lt;html&gt;EUR"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field4"/>
             <properties>
@@ -4679,7 +4776,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text11"/>
             <properties>
@@ -4737,7 +4835,8 @@
                     <property name="Text" value="&lt;html&gt;EUR"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field5"/>
             <properties>
@@ -4833,7 +4932,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text12"/>
             <properties>
@@ -4891,7 +4991,8 @@
                     <property name="Text" value="&lt;html&gt;EUR"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text13"/>
             <properties>
@@ -4949,7 +5050,8 @@
                     <property name="Text" value="&lt;html&gt;4. Die einmalige Aufnahmegebühr beträgt"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text14"/>
             <properties>
@@ -5007,7 +5109,8 @@
                     <property name="Text" value="&lt;html&gt;13,00 EUR"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text15"/>
             <properties>
@@ -5065,7 +5168,8 @@
                     <property name="Text" value="&lt;html&gt;5. Der Beitrag wird als Jahresbeitrag erhoben und ist ibis zum 28.Februar des Kalenderjahres fällig."/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text17"/>
             <properties>
@@ -5123,7 +5227,8 @@
                     <property name="Text" value="&lt;html&gt;6. Der Austritt eines Mitgliedes muß dem Präsidium gegenüber schrftlich erklärt werden. Es ist eine Kündigungsfrist von 3 Monaten einzuhalten. Bei Beendigung der Mitgliedschaft bleiben die Beitragspflicht bis zum Ende des laufenden Geschäftsjahres sowie sämtliche sonstigen Verpflichtungen gegenüber dem Verein bestehen."/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text18"/>
             <properties>
@@ -5181,7 +5286,8 @@
                     <property name="Text" value="&lt;html&gt;&lt;p align=center&gt;"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field8"/>
             <properties>
@@ -5277,7 +5383,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field9"/>
             <properties>
@@ -5373,7 +5480,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field10"/>
             <properties>
@@ -5469,7 +5577,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field11"/>
             <properties>
@@ -5565,7 +5674,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field13"/>
             <properties>
@@ -5661,7 +5771,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field14"/>
             <properties>
@@ -5757,7 +5868,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text4"/>
             <properties>
@@ -5815,7 +5927,8 @@
                     <property name="Text" value="&lt;html&gt;Erwachsene:"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field2"/>
             <properties>
@@ -5911,7 +6024,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text5"/>
             <properties>
@@ -5969,7 +6083,8 @@
                     <property name="Text" value="&lt;html&gt;EUR"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field3"/>
             <properties>
@@ -6065,7 +6180,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text6"/>
             <properties>
@@ -6123,7 +6239,8 @@
                     <property name="Text" value="&lt;html&gt;EUR"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field4"/>
             <properties>
@@ -6219,7 +6336,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT_FIELD"/>
             <property name="name" value="Text Field5"/>
             <properties>
@@ -6315,7 +6433,8 @@
                 <mouseDown/>
                 <keystroke/>
             </javascript>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text7"/>
             <properties>
@@ -6373,7 +6492,8 @@
                     <property name="Text" value="&lt;html&gt;EUR"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text8"/>
             <properties>
@@ -6431,7 +6551,8 @@
                     <property name="Text" value="&lt;html&gt;EUR"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text9"/>
             <properties>
@@ -6489,7 +6610,8 @@
                     <property name="Text" value="&lt;html&gt;Einzugsermächtigung und Sepa-Lastschriftmandat"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text10"/>
             <properties>
@@ -6547,7 +6669,8 @@
                     <property name="Text" value="&lt;html&gt;&lt;p align=left&gt;Hiermit ermächtige(n) ich/wir den Verein SV Berliner Verkehrsbetriebe 49 e.V. widerruflich, den Vereinsbeitrag sowie etwaige von der Mitgliederversammlung beschlossene Auslagen und Fälligkeiten zu Lasten meines/unseres nachfolgend benannten Kontos durch Lastschrift einzuziehen. Zugleich weise ich an, die vom Verein auf mein Konto gezogenen Lastschriften einzulösen."/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text11"/>
             <properties>
@@ -6605,7 +6728,8 @@
                     <property name="Text" value="&lt;html&gt;&lt;p align=left&gt;Wenn mein/unser Konto die erforderliche Deckung nicht aufweist, besteht seitens des kontoführenden Kreditinstituts keine Verpflichtung zur Einlösung."/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text12"/>
             <properties>
@@ -6663,7 +6787,8 @@
                     <property name="Text" value="&lt;html&gt;(In Druckbuchstaben)"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text13"/>
             <properties>
@@ -6721,7 +6846,8 @@
                     <property name="Text" value="&lt;html&gt;Kinder und Jugendliche:"/>
                 </caption_properties>
             </properties>
-        </widget><widget>
+        </widget>
+        <widget>
             <property name="type" value="TEXT"/>
             <property name="name" value="Text14"/>
             <properties>
@@ -6779,4 +6905,8 @@
                     <property name="Text" value="&lt;html&gt;Azubis/Studenten/Rentner:"/>
                 </caption_properties>
             </properties>
-        </widget><radiobuttongroups/><checkboxgroups/></page></document>
+        </widget>
+        <radiobuttongroups/>
+        <checkboxgroups/>
+    </page>
+</document>

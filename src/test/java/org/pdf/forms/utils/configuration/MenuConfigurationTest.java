@@ -10,17 +10,15 @@ import javax.swing.JMenu;
 
 import org.easymock.EasyMockSupport;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.support.io.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.designer.IDesigner;
 
-@ExtendWith(TempDirectory.class)
 class MenuConfigurationTest extends EasyMockSupport {
 
     @Test
-    void getMenus(@TempDirectory.TempDir final Path configDir) {
+    void getMenus(@TempDir final Path configDir) {
         final CommandListener cmdListener = createMock(CommandListener.class);
         final IDesigner designer = createMock(IDesigner.class);
         final IMainFrame mainFrame = createMock(IMainFrame.class);

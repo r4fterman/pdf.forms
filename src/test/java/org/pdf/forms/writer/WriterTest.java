@@ -55,9 +55,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.easymock.EasyMockSupport;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.support.io.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.IWidget;
@@ -74,7 +74,6 @@ import com.itextpdf.text.pdf.PdfFormField;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.RadioCheckField;
 
-@ExtendWith(TempDirectory.class)
 class WriterTest extends EasyMockSupport {
 
     private static final String DESIGNER_FILE = "/example.des";
@@ -91,7 +90,8 @@ class WriterTest extends EasyMockSupport {
         writer = new Writer(mainFrame);
     }
 
-    void write_should_persist_ui_document(@TempDirectory.TempDir final Path path) throws Exception {
+    @Disabled(value = "Does not work on headless Travis CI")
+    void write_should_persist_ui_document(@TempDir final Path path) throws Exception {
         final IDesigner designer = createMock(IDesigner.class);
         mainFrame.setDesigner(designer);
         designer.close();
@@ -119,7 +119,7 @@ class WriterTest extends EasyMockSupport {
     }
 
     @Test
-    void testWriter(@TempDirectory.TempDir final Path path) throws Exception {
+    void testWriter(@TempDir final Path path) throws Exception {
         final File file = new File(path.toFile(), "output.des");
 
         final Document document = new Document(PageSize.A4, 50, 50, 50, 50);
@@ -178,7 +178,7 @@ class WriterTest extends EasyMockSupport {
     }
 
     private File createTargetFile(
-            @TempDirectory.TempDir final Path path,
+            @TempDir final Path path,
             final File source) throws IOException {
         final File target = new File(path.toFile(), "example.des");
         Files.copy(new FileInputStream(source), target.toPath(), StandardCopyOption.REPLACE_EXISTING);

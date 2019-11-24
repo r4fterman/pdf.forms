@@ -13,11 +13,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.support.io.TempDirectory;
+import org.junit.jupiter.api.io.TempDir;
 import org.w3c.dom.Document;
 
-@ExtendWith(TempDirectory.class)
 class WindowConfigurationTest {
 
     private static final String DEFAULT_WINDOW_CONFIGURATION = ""
@@ -30,7 +28,7 @@ class WindowConfigurationTest {
             + "</window_configuration>";
 
     @Test
-    void isWindowVisible_should_return_true_on_new_created_properties_file_for_known_command(@TempDirectory.TempDir final Path configDir) {
+    void isWindowVisible_should_return_true_on_new_created_properties_file_for_known_command(@TempDir final Path configDir) {
         final WindowConfiguration windowConfiguration = new WindowConfiguration(configDir.toFile());
 
         assertThat(windowConfiguration.isWindowVisible(WindowConfiguration.SCRIPT_EDITOR), is(true));
@@ -40,14 +38,14 @@ class WindowConfigurationTest {
     }
 
     @Test
-    void isWindowVisible_should_return_false_on_new_created_properties_file_for_unknown_command(@TempDirectory.TempDir final Path configDir) {
+    void isWindowVisible_should_return_false_on_new_created_properties_file_for_unknown_command(@TempDir final Path configDir) {
         final WindowConfiguration windowConfiguration = new WindowConfiguration(configDir.toFile());
 
         assertThat(windowConfiguration.isWindowVisible("unknown"), is(false));
     }
 
     @Test
-    void writeDefaultConfiguration(@TempDirectory.TempDir final Path configDir) throws Exception {
+    void writeDefaultConfiguration(@TempDir final Path configDir) throws Exception {
         final WindowConfiguration windowConfiguration = new WindowConfiguration(configDir.toFile());
 
         windowConfiguration.writeDefaultConfiguration();
