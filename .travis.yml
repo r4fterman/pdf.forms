@@ -3,7 +3,7 @@ env:
     - CC_TEST_REPORTER_ID=7f97b09b52df4212c66f57cc09bdc7e3225161c2c6b149012a0b1335616b8831
 
 language: java
-jdk: openjdk10
+jdk: openjdk13
 
 before_install:
   - wget https://archive.apache.org/dist/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.zip
