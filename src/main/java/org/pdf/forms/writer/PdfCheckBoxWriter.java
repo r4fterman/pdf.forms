@@ -116,7 +116,7 @@ public class PdfCheckBoxWriter implements PdfComponentWriter {
         try {
             mapper.awtToPdf(font);
         } catch (final Exception e) {
-            logger.error("Failed converting font from AWT to PDF for " + font.getName() + "!", e);
+            logger.error("Failed converting font from AWT to PDF for {}!", font.getName(), e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());
         }

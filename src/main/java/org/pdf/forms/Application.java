@@ -6,9 +6,7 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.Optional;
-import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import javax.swing.SwingUtilities;
@@ -16,15 +14,20 @@ import javax.swing.UIManager;
 
 import org.pdf.forms.gui.VLFrame;
 import org.pdf.forms.gui.windows.SplashWindow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class Application {
 
     private static final String DEFAULT_VERSION = "0.8b05";
+    private static final String MANIFEST_MF = "META-INF/MANIFEST.MF";
 
     public static void main(final String[] args) {
         final Application application = new Application();
         application.start();
     }
+
+    private final Logger logger = LoggerFactory.getLogger(Application.class);
 
     private Application() {
     }
@@ -42,7 +45,7 @@ public final class Application {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error on application startup", e);
         }
 
         splashWindow.setProgress(1, "Initializing window");
@@ -64,18 +67,19 @@ public final class Application {
 
     private Optional<Manifest> readManifest() {
         try {
-            final Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+            final Enumeration<URL> resources = getClass().getClassLoader().getResources(MANIFEST_MF);
             if (resources.hasMoreElements()) {
                 return Optional.of(new Manifest(resources.nextElement().openStream()));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error reading {}", MANIFEST_MF, e);
         }
         return Optional.empty();
     }
 
     private String getVersion(final Manifest manifest) {
-        final Map<String, Attributes> manifestEntries = manifest.getEntries();
-        return Optional.ofNullable(manifest.getMainAttributes().getValue("Implementation-Version")).orElse(DEFAULT_VERSION);
+        return Optional
+                .ofNullable(manifest.getMainAttributes().getValue("Implementation-Version"))
+                .orElse(DEFAULT_VERSION);
     }
 }

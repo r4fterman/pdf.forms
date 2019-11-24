@@ -54,6 +54,8 @@ import org.pdf.forms.gui.toolbars.NavigationToolbar;
 import org.pdf.forms.gui.toolbars.PreviewNavigationToolbar;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.writer.Writer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 import com.vlsolutions.swing.docking.DockKey;
@@ -66,6 +68,8 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
 
     public static final int DESIGNER = 0;
     public static final int PREVIEW = 1;
+
+    private final Logger logger = LoggerFactory.getLogger(DesignerCompound.class);
 
     private final DockKey key = new DockKey("Designer");
 
@@ -119,7 +123,7 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
 
         addTab("Preview", previewContainer);
 
-        addChangeListener(e -> {
+        addChangeListener(event -> {
             if (getSelectedIndex() == 0) {
                 mainFrame.setDesignerCompoundContent(DesignerCompound.DESIGNER);
             } else if (getSelectedIndex() == 1) {
@@ -131,7 +135,7 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
                     file.deleteOnExit();
 
                     final int noOfPages = mainFrame.getTotalNoOfPages();
-                    final ImmutableMap.Builder<Integer, List<IWidget>> widgets = ImmutableMap.<Integer, List<IWidget>>builder();
+                    final ImmutableMap.Builder<Integer, List<IWidget>> widgets = ImmutableMap.builder();
 
                     final FormsDocument documentProperties = mainFrame.getFormsDocument();
 
@@ -158,8 +162,8 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
 
                     decodePDF.setPageParameters((float) previewScaling, 1);
                     decodePDF.decodePage(1);
-                } catch (final Exception e1) {
-                    e1.printStackTrace();
+                } catch (final Exception e) {
+                    logger.error("Error decoding PDF", e);
                 }
 
                 this.currentPdfPage = 1;
@@ -209,11 +213,10 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
                 previewToolBar.setCurrentPage(page);
             }
         } catch (final Exception e) {
-            e.printStackTrace();
+            logger.error("Error displaying preview page", e);
         }
 
         updateUI();
-
     }
 
     @Override
@@ -251,8 +254,8 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
 
             decodePDF.setPageParameters((float) previewScaling, currentPdfPage);
             decodePDF.decodePage(currentPdfPage);
-        } catch (final Exception e1) {
-            e1.printStackTrace();
+        } catch (final Exception e) {
+            logger.error("Error during preview zoom", e);
         }
     }
 

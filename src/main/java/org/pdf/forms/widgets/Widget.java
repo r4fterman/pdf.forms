@@ -62,30 +62,33 @@ import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.components.SplitComponent;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.pdf.forms.widgets.utils.WidgetSelection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class Widget {
 
-    private JComponent component;
+    private final Logger logger = LoggerFactory.getLogger(Widget.class);
+
     private final JComponent baseComponent;
+    private final Point position;
+    private final int type;
+    private final Icon icon;
 
+    private JComponent component;
     private Document properties;
-
     private boolean isComponentSplit;
     private boolean allowEditCaptionAndValue;
     private boolean allowEditOfCaptionOnClick;
     private String widgetName;
     private int arrayNumber;
-
-    private final Point position;
-    private final int type;
-    private int lastX, lastY;
+    private int lastX;
+    private int lastY;
     private double resizeHeightRatio;
     private double resizeWidthRatio;
     private double resizeFromTopRatio;
     private double resizeWidthFromLeftRatio;
-    private final Icon icon;
 
     public Widget(
             final int type,
@@ -377,7 +380,7 @@ public class Widget {
             final DocumentBuilder db = dbf.newDocumentBuilder();
             properties = db.newDocument();
         } catch (final ParserConfigurationException e) {
-            e.printStackTrace();
+            logger.error("Error setting up properties", e);
         }
 
         return XMLUtils.createAndAppendElement(properties, "widget", properties);
@@ -471,7 +474,7 @@ public class Widget {
             alignment = field.getInt(this);
             component.setVerticalAlignment(alignment);
         } catch (final Exception e) {
-            e.printStackTrace();
+            logger.error("Error setting paragraph properties", e);
         }
 
         setSize(getWidth(), getHeight());

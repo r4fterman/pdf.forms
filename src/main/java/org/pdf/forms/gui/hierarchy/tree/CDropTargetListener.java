@@ -65,9 +65,13 @@ import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.ButtonGroup;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.RadioButtonWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // DropTargetListener interface object...
 class CDropTargetListener implements DropTargetListener {
+
+    private final Logger logger = LoggerFactory.getLogger(CDropTargetListener.class);
 
     // Fields...
     private TreePath pathLast = null;
@@ -251,24 +255,24 @@ class CDropTargetListener implements DropTargetListener {
     }
 
     @Override
-    public void drop(final DropTargetDropEvent e) {
+    public void drop(final DropTargetDropEvent event) {
         // Prevent hover timer from doing an unwanted expandPath or collapsePath
         timerHover.stop();
 
-        if (!isDropAcceptable(e)) {
-            e.rejectDrop();
+        if (!isDropAcceptable(event)) {
+            event.rejectDrop();
             return;
         }
 
-        e.acceptDrop(e.getDropAction());
+        event.acceptDrop(event.getDropAction());
 
-        final Transferable transferable = e.getTransferable();
+        final Transferable transferable = event.getTransferable();
 
         final DataFlavor[] flavors = transferable.getTransferDataFlavors();
         for (final DataFlavor flavor : flavors) {
             if (flavor.isMimeTypeEqual(DataFlavor.javaJVMLocalObjectMimeType)) {
                 try {
-                    final Point pt = e.getLocation();
+                    final Point pt = event.getLocation();
                     final TreePath pathTarget = cTree.getClosestPathForLocation(pt.x, pt.y);
                     final TreePath pathSource = (TreePath) transferable.getTransferData(flavor);
 
@@ -423,15 +427,15 @@ class CDropTargetListener implements DropTargetListener {
                     designer.repaint();
 
                     break; // No need to check remaining flavors
-                } catch (final UnsupportedFlavorException | IOException ex) {
-                    ex.printStackTrace();
-                    e.dropComplete(false);
+                } catch (final UnsupportedFlavorException | IOException e) {
+                    logger.error("Error during drag and drop", e);
+                    event.dropComplete(false);
                     return;
                 }
             }
         }
 
-        e.dropComplete(true);
+        event.dropComplete(true);
     }
 
     private List<IWidget> getWidgetsList(
@@ -477,7 +481,7 @@ class CDropTargetListener implements DropTargetListener {
         items.add(theNode);
 
         // recursion
-        for (final Enumeration theChildren = theNode.children(); theChildren.hasMoreElements();) {
+        for (final Enumeration theChildren = theNode.children(); theChildren.hasMoreElements(); ) {
             getFlattenedTreeNodes((TreeNode) theChildren.nextElement(), items);
         }
     }

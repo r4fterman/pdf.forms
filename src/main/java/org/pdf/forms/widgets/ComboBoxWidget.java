@@ -42,12 +42,16 @@ import javax.swing.JComponent;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.SplitComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class ComboBoxWidget extends Widget implements IWidget {
 
     private static int nextWidgetNumber = 1;
+
+    private final Logger logger = LoggerFactory.getLogger(CheckBoxWidget.class);
 
     public ComboBoxWidget(
             final int type,
@@ -226,7 +230,6 @@ public class ComboBoxWidget extends Widget implements IWidget {
 
     @Override
     public void setLayoutProperties(final Element layoutProperties) {
-
         final SplitComponent comboBox = (SplitComponent) getBaseComponent();
 
         /* set the size and position of the TextField*/
@@ -245,8 +248,8 @@ public class ComboBoxWidget extends Widget implements IWidget {
             if (position != comboBox.getCaptionPosition()) {
                 comboBox.setCaptionPosition(position);
             }
-        } catch (final Exception ex) {
-            ex.printStackTrace();
+        } catch (final Exception e) {
+            logger.error("Error setting layout properties", e);
         }
 
         setSize(getWidth(), getHeight());
@@ -256,7 +259,6 @@ public class ComboBoxWidget extends Widget implements IWidget {
     public void setFontProperties(
             final Element fontProperties,
             final int currentlyEditing) {
-
         final SplitComponent comboBox = (SplitComponent) getBaseComponent();
 
         final Element captionProperties = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
@@ -268,7 +270,6 @@ public class ComboBoxWidget extends Widget implements IWidget {
 
     @Override
     public void setObjectProperties(final Element objectProperties) {
-
         final JComboBox comboBox = (JComboBox) getValueComponent();
 
         /* add items to combo box list */

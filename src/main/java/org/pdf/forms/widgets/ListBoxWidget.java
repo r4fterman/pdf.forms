@@ -41,12 +41,16 @@ import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.PdfList;
 import org.pdf.forms.widgets.components.SplitComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class ListBoxWidget extends Widget implements IWidget {
 
     private static int nextWidgetNumber = 1;
+
+    private final Logger logger = LoggerFactory.getLogger(ListBoxWidget.class);
 
     public ListBoxWidget(
             final int type,
@@ -223,7 +227,6 @@ public class ListBoxWidget extends Widget implements IWidget {
 
     @Override
     public void setLayoutProperties(final Element layoutProperties) {
-
         final SplitComponent listBox = (SplitComponent) getBaseComponent();
 
         /* set the size and position of the TextField*/
@@ -242,8 +245,8 @@ public class ListBoxWidget extends Widget implements IWidget {
             if (position != listBox.getCaptionPosition()) {
                 listBox.setCaptionPosition(position);
             }
-        } catch (final Exception ex) {
-            ex.printStackTrace();
+        } catch (final Exception e) {
+            logger.error("Error setting layout properties", e);
         }
 
         setSize(getWidth(), getHeight());

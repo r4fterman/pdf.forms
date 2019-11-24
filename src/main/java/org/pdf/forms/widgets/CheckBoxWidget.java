@@ -43,12 +43,16 @@ import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.CheckBoxIcon;
 import org.pdf.forms.widgets.components.PdfCheckBox;
 import org.pdf.forms.widgets.components.SplitComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class CheckBoxWidget extends Widget implements IWidget {
 
     private static int nextWidgetNumber = 1;
+
+    private final Logger logger = LoggerFactory.getLogger(CheckBoxWidget.class);
 
     public CheckBoxWidget(
             final int type,
@@ -230,7 +234,7 @@ public class CheckBoxWidget extends Widget implements IWidget {
                 radioButton.setCaptionPosition(position);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("Error setting layout properties", ex);
         }
 
         setSize(getWidth(), getHeight());

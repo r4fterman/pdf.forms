@@ -52,6 +52,7 @@ import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.Rule;
+import org.pdf.forms.widgets.IWidget;
 
 import com.itextpdf.text.PageSize;
 
@@ -239,7 +240,7 @@ public class PagePanel extends javax.swing.JPanel {
         try {
             height = Double.parseDouble(heightText);
         } catch (final NumberFormatException e) {
-            //e.printStackTrace();
+            // do nothing
         }
         heightBox.setText(height + " cm");
 
@@ -252,7 +253,7 @@ public class PagePanel extends javax.swing.JPanel {
         try {
             width = Double.parseDouble(widthText);
         } catch (final NumberFormatException e) {
-            //e.printStackTrace();
+            // do nothing
         }
         widthBox.setText(width + " cm");
 
@@ -262,10 +263,10 @@ public class PagePanel extends javax.swing.JPanel {
     }
 
     private void orientationClicked(final ActionEvent evt) {
-        // TODO add your handling code here:
+        // do nothing
     }
 
-    public void setProperties(final Set widgets) {
+    public void setProperties(final Set<IWidget> widgets) {
         page = (Page) widgets.iterator().next();
 
         final Dimension size = page.getSize();
@@ -288,7 +289,6 @@ public class PagePanel extends javax.swing.JPanel {
         //      portraitButton.setSelected(true);
         //     else
         //      landscapeButton.setSelected(true);
-
     }
 
     private void setItemQuietly(

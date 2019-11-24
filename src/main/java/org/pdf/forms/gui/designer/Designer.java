@@ -61,49 +61,38 @@ import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetSelection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class Designer extends PdfDecoder implements IDesigner {
 
-    private List<IWidget> widgets;
-
-    private Set<IWidget> selectedWidgets = new HashSet<>();
+    private final Logger logger = LoggerFactory.getLogger(Designer.class);
 
     private final WidgetSelection widgetSelection;
-
-    private int resizeType = DesignerMouseMotionListener.DEFAULT_CURSOR;
-
-    private boolean isResizing;
-
-    private int pageWidth, pageHeight;
-
-    private final int inset;
-
-    private int widgetToAdd = IWidget.NONE;
-
     private final IMainFrame mainFrame;
-
     private final DesignerSelectionBox selectionBox;
-
     private final Rule horizontalRuler;
     private final Rule verticalRuler;
-
-    private Point dragBoxMouseLocation = null;
-
-    private boolean currentlyDraging;
-
-    private boolean isResizingSplitComponent;
-
     private final Point mouseLocation = new Point();
-
-    private String currentlyOpenPDF;
-
     private final CaptionChanger captionChanger = new CaptionChanger();
 
-    private int drawingState;
+    private List<IWidget> widgets;
+    private Set<IWidget> selectedWidgets = new HashSet<>();
+    private int resizeType = DesignerMouseMotionListener.DEFAULT_CURSOR;
+    private int widgetToAdd = IWidget.NONE;
+    private Point dragBoxMouseLocation = null;
 
+    private boolean isResizing;
+    private int pageWidth;
+    private int pageHeight;
+    private final int inset;
+    private boolean currentlyDragging;
+    private boolean isResizingSplitComponent;
+    private int drawingState;
     private Page currentPage;
+    private String currentlyOpenPDF;
 
     public Designer(
             final int inset,
@@ -111,7 +100,6 @@ public class Designer extends PdfDecoder implements IDesigner {
             final Rule verticalRuler,
             final IMainFrame mainFrame,
             final String version) {
-
         super();
 
         setBackground(BACKGROUND_COLOR);
@@ -228,7 +216,7 @@ public class Designer extends PdfDecoder implements IDesigner {
              * if we are dragging the widget, or resizing it, we need to display the
              * required tooltip which displays the components size/coordinates details
              */
-            if (currentlyDraging) {
+            if (currentlyDragging) {
                 displayTooltip(g2, boxSize, false);
             } else if (isResizing) {
                 displayTooltip(g2, boxSize, true);
@@ -337,9 +325,6 @@ public class Designer extends PdfDecoder implements IDesigner {
         updateUI();
     }
 
-    public void setScale(final float scale) {
-    }
-
     @Override
     public Dimension getPreferredSize() {
         if (drawingState == IDesigner.PDFPAGE) {
@@ -351,7 +336,6 @@ public class Designer extends PdfDecoder implements IDesigner {
 
     @Override
     public void displayPage(final Page page) {
-
         this.currentPage = page;
 
         widgets = page.getWidgets();
@@ -406,7 +390,7 @@ public class Designer extends PdfDecoder implements IDesigner {
                 //                    page.setWidgetsAddedToDesigner(true);
                 //                }
             } catch (final Exception e) {
-                e.printStackTrace();
+                logger.error("Error displaying page", e);
             }
         }
 
@@ -436,7 +420,6 @@ public class Designer extends PdfDecoder implements IDesigner {
     @Override
     public void addWidget(final IWidget widget) {
         mainFrame.addWidgetToHierarchy(widget);
-
         mainFrame.addWidgetToPage(widget);
 
         final Set<IWidget> set = new HashSet<>();
@@ -472,7 +455,7 @@ public class Designer extends PdfDecoder implements IDesigner {
             final IWidget widgetToRemove,
             final List<IWidget> widgets) {
 
-        for (final Iterator<IWidget> it = widgets.iterator(); it.hasNext();) {
+        for (final Iterator<IWidget> it = widgets.iterator(); it.hasNext(); ) {
             final IWidget w = it.next();
 
             if (w.getType() == IWidget.GROUP) {
@@ -573,7 +556,7 @@ public class Designer extends PdfDecoder implements IDesigner {
 
     @Override
     public void setCurrentlyDraging(final boolean currentlyDraging) {
-        this.currentlyDraging = currentlyDraging;
+        this.currentlyDragging = currentlyDraging;
     }
 
     @Override

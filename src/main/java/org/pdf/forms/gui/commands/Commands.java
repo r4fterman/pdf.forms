@@ -83,6 +83,8 @@ import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.pdf.forms.widgets.utils.WidgetParser;
 import org.pdf.forms.writer.Writer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -130,6 +132,8 @@ public class Commands {
     public static final int ZOOM_IN = 2759635;
     public static final int ZOOM = 608001297;
     public static final int ZOOM_OUT = 1668177090;
+
+    private final Logger logger = LoggerFactory.getLogger(Commands.class);
 
     private final IMainFrame mainFrame;
     private final String version;
@@ -259,11 +263,9 @@ public class Commands {
     private void visitWebsite() {
         try {
             BrowserLauncher.openURL("http://pdfformsdesigne.sourceforge.net");
-        } catch (final IOException e1) {
+        } catch (final IOException e) {
             JOptionPane.showMessageDialog(null, "Error loading webpage");
-            //<start-full><start-demo>
-            e1.printStackTrace();
-            //<end-demo><end-full>
+            logger.error("Error loading web page browser", e);
         }
 
         //      JMenuItem about = new JMenuItem("About");
@@ -645,9 +647,8 @@ public class Commands {
             //initialize StreamResult with File object to save to file
             transformer.transform(new DOMSource(documentProperties), new StreamResult(fileName));
         } catch (final TransformerException e) {
-            e.printStackTrace();
+            logger.error("Error writing xml to file {}", fileName, e);
         }
-
     }
 
     private void newPDF(
@@ -753,9 +754,8 @@ public class Commands {
 
                 newPage.setWidgets(widgets);
             }
-
         } catch (final Exception e) {
-            e.printStackTrace();
+            logger.error("Error opening designer file {}", designerFileToOpen, e);
         }
 
         mainFrame.setCurrentPage(1);
@@ -941,7 +941,7 @@ public class Commands {
             updateRecentDocuments(properties.getRecentDocuments("recentpdffiles"), "recentpdffiles");
 
         } catch (final PdfException e) {
-            e.printStackTrace();
+            logger.error("Error importing PDF file {}", pdfPath, e);
         }
     }
 
@@ -1006,8 +1006,8 @@ public class Commands {
 
                 widgets.add(widget);
 
-            } catch (final Exception ex) {
-                ex.printStackTrace();
+            } catch (final Exception e) {
+                logger.error("Error getting widgets from XML element", e);
             }
         }
         return widgets;
@@ -1030,7 +1030,7 @@ public class Commands {
 
             decoder.decodePage(pdfPageNumber);
         } catch (final Exception e) {
-            e.printStackTrace();
+            logger.error("Error decoding PDF page {} of file {}", pdfPageNumber, pdfPath, e);
         }
 
         final PdfPageData pdfPageData = pdfDecoder.getPdfPageData();

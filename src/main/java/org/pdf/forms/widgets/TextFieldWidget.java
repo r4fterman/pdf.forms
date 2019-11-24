@@ -41,12 +41,16 @@ import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.IPdfComponent;
 import org.pdf.forms.widgets.components.SplitComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class TextFieldWidget extends Widget implements IWidget {
 
     private static int nextWidgetNumber = 1;
+
+    private final Logger logger = LoggerFactory.getLogger(TextFieldWidget.class);
 
     public TextFieldWidget(
             final int type,
@@ -270,7 +274,7 @@ public class TextFieldWidget extends Widget implements IWidget {
                 textField.setCaptionPosition(position);
             }
         } catch (final Exception e) {
-            e.printStackTrace();
+            logger.error("Error setting layout properties", e);
         }
 
         setSize(getWidth(), getHeight());

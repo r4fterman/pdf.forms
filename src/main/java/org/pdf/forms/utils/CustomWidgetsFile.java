@@ -41,6 +41,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.widgets.IWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -52,6 +54,8 @@ import org.w3c.dom.NodeList;
 public final class CustomWidgetsFile extends PropertiesFile {
 
     private static CustomWidgetsFile instance;
+
+    private final Logger logger = LoggerFactory.getLogger(CustomWidgetsFile.class);
 
     private CustomWidgetsFile(final File customWidgetFile) {
         super(customWidgetFile);
@@ -120,7 +124,7 @@ public final class CustomWidgetsFile extends PropertiesFile {
         try {
             writeDoc();
         } catch (final Exception e) {
-            e.printStackTrace();
+            logger.error("Error writing custom widget file", e);
         }
     }
 

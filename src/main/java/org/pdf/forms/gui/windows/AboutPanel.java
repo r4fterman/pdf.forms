@@ -44,8 +44,12 @@ import javax.swing.JPanel;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jpedal.utils.BrowserLauncher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AboutPanel extends javax.swing.JPanel {
+
+    private final Logger logger = LoggerFactory.getLogger(AboutPanel.class);
 
     /**
      * Creates new form AboutPanel.
@@ -173,35 +177,35 @@ public class AboutPanel extends javax.swing.JPanel {
 
         url.addMouseListener(new MouseListener() {
             @Override
-            public void mouseEntered(final MouseEvent e) {
+            public void mouseEntered(final MouseEvent event) {
                 details.setCursor(new Cursor(Cursor.HAND_CURSOR));
                 url.setText("<html><center><a href=" + website + ">" + website + "</a></center>");
             }
 
             @Override
-            public void mouseExited(final MouseEvent e) {
+            public void mouseExited(final MouseEvent event) {
                 details.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 url.setText("<html><center>" + website);
             }
 
             @Override
-            public void mouseClicked(final MouseEvent e) {
+            public void mouseClicked(final MouseEvent event) {
                 try {
                     BrowserLauncher.openURL(website);
-                } catch (final IOException e1) {
+                } catch (final IOException e) {
                     JOptionPane.showMessageDialog(null, "Error loading webpage");
                     //<start-full><start-demo>
-                    e1.printStackTrace();
+                    logger.error("Error opening wepbage in browser", e);
                     //<end-demo><end-full>
                 }
             }
 
             @Override
-            public void mousePressed(final MouseEvent e) {
+            public void mousePressed(final MouseEvent event) {
             }
 
             @Override
-            public void mouseReleased(final MouseEvent e) {
+            public void mouseReleased(final MouseEvent event) {
             }
         });
         return url;

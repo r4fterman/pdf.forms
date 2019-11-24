@@ -35,7 +35,7 @@ public abstract class ConfigurationFile {
                 try {
                     doc = db.parse(configFile);
                 } catch (final Exception e) {
-                    logger.error("Error parsing config file " + configFile.getAbsolutePath(), e);
+                    logger.error("Error parsing config file {}", configFile.getAbsolutePath(), e);
                     doc = db.newDocument();
                     needNewFile = true;
                 }
@@ -53,7 +53,7 @@ public abstract class ConfigurationFile {
                 writeDoc();
             }
         } catch (final Exception e) {
-            logger.error("Error generating menu configuration file " + configFile.getAbsolutePath(), e);
+            logger.error("Error generating menu configuration file {}", configFile.getAbsolutePath(), e);
         }
     }
 

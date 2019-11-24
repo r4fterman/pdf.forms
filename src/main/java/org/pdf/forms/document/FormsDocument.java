@@ -39,13 +39,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.utils.XMLUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class FormsDocument {
 
+    private final Logger logger = LoggerFactory.getLogger(FormsDocument.class);
     private final List<Page> pages = new ArrayList<>();
+
     private Document documentProperties;
 
     public FormsDocument(final String version) {
@@ -57,10 +61,11 @@ public class FormsDocument {
             final Element rootElement = documentProperties.createElement("document");
             documentProperties.appendChild(rootElement);
 
-            addVersion(rootElement, version); // todo we really need this to be generated each time the file is saved
+            //TODO: we really need this to be generated each time the file is saved
+            addVersion(rootElement, version);
             addJavaScript(rootElement);
         } catch (final ParserConfigurationException e) {
-            e.printStackTrace();
+            logger.error("Error building forms document", e);
         }
     }
 
@@ -73,7 +78,7 @@ public class FormsDocument {
             final Node newRoot = documentProperties.importNode(loadedRoot, true);
             documentProperties.appendChild(newRoot);
         } catch (final ParserConfigurationException e) {
-            e.printStackTrace();
+            logger.error("Error building forms document", e);
         }
     }
 
@@ -103,7 +108,7 @@ public class FormsDocument {
         pages.remove(index - 1);
     }
 
-    public List getPages() {
+    public List<Page> getPages() {
         return pages;
     }
 
@@ -115,7 +120,7 @@ public class FormsDocument {
         return pages.size();
     }
 
-    //todo try removing this
+    //TODO: try removing this
     public Document getDocument() {
         return documentProperties;
     }

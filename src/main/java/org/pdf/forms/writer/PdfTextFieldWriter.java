@@ -126,7 +126,7 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
         try {
             mapper.awtToPdf(font);
         } catch (final Exception e) {
-            logger.error("Failed converting font from AWT to PDF for " + font.getName() + "!", e);
+            logger.error("Failed converting font from AWT to PDF for {}!", font.getName(), e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());
         }
@@ -207,7 +207,7 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
         try {
             baseFont = BaseFont.createFont(fontPath, "Cp1250", BaseFont.EMBEDDED);
         } catch (final DocumentException e) {
-
+            logger.error("Error embedding font. So use Helvetica instead.", e);
             /*
              * A document exception has been thrown meaning that the font cannot be embedded
              * due to licensing restrictions so substitute with Helvetica

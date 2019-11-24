@@ -128,7 +128,7 @@ public class PdfButtonWriter implements PdfComponentWriter {
         try {
             return BaseFont.createFont(fontPath, BaseFont.CP1250, BaseFont.EMBEDDED);
         } catch (final DocumentException e) {
-            logger.error("Failed creating font from path " + fontPath + "!", e);
+            logger.error("Failed creating font from path {}!", fontPath, e);
 
             /*
              * A document exception has been thrown meaning that the font cannot be embedded

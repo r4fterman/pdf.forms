@@ -133,7 +133,7 @@ public final class DesignerPropertiesFile extends PropertiesFile {
             }
             return customFonts;
         } catch (final Exception e) {
-            logger.error("Exception " + e + " getting custom fonts");
+            logger.error("Error getting custom fonts", e);
             return Collections.emptyMap();
         }
 

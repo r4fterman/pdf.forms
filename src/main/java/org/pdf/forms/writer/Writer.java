@@ -118,7 +118,7 @@ public class Writer {
 
                 documentJavaScript.ifPresent(writer::addJavaScript);
             } catch (final IOException | DocumentException e) {
-                logger.error("Writing failed!", e);
+                logger.error("Writing to file {} failed!", fileToWriteTo, e);
             } finally {
                 document.close();
             }
@@ -155,7 +155,7 @@ public class Writer {
 
                 stamper.close();
             } catch (final IOException | DocumentException e) {
-                logger.error("Writing failed!", e);
+                logger.error("Writing to file {} failed!", fileToWriteTo, e);
             }
         }
     }
@@ -528,6 +528,7 @@ public class Writer {
         try {
             mapper.awtToPdf(font);
         } catch (final Exception e) {
+            logger.error("Error writing out caption", e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());
         }

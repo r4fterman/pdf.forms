@@ -48,12 +48,17 @@ import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public class WidgetPropertiesToolBar extends VLToolBar {
+
+    private final Logger logger = LoggerFactory.getLogger(WidgetPropertiesToolBar.class);
+
     private final ButtonGroup alignmentGroup;
     private final JComboBox<String> fontBox;
     private final JComboBox<String> fontSize;
@@ -374,8 +379,8 @@ public class WidgetPropertiesToolBar extends VLToolBar {
                 final JToggleButton toggleButton = (JToggleButton) field.get(this);
                 toggleButton.setSelected(true);
             }
-        } catch (final Exception ex) {
-            ex.printStackTrace();
+        } catch (final Exception e) {
+            logger.error("Error setting paragraph properties", e);
         }
     }
 

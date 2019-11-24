@@ -40,12 +40,16 @@ import javax.swing.JRadioButton;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.SplitComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class RadioButtonWidget extends Widget implements IWidget {
 
     private static int nextWidgetNumber = 1;
+
+    private final Logger logger = LoggerFactory.getLogger(RadioButtonWidget.class);
 
     public RadioButtonWidget(
             final int type,
@@ -226,7 +230,7 @@ public class RadioButtonWidget extends Widget implements IWidget {
                 radioButton.setCaptionPosition(position);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error setting layout properties", e);
         }
 
         setSize(getWidth(), getHeight());

@@ -107,9 +107,6 @@ public final class FontHandler {
         }
     }
 
-    /**
-     * Any method that relies on it what happened.
-     */
     String registerFont(final File file) {
         // TODO adapt this method to handle a duff file, behave nicely, and tell
         try {
@@ -121,14 +118,13 @@ public final class FontHandler {
 
             return font.getFontName();
         } catch (final FontFormatException | IOException e) {
-            logger.error("Error reading font in FontHandler: " + file.getAbsolutePath(), e);
+            logger.warn("Unable reading font in FontHandler {}", file.getAbsolutePath(), e);
         }
 
         return null;
     }
 
     public static FontHandler getInstance() {
-        // it's ok, we can call this constructor
         if (instance == null) {
             instance = new FontHandler();
         }
@@ -161,9 +157,8 @@ public final class FontHandler {
     }
 
     public Font getFontFromName(final String fontName) {
-        return FONT_FILE_MAP.entrySet().stream()
-                .filter(entry -> entry.getKey().getName().equals(fontName))
-                .map(Map.Entry::getKey)
+        return FONT_FILE_MAP.keySet().stream()
+                .filter(font -> font.getName().equals(fontName))
                 .findFirst()
                 .orElseGet(this::getDefaultFont);
     }

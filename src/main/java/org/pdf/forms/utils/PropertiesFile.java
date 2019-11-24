@@ -76,7 +76,7 @@ public abstract class PropertiesFile {
                 writeDoc();
             }
         } catch (final DOMException | ParserConfigurationException | TransformerException e) {
-            logger.error("Error generating properties file " + configFile.getAbsolutePath(), e);
+            logger.error("Error generating properties file {}", configFile.getAbsolutePath(), e);
         }
     }
 
@@ -87,7 +87,7 @@ public abstract class PropertiesFile {
             try {
                 return documentBuilder.parse(configFile);
             } catch (final SAXException | IOException e) {
-                logger.error("Error parsing properties file " + configFile.getAbsolutePath(), e);
+                logger.error("Error parsing properties file {}", configFile.getAbsolutePath(), e);
             }
         }
         return documentBuilder.newDocument();

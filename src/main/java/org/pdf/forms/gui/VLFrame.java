@@ -79,6 +79,8 @@ import org.pdf.forms.utils.configuration.MenuConfiguration;
 import org.pdf.forms.utils.configuration.WindowConfiguration;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetArrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vlsolutions.swing.docking.Dockable;
 import com.vlsolutions.swing.docking.DockableState;
@@ -93,18 +95,14 @@ import com.vlsolutions.swing.toolbars.ToolBarPanel;
 
 public class VLFrame extends JFrame implements IMainFrame {
 
+    private final Logger logger = LoggerFactory.getLogger(VLFrame.class);
+
     private final IDesigner designer;
-
-    private FormsDocument formsDocument;
-
     private final JavaScriptEditorPanel javaScriptEditor = new JavaScriptEditorPanel();
-
     private final LibraryPanel libraryPanel;
     private final HierarchyPanel hierarchyPanel;
-
     private final PropertiesCompound propertiesCompound;
     private final DesignerCompound designerCompound;
-
     private final ParagraphPropertiesTab paragraphPropertiesTab;
     private final BorderPropertiesTab borderPropertiesTab;
     private final LayoutPropertiesTab layoutPropertiesTab;
@@ -112,26 +110,24 @@ public class VLFrame extends JFrame implements IMainFrame {
     private final FontPropertiesTab fontPropertiesTab;
 
     private final Map<String, Dockable> dockableNames = new HashMap<>();
-
-    private int currentPage = 0;
-    private String currentDesignerFileName = "Untitled";
     private final Commands commands;
-
     private final DocumentToolBar documentToolBar;
     private final WidgetPropertiesToolBar propertiesToolBar;
     private final WidgetAlignmentAndOrderToolbar widgetAlignmentAndOrderToolbar;
-
     private final WidgetArrays widgetArrays = new WidgetArrays();
-
     private final IMainFrame mainFrame = this;
-
     private final MenuConfiguration menuConfiguration;
     private final WindowConfiguration windowConfiguration;
 
     // the desktop (which will contain dockables)
     private final DockingDesktop desk = new DockingDesktop();
     // byte array used to save a workspace (custom layout of dockables)
-    private byte[] savedWorkpace;
+    private byte[] savedWorkspace;
+
+    private FormsDocument formsDocument;
+
+    private int currentPage = 0;
+    private String currentDesignerFileName = "Untitled";
 
     // action used to save the current workspace
     private final Action saveWorkspaceAction = new AbstractAction("Save Workspace") {
@@ -285,7 +281,7 @@ public class VLFrame extends JFrame implements IMainFrame {
 
             designer.displayPage(formsDocument.getPage(currentPage));
 
-            final Set widgets = designer.getSelectedWidgets();
+            final Set<IWidget> widgets = designer.getSelectedWidgets();
             setPropertiesCompound(widgets);
             setPropertiesToolBar(widgets);
 
@@ -581,10 +577,10 @@ public class VLFrame extends JFrame implements IMainFrame {
             final ByteArrayOutputStream out = new ByteArrayOutputStream();
             desk.writeXML(out);
             out.close();
-            savedWorkpace = out.toByteArray();
+            savedWorkspace = out.toByteArray();
             loadWorkspaceAction.setEnabled(true);
-        } catch (final IOException ioe) {
-            ioe.printStackTrace();
+        } catch (final IOException e) {
+            logger.error("Error saving workspace", e);
         }
     }
 
@@ -593,12 +589,11 @@ public class VLFrame extends JFrame implements IMainFrame {
      */
     private void loadWorkspace() {
         try {
-            final ByteArrayInputStream in = new ByteArrayInputStream(savedWorkpace);
+            final ByteArrayInputStream in = new ByteArrayInputStream(savedWorkspace);
             desk.readXML(in);
             in.close();
-        } catch (final Exception ex) {
-            // catch all exceptions, including those of the SAXParser
-            ex.printStackTrace();
+        } catch (final Exception e) {
+            logger.error("Error loading workspace", e);
         }
     }
 
@@ -655,13 +650,11 @@ public class VLFrame extends JFrame implements IMainFrame {
             return widgetArrays.getNextArrayIndex(name);
         }
 
-        final List pages = formsDocument.getPages();
-        for (final Object page1 : pages) {
-            final Page page = (Page) page1;
-            final List widgetsOnPage = page.getWidgets();
+        final List<Page> pages = formsDocument.getPages();
+        for (Page page : pages) {
+            final List<IWidget> widgetsOnPage = page.getWidgets();
 
-            for (final Object o : widgetsOnPage) {
-                final IWidget widget = (IWidget) o;
+            for (final IWidget widget : widgetsOnPage) {
                 final String widgetName = widget.getWidgetName();
                 if (name.equals(widgetName) && !widget.equals(widgetToTest)) {
                     /*
@@ -681,9 +674,8 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     @Override
-    public void handleArrayNumberOnWidgetDeletion(final Set selectedWidgets) {
-        for (final Object widget1 : selectedWidgets) {
-            final IWidget widget = (IWidget) widget1;
+    public void handleArrayNumberOnWidgetDeletion(final Set<IWidget> selectedWidgets) {
+        for (final IWidget widget : selectedWidgets) {
             widgetArrays.removeWidgetFromArray(widget, widget.getWidgetName(), mainFrame);
         }
 

@@ -63,15 +63,19 @@ import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateC
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBoxParent;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*/ implements TristateCheckBoxParent {
 
-    private IDesigner designerPanel;
-
-    private Map<IWidget, Element> widgetsAndProperties;
+    private final Logger logger = LoggerFactory.getLogger(LayoutPropertiesPanel.class);
 
     private final int units = (int) (Rule.INCH / 2.54);
+
+    private IDesigner designerPanel;
+    private Map<IWidget, Element> widgetsAndProperties;
+
     // todo tidy up this from netbeans
     private JComboBox<String> anchorLocationBox;
     private ButtonGroup buttonGroup1;
@@ -712,8 +716,8 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
                 final Field field = getClass().getDeclaredField("rotate" + rotationToUse);
                 final JToggleButton toggleButton = (JToggleButton) field.get(this);
                 toggleButton.setSelected(true);
-            } catch (final Exception ex) {
-                ex.printStackTrace();
+            } catch (final Exception e) {
+                logger.error("Error finding rotation toggle button {}", rotationToUse, e);
             }
         }
 
@@ -753,7 +757,6 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
     }
 
     private double round(final double number) {
-
         final double exponential = Math.pow(10, 3);
 
         double value = number;
