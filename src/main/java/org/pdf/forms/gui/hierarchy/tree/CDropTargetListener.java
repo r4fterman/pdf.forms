@@ -481,7 +481,7 @@ class CDropTargetListener implements DropTargetListener {
         items.add(theNode);
 
         // recursion
-        for (final Enumeration theChildren = theNode.children(); theChildren.hasMoreElements(); ) {
+        for (final Enumeration theChildren = theNode.children(); theChildren.hasMoreElements();) {
             getFlattenedTreeNodes((TreeNode) theChildren.nextElement(), items);
         }
     }
