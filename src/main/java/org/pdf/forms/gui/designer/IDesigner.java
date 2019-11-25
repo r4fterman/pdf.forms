@@ -128,6 +128,8 @@ public interface IDesigner {
 
     void repaint();
 
+    void validate();
+
     void grabFocus();
 
     void setCursor(Cursor cursor);

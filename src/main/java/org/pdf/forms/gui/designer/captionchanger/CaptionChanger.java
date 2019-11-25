@@ -36,6 +36,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
 import org.jpedal.utils.Strip;
@@ -48,10 +50,11 @@ import org.w3c.dom.Element;
 
 public class CaptionChanger {
 
-    private static final String HTML_LINE_BREAK = "<br>";
+    private static final String HTML_LINE_BREAK = "<br/>";
     private static final String STRING_LINE_BREAK = "\n";
 
     private JTextPane textArea;
+    private JScrollPane scroll;
 
     private IWidget selectedWidget;
 
@@ -61,60 +64,47 @@ public class CaptionChanger {
     public void displayCaptionChanger(
             final IWidget selectedWidget,
             final IDesigner designerPanel) {
-
         this.selectedWidget = selectedWidget;
         this.designerPanel = designerPanel;
 
         final PdfCaption captionComponent = selectedWidget.getCaptionComponent();
-
-        final Rectangle captionBounds = captionComponent.getBounds();
-
-        textArea = new JTextPane();
-
-        // setting editor kit to CenterText puts the text in the vertical center of the text field
-        textArea.setEditorKit(new CenterText());
-
-        String captionText = captionComponent.getText();
-
+        final String captionText = captionComponent.getText();
         alignment = getAlignment(captionText);
 
-        // insert line breaks
-        captionText = captionText.replaceAll(HTML_LINE_BREAK, STRING_LINE_BREAK);
-        captionText = Strip.stripXML(captionText).toString();
-
-        textArea.setText(captionText);
-        textArea.selectAll();
-
-        textArea.setBorder(BorderFactory.createLineBorder(Color.black));
+        textArea = createTextArea(captionText);
+        textArea.setFont(captionComponent.getFont());
 
         final Point captionLocation = selectedWidget.getAbsoluteLocationsOfCaption();
-
-        final int absoluteX = captionLocation.x;
-        final int absoluteY = captionLocation.y;
-
-        textArea.setBounds(absoluteX, absoluteY, captionBounds.width, captionBounds.height);
-
-        designerPanel.add(textArea);
+        final Rectangle captionBounds = captionComponent.getBounds();
+        if (captionText.contains("<br")) {
+            this.scroll = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            setBounds(scroll, captionLocation, captionBounds);
+            designerPanel.add(scroll);
+        } else {
+            setBounds(textArea, captionLocation, captionBounds);
+            designerPanel.add(textArea);
+        }
 
         textArea.requestFocus();
     }
 
-    private String getAlignment(final String captionText) {
-        final String align = "align";
+    String getAlignment(final String captionText) {
+        final String align = "align=";
 
-        int start = captionText.indexOf(align);
-        if (start != -1) {
-            start += align.length();
-            int end = start;
-
-            while (captionText.charAt(end) != '>') {
-                end++;
-            }
-
-            return captionText.substring(start, end);
+        final int idx = captionText.indexOf(align);
+        if (idx == -1) {
+            return null;
         }
 
-        return null;
+        final int start = idx + align.length();
+        final int end = captionText.indexOf('>', start);
+
+        // Fix for: align====left
+        String text = captionText.substring(start, end);
+        while (text.startsWith("=")) {
+            text = text.substring(1);
+        }
+        return text;
     }
 
     public void closeCaptionChanger() {
@@ -128,15 +118,18 @@ public class CaptionChanger {
     }
 
     private void setCaptionText() {
-        String captionText = textArea.getText();
+        final String captionText = textArea.getText().replaceAll(STRING_LINE_BREAK, HTML_LINE_BREAK);
 
-        final String alignment;
-        if (this.alignment == null) {
-            alignment = "";
+        final StringBuilder builder = new StringBuilder("<html>");
+        if (alignment == null) {
+            builder.append(captionText);
         } else {
-            alignment = "<p align=" + this.alignment + ">";
+            builder
+                    .append("<p align=").append(alignment).append(">")
+                    .append(captionText)
+                    .append("</p>");
         }
-        captionText = "<html>" + alignment + captionText.replaceAll(STRING_LINE_BREAK, HTML_LINE_BREAK);
+        final String text = builder.toString();
 
         final Document properties = selectedWidget.getProperties();
         final Element captionProperties =
@@ -145,14 +138,47 @@ public class CaptionChanger {
 
         final Element textElement = XMLUtils.getPropertyElement(captionProperties, "Text");
 
-        textElement.getAttributeNode("value").setValue(captionText);
+        textElement.getAttributeNode("value").setValue(text);
 
         selectedWidget.setCaptionProperties(captionProperties);
 
         textArea.setText("");
         textArea.setVisible(false);
+        if (scroll != null) {
+            scroll.setVisible(false);
+        }
 
         designerPanel.repaint();
+    }
+
+    private void setBounds(
+            final JComponent component,
+            final Point location,
+            final Rectangle bounds) {
+        final int absoluteX = location.x;
+        final int absoluteY = location.y;
+
+        component.setBounds(absoluteX, absoluteY, bounds.width, bounds.height);
+    }
+
+    private JTextPane createTextArea(final String text) {
+        final JTextPane textArea = new JTextPane();
+        textArea.setBorder(BorderFactory.createLineBorder(Color.black));
+        textArea.setEditorKit(new CenterText());
+
+        textArea.setText(prepareTextForEditing(text));
+        textArea.selectAll();
+
+        return textArea;
+    }
+
+    private String prepareTextForEditing(final String text) {
+        final String textWithEditingLineBreaks = text
+                .replaceAll("<br>", HTML_LINE_BREAK)
+                .replaceAll(HTML_LINE_BREAK, STRING_LINE_BREAK);
+
+        return Strip.stripXML(textWithEditingLineBreaks).toString();
+
     }
 }
 

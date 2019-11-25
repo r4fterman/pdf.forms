@@ -75,7 +75,6 @@ public class DesignerMouseListener implements MouseListener {
     @Override
     public void mouseClicked(final MouseEvent e) {
         if (e.getClickCount() == 2) {
-
             final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
 
             /* get a flatterned set of widgets, this means if widgets are in a group, then get them out */
@@ -94,6 +93,9 @@ public class DesignerMouseListener implements MouseListener {
                     captionChanger.displayCaptionChanger(widget, designerPanel);
                 }
             }
+
+            designerPanel.validate();
+            designerPanel.repaint();
         }
     }
 

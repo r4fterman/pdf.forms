@@ -212,7 +212,7 @@ public class TextWidget extends Widget implements IWidget {
 
         final String captionText = XMLUtils.getAttributeFromChildElement(captionElement, "Text");
 
-        getCaptionComponent().setText(captionText.replaceAll("<br>", "\n"));
+        getCaptionComponent().setText(captionText);
 
         setSize(getWidth(), getHeight());
     }
