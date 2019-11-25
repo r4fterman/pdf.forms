@@ -32,11 +32,13 @@
 package org.pdf.forms.gui.commands;
 
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,7 +65,6 @@ import org.jpedal.PdfDecoder;
 import org.jpedal.examples.simpleviewer.utils.FileFilterer;
 import org.jpedal.exception.PdfException;
 import org.jpedal.objects.PdfPageData;
-import org.jpedal.utils.BrowserLauncher;
 import org.jpedal.utils.SwingWorker;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
@@ -133,7 +134,24 @@ public class Commands {
     public static final int ZOOM = 608001297;
     public static final int ZOOM_OUT = 1668177090;
 
-    private final Logger logger = LoggerFactory.getLogger(Commands.class);
+    public static final String GITHUB_PROJECT_PAGE = "https://github.com/r4fterman/pdf.forms";
+    private static final String ORIGINAL_PROJECT_PAGE = "http://pdfformsdesigne.sourceforge.net";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Commands.class);
+
+    public static boolean openWebpage(final String httpAddress) {
+        final Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                final URI uri = URI.create(httpAddress);
+                desktop.browse(uri);
+                return true;
+            } catch (final IOException e) {
+                LOGGER.error("Error opening web browser for address {}", httpAddress, e);
+            }
+        }
+        return false;
+    }
 
     private final IMainFrame mainFrame;
     private final String version;
@@ -261,24 +279,10 @@ public class Commands {
     }
 
     private void visitWebsite() {
-        try {
-            BrowserLauncher.openURL("http://pdfformsdesigne.sourceforge.net");
-        } catch (final IOException e) {
+        if (!openWebpage(GITHUB_PROJECT_PAGE)) {
             JOptionPane.showMessageDialog(null, "Error loading webpage");
-            logger.error("Error loading web page browser", e);
+            LOGGER.error("Error loading web page browser");
         }
-
-        //      JMenuItem about = new JMenuItem("About");
-        //      about.addActionListener(new ActionListener() {
-        //          public void actionPerformed(ActionEvent actionEvent) {
-        //   JOptionPane.showMessageDialog((Component) mainFrame, new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
-        //          }
-        //      });
-        //      help.add(visitWebSite);
-        //      help.add(about);
-        //
-        //      menubar.add(help);
-
     }
 
     private void addSelectionToLibrary() {
@@ -647,7 +651,7 @@ public class Commands {
             //initialize StreamResult with File object to save to file
             transformer.transform(new DOMSource(documentProperties), new StreamResult(fileName));
         } catch (final TransformerException e) {
-            logger.error("Error writing xml to file {}", fileName, e);
+            LOGGER.error("Error writing xml to file {}", fileName, e);
         }
     }
 
@@ -755,7 +759,7 @@ public class Commands {
                 newPage.setWidgets(widgets);
             }
         } catch (final Exception e) {
-            logger.error("Error opening designer file {}", designerFileToOpen, e);
+            LOGGER.error("Error opening designer file {}", designerFileToOpen, e);
         }
 
         mainFrame.setCurrentPage(1);
@@ -941,7 +945,7 @@ public class Commands {
             updateRecentDocuments(properties.getRecentDocuments("recentpdffiles"), "recentpdffiles");
 
         } catch (final PdfException e) {
-            logger.error("Error importing PDF file {}", pdfPath, e);
+            LOGGER.error("Error importing PDF file {}", pdfPath, e);
         }
     }
 
@@ -1007,7 +1011,7 @@ public class Commands {
                 widgets.add(widget);
 
             } catch (final Exception e) {
-                logger.error("Error getting widgets from XML element", e);
+                LOGGER.error("Error getting widgets from XML element", e);
             }
         }
         return widgets;
@@ -1030,7 +1034,7 @@ public class Commands {
 
             decoder.decodePage(pdfPageNumber);
         } catch (final Exception e) {
-            logger.error("Error decoding PDF page {} of file {}", pdfPageNumber, pdfPath, e);
+            LOGGER.error("Error decoding PDF page {} of file {}", pdfPageNumber, pdfPath, e);
         }
 
         final PdfPageData pdfPageData = pdfDecoder.getPdfPageData();

@@ -33,133 +33,133 @@ package org.pdf.forms.gui.windows;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.IOException;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import org.jdesktop.layout.GroupLayout;
-import org.jpedal.utils.BrowserLauncher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jdesktop.layout.LayoutStyle;
+import org.pdf.forms.gui.commands.Commands;
 
 public class AboutPanel extends javax.swing.JPanel {
 
-    private final Logger logger = LoggerFactory.getLogger(AboutPanel.class);
+    private static final String ORIGINAL_JPEDAL_PAGE = "http://www.jpedal.org";
+    private static final String COMMERCIAL_JPEDAL_PAGE = "https://www.idrsolutions.com/jpedal/";
 
-    /**
-     * Creates new form AboutPanel.
-     */
+    private static final String ORIGINAL_VLDOCKING_PAGE = "http://www.vlsolutions.com/en/products/docking/";
+    private static final String GITHUB_VLDOCKING_PAGE = "https://github.com/cmadsen/vldocking";
+
+    private static final String ORIGINAL_ITEXT_PAGE = "http://www.lowagie.com/iText/";
+    private static final String COMMERCIAL_ITEXT_PAGE = "https://itextpdf.com/";
+
+    private static final String ORIGINAL_SWING_LAYOUT_PAGE = "https://swing-layout.dev.java.net/";
+
+    private static final Map<String, String> USED_LIBRARIES = Map.of(
+            "JPedal", COMMERCIAL_JPEDAL_PAGE,
+            "VLDocking", GITHUB_VLDOCKING_PAGE,
+            "iText", COMMERCIAL_ITEXT_PAGE,
+            "Swing Layout", ORIGINAL_SWING_LAYOUT_PAGE
+    );
+
+    private final Font serifFont12 = new Font("Serif", Font.PLAIN, 12);
+
     public AboutPanel() {
         initComponents();
     }
 
     private void initComponents() {
+        final JLabel projectPageLabel = createUrlLabel(this, Commands.GITHUB_PROJECT_PAGE);
+        projectPageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        final JLabel jLabel2 = getURLLabel(this, "http://pdfformsdesigne.sourceforge.net");
-        final JLabel jLabel4 = new JLabel();
-        final JLabel jLabel5 = new JLabel();
-        final JLabel jLabel6 = new JLabel();
-        final JLabel jLabel7 = new JLabel();
-        final JLabel jLabel8 = new JLabel();
-        final JLabel jLabel9 = new JLabel();
-        final JLabel jLabel10 = getURLLabel(this, "http://www.jpedal.org");
-        final JLabel jLabel11 = getURLLabel(this, "http://www.vlsolutions.com/en/products/docking/");
-        final JLabel jLabel12 = getURLLabel(this, "http://www.lowagie.com/iText/");
-        final JLabel jLabel13 = getURLLabel(this, "https://swing-layout.dev.java.net/");
+        final JLabel pdfFormDesignerLabel = new JLabel("PDF Forms Designer");
+        pdfFormDesignerLabel.setFont(new Font("Serif", Font.BOLD, 14));
+        pdfFormDesignerLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        jLabel2.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        final JLabel usedLibrariesLabel = createLabel("Used Libraries:");
 
-        jLabel4.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("PDF Forms Designer");
+        final JLabel jpedalLabel = createLabel("JPedal - ");
+        final JLabel jpedalUrlLabel = createUrlLabel(this, COMMERCIAL_JPEDAL_PAGE);
 
-        jLabel5.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
-        jLabel5.setText("Used Libraries:");
+        final JLabel vldockingLabel = createLabel("VLDocking - ");
+        final JLabel vldockingUrlLabel = createUrlLabel(this, GITHUB_VLDOCKING_PAGE);
 
-        jLabel6.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
-        jLabel6.setText("JPedal - ");
+        final JLabel iTextLabel = createLabel("iText - ");
+        final JLabel iTextUrlLabel = createUrlLabel(this, COMMERCIAL_ITEXT_PAGE);
 
-        jLabel7.setFont(new java.awt.Font("Serif", 0, 12));
-        jLabel7.setText("VLDocking - ");
-
-        jLabel8.setFont(new java.awt.Font("Serif", 0, 12));
-        jLabel8.setText("iText - ");
-
-        jLabel9.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
-        jLabel9.setText("Swing Layout -");
-
-        jLabel10.setFont(new java.awt.Font("Serif", 0, 12));
-
-        jLabel11.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
-
-        jLabel12.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
-
-        jLabel13.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        final JLabel swingLayoutLabel = createLabel("Swing Layout -");
+        final JLabel swingLayoutUrlLabel = createUrlLabel(this, ORIGINAL_SWING_LAYOUT_PAGE);
 
         final GroupLayout layout = new GroupLayout(this);
-        this.setLayout(layout);
+        setLayout(layout);
+
+        final GroupLayout.ParallelGroup usedLibrariesGroup = layout.createParallelGroup(GroupLayout.LEADING)
+                .add(layout.createSequentialGroup()
+                        .add(vldockingLabel)
+                        .addPreferredGap(LayoutStyle.RELATED)
+                        .add(vldockingUrlLabel))
+                .add(layout.createSequentialGroup()
+                        .add(jpedalLabel)
+                        .addPreferredGap(LayoutStyle.RELATED)
+                        .add(jpedalUrlLabel))
+                .add(layout.createSequentialGroup()
+                        .add(iTextLabel)
+                        .addPreferredGap(LayoutStyle.RELATED)
+                        .add(iTextUrlLabel))
+                .add(layout.createSequentialGroup()
+                        .add(swingLayoutLabel)
+                        .addPreferredGap(LayoutStyle.RELATED)
+                        .add(swingLayoutUrlLabel));
+
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.LEADING)
-                                        .add(jLabel2, GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
-                                        .add(jLabel4, GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
-                                        .add(jLabel5)
+                                        .add(projectPageLabel, GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+                                        .add(pdfFormDesignerLabel, GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+                                        .add(usedLibrariesLabel)
                                         .add(layout.createSequentialGroup()
                                                 .add(10, 10, 10)
-                                                .add(layout.createParallelGroup(GroupLayout.LEADING)
-                                                        .add(layout.createSequentialGroup()
-                                                                .add(jLabel7)
-                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                .add(jLabel11))
-                                                        .add(layout.createSequentialGroup()
-                                                                .add(jLabel6)
-                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                .add(jLabel10))
-                                                        .add(layout.createSequentialGroup()
-                                                                .add(jLabel8)
-                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                .add(jLabel12))
-                                                        .add(layout.createSequentialGroup()
-                                                                .add(jLabel9)
-                                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                .add(jLabel13)))))
+                                                .add(usedLibrariesGroup)))
                                 .addContainerGap())
         );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .add(jLabel4)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jLabel2)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jLabel5)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel6)
-                                        .add(jLabel10))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel7)
-                                        .add(jLabel11))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel8)
-                                        .add(jLabel12))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel9)
-                                        .add(jLabel13))
-                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+
+        final GroupLayout.SequentialGroup topGroup = layout.createSequentialGroup()
+                .addContainerGap()
+                .add(pdfFormDesignerLabel)
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(projectPageLabel)
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(usedLibrariesLabel)
+                .addPreferredGap(LayoutStyle.RELATED);
+
+        final GroupLayout.SequentialGroup usedLibrariesSequentialGroup = topGroup
+                .add(layout.createParallelGroup(GroupLayout.BASELINE)
+                        .add(jpedalLabel)
+                        .add(jpedalUrlLabel))
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(GroupLayout.BASELINE)
+                        .add(vldockingLabel)
+                        .add(vldockingUrlLabel))
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(GroupLayout.BASELINE)
+                        .add(iTextLabel)
+                        .add(iTextUrlLabel))
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(GroupLayout.BASELINE)
+                        .add(swingLayoutLabel)
+                        .add(swingLayoutUrlLabel));
+
+        final GroupLayout.SequentialGroup sequentialGroup = usedLibrariesSequentialGroup
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
+
+        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.LEADING).add(sequentialGroup));
     }
 
     public static void main(final String[] args) {
@@ -169,46 +169,37 @@ public class AboutPanel extends javax.swing.JPanel {
         frame.setVisible(true);
     }
 
-    private JLabel getURLLabel(
+    private JLabel createLabel(final String text) {
+        final JLabel label = new JLabel(text);
+        label.setFont(serifFont12);
+        return label;
+    }
+    private JLabel createUrlLabel(
             final JPanel details,
             final String website) {
-        final JLabel url = new JLabel("<html><center> " + website);
-        url.setForeground(Color.blue);
+        final JLabel label = new JLabel("<html><center> " + website + "</center></html>");
+        label.setFont(serifFont12);
+        label.setForeground(Color.blue);
 
-        url.addMouseListener(new MouseListener() {
+        label.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(final MouseEvent event) {
                 details.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                url.setText("<html><center><a href=" + website + ">" + website + "</a></center>");
+                label.setText("<html><center><a href=" + website + ">" + website + "</a></center></html>");
             }
 
             @Override
             public void mouseExited(final MouseEvent event) {
                 details.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                url.setText("<html><center>" + website);
+                label.setText("<html><center>" + website + "</center></html>");
             }
 
             @Override
             public void mouseClicked(final MouseEvent event) {
-                try {
-                    BrowserLauncher.openURL(website);
-                } catch (final IOException e) {
-                    JOptionPane.showMessageDialog(null, "Error loading webpage");
-                    //<start-full><start-demo>
-                    logger.error("Error opening wepbage in browser", e);
-                    //<end-demo><end-full>
-                }
-            }
-
-            @Override
-            public void mousePressed(final MouseEvent event) {
-            }
-
-            @Override
-            public void mouseReleased(final MouseEvent event) {
+                Commands.openWebpage(website);
             }
         });
-        return url;
+        return label;
     }
 
 }
