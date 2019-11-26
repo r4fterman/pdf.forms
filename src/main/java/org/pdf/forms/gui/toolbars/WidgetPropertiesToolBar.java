@@ -38,6 +38,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.ButtonGroup;
@@ -149,16 +150,14 @@ public class WidgetPropertiesToolBar extends VLToolBar {
                 valueElement = (Element) paagraphList.get(1);
             }
 
-            final Element captionAlignment = XMLUtils.getPropertyElement(captionElement, "Horizontal Alignment");
-            Element valueAlignment = null;
+            final Element captionAlignment = XMLUtils.getPropertyElement(captionElement, "Horizontal Alignment").get();
+            Optional<Element> valueAlignment = Optional.empty();
             if (widget.allowEditCaptionAndValue()) {
                 valueAlignment = XMLUtils.getPropertyElement(valueElement, "Horizontal Alignment");
             }
 
             captionAlignment.getAttributeNode("value").setValue(alignment);
-            if (valueAlignment != null) {
-                valueAlignment.getAttributeNode("value").setValue(alignment);
-            }
+            valueAlignment.ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
 
             widget.setParagraphProperties(paragraphElement, IWidget.COMPONENT_BOTH);
         }
@@ -192,16 +191,18 @@ public class WidgetPropertiesToolBar extends VLToolBar {
                 valueElement = (Element) fontList.get(1);
             }
 
-            final Element captionFontName = XMLUtils.getPropertyElement(captionElement, "Font Name");
-            final Element captionFontSize = XMLUtils.getPropertyElement(captionElement, "Font Size");
-            final Element captionFontStyle = XMLUtils.getPropertyElement(captionElement, "Font Style");
+            final Element captionFontName = XMLUtils.getPropertyElement(captionElement, "Font Name").get();
+            final Element captionFontSize = XMLUtils.getPropertyElement(captionElement, "Font Size").get();
+            final Element captionFontStyle = XMLUtils.getPropertyElement(captionElement, "Font Style").get();
 
-            Element valueFontName = null, valueFontSize = null, valueFontStyle = null;
+            Element valueFontName = null;
+            Element valueFontSize = null;
+            Element valueFontStyle = null;
 
             if (widget.allowEditCaptionAndValue()) {
-                valueFontName = XMLUtils.getPropertyElement(valueElement, "Font Name");
-                valueFontSize = XMLUtils.getPropertyElement(valueElement, "Font Size");
-                valueFontStyle = XMLUtils.getPropertyElement(valueElement, "Font Style");
+                valueFontName = XMLUtils.getPropertyElement(valueElement, "Font Name").get();
+                valueFontSize = XMLUtils.getPropertyElement(valueElement, "Font Size").get();
+                valueFontStyle = XMLUtils.getPropertyElement(valueElement, "Font Style").get();
             }
 
             setProperty((String) fontBox.getSelectedItem(), captionFontName, valueFontName);
@@ -236,9 +237,9 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             /* get caption properties */
             final Element caption = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
 
-            final String captionFontName = XMLUtils.getAttributeFromChildElement(caption, "Font Name");
-            final String captionFontSize = XMLUtils.getAttributeFromChildElement(caption, "Font Size");
-            final String captionFontStyle = XMLUtils.getAttributeFromChildElement(caption, "Font Style");
+            final String captionFontName = XMLUtils.getAttributeFromChildElement(caption, "Font Name").get();
+            final String captionFontSize = XMLUtils.getAttributeFromChildElement(caption, "Font Size").get();
+            final String captionFontStyle = XMLUtils.getAttributeFromChildElement(caption, "Font Style").get();
 
             final String valueFontName;
             final String valueFontSize;
@@ -248,9 +249,9 @@ public class WidgetPropertiesToolBar extends VLToolBar {
                 /* get value properties */
                 final Element value = (Element) fontProperties.getElementsByTagName("font_value").item(0);
 
-                valueFontName = XMLUtils.getAttributeFromChildElement(value, "Font Name");
-                valueFontSize = XMLUtils.getAttributeFromChildElement(value, "Font Size");
-                valueFontStyle = XMLUtils.getAttributeFromChildElement(value, "Font Style");
+                valueFontName = XMLUtils.getAttributeFromChildElement(value, "Font Name").get();
+                valueFontSize = XMLUtils.getAttributeFromChildElement(value, "Font Size").get();
+                valueFontStyle = XMLUtils.getAttributeFromChildElement(value, "Font Style").get();
             } else {
                 valueFontName = captionFontName;
                 valueFontSize = captionFontSize;
@@ -344,7 +345,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             final Element captionElement =
                     (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
 
-            final String captionHorizontalAlignment = XMLUtils.getAttributeFromChildElement(captionElement, "Horizontal Alignment");
+            final String captionHorizontalAlignment = XMLUtils.getAttributeFromChildElement(captionElement, "Horizontal Alignment").orElse("left");
             final String valueHorizontalAlignment;
 
             /* get value properties */
@@ -352,7 +353,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
                 final Element valueElement =
                         (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_value").item(0);
 
-                valueHorizontalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Horizontal Alignment");
+                valueHorizontalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Horizontal Alignment").orElse("left");
             } else {
                 valueHorizontalAlignment = captionHorizontalAlignment;
             }
@@ -444,7 +445,8 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     private String getHorizontalAlignment(
             final String captionHorizontalAlignment,
             final String valueHorizontalAlignment) {
-        if (captionHorizontalAlignment.equals(valueHorizontalAlignment)) { // both value and caption are the same
+        if (captionHorizontalAlignment.equals(valueHorizontalAlignment)) {
+            // both value and caption are the same
             return captionHorizontalAlignment;
         } else {
             return "mixed";

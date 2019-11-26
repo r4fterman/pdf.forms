@@ -208,7 +208,7 @@ public class BorderPropertiesPanel extends JPanel {
             final Element borderProperties,
             final String attribute,
             final String value) {
-        final Element leftEdgeWidthElement = XMLUtils.getPropertyElement(borderProperties, attribute);
+        final Element leftEdgeWidthElement = XMLUtils.getPropertyElement(borderProperties, attribute).get();
         leftEdgeWidthElement.getAttributeNode("value").setValue(value);
     }
 
@@ -287,15 +287,15 @@ public class BorderPropertiesPanel extends JPanel {
             /* add borders properties */
             final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
 
-            final String borderStyle = XMLUtils.getAttributeFromChildElement(border, "Border Style");
-            final String borderWidth = XMLUtils.getAttributeFromChildElement(border, "Border Width");
-            final String borderColor = XMLUtils.getAttributeFromChildElement(border, "Border Color");
+            final String borderStyle = XMLUtils.getAttributeFromChildElement(border, "Border Style").get();
+            final String borderWidth = XMLUtils.getAttributeFromChildElement(border, "Border Width").get();
+            final String borderColor = XMLUtils.getAttributeFromChildElement(border, "Border Color").get();
 
             /* add background fill properties */
             final Element background = (Element) borderProperties.getElementsByTagName("backgroundfill").item(0);
 
-            final String backgroundStyle = XMLUtils.getAttributeFromChildElement(background, "Style");
-            final String backgroundColor = XMLUtils.getAttributeFromChildElement(background, "Fill Color");
+            final String backgroundStyle = XMLUtils.getAttributeFromChildElement(background, "Style").get();
+            final String backgroundColor = XMLUtils.getAttributeFromChildElement(background, "Fill Color").get();
 
             if (borderStyleToUse == null) { // this must be the first time round
                 borderStyleToUse = borderStyle;

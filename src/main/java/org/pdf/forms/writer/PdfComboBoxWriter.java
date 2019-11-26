@@ -66,7 +66,7 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
         final String[] items = new String[list.size()];
         for (int i = 0; i < list.size(); i++) {
             final Element item = (Element) list.get(i);
-            items[i] = XMLUtils.getAttributeFromElement(item, "item");
+            items[i] = XMLUtils.getAttributeFromElement(item, "item").get();
         }
 
         final Font font = value.getFont();
@@ -79,13 +79,13 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
         combo.setTextColor(getBaseColor(widget.getValueComponent().getForeground()));
         combo.setChoices(items);
 
-        final Element editableElement = XMLUtils.getPropertyElement(rootElement, "Allow Custom Text Entry");
-        final boolean editable = Boolean.valueOf(editableElement.getAttributes().getNamedItem("value").getNodeValue());
+        final Element editableElement = XMLUtils.getPropertyElement(rootElement, "Allow Custom Text Entry").get();
+        final boolean editable = Boolean.parseBoolean(editableElement.getAttributes().getNamedItem("value").getNodeValue());
         if (editable) {
             combo.setOptions(BaseField.EDIT);
         }
 
-        final Element defaultElement = XMLUtils.getPropertyElement(rootElement, "Default");
+        final Element defaultElement = XMLUtils.getPropertyElement(rootElement, "Default").get();
         String defaultText = defaultElement.getAttributes().getNamedItem("value").getNodeValue();
         if (defaultText.equals("< None >")) {
             defaultText = "";
@@ -103,7 +103,6 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
             final Rectangle pageSize,
             final int currentPage,
             final GlobalPdfWriter globalPdfWriter) {
-
         final PdfCaption caption = widget.getCaptionComponent();
         if (caption == null) {
             return;
@@ -113,7 +112,8 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
             final Element captionElement = XMLUtils.getElementsFromNodeList(
                     widget.getProperties().getElementsByTagName("layout")).get(0);
 
-            final String location = XMLUtils.getPropertyElement(captionElement, "Position").getAttributeNode("value").getValue();
+            final Element positionElement = XMLUtils.getPropertyElement(captionElement, "Position").get();
+            final String location = positionElement.getAttributeNode("value").getValue();
             if (location.equals("None")) {
                 return;
             }
@@ -165,9 +165,9 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
 
         final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
 
-        final String style = XMLUtils.getAttributeFromChildElement(border, "Border Style");
-        final String width = XMLUtils.getAttributeFromChildElement(border, "Border Width");
-        final String color = XMLUtils.getAttributeFromChildElement(border, "Border Color");
+        final String style = XMLUtils.getAttributeFromChildElement(border, "Border Style").orElse("None");
+        final String width = XMLUtils.getAttributeFromChildElement(border, "Border Width").orElse("1");
+        final String color = XMLUtils.getAttributeFromChildElement(border, "Border Color").orElse(String.valueOf(Color.WHITE.getRGB()));
 
         switch (style) {
             case "Solid":

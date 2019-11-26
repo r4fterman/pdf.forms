@@ -300,7 +300,7 @@ public class ListFieldPanel extends javax.swing.JPanel implements TristateCheckB
                 for (int i = 0; i < itemsList.size(); i++) {
                     final Element item = itemsList.get(i);
 
-                    final String value = XMLUtils.getAttributeFromElement(item, "item");
+                    final String value = XMLUtils.getAttributeFromElement(item, "item").orElse("");
 
                     tableModel.insertRow(i);
                     tableModel.setValueAt(value, i, 0);

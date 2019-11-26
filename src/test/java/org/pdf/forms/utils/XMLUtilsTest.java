@@ -4,12 +4,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,59 +47,62 @@ class XMLUtilsTest {
 
     @Test
     void getPropertyElement_should_return_child_property_element_with_given_name() throws Exception {
-        final Element propertyElement = XMLUtils.getPropertyElement(getElement(FONT_ELEMENT), "Font Style");
+        final Optional<Element> propertyElement = XMLUtils.getPropertyElement(getElement(FONT_ELEMENT), "Font Style");
 
-        assertThat(propertyElement, is(notNullValue()));
-        assertThat(propertyElement.getAttribute("value"), is("1"));
+        assertThat(propertyElement.isPresent(), is(true));
+        assertThat(propertyElement.get().getAttribute("value"), is("1"));
     }
 
     @Test
     void getPropertyElement_should_return_null_when_given_name_not_found() throws Exception {
-        final Element propertyElement = XMLUtils.getPropertyElement(getElement(FONT_ELEMENT), "not existing");
+        final Optional<Element> propertyElement = XMLUtils.getPropertyElement(getElement(FONT_ELEMENT), "not existing");
 
-        assertThat(propertyElement, is(nullValue()));
+        assertThat(propertyElement, is(Optional.empty()));
     }
 
     @Test
     void getPropertyElement_should_return_null_when_property_element_not_found() throws Exception {
-        final Element propertyElement = XMLUtils.getPropertyElement(getElement("<font><font_caption></font_caption></font>"), "not existing");
+        final Optional<Element> propertyElement = XMLUtils.getPropertyElement(getElement("<font><font_caption></font_caption></font>"), "not existing");
 
-        assertThat(propertyElement, is(nullValue()));
+        assertThat(propertyElement, is(Optional.empty()));
     }
 
     @Test
     void getAttributeByIndex_should_return_attribute_value_of_child_element() throws Exception {
-        final String attributeValue = XMLUtils.getAttributeByIndex(getElement(FONT_CAPTION_ELEMENT), 5);
+        final Optional<String> attributeValue = XMLUtils.getAttributeByIndex(getElement(FONT_CAPTION_ELEMENT), 5);
 
-        assertThat(attributeValue, is("-16777216"));
+        assertThat(attributeValue.isPresent(), is(true));
+        assertThat(attributeValue.get(), is("-16777216"));
     }
 
     @Test
     void getAttributeFromChildElement_should_return_attribute_value_of_child_element() throws Exception {
-        final String attributeValue = XMLUtils.getAttributeFromChildElement(getElement(FONT_CAPTION_ELEMENT), "Font Style");
+        final Optional<String> attributeValue = XMLUtils.getAttributeFromChildElement(getElement(FONT_CAPTION_ELEMENT), "Font Style");
 
-        assertThat(attributeValue, is("1"));
+        assertThat(attributeValue.isPresent(), is(true));
+        assertThat(attributeValue.get(), is("1"));
     }
 
     @Test
     void getAttributeFromChildElement_should_return_null_when_element_name_is_not_existing() throws Exception {
-        final String attributeValue = XMLUtils.getAttributeFromChildElement(getElement(FONT_CAPTION_ELEMENT), "Not Existing");
+        final Optional<String> attributeValue = XMLUtils.getAttributeFromChildElement(getElement(FONT_CAPTION_ELEMENT), "Not Existing");
 
-        assertThat(attributeValue, is(nullValue()));
+        assertThat(attributeValue, is(Optional.empty()));
     }
 
     @Test
     void getAttributeFromElement_should_return_attribute_value() throws Exception {
-        final String attributeValue = XMLUtils.getAttributeFromElement(getElement("<property name=\"Font Style\" value=\"1\"/>"), "Font Style");
+        final Optional<String> attributeValue = XMLUtils.getAttributeFromElement(getElement("<property name=\"Font Style\" value=\"1\"/>"), "Font Style");
 
-        assertThat(attributeValue, is("1"));
+        assertThat(attributeValue.isPresent(), is(true));
+        assertThat(attributeValue.get(), is("1"));
     }
 
     @Test
     void getAttributeFromElement_should_return_null_when_attribute_is_not_exisiting() throws Exception {
-        final String attributeValue = XMLUtils.getAttributeFromElement(getElement(FONT_CAPTION_ELEMENT), "Font Style");
+        final Optional<String> attributeValue = XMLUtils.getAttributeFromElement(getElement(FONT_CAPTION_ELEMENT), "Font Style");
 
-        assertThat(attributeValue, is(nullValue()));
+        assertThat(attributeValue, is(Optional.empty()));
     }
 
     @Test

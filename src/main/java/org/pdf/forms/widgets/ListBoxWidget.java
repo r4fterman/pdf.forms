@@ -90,8 +90,8 @@ public class ListBoxWidget extends Widget implements IWidget {
         setAllowEditOfCaptionOnClick(true);
 
         final Element bindingElement = XMLUtils.getElementsFromNodeList(root.getElementsByTagName("binding")).get(0);
-        setWidgetName(XMLUtils.getAttributeFromChildElement(bindingElement, "Name"));
-        setArrayNumber(Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingElement, "Array Number")));
+        setWidgetName(XMLUtils.getAttributeFromChildElement(bindingElement, "Name").orElse(""));
+        setArrayNumber(Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingElement, "Array Number").orElse("0")));
 
         final Element rootElement = setupProperties();
         final Node newRoot = getProperties().importNode(root, true);
@@ -235,7 +235,7 @@ public class ListBoxWidget extends Widget implements IWidget {
         /* set the location of the caption */
         final Element captionElement = (Element) layoutProperties.getElementsByTagName("caption").item(0);
 
-        final String captionPosition = XMLUtils.getAttributeFromChildElement(captionElement, "Position");
+        final String captionPosition = XMLUtils.getAttributeFromChildElement(captionElement, "Position").orElse("left");
 
         /* use reflection to set the required rotation button selected */
         try {
@@ -276,21 +276,19 @@ public class ListBoxWidget extends Widget implements IWidget {
         /* add items to list box box list */
         final Element itemsElement = (Element) objectProperties.getElementsByTagName("items").item(0);
 
-        final List items = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes());
+        final List<Element> items = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes());
 
         final DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
         model.removeAllElements();
 
-        for (final Object item1 : items) {
-            final Element item = (Element) item1;
-            final String value = XMLUtils.getAttributeFromElement(item, "item");
+        for (final Element item : items) {
+            final String value = XMLUtils.getAttributeFromElement(item, "item").get();
             model.addElement(value);
         }
 
         final Element valueElement = (Element) objectProperties.getElementsByTagName("value").item(0);
 
-        String defaultText = XMLUtils.getAttributeFromChildElement(valueElement, "Default");
-
+        String defaultText = XMLUtils.getAttributeFromChildElement(valueElement, "Default").orElse("< None >");
         if (defaultText.equals("< None >")) {
             defaultText = "";
         }

@@ -395,7 +395,7 @@ public class WidgetSelection {
                 final Document properties = selectedWidget.getProperties();
                 final Element captionProperties = XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties")).get(0);
 
-                final Element divisorLocationElement = XMLUtils.getPropertyElement(captionProperties, "Divisor Location");
+                final Element divisorLocationElement = XMLUtils.getPropertyElement(captionProperties, "Divisor Location").get();
 
                 divisorLocationElement.getAttributeNode("value").setValue(String.valueOf(mouseX - x));
 
@@ -414,7 +414,7 @@ public class WidgetSelection {
                 final Element captionProperties =
                         XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties")).get(0);
 
-                final Element divisorLocationElement = XMLUtils.getPropertyElement(captionProperties, "Divisor Location");
+                final Element divisorLocationElement = XMLUtils.getPropertyElement(captionProperties, "Divisor Location").get();
 
                 divisorLocationElement.getAttributeNode("value").setValue(String.valueOf(mouseY - y));
 

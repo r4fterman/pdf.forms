@@ -75,7 +75,7 @@ public class WidgetArrays {
                 Element objectElement = (Element) w.getProperties().getElementsByTagName("object").item(0);
                 Element biningElement = (Element) objectElement.getElementsByTagName("binding").item(0);
 
-                Element arrayNumberElement = XMLUtils.getPropertyElement(biningElement, "Array Number");
+                Element arrayNumberElement = XMLUtils.getPropertyElement(biningElement, "Array Number").get();
                 arrayNumberElement.getAttributeNode("value").setValue(i + "");
 
                 w.setObjectProperties(objectElement);

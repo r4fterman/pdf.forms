@@ -82,7 +82,7 @@ public class TextWidget extends Widget implements IWidget {
         setAllowEditCaptionAndValue(false);
         setAllowEditOfCaptionOnClick(true);
 
-        setWidgetName(XMLUtils.getAttributeFromChildElement(root, "Name"));
+        setWidgetName(XMLUtils.getAttributeFromChildElement(root, "Name").orElse(""));
 
         final Element rootElement = setupProperties();
         final Node newRoot = getProperties().importNode(root, true);
@@ -210,7 +210,7 @@ public class TextWidget extends Widget implements IWidget {
     public void setCaptionProperties(final Element captionProperties) {
         final Element captionElement = (Element) getProperties().getElementsByTagName("caption_properties").item(0);
 
-        final String captionText = XMLUtils.getAttributeFromChildElement(captionElement, "Text");
+        final String captionText = XMLUtils.getAttributeFromChildElement(captionElement, "Text").orElse("");
 
         getCaptionComponent().setText(captionText);
 

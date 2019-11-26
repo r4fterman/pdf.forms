@@ -208,7 +208,7 @@ public class RadioButtonGroupOrganiser extends JPanel {
                             widget.setRadioButtonGroupName(lastGroup.getName());
 
                             final Element objectProperties = widget.getProperties().getDocumentElement();
-                            final Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default");
+                            final Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
                             defaultElement.getAttributeNode("value").setValue("Off");
                             widget.setObjectProperties(objectProperties);
                         }

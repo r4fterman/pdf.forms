@@ -173,7 +173,7 @@ public class RadioButtonFieldPanel extends javax.swing.JPanel {
             }
 
             final Element objectProperties = widget.getProperties().getDocumentElement();
-            final Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default");
+            final Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
             defaultElement.getAttributeNode("value").setValue("Off");
             widget.setObjectProperties(objectProperties);
         }
@@ -211,8 +211,7 @@ public class RadioButtonFieldPanel extends javax.swing.JPanel {
             /* add field propertes */
             final Element fieldProperties = (Element) objectPropertiesElement.getElementsByTagName("field").item(0);
 
-            final String buttonGroup = XMLUtils.getAttributeFromChildElement(fieldProperties, "Group Name");
-
+            final String buttonGroup = XMLUtils.getAttributeFromChildElement(fieldProperties, "Group Name").orElse("");
             if (buttonGroupToUse == null) {
                 // this must be the first time round
                 buttonGroupToUse = buttonGroup;

@@ -35,6 +35,7 @@ import java.awt.event.ActionEvent;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.ButtonGroup;
@@ -236,8 +237,8 @@ public class ParagraphPropertiesPanel extends JPanel {
                 valueElement = paagraphList.get(1);
             }
 
-            final Element captionAlignment = XMLUtils.getPropertyElement(captionElement, propertyName);
-            Element valueAlignment = null;
+            final Element captionAlignment = XMLUtils.getPropertyElement(captionElement, propertyName).get();
+            Optional<Element> valueAlignment = Optional.empty();
             if (widget.allowEditCaptionAndValue()) {
                 valueAlignment = XMLUtils.getPropertyElement(valueElement, propertyName);
             }
@@ -246,15 +247,11 @@ public class ParagraphPropertiesPanel extends JPanel {
 
             if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
                 captionAlignment.getAttributeNode("value").setValue(alignment);
-                if (valueAlignment != null) {
-                    valueAlignment.getAttributeNode("value").setValue(alignment);
-                }
+                valueAlignment.ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
             } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
                 captionAlignment.getAttributeNode("value").setValue(alignment);
             } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
-                if (valueAlignment != null) {
-                    valueAlignment.getAttributeNode("value").setValue(alignment);
-                }
+                valueAlignment.ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
             }
 
             widget.setParagraphProperties(widgetsAndProperties.get(widget), currentlyEditingBox.getSelectedIndex());
@@ -301,8 +298,8 @@ public class ParagraphPropertiesPanel extends JPanel {
             final Element captionElement =
                     (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
 
-            final String captionHorizontalAlignment = XMLUtils.getAttributeFromChildElement(captionElement, "Horizontal Alignment");
-            final String captionVerticalAlignment = XMLUtils.getAttributeFromChildElement(captionElement, "Vertical Alignment");
+            final String captionHorizontalAlignment = XMLUtils.getAttributeFromChildElement(captionElement, "Horizontal Alignment").orElse("left");
+            final String captionVerticalAlignment = XMLUtils.getAttributeFromChildElement(captionElement, "Vertical Alignment").orElse("top");
 
             final String valueHorizontalAlignment;
             final String valueVerticalAlignment;
@@ -312,8 +309,8 @@ public class ParagraphPropertiesPanel extends JPanel {
                 final Element valueElement =
                         (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_value").item(0);
 
-                valueHorizontalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Horizontal Alignment");
-                valueVerticalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Vertical Alignment");
+                valueHorizontalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Horizontal Alignment").orElse("left");
+                valueVerticalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Vertical Alignment").orElse("top");
             } else {
                 valueHorizontalAlignment = captionHorizontalAlignment;
                 valueVerticalAlignment = captionVerticalAlignment;

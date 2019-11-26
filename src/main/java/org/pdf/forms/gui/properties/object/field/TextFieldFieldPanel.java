@@ -167,7 +167,7 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
             if (maxChars != null && !maxChars.equals("mixed")) {
                 final Element widgetProperties = widgetsAndProperties.get(widget);
 
-                final Element maxCharsElement = XMLUtils.getPropertyElement(widgetProperties, "Max Chars");
+                final Element maxCharsElement = XMLUtils.getPropertyElement(widgetProperties, "Max Chars").get();
 
                 maxCharsElement.getAttributeNode("value").setValue(maxChars);
             }
@@ -190,12 +190,11 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
             /* add field properties */
             final Element fieldProperties = (Element) objectPropertiesElement.getElementsByTagName("field").item(0);
 
-            final boolean allowMultipleLines = Boolean.valueOf(XMLUtils.getAttributeFromChildElement(fieldProperties, "Allow Multiple Lines"));
-            final boolean limitLength = Boolean.valueOf(XMLUtils.getAttributeFromChildElement(fieldProperties, "Limit Length"));
-            final String maxChars = XMLUtils.getAttributeFromChildElement(fieldProperties, "Max Chars");
+            final boolean allowMultipleLines = Boolean.parseBoolean(XMLUtils.getAttributeFromChildElement(fieldProperties, "Allow Multiple Lines").orElse("false"));
+            final boolean limitLength = Boolean.parseBoolean(XMLUtils.getAttributeFromChildElement(fieldProperties, "Limit Length").orElse("false"));
+            final String maxChars = XMLUtils.getAttributeFromChildElement(fieldProperties, "Max Chars").orElse("10");
 
             if (maxCharsToUse == null) {
-
                 if (allowMultipleLines) {
                     allowMultipleLinesToUse = TristateCheckBox.SELECTED;
                 } else {

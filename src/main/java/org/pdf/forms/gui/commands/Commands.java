@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -721,23 +722,26 @@ public class Commands {
             final Map<String, String> changedFiles = getChangedPdfFileLocations(pages);
 
             for (final Element page : pages) {
-                final String pageType = XMLUtils.getAttributeFromChildElement(page, "pagetype");
-                final String pageName = XMLUtils.getAttributeFromChildElement(page, "pagename");
+                final Optional<String> pageType = XMLUtils.getAttributeFromChildElement(page, "pagetype");
+                final Optional<String> pageName = XMLUtils.getAttributeFromChildElement(page, "pagename");
 
                 final Element pageData = (Element) page.getElementsByTagName("pagedata").item(0);
 
-                final String value1 = XMLUtils.getAttributeByIndex(pageData, 0);
-                final int value2 = Integer.parseInt(XMLUtils.getAttributeByIndex(pageData, 1));
+                final Optional<String> value1 = XMLUtils.getAttributeByIndex(pageData, 0);
+                final Optional<String> value2 = XMLUtils.getAttributeByIndex(pageData, 1);
 
                 final Page newPage;
-                if (pageType.equals("pdfpage")) {
+                if (pageType.isPresent() && pageType.get().equals("pdfpage")) {
                     // PDF page
-                    final String pdfFileToUse = changedFiles.get(value1);
-                    //todo check for skiped PDF files
-                    newPage = new Page(pageName, pdfFileToUse, value2);
+                    final String pdfFileToUse = changedFiles.get(value1.get());
+                    final int pdfPageNumber = Integer.parseInt(value2.get());
+                    //todo check for skip PDF files
+                    newPage = new Page(pageName.get(), pdfFileToUse, pdfPageNumber);
                 } else {
                     // simple page
-                    newPage = new Page(pageName, Integer.parseInt(value1), value2);
+                    final int width = Integer.parseInt(value1.get());
+                    final int height = Integer.parseInt(value2.get());
+                    newPage = new Page(pageName.get(), width, height);
                 }
 
                 /* add radio button groups to page */
@@ -965,10 +969,10 @@ public class Commands {
         final List<Element> radioButtonGropusList = XMLUtils.getElementsFromNodeList(radioButtonGroupsElement.getChildNodes());
 
         for (final Element buttonGroupElement : radioButtonGropusList) {
-            final String value = XMLUtils.getAttributeFromElement(buttonGroupElement, "buttongroupname");
+            final Optional<String> value = XMLUtils.getAttributeFromElement(buttonGroupElement, "buttongroupname");
             final ButtonGroup buttonGroup = new ButtonGroup(type);
 
-            buttonGroup.setName(value);
+            buttonGroup.setName(value.get());
 
             if (type == IWidget.RADIO_BUTTON) {
                 newPage.getRadioButtonGroups().add(buttonGroup);
@@ -992,10 +996,10 @@ public class Commands {
         final List<IWidget> widgets = new ArrayList<>();
 
         for (final Element widgetElement : widgetsInPageList) {
-            final String widgetType = XMLUtils.getAttributeFromChildElement(widgetElement, "type");
+            final Optional<String> widgetType = XMLUtils.getAttributeFromChildElement(widgetElement, "type");
 
             try {
-                final Field field = IWidget.class.getDeclaredField(widgetType);
+                final Field field = IWidget.class.getDeclaredField(widgetType.get());
 
                 final int type = field.getInt(this);
 
@@ -1112,11 +1116,10 @@ public class Commands {
     private Map<String, String> getChangedPdfFileLocations(final List<Element> pages) {
         final Set<String> pdfFiles = new HashSet<>();
         for (final Element page : pages) {
-            final Element fileLocationElement = XMLUtils.getPropertyElement(page, "pdffilelocation");
-            if (fileLocationElement != null) {
-                final String fileLocation = fileLocationElement.getAttributeNode("value").getValue();
-                pdfFiles.add(fileLocation);
-            }
+            XMLUtils.getPropertyElement(page, "pdffilelocation")
+                    .ifPresent(element ->
+                            pdfFiles.add(element.getAttributeNode("value").getValue())
+                    );
         }
 
         final Map<String, String> changedFiles = new HashMap<>();

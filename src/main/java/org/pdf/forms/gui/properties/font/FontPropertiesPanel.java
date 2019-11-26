@@ -264,12 +264,12 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
                 valueElement = fontList.get(1);
             }
 
-            final Element captionFontName = XMLUtils.getPropertyElement(captionElement, "Font Name");
-            final Element captionFontSize = XMLUtils.getPropertyElement(captionElement, "Font Size");
-            final Element captionFontStyle = XMLUtils.getPropertyElement(captionElement, "Font Style");
-            final Element captionUnderline = XMLUtils.getPropertyElement(captionElement, "Underline");
-            final Element captionStrikethrough = XMLUtils.getPropertyElement(captionElement, "Strikethrough");
-            final Element captionColor = XMLUtils.getPropertyElement(captionElement, "Color");
+            final Element captionFontName = XMLUtils.getPropertyElement(captionElement, "Font Name").get();
+            final Element captionFontSize = XMLUtils.getPropertyElement(captionElement, "Font Size").get();
+            final Element captionFontStyle = XMLUtils.getPropertyElement(captionElement, "Font Style").get();
+            final Element captionUnderline = XMLUtils.getPropertyElement(captionElement, "Underline").get();
+            final Element captionStrikethrough = XMLUtils.getPropertyElement(captionElement, "Strikethrough").get();
+            final Element captionColor = XMLUtils.getPropertyElement(captionElement, "Color").get();
 
             Element valueFontName = null;
             Element valueFontSize = null;
@@ -279,12 +279,12 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
             Element valueColor = null;
 
             if (widget.allowEditCaptionAndValue()) {
-                valueFontName = XMLUtils.getPropertyElement(valueElement, "Font Name");
-                valueFontSize = XMLUtils.getPropertyElement(valueElement, "Font Size");
-                valueFontStyle = XMLUtils.getPropertyElement(valueElement, "Font Style");
-                valueUnderline = XMLUtils.getPropertyElement(valueElement, "Underline");
-                valueStrikethrough = XMLUtils.getPropertyElement(valueElement, "Strikethrough");
-                valueColor = XMLUtils.getPropertyElement(valueElement, "Color");
+                valueFontName = XMLUtils.getPropertyElement(valueElement, "Font Name").get();
+                valueFontSize = XMLUtils.getPropertyElement(valueElement, "Font Size").get();
+                valueFontStyle = XMLUtils.getPropertyElement(valueElement, "Font Style").get();
+                valueUnderline = XMLUtils.getPropertyElement(valueElement, "Underline").get();
+                valueStrikethrough = XMLUtils.getPropertyElement(valueElement, "Strikethrough").get();
+                valueColor = XMLUtils.getPropertyElement(valueElement, "Color").get();
             }
 
             setProperty(fontNameBox.getSelectedItem(), captionFontName, valueFontName);
@@ -368,7 +368,7 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
         setProperties(widgetsAndProperties, currentlyEditingBox.getSelectedIndex());
     }
 
-    public void updateAvailiableFonts() {
+    public void updateAvailableFonts() {
         final String[] fonts = getFonts();
         final DefaultComboBoxModel model = new DefaultComboBoxModel<>(fonts);
         fontNameBox.setModel(model);
@@ -411,12 +411,12 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
             /* get caption properties */
             final Element caption = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
 
-            final String captionFontName = XMLUtils.getAttributeFromChildElement(caption, "Font Name");
-            final String captionFontSize = XMLUtils.getAttributeFromChildElement(caption, "Font Size");
-            final String captionFontStyle = XMLUtils.getAttributeFromChildElement(caption, "Font Style");
-            final String captionUnderline = XMLUtils.getAttributeFromChildElement(caption, "Underline");
-            final String captionStrikethrough = XMLUtils.getAttributeFromChildElement(caption, "Strikethrough");
-            final String captionColor = XMLUtils.getAttributeFromChildElement(caption, "Color");
+            final String captionFontName = XMLUtils.getAttributeFromChildElement(caption, "Font Name").orElse("Arial");
+            final String captionFontSize = XMLUtils.getAttributeFromChildElement(caption, "Font Size").orElse("10");
+            final String captionFontStyle = XMLUtils.getAttributeFromChildElement(caption, "Font Style").orElse("1");
+            final String captionUnderline = XMLUtils.getAttributeFromChildElement(caption, "Underline").orElse("1");
+            final String captionStrikethrough = XMLUtils.getAttributeFromChildElement(caption, "Strikethrough").orElse("1");
+            final String captionColor = XMLUtils.getAttributeFromChildElement(caption, "Color").orElse(String.valueOf(Color.BLACK.getRGB()));
 
             final String valueFontName;
             final String valueFontSize;
@@ -429,12 +429,12 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
                 /* get value properties */
                 final Element value = (Element) fontProperties.getElementsByTagName("font_value").item(0);
 
-                valueFontName = XMLUtils.getAttributeFromChildElement(value, "Font Name");
-                valueFontSize = XMLUtils.getAttributeFromChildElement(value, "Font Size");
-                valueFontStyle = XMLUtils.getAttributeFromChildElement(value, "Font Style");
-                valueUnderline = XMLUtils.getAttributeFromChildElement(value, "Underline");
-                valueStrikethrough = XMLUtils.getAttributeFromChildElement(value, "Strikethrough");
-                valueColor = XMLUtils.getAttributeFromChildElement(value, "Color");
+                valueFontName = XMLUtils.getAttributeFromChildElement(value, "Font Name").get();
+                valueFontSize = XMLUtils.getAttributeFromChildElement(value, "Font Size").get();
+                valueFontStyle = XMLUtils.getAttributeFromChildElement(value, "Font Style").get();
+                valueUnderline = XMLUtils.getAttributeFromChildElement(value, "Underline").get();
+                valueStrikethrough = XMLUtils.getAttributeFromChildElement(value, "Strikethrough").get();
+                valueColor = XMLUtils.getAttributeFromChildElement(value, "Color").get();
             } else {
                 valueFontName = captionFontName;
                 valueFontSize = captionFontSize;
@@ -452,7 +452,8 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
             final String strikethrough = getProperty(currentlyEditing, captionStrikethrough, valueStrikethrough);
             final String color = getProperty(currentlyEditing, captionColor, valueColor);
 
-            if (fontNameToUse == null) { // this must be the first time round
+            if (fontNameToUse == null) {
+                // this must be the first time round
                 fontNameToUse = fontName;
                 fontSizeToUse = fontSize;
                 fontStyleToUse = fontStyle;
@@ -460,8 +461,8 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
                 strikethroughToUse = strikethrough;
                 colorToUse = color;
 
-            } else { // check for subsequent widgets
-
+            } else {
+                // check for subsequent widgets
                 if (!fontNameToUse.equals(fontName)) {
                     fontNameToUse = "mixed";
                 }

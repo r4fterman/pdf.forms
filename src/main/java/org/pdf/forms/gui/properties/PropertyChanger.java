@@ -70,16 +70,16 @@ public class PropertyChanger {
                 valueElement = (Element) fontList.get(1);
             }
 
-            final Element captionFontName = XMLUtils.getPropertyElement(captionElement, "Font Name");
-            final Element captionFontSize = XMLUtils.getPropertyElement(captionElement, "Font Size");
-            final Element captionFontStyle = XMLUtils.getPropertyElement(captionElement, "Font Style");
+            final Element captionFontName = XMLUtils.getPropertyElement(captionElement, "Font Name").get();
+            final Element captionFontSize = XMLUtils.getPropertyElement(captionElement, "Font Size").get();
+            final Element captionFontStyle = XMLUtils.getPropertyElement(captionElement, "Font Style").get();
 
             Element valueFontName = null, valueFontSize = null, valueFontStyle = null;
 
             if (widget.allowEditCaptionAndValue()) {
-                valueFontName = XMLUtils.getPropertyElement(valueElement, "Font Name");
-                valueFontSize = XMLUtils.getPropertyElement(valueElement, "Font Size");
-                valueFontStyle = XMLUtils.getPropertyElement(valueElement, "Font Style");
+                valueFontName = XMLUtils.getPropertyElement(valueElement, "Font Name").get();
+                valueFontSize = XMLUtils.getPropertyElement(valueElement, "Font Size").get();
+                valueFontStyle = XMLUtils.getPropertyElement(valueElement, "Font Style").get();
             }
 
             setProperty(fontName, captionFontName, valueFontName);
@@ -97,16 +97,16 @@ public class PropertyChanger {
 
             final Element element = (Element) properties.getElementsByTagName("sizeandposition").item(0);
 
-            final Element xCord = XMLUtils.getPropertyElement(element, "X");
+            final Element xCord = XMLUtils.getPropertyElement(element, "X").get();
             xCord.getAttributeNode("value").setValue(widget.getX() + "");
 
-            final Element yCord = XMLUtils.getPropertyElement(element, "Y");
+            final Element yCord = XMLUtils.getPropertyElement(element, "Y").get();
             yCord.getAttributeNode("value").setValue(widget.getY() + "");
 
-            final Element width = XMLUtils.getPropertyElement(element, "Width");
+            final Element width = XMLUtils.getPropertyElement(element, "Width").get();
             width.getAttributeNode("value").setValue(widget.getWidth() + "");
 
-            final Element height = XMLUtils.getPropertyElement(element, "Height");
+            final Element height = XMLUtils.getPropertyElement(element, "Height").get();
             height.getAttributeNode("value").setValue(widget.getHeight() + "");
         }
     }
@@ -122,22 +122,22 @@ public class PropertyChanger {
             final Element element = (Element) properties.getElementsByTagName("sizeandposition").item(0);
 
             if (props[0] != null) {
-                final Element xCord = XMLUtils.getPropertyElement(element, "X");
+                final Element xCord = XMLUtils.getPropertyElement(element, "X").get();
                 xCord.getAttributeNode("value").setValue(props[0] + "");
             }
 
             if (props[1] != null) {
-                final Element yCord = XMLUtils.getPropertyElement(element, "Y");
+                final Element yCord = XMLUtils.getPropertyElement(element, "Y").get();
                 yCord.getAttributeNode("value").setValue(props[1] + "");
             }
 
             if (props[2] != null) {
-                final Element width = XMLUtils.getPropertyElement(element, "Width");
+                final Element width = XMLUtils.getPropertyElement(element, "Width").get();
                 width.getAttributeNode("value").setValue(props[2] + "");
             }
 
             if (props[3] != null) {
-                final Element height = XMLUtils.getPropertyElement(element, "Height");
+                final Element height = XMLUtils.getPropertyElement(element, "Height").get();
                 height.getAttributeNode("value").setValue(props[3] + "");
             }
         }

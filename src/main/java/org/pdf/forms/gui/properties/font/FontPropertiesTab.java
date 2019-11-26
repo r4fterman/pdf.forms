@@ -100,6 +100,6 @@ public class FontPropertiesTab extends JPanel implements Dockable {
     }
 
     public void updateAvailiableFonts() {
-        fontPanel.updateAvailiableFonts();
+        fontPanel.updateAvailableFonts();
     }
 }

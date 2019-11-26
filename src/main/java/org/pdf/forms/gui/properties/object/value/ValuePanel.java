@@ -94,7 +94,7 @@ public class ValuePanel extends JPanel {
         defaultBox.addActionListener(this::updateDefaultText);
 
         final GroupLayout layout = new GroupLayout(this);
-        this.setLayout(layout);
+        setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
@@ -146,7 +146,7 @@ public class ValuePanel extends JPanel {
                 for (final IWidget widget : widgetsAndProperties.keySet()) {
                     final Element objectProperties = widgetsAndProperties.get(widget);
 
-                    final Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default");
+                    final Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
 
                     defaultElement.getAttributeNode("value").setValue(selectedItem);
 
@@ -157,7 +157,7 @@ public class ValuePanel extends JPanel {
             case IWidget.RADIO_BUTTON:
                 Element objectProperties = widgetsAndProperties.get(testWidget);
 
-                Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default");
+                Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
 
                 defaultElement.getAttributeNode("value").setValue(selectedItem);
 
@@ -171,7 +171,7 @@ public class ValuePanel extends JPanel {
                             final RadioButtonWidget rbw = (RadioButtonWidget) widget;
                             if (rbw.getRadioButtonGroupName().equals(((RadioButtonWidget) testWidget).getRadioButtonGroupName())) {
                                 objectProperties = rbw.getProperties().getDocumentElement();
-                                defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default");
+                                defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
                                 defaultElement.getAttributeNode("value").setValue("Off");
                                 rbw.setObjectProperties(objectProperties);
                             }
@@ -183,7 +183,7 @@ public class ValuePanel extends JPanel {
             default:
                 objectProperties = widgetsAndProperties.get(testWidget);
 
-                defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default");
+                defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
 
                 defaultElement.getAttributeNode("value").setValue(selectedItem);
 
@@ -236,30 +236,22 @@ public class ValuePanel extends JPanel {
 
                     if (widgetsAndProperties.size() == 1) {
                         final Element itemElement = (Element) objectProperties.getElementsByTagName("items").item(0);
-
-                        final List items = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
-
+                        final List<Element> items = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
                         if (type == IWidget.COMBO_BOX) {
                             defaultBox.addItem("< None >");
                         }
 
-                        for (final Object item1 : items) {
-                            final Element item = (Element) item1;
-
-                            final String value = XMLUtils.getAttributeFromElement(item, "item");
-
+                        for (final Element item : items) {
+                            final String value = XMLUtils.getAttributeFromElement(item, "item").orElse("");
                             defaultBox.addItem(value);
                         }
                     }
 
                     final String defaultText = getDefault(objectProperties);
-
                     defaultBox.setSelectedItem(defaultText);
-
                 } else {
                     setItemsEnabled(false);
                 }
-
                 break;
         }
 
@@ -301,8 +293,7 @@ public class ValuePanel extends JPanel {
 
     private String getDefault(final Element objectProperties) {
         final Element valueProperties = (Element) objectProperties.getElementsByTagName("value").item(0);
-
-        return XMLUtils.getAttributeFromChildElement(valueProperties, "Default");
+        return XMLUtils.getAttributeFromChildElement(valueProperties, "Default").orElse("");
     }
 
     private void setItemsEnabled(final boolean b) {

@@ -33,6 +33,7 @@ package org.pdf.forms.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -43,7 +44,7 @@ import org.w3c.dom.NodeList;
 
 public class XMLUtils {
 
-    public static Element getPropertyElement(
+    public static Optional<Element> getPropertyElement(
             final Element parentElement,
             final String property) {
         final NodeList properties = parentElement.getElementsByTagName("property");
@@ -56,27 +57,27 @@ public class XMLUtils {
                 final String attr = e.getAttribute("name");
 
                 if (attr.equals(property)) {
-                    return e;
+                    return Optional.of(e);
                 }
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
-    public static String getAttributeByIndex(
+    public static Optional<String> getAttributeByIndex(
             final Element element,
             final int index) {
         return getAttribute(getElementsFromNodeList(element.getChildNodes()), index);
     }
 
-    public static String getAttributeFromChildElement(
+    public static Optional<String> getAttributeFromChildElement(
             final Element element,
             final String name) {
         return getAttributeByName(getElementsFromNodeList(element.getChildNodes()), name);
     }
 
-    public static String getAttributeFromElement(
+    public static Optional<String> getAttributeFromElement(
             final Element element,
             final String attributeName) {
         final NamedNodeMap attrs = element.getAttributes();
@@ -88,13 +89,13 @@ public class XMLUtils {
                 if (nodeValue.equals(attributeName)) {
                     final Node namedItem = attrs.getNamedItem("value");
                     if (namedItem != null) {
-                        return namedItem.getNodeValue();
+                        return Optional.ofNullable(namedItem.getNodeValue());
                     }
                 }
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
     public static Element createAndAppendElement(
@@ -131,7 +132,7 @@ public class XMLUtils {
         return elements;
     }
 
-    private static String getAttribute(
+    private static Optional<String> getAttribute(
             final List<Element> elements,
             final int index) {
         final Element element = elements.get(index);
@@ -139,22 +140,22 @@ public class XMLUtils {
 
         final Node item = attrs.getNamedItem("value");
         if (item != null) {
-            return item.getNodeValue();
+            return Optional.ofNullable(item.getNodeValue());
         }
 
-        return null;
+        return Optional.empty();
     }
 
-    private static String getAttributeByName(
+    private static Optional<String> getAttributeByName(
             final List<Element> elements,
             final String attributeName) {
         for (final Element element : elements) {
-            final String value = getAttributeFromElement(element, attributeName);
-            if (value != null) {
+            final Optional<String> value = getAttributeFromElement(element, attributeName);
+            if (value.isPresent()) {
                 return value;
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 }

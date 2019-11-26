@@ -89,7 +89,7 @@ public class ImageWidget extends Widget implements IWidget {
         setComponentSplit(false);
         setAllowEditCaptionAndValue(false);
 
-        setWidgetName(XMLUtils.getAttributeFromChildElement(root, "Name"));
+        setWidgetName(XMLUtils.getAttributeFromChildElement(root, "Name").orElse(""));
 
         final Element rootElement = setupProperties();
         final Node newRoot = getProperties().importNode(root, true);
@@ -147,8 +147,8 @@ public class ImageWidget extends Widget implements IWidget {
     public void setObjectProperties(final Element objectElement) {
         final Element drawElement = (Element) objectElement.getElementsByTagName("draw").item(0);
 
-        final String location = XMLUtils.getAttributeFromChildElement(drawElement, "Location");
-        final String sizing = XMLUtils.getAttributeFromChildElement(drawElement, "Sizing");
+        final String location = XMLUtils.getAttributeFromChildElement(drawElement, "Location").orElse("");
+        final String sizing = XMLUtils.getAttributeFromChildElement(drawElement, "Sizing").orElse("Stretch Image To Fit");
 
         if (sizing.equals("Stretch Image To Fit")) {
             this.sizing = STRETCH;

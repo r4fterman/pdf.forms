@@ -159,7 +159,7 @@ public class SimpleValuePanel extends JPanel {
             if (defaultText != null && !defaultText.equals("mixed")) {
                 final Element widgetProperties = widgetsAndProperties.get(widget);
 
-                final Element defaultTextElement = XMLUtils.getPropertyElement(widgetProperties, "Default");
+                final Element defaultTextElement = XMLUtils.getPropertyElement(widgetProperties, "Default").get();
 
                 defaultTextElement.getAttributeNode("value").setValue(defaultText);
             }
@@ -182,8 +182,7 @@ public class SimpleValuePanel extends JPanel {
             /* add value properties */
             final Element valueProperties = (Element) objectPropertiesElement.getElementsByTagName("value").item(0);
 
-            final String defaultText = XMLUtils.getAttributeFromChildElement(valueProperties, "Default");
-
+            final String defaultText = XMLUtils.getAttributeFromChildElement(valueProperties, "Default").orElse("");
             if (defaultTextToUse == null) {
                 defaultTextToUse = defaultText;
             } else {

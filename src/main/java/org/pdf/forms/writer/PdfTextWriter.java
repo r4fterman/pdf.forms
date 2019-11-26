@@ -47,7 +47,6 @@ public class PdfTextWriter implements PdfComponentWriter {
             final Rectangle pageSize,
             final int currentPage,
             final GlobalPdfWriter globalPdfWriter) {
-
         final PdfCaption caption = widget.getCaptionComponent();
         if (caption == null) {
             return;
@@ -57,7 +56,8 @@ public class PdfTextWriter implements PdfComponentWriter {
             final Element captionElement = XMLUtils.getElementsFromNodeList(
                     widget.getProperties().getElementsByTagName("layout")).get(0);
 
-            final String location = XMLUtils.getPropertyElement(captionElement, "Position").getAttributeNode("value").getValue();
+            final Element positionElement = XMLUtils.getPropertyElement(captionElement, "Position").get();
+            final String location = positionElement.getAttributeNode("value").getValue();
             if (location.equals("None")) {
                 return;
             }

@@ -1,5 +1,6 @@
 package org.pdf.forms.writer;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.io.ByteArrayOutputStream;
@@ -207,8 +208,7 @@ public class Writer {
     }
 
     private boolean isPdfPage(final Element page) {
-        final Element fileLocationElement = XMLUtils.getPropertyElement(page, "pdffilelocation");
-        return fileLocationElement != null;
+        return XMLUtils.getPropertyElement(page, "pdffilelocation").isPresent();
     }
 
     private Rectangle getPageSize(
@@ -217,8 +217,8 @@ public class Writer {
         final Element page = pages.get(currentPage - 1);
         final Element pageDataElement = (Element) page.getElementsByTagName("pagedata").item(0);
 
-        final int width = Integer.parseInt(XMLUtils.getAttributeFromChildElement(pageDataElement, "width"));
-        final int height = Integer.parseInt(XMLUtils.getAttributeFromChildElement(pageDataElement, "height"));
+        final int width = Integer.parseInt(XMLUtils.getAttributeFromChildElement(pageDataElement, "width").orElse("25"));
+        final int height = Integer.parseInt(XMLUtils.getAttributeFromChildElement(pageDataElement, "height").orElse("25"));
 
         return new Rectangle(width, height);
     }
@@ -384,9 +384,9 @@ public class Writer {
 
         final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
 
-        final String style = XMLUtils.getAttributeFromChildElement(border, "Border Style");
-        final String width = XMLUtils.getAttributeFromChildElement(border, "Border Width");
-        final String color = XMLUtils.getAttributeFromChildElement(border, "Border Color");
+        final String style = XMLUtils.getAttributeFromChildElement(border, "Border Style").orElse("None");
+        final String width = XMLUtils.getAttributeFromChildElement(border, "Border Width").orElse("1");
+        final String color = XMLUtils.getAttributeFromChildElement(border, "Border Color").orElse(String.valueOf(Color.WHITE.getRGB()));
 
         switch (style) {
             case "Solid":
@@ -424,13 +424,15 @@ public class Writer {
         final PdfDocumentLayout pdfDocumentLayout = new PdfDocumentLayout();
 
         for (final Element page : pages) {
-            final Element fileLocationElement = XMLUtils.getPropertyElement(page, "pdffilelocation");
-            if (fileLocationElement == null) { // is a hand made page
+            final Optional<Element> fileLocationElement = XMLUtils.getPropertyElement(page, "pdffilelocation");
+            if (!fileLocationElement.isPresent()) {
+                // is a hand made page
                 pdfDocumentLayout.addPage(false);
-            } else { // its an imported page
-                final String fileLocation = fileLocationElement.getAttributeNode("value").getValue();
+            } else {
+                // its an imported page
+                final String fileLocation = fileLocationElement.get().getAttributeNode("value").getValue();
 
-                final Element pdfPageNumberElement = XMLUtils.getPropertyElement(page, "pdfpagenumber");
+                final Element pdfPageNumberElement = XMLUtils.getPropertyElement(page, "pdfpagenumber").get();
                 final String pdfPageNumber = pdfPageNumberElement.getAttributeNode("value").getValue();
 
                 pdfDocumentLayout.addPage(true, fileLocation, Integer.parseInt(pdfPageNumber));
@@ -499,7 +501,8 @@ public class Writer {
             final Element captionElement = XMLUtils.getElementsFromNodeList(
                     widget.getProperties().getElementsByTagName("layout")).get(0);
 
-            final String location = XMLUtils.getPropertyElement(captionElement, "Position").getAttributeNode("value").getValue();
+            final Element positionElement = XMLUtils.getPropertyElement(captionElement, "Position").get();
+            final String location = positionElement.getAttributeNode("value").getValue();
             if (location.equals("None")) {
                 return;
             }

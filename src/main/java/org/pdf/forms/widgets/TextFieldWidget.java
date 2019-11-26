@@ -90,8 +90,8 @@ public class TextFieldWidget extends Widget implements IWidget {
         setAllowEditOfCaptionOnClick(true);
 
         final Element bindingElement = XMLUtils.getElementsFromNodeList(root.getElementsByTagName("binding")).get(0);
-        setWidgetName(XMLUtils.getAttributeFromChildElement(bindingElement, "Name"));
-        setArrayNumber(Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingElement, "Array Number")));
+        setWidgetName(XMLUtils.getAttributeFromChildElement(bindingElement, "Name").orElse(""));
+        setArrayNumber(Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingElement, "Array Number").orElse("0")));
 
         final Element rootElement = setupProperties();
         final Node newRoot = getProperties().importNode(root, true);
@@ -263,7 +263,7 @@ public class TextFieldWidget extends Widget implements IWidget {
         /* set the location of the caption */
         final Element captionElement = (Element) layoutProperties.getElementsByTagName("caption").item(0);
 
-        final String captionPosition = XMLUtils.getAttributeFromChildElement(captionElement, "Position");
+        final String captionPosition = XMLUtils.getAttributeFromChildElement(captionElement, "Position").orElse("left");
 
         /* use reflection to set the required rotation button selected */
         try {
@@ -327,7 +327,7 @@ public class TextFieldWidget extends Widget implements IWidget {
         /* set value getProperties() */
         final Element valueElement = (Element) objectProperties.getElementsByTagName("value").item(0);
 
-        final String defaultText = XMLUtils.getAttributeFromChildElement(valueElement, "Default");
+        final String defaultText = XMLUtils.getAttributeFromChildElement(valueElement, "Default").orElse("");
 
         final JTextField textField = (JTextField) getValueComponent();
         textField.setText(defaultText);

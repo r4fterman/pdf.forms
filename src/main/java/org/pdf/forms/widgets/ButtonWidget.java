@@ -51,18 +51,17 @@ public class ButtonWidget extends Widget implements IWidget {
             final int type,
             final JComponent baseComponent,
             final JComponent component) {
-
         super(type, baseComponent, component, "/org/pdf/forms/res/Button.gif");
 
         setComponentSplit(false);
         setAllowEditCaptionAndValue(false);
 
-        String widgetName = "Button" + nextWidgetNumber;
+        final String widgetName = "Button" + nextWidgetNumber;
         nextWidgetNumber++;
 
         setWidgetName(widgetName);
 
-        Element rootElement = setupProperties();
+        final Element rootElement = setupProperties();
 
         XMLUtils.addBasicProperty(getProperties(), "type", "BUTTON", rootElement);
         XMLUtils.addBasicProperty(getProperties(), "name", widgetName, rootElement);
@@ -77,18 +76,17 @@ public class ButtonWidget extends Widget implements IWidget {
             final JComponent baseComponent,
             final JComponent component,
             final Element root) {
-
         super(type, baseComponent, component, "/org/pdf/forms/res/Button.gif");
 
         setComponentSplit(false);
         setAllowEditCaptionAndValue(false);
 
-        Element bindingElement = XMLUtils.getElementsFromNodeList(root.getElementsByTagName("binding")).get(0);
-        setWidgetName(XMLUtils.getAttributeFromChildElement(bindingElement, "Name"));
-        setArrayNumber(Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingElement, "Array Number")));
+        final Element bindingElement = XMLUtils.getElementsFromNodeList(root.getElementsByTagName("binding")).get(0);
+        setWidgetName(XMLUtils.getAttributeFromChildElement(bindingElement, "Name").orElse(""));
+        setArrayNumber(Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingElement, "Array Number").orElse("0")));
 
-        Element rootElement = setupProperties();
-        Node newRoot = getProperties().importNode(root, true);
+        final Element rootElement = setupProperties();
+        final Node newRoot = getProperties().importNode(root, true);
 
         getProperties().replaceChild(newRoot, rootElement);
 
@@ -96,7 +94,7 @@ public class ButtonWidget extends Widget implements IWidget {
     }
 
     private void addProperties(final Element rootElement) {
-        Element propertiesElement = XMLUtils.createAndAppendElement(getProperties(), "properties", rootElement);
+        final Element propertiesElement = XMLUtils.createAndAppendElement(getProperties(), "properties", rootElement);
 
         addFontProperties(propertiesElement);
 
@@ -110,9 +108,9 @@ public class ButtonWidget extends Widget implements IWidget {
     }
 
     private void addFontProperties(final Element propertiesElement) {
-        Element fontElement = XMLUtils.createAndAppendElement(getProperties(), "font", propertiesElement);
+        final Element fontElement = XMLUtils.createAndAppendElement(getProperties(), "font", propertiesElement);
 
-        Element caption = XMLUtils.createAndAppendElement(getProperties(), "font_caption", fontElement);
+        final Element caption = XMLUtils.createAndAppendElement(getProperties(), "font_caption", fontElement);
         XMLUtils.addBasicProperty(getProperties(), "Font Name", FontHandler.getInstance().getDefaultFont().getFontName(), caption);
         XMLUtils.addBasicProperty(getProperties(), "Font Size", "11", caption);
         XMLUtils.addBasicProperty(getProperties(), "Font Style", "0", caption);
@@ -122,23 +120,23 @@ public class ButtonWidget extends Widget implements IWidget {
     }
 
     private void addObjectProperties(final Element propertiesElement) {
-        Element objectElement = XMLUtils.createAndAppendElement(getProperties(), "object", propertiesElement);
+        final Element objectElement = XMLUtils.createAndAppendElement(getProperties(), "object", propertiesElement);
 
-        Element fieldElement = XMLUtils.createAndAppendElement(getProperties(), "field", objectElement);
+        final Element fieldElement = XMLUtils.createAndAppendElement(getProperties(), "field", objectElement);
         XMLUtils.addBasicProperty(getProperties(), "Presence", "Visible", fieldElement);
 
-        Element valueElement = XMLUtils.createAndAppendElement(getProperties(), "value", objectElement);
+        final Element valueElement = XMLUtils.createAndAppendElement(getProperties(), "value", objectElement);
         XMLUtils.addBasicProperty(getProperties(), "Default", "Button", valueElement);
 
-        Element bindingElement = XMLUtils.createAndAppendElement(getProperties(), "binding", objectElement);
+        final Element bindingElement = XMLUtils.createAndAppendElement(getProperties(), "binding", objectElement);
         XMLUtils.addBasicProperty(getProperties(), "Name", getWidgetName(), bindingElement);
         XMLUtils.addBasicProperty(getProperties(), "Array Number", "0", bindingElement);
     }
 
     private void addLayoutProperties(final Element propertiesElement) {
-        Element layoutElement = XMLUtils.createAndAppendElement(getProperties(), "layout", propertiesElement);
+        final Element layoutElement = XMLUtils.createAndAppendElement(getProperties(), "layout", propertiesElement);
 
-        Element sizeAndPositionElement = XMLUtils.createAndAppendElement(getProperties(), "sizeandposition", layoutElement);
+        final Element sizeAndPositionElement = XMLUtils.createAndAppendElement(getProperties(), "sizeandposition", layoutElement);
         XMLUtils.addBasicProperty(getProperties(), "X", "", sizeAndPositionElement);
         XMLUtils.addBasicProperty(getProperties(), "Width", "", sizeAndPositionElement);
         XMLUtils.addBasicProperty(getProperties(), "Y", "", sizeAndPositionElement);
@@ -148,7 +146,7 @@ public class ButtonWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(getProperties(), "Anchor", "Top Left", sizeAndPositionElement);
         XMLUtils.addBasicProperty(getProperties(), "Rotation", "0", sizeAndPositionElement);
 
-        Element margins = XMLUtils.createAndAppendElement(getProperties(), "margins", layoutElement);
+        final Element margins = XMLUtils.createAndAppendElement(getProperties(), "margins", layoutElement);
         XMLUtils.addBasicProperty(getProperties(), "Left", "2", margins);
         XMLUtils.addBasicProperty(getProperties(), "Right", "4", margins);
         XMLUtils.addBasicProperty(getProperties(), "Top", "2", margins);
@@ -156,62 +154,64 @@ public class ButtonWidget extends Widget implements IWidget {
     }
 
     private void addBorderProperties(final Element propertiesElement) {
-        Element borderElement = XMLUtils.createAndAppendElement(getProperties(), "border", propertiesElement);
+        final Element borderElement = XMLUtils.createAndAppendElement(getProperties(), "border", propertiesElement);
 
-        Element borders = XMLUtils.createAndAppendElement(getProperties(), "borders", borderElement);
+        final Element borders = XMLUtils.createAndAppendElement(getProperties(), "borders", borderElement);
         XMLUtils.addBasicProperty(getProperties(), "Border Style", "None", borders);
         XMLUtils.addBasicProperty(getProperties(), "Border Width", "1", borders);
         XMLUtils.addBasicProperty(getProperties(), "Border Color", Color.BLACK.getRGB() + "", borders);
 
-        Element backgorundFill = XMLUtils.createAndAppendElement(getProperties(), "backgroundfill", borderElement);
+        final Element backgorundFill = XMLUtils.createAndAppendElement(getProperties(), "backgroundfill", borderElement);
         XMLUtils.addBasicProperty(getProperties(), "Style", "Solid", backgorundFill);
         XMLUtils.addBasicProperty(getProperties(), "Fill Color", getValueComponent().getBackground().getRGB() + "", backgorundFill);
     }
 
     private void addParagraphProperties(final Element propertiesElement) {
-        Element paragraphElement = XMLUtils.createAndAppendElement(getProperties(), "paragraph", propertiesElement);
+        final Element paragraphElement = XMLUtils.createAndAppendElement(getProperties(), "paragraph", propertiesElement);
 
-        Element value = XMLUtils.createAndAppendElement(getProperties(), "paragraph_caption", paragraphElement);
+        final Element value = XMLUtils.createAndAppendElement(getProperties(), "paragraph_caption", paragraphElement);
         XMLUtils.addBasicProperty(getProperties(), "Horizontal Alignment", "center", value);
         XMLUtils.addBasicProperty(getProperties(), "Vertical Alignment", "center", value);
     }
 
+    @Override
     public void setParagraphProperties(
-            final Element paragraphPropertiesElememt,
+            final Element paragraphPropertiesElement,
             final int currentlyEditing) {
+        final IPdfComponent button = (IPdfComponent) getBaseComponent();
 
-        IPdfComponent button = (IPdfComponent) getBaseComponent();
-
-        Element paragraphCaptionElement =
-                (Element) paragraphPropertiesElememt.getElementsByTagName("paragraph_caption").item(0);
+        final Element paragraphCaptionElement =
+                (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
 
         setParagraphProperties(paragraphCaptionElement, button);
     }
 
+    @Override
     public void setLayoutProperties(final Element layoutProperties) {
         setSizeAndPosition(layoutProperties);
     }
 
+    @Override
     public void setFontProperties(
             final Element fontProperties,
             final int currentlyEditing) {
+        final IPdfComponent button = (IPdfComponent) getBaseComponent();
 
-        IPdfComponent button = (IPdfComponent) getBaseComponent();
-
-        Element captionProperties = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
+        final Element captionProperties = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
 
         setFontProperties(captionProperties, button);
 
         setSize(getWidth(), getHeight());
     }
 
+    @Override
     public void setObjectProperties(final Element objectProperties) {
-        JButton button = (JButton) getValueComponent();
+        final JButton button = (JButton) getValueComponent();
 
         /* set value getProperties() */
-        Element valueElement = (Element) objectProperties.getElementsByTagName("value").item(0);
+        final Element valueElement = (Element) objectProperties.getElementsByTagName("value").item(0);
 
-        String defaultText = XMLUtils.getAttributeFromChildElement(valueElement, "Default");
+        final String defaultText = XMLUtils.getAttributeFromChildElement(valueElement, "Default").orElse("");
 
         button.setText(defaultText);
 
@@ -221,6 +221,7 @@ public class ButtonWidget extends Widget implements IWidget {
         setBindingProperties(objectProperties);
     }
 
+    @Override
     public Point getAbsoluteLocationsOfValue() {
         return new Point(getX(), getY());
     }

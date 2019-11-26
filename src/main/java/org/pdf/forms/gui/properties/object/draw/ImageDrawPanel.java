@@ -139,7 +139,7 @@ public class ImageDrawPanel extends javax.swing.JPanel {
             if (sizing != null) {
                 final Element widgetProperties = widgetsAndProperties.get(widget);
 
-                final Element sizingElement = XMLUtils.getPropertyElement(widgetProperties, "Sizing");
+                final Element sizingElement = XMLUtils.getPropertyElement(widgetProperties, "Sizing").get();
 
                 sizingElement.getAttributeNode("value").setValue(sizing);
             }
@@ -179,7 +179,7 @@ public class ImageDrawPanel extends javax.swing.JPanel {
             if (location != null && !location.equals("mixed")) {
                 final Element widgetProperties = widgetsAndProperties.get(widget);
 
-                final Element locationElement = XMLUtils.getPropertyElement(widgetProperties, "Location");
+                final Element locationElement = XMLUtils.getPropertyElement(widgetProperties, "Location").get();
 
                 locationElement.getAttributeNode("value").setValue(location);
             }
@@ -203,8 +203,8 @@ public class ImageDrawPanel extends javax.swing.JPanel {
             /* get draw properties */
             final Element drawProperties = (Element) objectProperties.getElementsByTagName("draw").item(0);
 
-            final String location = XMLUtils.getAttributeFromChildElement(drawProperties, "Location");
-            final String sizing = XMLUtils.getAttributeFromChildElement(drawProperties, "Sizing");
+            final String location = XMLUtils.getAttributeFromChildElement(drawProperties, "Location").orElse("top left");
+            final String sizing = XMLUtils.getAttributeFromChildElement(drawProperties, "Sizing").orElse("Stretch Image To Fit");
 
             if (locationToUse == null) { // this must be the first time round
                 locationToUse = location;

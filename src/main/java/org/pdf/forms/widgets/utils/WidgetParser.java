@@ -98,7 +98,7 @@ public final class WidgetParser {
                         final String text = formObject.getNormalCaption();
 
                         final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
-                        final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default");
+                        final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
                         defaultTextElement.getAttributeNode("value").setValue(text);
                         widget.setObjectProperties(objectProperties);
 
@@ -127,7 +127,7 @@ public final class WidgetParser {
                     final Document document = widget.getProperties();
 
                     final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
-                    final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default");
+                    final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
 
                     final String text = formObject.getTextString();
                     defaultTextElement.getAttributeNode("value").setValue(text);
@@ -259,7 +259,7 @@ public final class WidgetParser {
 
             // set the default state
             final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
-            final Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default");
+            final Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
 
             final String value;
             if (selected) {
@@ -335,13 +335,13 @@ public final class WidgetParser {
         final String widgetName = formObject.getFieldName();
 
         final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
-        final Element nameElement = XMLUtils.getPropertyElement(objectProperties, "Name");
+        final Element nameElement = XMLUtils.getPropertyElement(objectProperties, "Name").get();
         nameElement.getAttributeNode("value").setValue(widgetName);
 
         widget.setObjectProperties(objectProperties);
 
         final int arrayNumber = getNextArrayNumberForName(widgetName, widget, mainFrame.getWidgetArrays(), widgetList);
-        final Element arrayNumberElement = XMLUtils.getPropertyElement(objectProperties, "Array Number");
+        final Element arrayNumberElement = XMLUtils.getPropertyElement(objectProperties, "Array Number").get();
         arrayNumberElement.getAttributeNode("value").setValue(arrayNumber + "");
 
         widget.setObjectProperties(objectProperties);
@@ -390,7 +390,7 @@ public final class WidgetParser {
             }
         }
 
-        final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default");
+        final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
 
         //get and set currently selected value
         String textValue = formObject.getSelectedItem();
@@ -455,7 +455,7 @@ public final class WidgetParser {
             final Element borderProperties,
             final String attribute,
             final String value) {
-        final Element leftEdgeWidthElement = XMLUtils.getPropertyElement(borderProperties, attribute);
+        final Element leftEdgeWidthElement = XMLUtils.getPropertyElement(borderProperties, attribute).get();
         leftEdgeWidthElement.getAttributeNode("value").setValue(value);
     }
 

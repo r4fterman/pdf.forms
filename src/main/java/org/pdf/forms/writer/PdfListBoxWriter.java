@@ -1,5 +1,6 @@
 package org.pdf.forms.writer;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.io.IOException;
@@ -75,7 +76,7 @@ public class PdfListBoxWriter implements PdfComponentWriter {
         list.setFontSize(value.getFont().getSize());
         list.setChoices(items);
 
-        final Element defaultElement = XMLUtils.getPropertyElement(rootElement, "Default");
+        final Element defaultElement = XMLUtils.getPropertyElement(rootElement, "Default").get();
         final String defaultText = defaultElement.getAttributes().getNamedItem("value").getNodeValue();
 
         int index = 0;
@@ -111,7 +112,8 @@ public class PdfListBoxWriter implements PdfComponentWriter {
             final Element captionElement = XMLUtils.getElementsFromNodeList(
                     widget.getProperties().getElementsByTagName("layout")).get(0);
 
-            final String location = XMLUtils.getPropertyElement(captionElement, "Position").getAttributeNode("value").getValue();
+            final Element positionElement = XMLUtils.getPropertyElement(captionElement, "Position").get();
+            final String location = positionElement.getAttributeNode("value").getValue();
             if (location.equals("None")) {
                 return;
             }
@@ -163,9 +165,9 @@ public class PdfListBoxWriter implements PdfComponentWriter {
 
         final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
 
-        final String style = XMLUtils.getAttributeFromChildElement(border, "Border Style");
-        final String width = XMLUtils.getAttributeFromChildElement(border, "Border Width");
-        final String color = XMLUtils.getAttributeFromChildElement(border, "Border Color");
+        final String style = XMLUtils.getAttributeFromChildElement(border, "Border Style").orElse("None");
+        final String width = XMLUtils.getAttributeFromChildElement(border, "Border Width").orElse("1");
+        final String color = XMLUtils.getAttributeFromChildElement(border, "Border Color").orElse(String.valueOf(Color.WHITE.getRGB()));
 
         switch (style) {
             case "Solid":

@@ -413,7 +413,7 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
             if (widget.isComponentSplit() && captionPosition != null) {
                 final Element widgetProperties = widgetsAndProperties.get(widget);
 
-                final Element captionPositionElement = XMLUtils.getPropertyElement(widgetProperties, "Position");
+                final Element captionPositionElement = XMLUtils.getPropertyElement(widgetProperties, "Position").get();
 
                 captionPositionElement.getAttributeNode("value").setValue(captionPosition.toString());
 
@@ -433,7 +433,7 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
         for (final IWidget widget : widgets) {
             final Element widgetProperties = widgetsAndProperties.get(widget);
 
-            final Element rotationElement = XMLUtils.getPropertyElement(widgetProperties, "Rotation");
+            final Element rotationElement = XMLUtils.getPropertyElement(widgetProperties, "Rotation").get();
 
             rotationElement.getAttributeNode("value").setValue(alignment);
         }
@@ -448,7 +448,7 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
             if (anchor != null) {
                 final Element widgetProperties = widgetsAndProperties.get(widget);
 
-                final Element anchorElement = XMLUtils.getPropertyElement(widgetProperties, "Anchor");
+                final Element anchorElement = XMLUtils.getPropertyElement(widgetProperties, "Anchor").get();
 
                 anchorElement.getAttributeNode("value").setValue(anchor.toString());
             }
@@ -581,22 +581,22 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
             /* add size & position properties */
             final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
 
-            final String xCord = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "X");
-            final String width = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Width");
-            final String yCord = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Y");
-            final String height = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Height");
+            final String xCord = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "X").get();
+            final String width = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Width").get();
+            final String yCord = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Y").get();
+            final String height = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Height").get();
 
             //            boolean xExpand = Boolean.valueOf(XMLUtils.getAttribute(sizeAndPosition, 4)).booleanValue();
             //            boolean yExpand = Boolean.valueOf(XMLUtils.getAttribute(sizeAndPosition, 5)).booleanValue();
 
-            final String anchor = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Anchor");
-            final String rotation = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Rotation");
+            final String anchor = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Anchor").get();
+            final String rotation = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Rotation").get();
 
             /* add caption properties */
             String captionPosition = null;
             if (widget.isComponentSplit()) {
                 final Element caption = (Element) props.getElementsByTagName("caption").item(0);
-                captionPosition = XMLUtils.getAttributeFromChildElement(caption, "Position");
+                captionPosition = XMLUtils.getAttributeFromChildElement(caption, "Position").get();
             }
 
             if (captionPositionToUse == null) {

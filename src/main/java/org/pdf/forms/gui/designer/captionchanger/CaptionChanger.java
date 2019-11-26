@@ -136,7 +136,7 @@ public class CaptionChanger {
                 XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties"))
                         .get(0);
 
-        final Element textElement = XMLUtils.getPropertyElement(captionProperties, "Text");
+        final Element textElement = XMLUtils.getPropertyElement(captionProperties, "Text").get();
 
         textElement.getAttributeNode("value").setValue(text);
 

@@ -84,9 +84,9 @@ public class PdfButtonWriter implements PdfComponentWriter {
 
         final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
 
-        final String style = XMLUtils.getAttributeFromChildElement(border, "Border Style");
-        final String width = XMLUtils.getAttributeFromChildElement(border, "Border Width");
-        final String color = XMLUtils.getAttributeFromChildElement(border, "Border Color");
+        final String style = XMLUtils.getAttributeFromChildElement(border, "Border Style").orElse("None");
+        final String width = XMLUtils.getAttributeFromChildElement(border, "Border Width").orElse("1");
+        final String color = XMLUtils.getAttributeFromChildElement(border, "Border Color").orElse(String.valueOf(Color.WHITE.getRGB()));
 
         switch (style) {
             case "Solid":

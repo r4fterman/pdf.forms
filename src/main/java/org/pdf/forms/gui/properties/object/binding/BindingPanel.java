@@ -122,11 +122,11 @@ public class BindingPanel extends JPanel {
                     mainFrame.renameWidget(oldName, name, widget);
                 }
 
-                final Element nameElement = XMLUtils.getPropertyElement(widgetProperties, "Name");
+                final Element nameElement = XMLUtils.getPropertyElement(widgetProperties, "Name").get();
                 nameElement.getAttributeNode("value").setValue(name);
 
                 final int arrayNumber = mainFrame.getNextArrayNumberForName(name, widget);
-                final Element arrayNumberElement = XMLUtils.getPropertyElement(widgetProperties, "Array Number");
+                final Element arrayNumberElement = XMLUtils.getPropertyElement(widgetProperties, "Array Number").get();
                 arrayNumberElement.getAttributeNode("value").setValue(arrayNumber + "");
             }
 
@@ -149,8 +149,8 @@ public class BindingPanel extends JPanel {
             /* add binding properties */
             final Element valueProperties = (Element) objectProperties.getElementsByTagName("binding").item(0);
 
-            final String name = XMLUtils.getAttributeFromChildElement(valueProperties, "Name");
-            final String arrayNumber = XMLUtils.getAttributeFromChildElement(valueProperties, "Array Number");
+            final String name = XMLUtils.getAttributeFromChildElement(valueProperties, "Name").orElse("");
+            final String arrayNumber = XMLUtils.getAttributeFromChildElement(valueProperties, "Array Number").orElse("0");
 
             nameField.setText(name);
             arrayField.setText(arrayNumber);
