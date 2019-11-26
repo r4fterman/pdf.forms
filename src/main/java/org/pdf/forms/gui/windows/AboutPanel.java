@@ -176,8 +176,9 @@ public class AboutPanel extends javax.swing.JPanel {
     }
     private JLabel createUrlLabel(
             final JPanel details,
-            final String website) {
-        final JLabel label = new JLabel("<html><center> " + website + "</center></html>");
+            final String linkAddress) {
+        final String htmlCenteredLink = "<html><p>" + linkAddress + "</p></html>";
+        final JLabel label = new JLabel(htmlCenteredLink);
         label.setFont(serifFont12);
         label.setForeground(Color.blue);
 
@@ -185,18 +186,18 @@ public class AboutPanel extends javax.swing.JPanel {
             @Override
             public void mouseEntered(final MouseEvent event) {
                 details.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                label.setText("<html><center><a href=" + website + ">" + website + "</a></center></html>");
+                label.setText("<html><a href=" + linkAddress + ">" + linkAddress + "</a></html>");
             }
 
             @Override
             public void mouseExited(final MouseEvent event) {
                 details.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                label.setText("<html><center>" + website + "</center></html>");
+                label.setText(htmlCenteredLink);
             }
 
             @Override
             public void mouseClicked(final MouseEvent event) {
-                Commands.openWebpage(website);
+                Commands.openWebpage(linkAddress);
             }
         });
         return label;
