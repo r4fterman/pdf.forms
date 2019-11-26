@@ -55,9 +55,6 @@ public class BindingPanel extends JPanel {
     private JTextField arrayField;
     private JTextField nameField;
 
-    /**
-     * Creates new form TextFieldBindingPanel.
-     */
     public BindingPanel() {
         initComponents();
     }

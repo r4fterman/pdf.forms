@@ -50,6 +50,7 @@ import org.pdf.forms.widgets.RadioButtonWidget;
 import org.w3c.dom.Element;
 
 public class RadioButtonGroupOrganiser extends JPanel {
+
     private final List<ButtonGroup> radioButtonGroups;
     private final JDialog parentDialog;
     private final List<IWidget> widgetsOnPage;
@@ -57,13 +58,10 @@ public class RadioButtonGroupOrganiser extends JPanel {
 
     private JList<String> buttonGroupsList;
 
-    /**
-     * Creates new form RadioButtonGroupOrganiser.
-     */
     public RadioButtonGroupOrganiser(
             final JDialog parentDialog,
-            final List radioButtonGroups,
-            final List widgetsOnPage,
+            final List<ButtonGroup> radioButtonGroups,
+            final List<IWidget> widgetsOnPage,
             final int type) {
         this.parentDialog = parentDialog;
         this.radioButtonGroups = radioButtonGroups;
@@ -111,7 +109,7 @@ public class RadioButtonGroupOrganiser extends JPanel {
         jButton4.addActionListener(this::okClicked);
 
         final GroupLayout layout = new GroupLayout(this);
-        this.setLayout(layout);
+        setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()

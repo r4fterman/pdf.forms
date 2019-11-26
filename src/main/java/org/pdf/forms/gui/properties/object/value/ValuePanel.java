@@ -58,9 +58,6 @@ public class ValuePanel extends JPanel {
 
     private JComboBox<String> defaultBox;
 
-    /**
-     * Creates new form TextFieldValuePanel.
-     */
     public ValuePanel() {
         initComponents();
     }

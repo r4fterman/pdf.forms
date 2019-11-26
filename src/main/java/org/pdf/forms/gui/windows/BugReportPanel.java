@@ -36,6 +36,7 @@ import java.util.LinkedHashMap;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -49,7 +50,7 @@ import javax.swing.table.TableColumn;
 
 import org.jdesktop.layout.GroupLayout;
 
-public class BugReportPanel extends javax.swing.JPanel implements TableModelListener {
+public class BugReportPanel extends JPanel implements TableModelListener {
 
     private final LinkedHashMap filesAndSizes;
     private final JDialog parentDialog;
@@ -57,9 +58,6 @@ public class BugReportPanel extends javax.swing.JPanel implements TableModelList
     private JTable filesToAttach;
     private JLabel sizeOfAttachment;
 
-    /**
-     * Creates new form BugReportDialog.
-     */
     public BugReportPanel(
             final LinkedHashMap filesAndSizes,
             final JDialog parentDialog) {
@@ -98,7 +96,6 @@ public class BugReportPanel extends javax.swing.JPanel implements TableModelList
     }
 
     private void initComponents() {
-
         final JLabel jLabel1 = new JLabel();
         final JTextField nameBox = new JTextField();
         final JLabel jLabel2 = new JLabel();

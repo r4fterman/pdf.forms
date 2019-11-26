@@ -43,6 +43,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
@@ -57,7 +58,7 @@ import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.RadioButtonWidget;
 import org.w3c.dom.Element;
 
-public class RadioButtonFieldPanel extends javax.swing.JPanel {
+public class RadioButtonFieldPanel extends JPanel {
     private Map<IWidget, Element> widgetsAndProperties;
 
     private IDesigner designerPanel;

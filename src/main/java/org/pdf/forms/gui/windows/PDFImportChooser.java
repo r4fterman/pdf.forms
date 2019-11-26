@@ -38,13 +38,14 @@ import java.awt.event.ActionEvent;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import org.jdesktop.layout.GroupLayout;
 
-public class PDFImportChooser extends javax.swing.JDialog {
+public class PDFImportChooser extends JDialog {
 
     public static final int IMPORT_NEW = 0;
     public static final int IMPORT_EXISTING = 1;
@@ -53,9 +54,6 @@ public class PDFImportChooser extends javax.swing.JDialog {
     private JRadioButton importIntoExistingButton;
     private JRadioButton importIntoNewButton;
 
-    /**
-     * Creates new form PDFImportChooser.
-     */
     public PDFImportChooser(final Component parent) {
         super((Frame) parent, "Import Type", true);
 

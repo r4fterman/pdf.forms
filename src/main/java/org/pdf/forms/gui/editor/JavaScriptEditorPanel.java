@@ -36,6 +36,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JPanel;
+
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.utils.XMLUtils;
@@ -48,7 +50,7 @@ import org.w3c.dom.Text;
 import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
 
-public class JavaScriptEditorPanel extends javax.swing.JPanel implements Dockable {
+public class JavaScriptEditorPanel extends JPanel implements Dockable {
 
     private final DockKey key = new DockKey("Script Editor");
 
@@ -61,9 +63,6 @@ public class JavaScriptEditorPanel extends javax.swing.JPanel implements Dockabl
     private javax.swing.JComboBox<String> runAtBox;
     private javax.swing.JTextArea scriptBox;
 
-    /**
-     * Creates new form JavaScriptEditorPanel.
-     */
     public JavaScriptEditorPanel() {
         key.setFloatEnabled(true);
         initComponents();

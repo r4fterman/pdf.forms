@@ -41,15 +41,11 @@ import javax.swing.SwingConstants;
 
 class SplashPanel extends JPanel {
 
-    /**
-     * Creates new form SpashPanel.
-     */
     SplashPanel(final String version) {
         initComponents(version);
     }
 
     private void initComponents(final String version) {
-
         final JLabel jLabel2 = new JLabel();
         final JLabel jLabel1 = new JLabel();
         progressBar = new JProgressBar();

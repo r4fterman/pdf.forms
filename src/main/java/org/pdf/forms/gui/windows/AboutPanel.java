@@ -38,7 +38,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Map;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -47,7 +46,7 @@ import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.commands.Commands;
 
-public class AboutPanel extends javax.swing.JPanel {
+public class AboutPanel extends JPanel {
 
     private static final String ORIGINAL_JPEDAL_PAGE = "http://www.jpedal.org";
     private static final String COMMERCIAL_JPEDAL_PAGE = "https://www.idrsolutions.com/jpedal/";
@@ -162,18 +161,12 @@ public class AboutPanel extends javax.swing.JPanel {
         layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.LEADING).add(sequentialGroup));
     }
 
-    public static void main(final String[] args) {
-        final JFrame frame = new JFrame();
-        frame.getContentPane().add(new AboutPanel());
-        frame.pack();
-        frame.setVisible(true);
-    }
-
     private JLabel createLabel(final String text) {
         final JLabel label = new JLabel(text);
         label.setFont(serifFont12);
         return label;
     }
+
     private JLabel createUrlLabel(
             final JPanel details,
             final String linkAddress) {

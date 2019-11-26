@@ -44,6 +44,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
@@ -56,7 +57,7 @@ import org.pdf.forms.widgets.IWidget;
 
 import com.itextpdf.text.PageSize;
 
-public class PagePanel extends javax.swing.JPanel {
+public class PagePanel extends JPanel {
 
     private final Dimension A4 = new Dimension(
             (int) PageSize.A4.getWidth(), (int) PageSize.A4.getHeight());

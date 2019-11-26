@@ -47,6 +47,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
@@ -60,7 +61,7 @@ import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Element;
 
-public class ListFieldPanel extends javax.swing.JPanel implements TristateCheckBoxParent {
+public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
 
     private Map<IWidget, Element> widgetsAndProperties;
     private IDesigner designerPanel;

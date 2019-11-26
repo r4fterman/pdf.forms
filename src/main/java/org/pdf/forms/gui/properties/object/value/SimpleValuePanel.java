@@ -59,9 +59,6 @@ public class SimpleValuePanel extends JPanel {
     private JScrollPane jScrollPane1;
     private JComboBox<String> typeBox;
 
-    /**
-     * Creates new form TextFieldValuePanel.
-     */
     public SimpleValuePanel(final int type) {
         initComponents();
 

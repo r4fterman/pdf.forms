@@ -44,6 +44,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.jdesktop.layout.GroupLayout;
@@ -54,7 +55,7 @@ import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Element;
 
-public class ImageDrawPanel extends javax.swing.JPanel {
+public class ImageDrawPanel extends JPanel {
 
     private Map<IWidget, Element> widgetsAndProperties;
 

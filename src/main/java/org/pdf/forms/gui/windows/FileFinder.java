@@ -35,6 +35,7 @@ import java.awt.Component;
 import java.io.File;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -44,16 +45,13 @@ import javax.swing.JTextField;
 import org.jdesktop.layout.GroupLayout;
 import org.jpedal.examples.simpleviewer.utils.FileFilterer;
 
-public class FileFinder extends javax.swing.JDialog {
+public class FileFinder extends JDialog {
 
     private String fileLocation;
 
     private JLabel fileLabel;
     private JTextField locationBox;
 
-    /**
-     * Creates new form FileFinderFrame.
-     */
     public FileFinder(
             final Component parent,
             final String fileToFind) {

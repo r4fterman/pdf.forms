@@ -64,7 +64,6 @@ public class HierarchyPanel extends JPanel implements Dockable {
     private final List<DefaultMutableTreeNode> pageNodes = new ArrayList<>();
 
     public HierarchyPanel(final IDesigner designer) {
-
         setLayout(new BorderLayout());
 
         top = new DefaultMutableTreeNode("Document Root");
