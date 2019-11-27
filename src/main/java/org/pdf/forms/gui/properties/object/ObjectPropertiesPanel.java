@@ -56,7 +56,6 @@ import org.w3c.dom.Element;
 public class ObjectPropertiesPanel extends JPanel {
 
     private final JTabbedPane tabs = new JTabbedPane();
-
     private IDesigner designerPanel;
 
     ObjectPropertiesPanel() {
@@ -160,23 +159,7 @@ public class ObjectPropertiesPanel extends JPanel {
 
                     break;
                 }
-                case IWidget.CHECK_BOX: {
-                    final RadioButtonFieldPanel radioButtonFieldPanel = new RadioButtonFieldPanel();
-                    radioButtonFieldPanel.setDesignerPanel(designerPanel, type);
-                    radioButtonFieldPanel.setProperties(widgetsAndProperties);
-
-                    final ValuePanel valuePanel = new ValuePanel();
-                    valuePanel.setDesignerPanel(designerPanel);
-                    valuePanel.setProperties(widgetsAndProperties);
-
-                    bindingPanel.setProperties(widgetsAndProperties);
-
-                    tabs.add("Field", radioButtonFieldPanel);
-                    tabs.add("Value", valuePanel);
-                    tabs.add("Binding", bindingPanel);
-
-                    break;
-                }
+                case IWidget.CHECK_BOX:
                 case IWidget.RADIO_BUTTON: {
                     final RadioButtonFieldPanel radioButtonFieldPanel = new RadioButtonFieldPanel();
                     radioButtonFieldPanel.setDesignerPanel(designerPanel, type);
@@ -194,8 +177,7 @@ public class ObjectPropertiesPanel extends JPanel {
 
                     break;
                 }
-                case IWidget.IMAGE:
-
+                case IWidget.IMAGE: {
                     final ImageDrawPanel imageDrawPanel = new ImageDrawPanel();
                     imageDrawPanel.setDesignerPanel(designerPanel);
                     imageDrawPanel.setProperties(widgetsAndProperties);
@@ -203,6 +185,7 @@ public class ObjectPropertiesPanel extends JPanel {
                     tabs.add("Draw", imageDrawPanel);
 
                     break;
+                }
                 default:
                     break;
             }

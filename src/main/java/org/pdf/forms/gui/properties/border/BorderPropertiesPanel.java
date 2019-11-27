@@ -72,9 +72,6 @@ public class BorderPropertiesPanel extends JPanel {
     private JComboBox<String> borderStyleBox;
     private JTextField borderWidthBox;
 
-    /**
-     * Creates new form BorderPropertiesPanel.
-     */
     BorderPropertiesPanel() {
         initComponents();
     }

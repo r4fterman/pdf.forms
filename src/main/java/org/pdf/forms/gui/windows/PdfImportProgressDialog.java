@@ -31,19 +31,27 @@
 */
 package org.pdf.forms.gui.windows;
 
+import static javax.swing.LayoutStyle.ComponentPlacement;
+
+import java.awt.event.ActionEvent;
+
 import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
+import javax.swing.WindowConstants;
 
 public class PdfImportProgressDialog extends JDialog {
 
     private int noOfPages;
     private boolean isCancelled = false;
 
-    private javax.swing.JLabel infoText;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JProgressBar progressBar;
-    private javax.swing.JButton stopButton;
+    private JLabel infoText;
+    private JProgressBar progressBar;
+    private JButton stopButton;
 
     public PdfImportProgressDialog(final JFrame frame) {
         super(frame);
@@ -52,26 +60,22 @@ public class PdfImportProgressDialog extends JDialog {
 
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        infoText = new javax.swing.JLabel();
-        progressBar = new javax.swing.JProgressBar();
-        stopButton = new javax.swing.JButton();
+        final JLabel jLabel1 = new JLabel();
+        infoText = new JLabel();
+        progressBar = new JProgressBar();
+        stopButton = new JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/pdf/forms/res/animation.gif"))); // NOI18N
+        jLabel1.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/animation.gif"))); // NOI18N
 
         infoText.setText("Importing PDF page 1 of 10:");
 
         stopButton.setText("Stop");
-        stopButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                stopButtonstopClicked(evt);
-            }
-        });
+        stopButton.addActionListener(this::stopButtonClicked);
 
-        GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        final GroupLayout layout = new GroupLayout(getContentPane());
+        setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGap(0, 424, Short.MAX_VALUE)
@@ -92,11 +96,11 @@ public class PdfImportProgressDialog extends JDialog {
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jLabel1, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addPreferredGap(ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                                         .addGroup(GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                                 .addComponent(infoText)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addPreferredGap(ComponentPlacement.RELATED)
                                                 .addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE))
                                         .addComponent(stopButton))
                                 .addContainerGap())
@@ -105,17 +109,17 @@ public class PdfImportProgressDialog extends JDialog {
         pack();
     }
 
-    private void stopButtonstopClicked(java.awt.event.ActionEvent evt) {
+    private void stopButtonClicked(final ActionEvent evt) {
         stopButton.setEnabled(false);
         isCancelled = true;
     }
 
-    public void setStatusMaximum(int max) {
-        this.noOfPages = max;
+    public void setStatusMaximum(final int max) {
+        noOfPages = max;
         progressBar.setMaximum(max);
     }
 
-    public void setProgress(int progress) {
+    public void setProgress(final int progress) {
         progressBar.setValue(progress);
         infoText.setText("Importing PDF page " + (progress + 1) + " of " + noOfPages + ":");
     }

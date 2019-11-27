@@ -43,6 +43,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
@@ -54,7 +55,7 @@ import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Element;
 
-public class FontPropertiesPanel extends javax.swing.JPanel {
+public class FontPropertiesPanel extends JPanel {
 
     //fontNameBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Times-Roman", "Times-Bold", "Times-Italic", "Times-BoldItalic", "Helvetica", "Helvetica-Bold", "Helvetica-Oblique", "Helvetica-BoldOblique", "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique", "Symbol", "ZapfDingbats" }));
 
@@ -62,7 +63,7 @@ public class FontPropertiesPanel extends javax.swing.JPanel {
     private IDesigner designerPanel;
     private Map<IWidget, Element> widgetsAndProperties;
 
-    private javax.swing.JComboBox<Object> colorBox;
+    private JComboBox<Object> colorBox;
     private javax.swing.JComboBox<String> currentlyEditingBox;
     private javax.swing.JComboBox<String> fontNameBox;
     private javax.swing.JComboBox<String> fontSizeBox;

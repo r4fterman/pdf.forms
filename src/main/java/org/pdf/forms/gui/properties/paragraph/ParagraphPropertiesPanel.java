@@ -76,9 +76,6 @@ public class ParagraphPropertiesPanel extends JPanel {
     private JToggleButton verticalAlignCenter;
     private JToggleButton verticalAlignBottom;
 
-    /**
-     * Creates new form ParagraphPropertiesPanel.
-     */
     ParagraphPropertiesPanel() {
         initComponents();
         horizontalAlignJustify.setVisible(false);

@@ -4,11 +4,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.gui.designer.Designer;
 import org.pdf.forms.gui.designer.gui.Rule;
 import org.pdf.forms.gui.windows.SplashWindow;
 
+@Disabled
 public abstract class UIPanelTest {
 
     private Designer designerPanel;

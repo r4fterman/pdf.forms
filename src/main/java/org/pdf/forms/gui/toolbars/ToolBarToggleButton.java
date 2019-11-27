@@ -39,17 +39,10 @@ import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 
-/**
- * Swing specific implementation of GUIButton interface.
- */
 public class ToolBarToggleButton extends JToggleButton {
 
     ToolBarToggleButton() {
         super();
-    }
-
-    public ToolBarToggleButton(final String text) {
-        super(text);
     }
 
     void init(
