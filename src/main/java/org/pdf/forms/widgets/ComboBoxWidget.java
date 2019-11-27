@@ -32,7 +32,6 @@
 package org.pdf.forms.widgets;
 
 import java.awt.Color;
-import java.lang.reflect.Field;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
@@ -196,9 +195,9 @@ public class ComboBoxWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(getProperties(), "Border Width", "1", borders);
         XMLUtils.addBasicProperty(getProperties(), "Border Color", Color.BLACK.getRGB() + "", borders);
 
-        final Element backgorundFill = XMLUtils.createAndAppendElement(getProperties(), "backgroundfill", borderElement);
-        XMLUtils.addBasicProperty(getProperties(), "Style", "Solid", backgorundFill);
-        XMLUtils.addBasicProperty(getProperties(), "Fill Color", Color.WHITE.getRGB() + "", backgorundFill);
+        final Element backgroundFill = XMLUtils.createAndAppendElement(getProperties(), "backgroundfill", borderElement);
+        XMLUtils.addBasicProperty(getProperties(), "Style", "Solid", backgroundFill);
+        XMLUtils.addBasicProperty(getProperties(), "Fill Color", Color.WHITE.getRGB() + "", backgroundFill);
     }
 
     private void addParagraphProperties(final Element propertiesElement) {
@@ -215,13 +214,13 @@ public class ComboBoxWidget extends Widget implements IWidget {
 
     @Override
     public void setParagraphProperties(
-            final Element paragraphPropertiesElememt,
+            final Element paragraphPropertiesElement,
             final int currentlyEditing) {
 
         final SplitComponent comboBox = (SplitComponent) getBaseComponent();
 
         final Element paragraphCaptionElement =
-                (Element) paragraphPropertiesElememt.getElementsByTagName("paragraph_caption").item(0);
+                (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
 
         setParagraphProperties(paragraphCaptionElement, comboBox.getCaption());
 
@@ -230,29 +229,26 @@ public class ComboBoxWidget extends Widget implements IWidget {
 
     @Override
     public void setLayoutProperties(final Element layoutProperties) {
-        final SplitComponent comboBox = (SplitComponent) getBaseComponent();
-
-        /* set the size and position of the TextField*/
         setSizeAndPosition(layoutProperties);
-
-        /* set the location of the caption */
-        final Element captionElement = (Element) layoutProperties.getElementsByTagName("caption").item(0);
-
-        final String captionPosition = XMLUtils.getAttributeFromChildElement(captionElement, "Position").orElse("left");
-
-        /* use reflection to set the required rotation button selected */
-        try {
-            final Field field = comboBox.getClass().getDeclaredField("CAPTION_" + captionPosition.toUpperCase());
-
-            final int position = field.getInt(this);
-            if (position != comboBox.getCaptionPosition()) {
-                comboBox.setCaptionPosition(position);
-            }
-        } catch (final Exception e) {
-            logger.error("Error setting layout properties", e);
-        }
+        setCaptionLocation(layoutProperties);
 
         setSize(getWidth(), getHeight());
+    }
+
+    private void setCaptionLocation(final Element layoutProperties) {
+        final int captionLocation= extractCaptionLocation(layoutProperties);
+
+        final SplitComponent comboBox = (SplitComponent) getBaseComponent();
+        if (comboBox.getCaptionPosition() != captionLocation) {
+            comboBox.setCaptionPosition(captionLocation);
+        }
+    }
+
+    private int extractCaptionLocation(final Element layoutProperties) {
+        final Element captionElement = (Element) layoutProperties.getElementsByTagName("caption").item(0);
+        return XMLUtils.getAttributeFromChildElement(captionElement, "Position")
+                .map(caption -> new Caption(caption).getLocation())
+                .orElse(Caption.DEFAULT_LOCATION);
     }
 
     @Override
