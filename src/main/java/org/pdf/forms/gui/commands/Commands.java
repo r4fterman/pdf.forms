@@ -347,8 +347,10 @@ public class Commands {
                 final String fileName = item.getName();
 
                 if (type.equals("recentdesfiles")) {
+                    // TODO: handle missing files here
                     openDesignerFile(fileName);
-                } else { // "recentpdffiles"
+                } else {
+                    // "recentpdffiles"
                     final int importType = aquirePDFImportType();
 
                     importPDF(importType, fileName);
