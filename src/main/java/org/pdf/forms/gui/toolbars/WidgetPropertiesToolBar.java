@@ -34,7 +34,6 @@ package org.pdf.forms.gui.toolbars;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,16 +48,12 @@ import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public class WidgetPropertiesToolBar extends VLToolBar {
-
-    private final Logger logger = LoggerFactory.getLogger(WidgetPropertiesToolBar.class);
 
     private final ButtonGroup alignmentGroup;
     private final JComboBox<String> fontBox;
@@ -72,7 +67,6 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     private final IDesigner designerPanel;
 
     public WidgetPropertiesToolBar(final IDesigner designerPanel) {
-
         this.designerPanel = designerPanel;
 
         final Map fontFileMap = FontHandler.getInstance().getFontFileMap();
@@ -135,19 +129,18 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     }
 
     private void updateAlignment(final String alignment) {
-
         final Set<IWidget> widgets = designerPanel.getSelectedWidgets();
 
         for (final IWidget widget : widgets) {
             final Document properties = widget.getProperties();
             final Element paragraphElement = (Element) properties.getElementsByTagName("paragraph").item(0);
 
-            final List paagraphList = XMLUtils.getElementsFromNodeList(paragraphElement.getChildNodes());
+            final List paragraphList = XMLUtils.getElementsFromNodeList(paragraphElement.getChildNodes());
 
-            final Element captionElement = (Element) paagraphList.get(0);
+            final Element captionElement = (Element) paragraphList.get(0);
             Element valueElement = null;
             if (widget.allowEditCaptionAndValue()) {
-                valueElement = (Element) paagraphList.get(1);
+                valueElement = (Element) paragraphList.get(1);
             }
 
             final Element captionAlignment = XMLUtils.getPropertyElement(captionElement, "Horizontal Alignment").get();
@@ -228,7 +221,9 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             widgetsAndProperties.put(widget, layoutProperties);
         }
 
-        String fontNameToUse = null, fontSizeToUse = null, fontStyleToUse = null;
+        String fontNameToUse = null;
+        String fontSizeToUse = null;
+        String fontStyleToUse = null;
 
         /* iterate through the widgets */
         for (final IWidget widget : widgetsAndProperties.keySet()) {
@@ -263,12 +258,14 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             final String fontSize = getProperty(captionFontSize, valueFontSize);
             final String fontStyle = getProperty(captionFontStyle, valueFontStyle);
 
-            if (fontNameToUse == null) { // this must be the first time round
+            if (fontNameToUse == null) {
+                // this must be the first time round
                 fontNameToUse = fontName;
                 fontSizeToUse = fontSize;
                 fontStyleToUse = fontStyle;
 
-            } else { // check for subsequent widgets
+            } else {
+                // check for subsequent widgets
 
                 if (!fontNameToUse.equals(fontName)) {
                     fontNameToUse = "mixed";
@@ -370,18 +367,14 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             }
         }
 
-        try {
-            if ("mixed".equals(horizontalAlignmentToUse)) {
-                alignmentGroup.setSelected(new JToggleButton("").getModel(), true);
-            } else {
-                horizontalAlignmentToUse = horizontalAlignmentToUse.substring(0, 1).toUpperCase() + horizontalAlignmentToUse.substring(1);
-
-                final Field field = getClass().getDeclaredField("align" + horizontalAlignmentToUse);
-                final JToggleButton toggleButton = (JToggleButton) field.get(this);
-                toggleButton.setSelected(true);
-            }
-        } catch (final Exception e) {
-            logger.error("Error setting paragraph properties", e);
+        if ("mixed".equals(horizontalAlignmentToUse)) {
+            alignmentGroup.setSelected(new JToggleButton("").getModel(), true);
+        } else if ("left".equals(horizontalAlignmentToUse)) {
+            alignLeft.setSelected(true);
+        } else if ("center".equals(horizontalAlignmentToUse)) {
+            alignCenter.setSelected(true);
+        } else if ("right".equals(horizontalAlignmentToUse)) {
+            alignRight.setSelected(true);
         }
     }
 
@@ -421,21 +414,19 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             final Object value) {
         final ActionListener listener = comboBox.getActionListeners()[0];
         comboBox.removeActionListener(listener);
-
         comboBox.setSelectedItem(value);
-
         comboBox.addActionListener(listener);
     }
 
     private String getProperty(
             final String captionProperty,
             final String valueProperty) {
-        String propertyToUse = null;
-
-        if (captionProperty.equals(valueProperty)) { // both are the same
+        final String propertyToUse;
+        if (captionProperty.equals(valueProperty)) {
+            // both are the same
             propertyToUse = captionProperty;
         } else {
-            /* properties are different */
+            // properties are different
             propertyToUse = "mixed";
         }
 
@@ -455,11 +446,11 @@ public class WidgetPropertiesToolBar extends VLToolBar {
 
     private void setState(final boolean enabled) {
         if (!enabled) {
-            setItemQuietly(fontBox, null);
-            setItemQuietly(fontSize, null);
+            setItemQuietly(fontBox);
+            setItemQuietly(fontSize);
 
-            setSelectedQuietly(fontBold, false);
-            setSelectedQuietly(fontItalic, false);
+            setSelectedQuietly(fontBold);
+            setSelectedQuietly(fontItalic);
 
             alignmentGroup.setSelected(new JToggleButton("").getModel(), true);
         }
@@ -475,21 +466,17 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         alignRight.setEnabled(enabled);
     }
 
-    private void setItemQuietly(
-            final JComboBox comboBox,
-            final Object item) {
+    private void setItemQuietly(final JComboBox comboBox) {
         final ActionListener listener = comboBox.getActionListeners()[0];
         comboBox.removeActionListener(listener);
-        comboBox.setSelectedItem(item);
+        comboBox.setSelectedItem(null);
         comboBox.addActionListener(listener);
     }
 
-    private void setSelectedQuietly(
-            final JToggleButton toggleButton,
-            final boolean selected) {
+    private void setSelectedQuietly(final JToggleButton toggleButton) {
         final ActionListener listener = toggleButton.getActionListeners()[0];
         toggleButton.removeActionListener(listener);
-        toggleButton.setSelected(selected);
+        toggleButton.setSelected(false);
         toggleButton.addActionListener(listener);
     }
 }

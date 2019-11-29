@@ -35,7 +35,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +46,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -63,13 +61,9 @@ import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateC
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBoxParent;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*/ implements TristateCheckBoxParent {
-
-    private final Logger logger = LoggerFactory.getLogger(LayoutPropertiesPanel.class);
 
     private final int units = (int) (Rule.INCH / 2.54);
 
@@ -103,7 +97,6 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
 
     private void initComponents() {
         buttonGroup1 = new ButtonGroup();
-        final JFileChooser jFileChooser1 = new JFileChooser();
         final JPanel jPanel1 = new JPanel();
         final JLabel jLabel1 = new JLabel();
         final JLabel jLabel2 = new JLabel();
@@ -144,14 +137,14 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
         xBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent evt) {
-                updateSizeAndPosition(evt);
+                updateSizeAndPosition();
             }
         });
 
         widthBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent evt) {
-                updateSizeAndPosition(evt);
+                updateSizeAndPosition();
             }
         });
 
@@ -167,14 +160,14 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
         heightBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent evt) {
-                updateSizeAndPosition(evt);
+                updateSizeAndPosition();
             }
         });
 
         yBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent evt) {
-                updateSizeAndPosition(evt);
+                updateSizeAndPosition();
             }
         });
 
@@ -381,7 +374,7 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
         );
 
         final GroupLayout layout = new GroupLayout(this);
-        this.setLayout(layout);
+        setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
@@ -456,7 +449,7 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
 
     }
 
-    private void updateSizeAndPosition(final FocusEvent evt) {
+    private void updateSizeAndPosition() {
         final Integer[] props = new Integer[4];
 
         if (!xBox.getText().equals("mixed")) {
@@ -709,16 +702,14 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
 
         if ("mixed".equals(rotationToUse)) {
             buttonGroup1.setSelected(new JToggleButton("").getModel(), true);
-        } else {
-
-            /* use reflection to set the required rotation button selected */
-            try {
-                final Field field = getClass().getDeclaredField("rotate" + rotationToUse);
-                final JToggleButton toggleButton = (JToggleButton) field.get(this);
-                toggleButton.setSelected(true);
-            } catch (final Exception e) {
-                logger.error("Error finding rotation toggle button {}", rotationToUse, e);
-            }
+        } else if ("0".equals(rotationToUse)) {
+            rotate0.setSelected(true);
+        } else if ("90".equals(rotationToUse)) {
+            rotate90.setSelected(true);
+        } else if ("180".equals(rotationToUse)) {
+            rotate180.setSelected(true);
+        } else if ("270".equals(rotationToUse)) {
+            rotate270.setSelected(true);
         }
 
         if (isComponentSplit) {
