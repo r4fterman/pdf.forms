@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -334,7 +333,7 @@ public class Commands {
             }
 
             final String fileNameToAdd = recentDocs[i];
-            final String shortenedFileName = getShortenedFileName(fileNameToAdd);
+            final String shortenedFileName = getShortenedFileName(fileNameToAdd, File.separator);
 
             recentDocuments[i] = new JMenuItem(i + 1 + ": " + shortenedFileName);
 
@@ -377,7 +376,7 @@ public class Commands {
 
         for (int i = 0; i < recentDocs.length; i++) {
             if (recentDocs[i] != null) {
-                final String shortenedFileName = getShortenedFileName(recentDocs[i]);
+                final String shortenedFileName = getShortenedFileName(recentDocs[i], File.separator);
                 if (recentDocuments[i] == null) {
                     recentDocuments[i] = new JMenuItem();
                 }
@@ -393,30 +392,27 @@ public class Commands {
         }
     }
 
-    private String getShortenedFileName(final String fileNameToAdd) {
+    String getShortenedFileName(
+            final String fileNameToAdd,
+            final String fileSeparator) {
         final int maxChars = 30;
 
         if (fileNameToAdd.length() <= maxChars) {
             return fileNameToAdd;
         }
 
-        final StringTokenizer st = new StringTokenizer(fileNameToAdd, "\\/");
+        final String[] arrayedFilePath = fileNameToAdd.split(fileSeparator);
+        final int numberOfTokens = arrayedFilePath.length;
 
-        final int noOfTokens = st.countTokens();
-        final String[] arrayedFile = new String[noOfTokens];
-        for (int i = 0; i < noOfTokens; i++) {
-            arrayedFile[i] = st.nextToken();
-        }
-
-        final String filePathBody = fileNameToAdd.substring(arrayedFile[0].length(),
-                fileNameToAdd.length() - arrayedFile[noOfTokens - 1].length());
+        final String filePathBody = fileNameToAdd.substring(arrayedFilePath[0].length(),
+                fileNameToAdd.length() - arrayedFilePath[numberOfTokens - 1].length());
 
         final StringBuilder builder = new StringBuilder(filePathBody);
 
-        for (int i = noOfTokens - 2; i > 0; i--) {
-            final int start = builder.lastIndexOf(arrayedFile[i]);
+        for (int i = numberOfTokens - 2; i > 0; i--) {
+            final int start = builder.lastIndexOf(arrayedFilePath[i]);
 
-            final int end = start + arrayedFile[i].length();
+            final int end = start + arrayedFilePath[i].length();
             builder.replace(start, end, "...");
 
             if (builder.toString().length() <= maxChars) {
@@ -424,7 +420,7 @@ public class Commands {
             }
         }
 
-        return arrayedFile[0] + builder.toString() + arrayedFile[noOfTokens - 1];
+        return arrayedFilePath[0] + builder.toString() + arrayedFilePath[numberOfTokens - 1];
     }
 
     private void fontManagement() {
