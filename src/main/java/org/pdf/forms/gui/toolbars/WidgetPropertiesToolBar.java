@@ -48,12 +48,16 @@ import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public class WidgetPropertiesToolBar extends VLToolBar {
+
+    private Logger logger = LoggerFactory.getLogger(WidgetPropertiesToolBar.class);
 
     private final ButtonGroup alignmentGroup;
     private final JComboBox<String> fontBox;
@@ -263,18 +267,14 @@ public class WidgetPropertiesToolBar extends VLToolBar {
                 fontNameToUse = fontName;
                 fontSizeToUse = fontSize;
                 fontStyleToUse = fontStyle;
-
             } else {
                 // check for subsequent widgets
-
                 if (!fontNameToUse.equals(fontName)) {
                     fontNameToUse = "mixed";
                 }
-
                 if (!fontSizeToUse.equals(fontSize)) {
                     fontSizeToUse = "mixed";
                 }
-
                 if (!fontStyleToUse.equals(fontStyle)) {
                     fontStyleToUse = "mixed";
                 }
@@ -304,19 +304,14 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             fontBold.setSelected(false);
             fontItalic.setSelected(false);
         } else {
-            switch (Integer.parseInt(fontStyleToUse)) {
-                case IWidget.STYLE_BOLD:
-                    fontBold.setSelected(true);
-                    break;
-                case IWidget.STYLE_ITALIC:
-                    fontItalic.setSelected(true);
-                    break;
-                case IWidget.STYLE_BOLDITALIC:
-                    fontBold.setSelected(true);
-                    fontItalic.setSelected(true);
-                    break;
-                default:
-                    break;
+            final int style = Integer.parseInt(fontStyleToUse);
+            if (style == IWidget.STYLE_BOLD) {
+                fontBold.setSelected(true);
+            } else if (style == IWidget.STYLE_ITALIC) {
+                fontItalic.setSelected(true);
+            } else if (style == IWidget.STYLE_BOLDITALIC) {
+                fontBold.setSelected(true);
+                fontItalic.setSelected(true);
             }
         }
     }
@@ -375,6 +370,8 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             alignCenter.setSelected(true);
         } else if ("right".equals(horizontalAlignmentToUse)) {
             alignRight.setSelected(true);
+        } else {
+            logger.warn("Unexpected horizontal alignment {}", horizontalAlignmentToUse);
         }
     }
 

@@ -37,7 +37,6 @@ import java.awt.EventQueue;
 import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -996,27 +995,21 @@ public class Commands {
         final List<IWidget> widgets = new ArrayList<>();
 
         for (final Element widgetElement : widgetsInPageList) {
-            final Optional<String> widgetType = XMLUtils.getAttributeFromChildElement(widgetElement, "type");
-
-            try {
-                final Field field = IWidget.class.getDeclaredField(widgetType.get());
-
-                final int type = field.getInt(this);
-
-                final IWidget widget;
-                if (type == IWidget.GROUP) {
-                    widget = new GroupWidget();
-                    final List<IWidget> widgetsInGroup = getWidgetsFromXMLElement(XMLUtils.getElementsFromNodeList(widgetElement.getElementsByTagName("widgets")).get(0));
-                    widget.setWidgetsInGroup(widgetsInGroup);
-                } else {
-                    widget = WidgetFactory.createWidget(type, widgetElement);
-                }
-
-                widgets.add(widget);
-
-            } catch (final Exception e) {
-                LOGGER.error("Error getting widgets from XML element", e);
-            }
+            XMLUtils.getAttributeFromChildElement(widgetElement, "type")
+                    .map(type -> IWidget.WIDGET_TYPES.getOrDefault(type.toLowerCase(), IWidget.NONE))
+                    .map(widgetType -> {
+                        final IWidget widget;
+                        // TODO: move to WidgetFactory
+                        if (widgetType == IWidget.GROUP) {
+                            widget = new GroupWidget();
+                            final List<IWidget> widgetsInGroup = getWidgetsFromXMLElement(XMLUtils.getElementsFromNodeList(widgetElement.getElementsByTagName("widgets")).get(0));
+                            widget.setWidgetsInGroup(widgetsInGroup);
+                        } else {
+                            widget = WidgetFactory.createWidget(widgetType, widgetElement);
+                        }
+                        return widget;
+                    })
+                    .ifPresent(widgets::add);
         }
         return widgets;
     }

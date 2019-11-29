@@ -1,40 +1,10 @@
-/**
- * ===========================================
- * PDF Forms Designer
- * ===========================================
- * <p>
- * Project Info:  http://pdfformsdesigne.sourceforge.net
- * (C) Copyright 2006-2008..
- * Lead Developer: Simon Barnett (n6vale@googlemail.com)
- * <p>
- * This file is part of the PDF Forms Designer
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * <p>
- * <p>
- * <p>
- * ---------------
- * IWidget.java
- * ---------------
- */
 package org.pdf.forms.widgets;
 
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -56,6 +26,19 @@ public interface IWidget {
     int IMAGE = 7;
     int GROUP = 8;
 
+    Map<String, Integer> WIDGET_TYPES = Map.of(
+            "none", IWidget.NONE,
+            "text_field", IWidget.TEXT_FIELD,
+            "text", IWidget.TEXT,
+            "button", IWidget.BUTTON,
+            "radio_button", IWidget.RADIO_BUTTON,
+            "check_box", IWidget.CHECK_BOX,
+            "combo_box", IWidget.COMBO_BOX,
+            "list_box", IWidget.LIST_BOX,
+            "image", IWidget.IMAGE,
+            "group", IWidget.GROUP
+    );
+
     int COMPONENT_BOTH = 0;
     int COMPONENT_CAPTION = 1;
     int COMPONENT_VALUE = 2;
@@ -76,7 +59,9 @@ public interface IWidget {
 
     JComponent getWidget();
 
-    void setPosition(int x, int y);
+    void setPosition(
+            int x,
+            int y);
 
     void setX(int x);
 
@@ -90,11 +75,16 @@ public interface IWidget {
 
     int getHeight();
 
-    void setSize(int width, int height);
+    void setSize(
+            int width,
+            int height);
 
+    @Override
     String toString();
 
-    int getResizeTypeForSplitComponent(int mouseX, int mouseY);
+    int getResizeTypeForSplitComponent(
+            int mouseX,
+            int mouseY);
 
     boolean allowEditCaptionAndValue();
 
@@ -156,11 +146,15 @@ public interface IWidget {
 
     void setBorderAndBackgroundProperties(Element borderProperties);
 
-    void setParagraphProperties(Element parentElement, int currentlyEditing);
+    void setParagraphProperties(
+            Element parentElement,
+            int currentlyEditing);
 
     void setLayoutProperties(Element parentElement);
 
-    void setFontProperties(Element parentElement, int currentlyEditing);
+    void setFontProperties(
+            Element parentElement,
+            int currentlyEditing);
 
     void setCaptionProperties(Element captionProperties);
 

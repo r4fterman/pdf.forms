@@ -51,9 +51,13 @@ import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class ParagraphPropertiesPanel extends JPanel {
+
+    private final Logger logger = LoggerFactory.getLogger(ParagraphPropertiesPanel.class);
 
     private IDesigner designerPanel;
     private Map<IWidget, Element> widgetsAndProperties;
@@ -252,6 +256,8 @@ public class ParagraphPropertiesPanel extends JPanel {
                 captionAlignment.getAttributeNode("value").setValue(alignment);
             } else if ("Value properties".equals(selectedItem)) {
                 valueAlignment.ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
+            } else {
+                logger.warn("Unexpected selected item {}", selectedItem);
             }
 
             widget.setParagraphProperties(widgetsAndProperties.get(widget), currentlyEditingBox.getSelectedIndex());
@@ -347,6 +353,8 @@ public class ParagraphPropertiesPanel extends JPanel {
             horizontalAlignCenter.setSelected(true);
         } else if ("justify".equals(horizontalAlignmentToUse)) {
             horizontalAlignJustify.setSelected(true);
+        } else {
+            logger.warn("Unexpected horizontal alignment {}", horizontalAlignmentToUse);
         }
 
         if ("mixed".equals(verticalAlignmentToUse)) {
@@ -357,6 +365,8 @@ public class ParagraphPropertiesPanel extends JPanel {
             verticalAlignBottom.setSelected(true);
         } else if ("center".equals(verticalAlignmentToUse)) {
             verticalAlignCenter.setSelected(true);
+        } else {
+            logger.warn("Unexpected vertical alignment {}", verticalAlignmentToUse);
         }
     }
 

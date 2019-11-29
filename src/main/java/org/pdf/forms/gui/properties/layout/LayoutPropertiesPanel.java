@@ -61,9 +61,13 @@ import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateC
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBoxParent;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*/ implements TristateCheckBoxParent {
+
+    private final Logger logger = LoggerFactory.getLogger(LayoutPropertiesPanel.class);
 
     private final int units = (int) (Rule.INCH / 2.54);
 
@@ -405,11 +409,8 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
         for (final IWidget widget : widgets) {
             if (widget.isComponentSplit() && captionPosition != null) {
                 final Element widgetProperties = widgetsAndProperties.get(widget);
-
                 final Element captionPositionElement = XMLUtils.getPropertyElement(widgetProperties, "Position").get();
-
                 captionPositionElement.getAttributeNode("value").setValue(captionPosition.toString());
-
                 widget.setLayoutProperties(widgetProperties);
             }
         }
@@ -425,9 +426,7 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
 
         for (final IWidget widget : widgets) {
             final Element widgetProperties = widgetsAndProperties.get(widget);
-
             final Element rotationElement = XMLUtils.getPropertyElement(widgetProperties, "Rotation").get();
-
             rotationElement.getAttributeNode("value").setValue(alignment);
         }
     }
@@ -440,9 +439,7 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
         for (final IWidget widget : widgets) {
             if (anchor != null) {
                 final Element widgetProperties = widgetsAndProperties.get(widget);
-
                 final Element anchorElement = XMLUtils.getPropertyElement(widgetProperties, "Anchor").get();
-
                 anchorElement.getAttributeNode("value").setValue(anchor.toString());
             }
         }
@@ -710,6 +707,8 @@ public class LayoutPropertiesPanel extends JPanel/*extends BasicPropertiesPanel*
             rotate180.setSelected(true);
         } else if ("270".equals(rotationToUse)) {
             rotate270.setSelected(true);
+        } else {
+            logger.warn("Unexpected rotation to use {}", rotationToUse);
         }
 
         if (isComponentSplit) {
