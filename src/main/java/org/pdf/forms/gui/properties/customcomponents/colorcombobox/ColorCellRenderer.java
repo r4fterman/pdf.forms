@@ -64,7 +64,7 @@ public class ColorCellRenderer implements ListCellRenderer<Object> {
         if (value instanceof Color) {
             renderer.setBackground((Color) value);
             renderer.setText("");
-        } else if (value instanceof String && value.equals("Custom")) {
+            //} else if (value instanceof String && value.equals("Custom")) {
             // Custom color found
         } else {
             logger.warn("Unexpected list cell renderer value {} of class {}", value, value.getClass().getCanonicalName());

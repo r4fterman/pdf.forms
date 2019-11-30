@@ -1,5 +1,6 @@
 package org.pdf.forms.gui;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 
 import org.junit.jupiter.api.Test;
@@ -10,13 +11,16 @@ public abstract class UIDialogTest {
     void buildAndShowDialog() throws Exception {
         final JFrame frame = new JFrame();
 
-        createDialog(frame);
+        final JDialog dialog = createDialog(frame);
 
         frame.pack();
         frame.setVisible(true);
 
-        Thread.sleep(10000);
+        Thread.sleep(1000);
+
+        dialog.dispose();
+        frame.dispose();
     }
 
-    protected abstract void createDialog(final JFrame frame);
+    protected abstract JDialog createDialog(JFrame frame);
 }

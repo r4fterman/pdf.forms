@@ -3,6 +3,7 @@ env:
     - CC_TEST_REPORTER_ID=7f97b09b52df4212c66f57cc09bdc7e3225161c2c6b149012a0b1335616b8831
 
 language: java
+
 jdk: openjdk13
 
 before_install:
@@ -14,11 +15,15 @@ before_install:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 
-install: /bin/true
+install: true
+
+services:
+  - xvfb
 
 script:
   - mvn clean install -Pci
   - JACOCO_SOURCE_PATH=src/main/java ./cc-test-reporter format-coverage ./target/coverage-reports/jacoco.xml --input-type jacoco
+# Specify a display with xvfb for UI testing
 
 after_success:
   - ./cc-test-reporter upload-coverage -r $CC_TEST_REPORTER_ID

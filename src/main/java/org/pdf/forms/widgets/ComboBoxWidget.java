@@ -236,7 +236,7 @@ public class ComboBoxWidget extends Widget implements IWidget {
     }
 
     private void setCaptionLocation(final Element layoutProperties) {
-        final int captionLocation= extractCaptionLocation(layoutProperties);
+        final int captionLocation = extractCaptionLocation(layoutProperties);
 
         final SplitComponent comboBox = (SplitComponent) getBaseComponent();
         if (comboBox.getCaptionPosition() != captionLocation) {
