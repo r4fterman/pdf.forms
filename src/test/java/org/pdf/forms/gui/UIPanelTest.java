@@ -31,7 +31,9 @@ public abstract class UIPanelTest {
         frame.pack();
         frame.setVisible(true);
 
-        Thread.sleep(10000);
+        Thread.sleep(1000);
+
+        frame.dispose();
     }
 
     protected Designer getDesignerPanel() {
