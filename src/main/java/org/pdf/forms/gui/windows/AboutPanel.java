@@ -44,7 +44,7 @@ import javax.swing.SwingConstants;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
-import org.pdf.forms.gui.commands.Commands;
+import org.pdf.forms.gui.commands.VisitWebsiteCommand;
 
 public class AboutPanel extends JPanel {
 
@@ -73,7 +73,7 @@ public class AboutPanel extends JPanel {
     }
 
     private void initComponents() {
-        final JLabel projectPageLabel = createUrlLabel(this, Commands.GITHUB_PROJECT_PAGE);
+        final JLabel projectPageLabel = createUrlLabel(this, VisitWebsiteCommand.GITHUB_PROJECT_PAGE);
         projectPageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         final JLabel pdfFormDesignerLabel = new JLabel("PDF Forms Designer");
@@ -190,7 +190,7 @@ public class AboutPanel extends JPanel {
 
             @Override
             public void mouseClicked(final MouseEvent event) {
-                Commands.openWebpage(linkAddress);
+                VisitWebsiteCommand.openWebpage(linkAddress);
             }
         });
         return label;

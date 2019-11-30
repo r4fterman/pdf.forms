@@ -31,13 +31,11 @@
  */
 package org.pdf.forms.gui.commands;
 
+import static java.util.Map.entry;
+
 import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.EventQueue;
-import java.awt.Frame;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,35 +44,21 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.jpedal.PdfDecoder;
-import org.jpedal.examples.simpleviewer.utils.FileFilterer;
 import org.jpedal.exception.PdfException;
 import org.jpedal.objects.PdfPageData;
 import org.jpedal.utils.SwingWorker;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
-import org.pdf.forms.fonts.FontSelector;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.gui.designer.gui.DesignerCompound;
-import org.pdf.forms.gui.windows.AboutPanel;
 import org.pdf.forms.gui.windows.FileFinder;
 import org.pdf.forms.gui.windows.PDFImportChooser;
-import org.pdf.forms.utils.CustomWidgetsFile;
 import org.pdf.forms.utils.DesignerPropertiesFile;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.ButtonGroup;
@@ -82,13 +66,10 @@ import org.pdf.forms.widgets.GroupWidget;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.pdf.forms.widgets.utils.WidgetParser;
-import org.pdf.forms.writer.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.google.common.collect.ImmutableMap;
 
 public class Commands {
 
@@ -132,25 +113,10 @@ public class Commands {
     public static final int ZOOM_IN = 2759635;
     public static final int ZOOM = 608001297;
     public static final int ZOOM_OUT = 1668177090;
-
-    public static final String GITHUB_PROJECT_PAGE = "https://github.com/r4fterman/pdf.forms";
-    private static final String ORIGINAL_PROJECT_PAGE = "http://pdfformsdesigne.sourceforge.net";
+    public static final int ADD_SELECTION_TO_LIBRARY = 1778177090;
+    public static final int BUG_REPORT = 1888177090;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Commands.class);
-
-    public static boolean openWebpage(final String httpAddress) {
-        final Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-            try {
-                final URI uri = URI.create(httpAddress);
-                desktop.browse(uri);
-                return true;
-            } catch (final IOException e) {
-                LOGGER.error("Error opening web browser for address {}", httpAddress, e);
-            }
-        }
-        return false;
-    }
 
     private final IMainFrame mainFrame;
     private final String version;
@@ -158,6 +124,8 @@ public class Commands {
     private final JMenuItem[] recentDesignerDocuments;
     private final JMenuItem[] recentImportedDocuments;
     private final int noOfRecentDocs;
+
+    private final Map<Integer, Command> commandMap;
 
     public Commands(
             final IMainFrame mainFrame,
@@ -169,143 +137,33 @@ public class Commands {
         noOfRecentDocs = DesignerPropertiesFile.getInstance(configDir).getNoRecentDocumentsToDisplay();
         recentDesignerDocuments = new JMenuItem[noOfRecentDocs];
         recentImportedDocuments = new JMenuItem[noOfRecentDocs];
+
+        commandMap = Map.ofEntries(
+                entry(NEW, new NewPdfCommand(mainFrame, version)),
+                entry(OPEN, new OpenDesignerFileCommand(mainFrame, version)),
+                entry(CLOSE, new ClosePdfCommand(mainFrame, version)),
+                entry(IMPORT, new ImportPdfCommand(mainFrame, version)),
+                entry(SAVE_FILE, new SaveDesignerFileCommand(mainFrame, version)),
+                entry(SAVE_FILE_AS, new SaveDesignerFileAsCommand(mainFrame, version)),
+                entry(PUBLISH, new PublishPdfCommand(mainFrame, version)),
+                entry(FONT_MANAGEMENT, new FontManagementCommand(mainFrame, version)),
+                entry(EXIT, () -> System.exit(0)),
+                entry(ZOOM_IN, new ZoomInCommand(mainFrame, version)),
+                entry(ZOOM_OUT, new ZoomOutCommand(mainFrame, version)),
+                entry(ZOOM, new ZoomCommand(mainFrame, version)),
+                entry(INSERT_PAGE, new InsertPageCommand(mainFrame, version)),
+                entry(REMOVE_PAGE, new RemovePageCommand(mainFrame, version)),
+                entry(ADD_SELECTION_TO_LIBRARY, new AddSelectionToLibraryCommand(mainFrame, version)),
+                entry(GROUP, new GroupCommand(mainFrame)),
+                entry(UNGROUP, new UnGroupCommand(mainFrame)),
+                entry(WEBSITE, new VisitWebsiteCommand(mainFrame)),
+                entry(ABOUT, new ShowAboutPanelCommand(mainFrame)),
+                entry(BUG_REPORT, new BugReportCommand(mainFrame))
+        );
     }
 
     public void executeCommand(final int id) {
-        switch (id) {
-            case NEW:
-                newPDF(595, 842);
-                break;
-            case OPEN:
-                openDesignerFile();
-                break;
-            case CLOSE:
-                closePDF();
-                break;
-            case IMPORT:
-                importPDF();
-                break;
-            case SAVE_FILE:
-                saveDesignerFile();
-                break;
-            case SAVE_FILE_AS:
-                saveDesignerFileAs();
-                break;
-            case PUBLISH:
-                publishPDF();
-                break;
-            case FONT_MANAGEMENT:
-                fontManagement();
-                break;
-            case EXIT:
-                System.exit(0);
-                break;
-
-            // case ZOOM_IN:
-            //     zoom(mainFrame.getCurrentScaling() * (3d / 2d));
-            //     break;
-            // case ZOOM:
-            //     zoom(mainFrame.getCurrentSelectedScaling() / 100d);
-            //     break;
-            // case ZOOM_OUT:
-            //     zoom(mainFrame.getCurrentScaling() * (2d / 3d));
-            //     break;
-
-            case INSERT_PAGE:
-                insertPage(595, 842);
-                break;
-            case REMOVE_PAGE:
-                removePage();
-                break;
-            // case ADDSELECTIONTOLIBRARY:
-            //     addSelectionToLibrary();
-            //     break;
-
-            case GROUP:
-                group();
-                break;
-            case UNGROUP:
-                ungroup();
-                break;
-
-            case WEBSITE:
-                visitWebsite();
-                break;
-
-            case ABOUT:
-                about();
-                break;
-            // case BUGREPORT:
-            //
-            //  LinkedHashMap pdfFilesAndSizes = mainFrame.getFormsDocument().getPdfFilesUsed();
-            //
-            //  LinkedHashMap filesAndSizes = new LinkedHashMap();
-            //  Document documentProperties = mainFrame.getFormsDocument().getDocumentProperties();
-            //
-            // try {
-            //  File designerFile = File.createTempFile("bugreport", ".des");
-            //  designerFile.deleteOnExit();
-            //
-            //  writeXML(documentProperties, designerFile.getAbsolutePath());
-            //
-            //  Double size = Double.valueOf(round((designerFile.length() / 1000d), 1));
-            //  System.out.println(designerFile.getAbsolutePath());
-            //  filesAndSizes.put("Designer File", size);
-            // } catch (IOException e) {
-            //  e.printStackTrace();
-            // }
-            //
-            // filesAndSizes.putAll(pdfFilesAndSizes);
-            // System.out.println(filesAndSizes);
-            //
-            // JDialog dialog = new JDialog((Frame) mainFrame, "Bug report", true);
-            //
-            // BugReportPanel bugReportPanel = new BugReportPanel(filesAndSizes, dialog);
-            //
-            //  dialog.add(bugReportPanel);
-            //  dialog.pack();
-            //  dialog.setLocationRelativeTo((Component) mainFrame);
-            //  dialog.setVisible(true);
-            //
-            //  break;
-            default:
-                break;
-        }
-    }
-
-    private void about() {
-        JOptionPane.showMessageDialog((Component) mainFrame, new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
-    }
-
-    private void visitWebsite() {
-        if (!openWebpage(GITHUB_PROJECT_PAGE)) {
-            JOptionPane.showMessageDialog(null, "Error loading webpage");
-            LOGGER.error("Error loading web page browser");
-        }
-    }
-
-    private void addSelectionToLibrary() {
-        final File configDir = new File(System.getProperty("user.dir"));
-        final CustomWidgetsFile customWidgetsFile = CustomWidgetsFile.getInstance(configDir);
-        boolean finished = false;
-
-        String name = JOptionPane.showInputDialog((Component) mainFrame, "Enter a name for the new component", "New component name",
-                JOptionPane.QUESTION_MESSAGE);
-
-        while (!finished) {
-            if (name == null) {
-                return;
-            }
-
-            if (customWidgetsFile.isNameTaken(name)) {
-                name = JOptionPane.showInputDialog((Component) mainFrame, "The name you have entered is already taken, please enter another name", "New component name",
-                        JOptionPane.WARNING_MESSAGE);
-            } else {
-                finished = true;
-            }
-        }
-
-        customWidgetsFile.addCustomWidget(name, mainFrame.getDesigner().getSelectedWidgets());
+        commandMap.getOrDefault(id, new NoopCommand()).execute();
     }
 
     public void recentDocumentsOption(
@@ -425,270 +283,8 @@ public class Commands {
         return arrayedFilePath[0] + builder.toString() + arrayedFilePath[numberOfTokens - 1];
     }
 
-    private void fontManagement() {
-        final JDialog dialog = new JDialog((Frame) mainFrame, "Font Management", true);
-        final FontSelector fs = new FontSelector(mainFrame, dialog);
-
-        dialog.add(fs);
-        dialog.pack();
-        dialog.setLocationRelativeTo((Frame) mainFrame);
-        dialog.setVisible(true);
-
-        mainFrame.updateAvailiableFonts();
-    }
-
-    private void ungroup() {
-        final IDesigner designerPanel = mainFrame.getDesigner();
-
-        final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
-
-        final IWidget gw = selectedWidgets.iterator().next();
-
-        designerPanel.removeSelectedWidgets();
-
-        final List<IWidget> widgetsInGroup = gw.getWidgetsInGroup();
-        for (final IWidget widget : widgetsInGroup) {
-            designerPanel.addWidget(widget);
-        }
-
-        final Set<IWidget> widgets = new HashSet<>(widgetsInGroup);
-
-        designerPanel.setSelectedWidgets(widgets);
-
-        designerPanel.getMainFrame().setPropertiesCompound(widgets);
-        designerPanel.getMainFrame().setPropertiesToolBar(widgets);
-
-        designerPanel.repaint();
-    }
-
-    private void group() {
-        final IDesigner designerPanel = mainFrame.getDesigner();
-
-        final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
-
-        final List<IWidget> widgetsInGroup = new ArrayList<>();
-        final GroupWidget gw = new GroupWidget();
-
-        final List<IWidget> allWidgets = designerPanel.getWidgets();
-
-        for (final IWidget widget : allWidgets) {
-            if (selectedWidgets.contains(widget)) {
-                widgetsInGroup.add(widget);
-            }
-        }
-
-        gw.setWidgetsInGroup(widgetsInGroup);
-        designerPanel.addWidget(gw);
-
-        designerPanel.removeSelectedWidgets();
-
-        final Set<IWidget> set = new HashSet<>();
-        set.add(gw);
-        designerPanel.setSelectedWidgets(set);
-
-        designerPanel.repaint();
-    }
-
-    private double round(final double number) {
-        final double exponential = Math.pow(10, 2);
-
-        double value = number;
-        value *= exponential;
-        value = Math.round(value);
-        value /= exponential;
-
-        return value;
-    }
-
-    private void zoom(final double scaling) {
-        if (mainFrame.getDesignerCompoundContent() == DesignerCompound.PREVIEW) {
-
-            mainFrame.setCurrentSelectedScaling(round(scaling * 100));
-
-            final DesignerCompound desgnerCompound = mainFrame.getDesignerCompound();
-            desgnerCompound.previewZoom(scaling);
-        }
-        //mainFrame.setScaling(mainFrame.getScaling() * scaling); @scale
-    }
-
-    private void publishPDF() {
-
-        File file;
-        String fileToSave;
-        boolean finished = false;
-
-        while (!finished) {
-            final JFileChooser chooser = new JFileChooser();
-            chooser.addChoosableFileFilter(new FileFilterer(new String[] {
-                    "pdf"
-            },
-                    "pdf (*.pdf)"));
-            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-            final int approved = chooser.showSaveDialog(null);
-            if (approved == JFileChooser.APPROVE_OPTION) {
-
-                file = chooser.getSelectedFile();
-                fileToSave = file.getAbsolutePath();
-
-                if (!fileToSave.endsWith(".pdf")) {
-                    fileToSave += ".pdf";
-                    file = new File(fileToSave);
-                }
-
-                if (file.exists()) {
-                    final int n = JOptionPane.showConfirmDialog((Component) mainFrame, "The file already exists, are you sure you wish to overwrite?",
-                            "File already exists", JOptionPane.YES_NO_OPTION);
-
-                    if (n == 1) {
-                        continue;
-                    }
-                }
-
-                final Writer writer = new Writer(mainFrame);
-
-                final int noOfPages = mainFrame.getTotalNoOfPages();
-
-                final FormsDocument documentProperties = mainFrame.getFormsDocument();
-
-                final ImmutableMap.Builder<Integer, List<IWidget>> widgets = ImmutableMap.builder();
-                for (int pageNumber = 0; pageNumber < noOfPages; pageNumber++) {
-                    widgets.put(pageNumber, documentProperties.getPage(pageNumber + 1).getWidgets());
-                }
-
-                writer.write(file, widgets.build(), documentProperties.getDocumentProperties());
-
-                finished = true;
-            } else {
-                return;
-            }
-        }
-    }
-
-    private void saveDesignerFileAs() {
-        final Document documentProperties = mainFrame.getFormsDocument().getDocumentProperties();
-        saveDesignerFileAs(documentProperties);
-    }
-
-    private void saveDesignerFile() {
-        final Document documentProperties = mainFrame.getFormsDocument().getDocumentProperties();
-
-        final String currentDesignerFileName = mainFrame.getCurrentDesignerFileName();
-        if (currentDesignerFileName.equals("Untitled")) {
-            // saving for the first time
-            saveDesignerFileAs(documentProperties);
-        } else {
-            // saving an already saved file
-            writeXML(documentProperties, currentDesignerFileName);
-        }
-    }
-
-    private void saveDesignerFileAs(final Document documentProperties) {
-        File file;
-        String fileToSave;
-        boolean finished = false;
-
-        while (!finished) {
-            final JFileChooser chooser = new JFileChooser();
-            chooser.addChoosableFileFilter(new FileFilterer(new String[] {
-                    "des"
-            },
-                    "des (*.des)"));
-            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-            final int approved = chooser.showSaveDialog(null);
-            if (approved == JFileChooser.APPROVE_OPTION) {
-
-                file = chooser.getSelectedFile();
-                fileToSave = file.getAbsolutePath();
-
-                if (!fileToSave.endsWith(".des")) {
-                    fileToSave += ".des";
-                    file = new File(fileToSave);
-                }
-
-                if (file.exists()) {
-                    final int n = JOptionPane.showConfirmDialog((Component) mainFrame, "The file already exists, are you sure you wish to overwrite?",
-                            "File already exists", JOptionPane.YES_NO_OPTION);
-
-                    if (n == 1) {
-                        continue;
-                    }
-                }
-
-                mainFrame.setCurrentDesignerFileName(fileToSave);
-
-                writeXML(documentProperties, mainFrame.getCurrentDesignerFileName());
-
-                mainFrame.setTitle(fileToSave + " - PDF Forms Designer Version " + version);
-
-                finished = true;
-            } else {
-                return;
-            }
-        }
-    }
-
-    private void writeXML(
-            final Document documentProperties,
-            final String fileName) {
-        //        try {
-        // InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
-        //
-        // TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        // Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
-        // transformer.transform(new DOMSource(documentProperties), new StreamResult(mainFrame.getCurrentDesignerFileName()));
-        //        } catch (TransformerException e) {
-        // e.printStackTrace();
-        //        }
-
-        try {
-            final Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            // transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-            //initialize StreamResult with File object to save to file
-            transformer.transform(new DOMSource(documentProperties), new StreamResult(fileName));
-        } catch (final TransformerException e) {
-            LOGGER.error("Error writing xml to file {}", fileName, e);
-        }
-    }
-
-    private void newPDF(
-            final int width,
-            final int height) {
-        closePDF();
-
-        mainFrame.setCurrentDesignerFileName("Untitled");
-        mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version);
-
-        setPanelsState(true);
-
-        mainFrame.setFormsDocument(new FormsDocument(version));
-
-        insertPage(width, height);
-    }
-
     private void setPanelsState(final boolean state) {
         mainFrame.setPanelsState(state);
-    }
-
-    private void openDesignerFile() {
-        final JFileChooser chooser = new JFileChooser();
-
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        final String[] des = new String[] {
-                "des"
-        };
-        chooser.addChoosableFileFilter(new FileFilterer(des, "des (*.des)"));
-
-        final int state = chooser.showOpenDialog((Component) mainFrame);
-
-        final File fileToOpen = chooser.getSelectedFile();
-
-        if (fileToOpen != null && state == JFileChooser.APPROVE_OPTION) {
-            openDesignerFile(fileToOpen.getAbsolutePath());
-        }
     }
 
     public void openDesignerFile(final String designerFileToOpen) {
@@ -780,25 +376,6 @@ public class Commands {
     public void importPDF(final String file) {
         final int importType = aquirePDFImportType();
         importPDF(importType, file);
-    }
-
-    private void importPDF() {
-        // TODO dont allow import of a pdf into a closed document
-        final int importType = aquirePDFImportType();
-
-        final JFileChooser chooser = new JFileChooser();
-
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        final String[] pdf = new String[] {
-                "pdf"
-        };
-        chooser.addChoosableFileFilter(new FileFilterer(pdf, "Pdf (*.pdf)"));
-
-        final int state = chooser.showOpenDialog((Component) mainFrame);
-        final File file = chooser.getSelectedFile();
-        if (file != null && state == JFileChooser.APPROVE_OPTION) {
-            importPDF(importType, file.getAbsolutePath());
-        }
     }
 
     private int aquirePDFImportType() {
@@ -1065,43 +642,6 @@ public class Commands {
         setPanelsState(false);
 
         mainFrame.setCurrentPage(0);
-    }
-
-    private void removePage() {
-
-        final int noOfPages = mainFrame.getTotalNoOfPages();
-        if (noOfPages == 1) {
-            JOptionPane.showMessageDialog((Component) mainFrame, "You cannot remove the last page", "Last Page", JOptionPane.ERROR_MESSAGE);
-
-            return;
-        }
-
-        mainFrame.getFormsDocument().removePage(mainFrame.getCurrentPage());
-        mainFrame.removePageFromHierarchyPanel(mainFrame.getCurrentPage());
-
-        //System.out.println(mainFrame.getCurrentPage() +" "+ mainFrame.getTotalNoOfPages());
-
-        if (mainFrame.getCurrentPage() == noOfPages) {
-            mainFrame.setCurrentPage(mainFrame.getCurrentPage() - 1);
-        }
-
-        mainFrame.displayPage(mainFrame.getCurrentPage());
-
-        setTotalPages();
-    }
-
-    private void insertPage(
-            final int width,
-            final int height) {
-        final Page newPage = new Page("(page " + (mainFrame.getTotalNoOfPages() + 1) + ")", width, height);
-
-        mainFrame.setCurrentPage(mainFrame.getCurrentPage() + 1);
-
-        addPage(mainFrame.getCurrentPage(), newPage);
-
-        mainFrame.displayPage(mainFrame.getCurrentPage());
-
-        setTotalPages();
     }
 
     private Map<String, String> getChangedPdfFileLocations(final List<Element> pages) {
