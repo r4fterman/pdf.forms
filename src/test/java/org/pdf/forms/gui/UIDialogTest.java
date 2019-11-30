@@ -22,5 +22,5 @@ public abstract class UIDialogTest {
         frame.dispose();
     }
 
-    protected abstract JDialog createDialog(final JFrame frame);
+    protected abstract JDialog createDialog(JFrame frame);
 }

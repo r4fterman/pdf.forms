@@ -139,7 +139,13 @@ public class Commands {
     private static final Logger LOGGER = LoggerFactory.getLogger(Commands.class);
 
     public static boolean openWebpage(final String httpAddress) {
-        final Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        final Desktop desktop;
+        if (Desktop.isDesktopSupported()) {
+            desktop = Desktop.getDesktop();
+        } else {
+            desktop = null;
+        }
+
         if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
             try {
                 final URI uri = URI.create(httpAddress);

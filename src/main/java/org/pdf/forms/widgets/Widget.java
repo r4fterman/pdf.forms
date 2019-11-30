@@ -459,168 +459,168 @@ public class Widget {
         setSize(getWidth(), getHeight());
     }
 
-        public void setAllProperties () {
+    public void setAllProperties() {
 
-            final Element root = properties.getDocumentElement();
+        final Element root = properties.getDocumentElement();
 
-            setParagraphProperties(root, IWidget.COMPONENT_BOTH);
-            setLayoutProperties(root);
-            setFontProperties(root, IWidget.COMPONENT_BOTH);
-            setObjectProperties(root);
-            setCaptionProperties(root);
-        }
+        setParagraphProperties(root, IWidget.COMPONENT_BOTH);
+        setLayoutProperties(root);
+        setFontProperties(root, IWidget.COMPONENT_BOTH);
+        setObjectProperties(root);
+        setCaptionProperties(root);
+    }
 
-        void addJavaScript ( final Element rootElement){
-            final Element javaScriptElement = XMLUtils.createAndAppendElement(properties, "javascript", rootElement);
+    void addJavaScript(final Element rootElement) {
+        final Element javaScriptElement = XMLUtils.createAndAppendElement(properties, "javascript", rootElement);
 
-            final Element mouseEnterElement = XMLUtils.createAndAppendElement(properties, "mouseEnter", javaScriptElement);
-            mouseEnterElement.appendChild(properties.createTextNode(""));
+        final Element mouseEnterElement = XMLUtils.createAndAppendElement(properties, "mouseEnter", javaScriptElement);
+        mouseEnterElement.appendChild(properties.createTextNode(""));
 
-            final Element mouseExitElement = XMLUtils.createAndAppendElement(properties, "mouseExit", javaScriptElement);
-            mouseExitElement.appendChild(properties.createTextNode(""));
+        final Element mouseExitElement = XMLUtils.createAndAppendElement(properties, "mouseExit", javaScriptElement);
+        mouseExitElement.appendChild(properties.createTextNode(""));
 
-            final Element changeElement = XMLUtils.createAndAppendElement(properties, "change", javaScriptElement);
-            changeElement.appendChild(properties.createTextNode(""));
+        final Element changeElement = XMLUtils.createAndAppendElement(properties, "change", javaScriptElement);
+        changeElement.appendChild(properties.createTextNode(""));
 
-            final Element mouseUpElement = XMLUtils.createAndAppendElement(properties, "mouseUp", javaScriptElement);
-            mouseUpElement.appendChild(properties.createTextNode(""));
+        final Element mouseUpElement = XMLUtils.createAndAppendElement(properties, "mouseUp", javaScriptElement);
+        mouseUpElement.appendChild(properties.createTextNode(""));
 
-            final Element mouseDownElement = XMLUtils.createAndAppendElement(properties, "mouseDown", javaScriptElement);
-            mouseDownElement.appendChild(properties.createTextNode(""));
+        final Element mouseDownElement = XMLUtils.createAndAppendElement(properties, "mouseDown", javaScriptElement);
+        mouseDownElement.appendChild(properties.createTextNode(""));
 
-            if (getType() == IWidget.TEXT_FIELD) {
-                final Element keystrokeElement = XMLUtils.createAndAppendElement(properties, "keystroke", javaScriptElement);
-                keystrokeElement.appendChild(properties.createTextNode(""));
-            }
-        }
-
-        public void setObjectProperties ( final Element parentElement){
-        }
-
-        void setBindingProperties ( final Element objectPropertiesElement){
-            final Element bindingPropertiesElement = (Element) objectPropertiesElement.getElementsByTagName("binding").item(0);
-
-            widgetName = XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Name").orElse("");
-            arrayNumber = Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Array Number").orElse("0"));
-
-            setSize(getWidth(), getHeight());
-        }
-
-        public void setCaptionProperties ( final Element captionPropertiesElement){
-            if (isComponentSplit
-                    && ((SplitComponent) baseComponent).getCaptionPosition() != SplitComponent.CAPTION_NONE) {
-
-                final Element captionProperties = (Element) properties.getElementsByTagName("caption_properties").item(0);
-
-                final String captionText = XMLUtils.getAttributeFromChildElement(captionProperties, "Text").orElse("");
-                getCaptionComponent().setText(captionText);
-
-                final Optional<String> stringLocation = XMLUtils.getAttributeFromChildElement(captionProperties, "Divisor Location");
-                if (stringLocation.isPresent() && !stringLocation.get().equals("")) {
-                    final int divisorLocation = Integer.parseInt(stringLocation.get());
-                    final SplitComponent ptf = (SplitComponent) baseComponent;
-                    ptf.setDividerLocation(divisorLocation);
-                }
-
-                setSize(getWidth(), getHeight());
-            }
-        }
-
-        public void setBorderAndBackgroundProperties ( final Element borderPropertiesElement){
-            final JComponent component = getValueComponent();
-
-            final Element borderProperties = (Element) borderPropertiesElement.getElementsByTagName("borders").item(0);
-
-            final String borderStyle = XMLUtils.getAttributeFromChildElement(borderProperties, "Border Style").orElse("None");
-            if (borderStyle.equals("None")) {
-                component.setBorder(null);
-            } else {
-                final Optional<String> leftEdgeWidth = XMLUtils.getAttributeFromChildElement(borderProperties, "Border Width");
-                final Optional<String> leftEdgeColor = XMLUtils.getAttributeFromChildElement(borderProperties, "Border Color");
-
-                final Map<String, String> borderPropertiesMap = new HashMap<>();
-                if (borderStyle.equals("Beveled")) {
-                    borderPropertiesMap.put("S", "/B");
-                }
-                if (borderStyle.equals("Solid")) {
-                    borderPropertiesMap.put("S", "/S");
-                }
-                if (borderStyle.equals("Dashed")) {
-                    borderPropertiesMap.put("S", "/D");
-                }
-
-                if (leftEdgeWidth.isPresent() && leftEdgeWidth.get().length() > 0) {
-                    borderPropertiesMap.put("W", leftEdgeWidth.get());
-                }
-
-                final Color color = new Color(Integer.parseInt(leftEdgeColor.get()));
-                final Border border = JPedalBorderFactory.createBorderStyle(borderPropertiesMap, color, color);
-
-                component.setBorder(border);
-            }
-
-            final Element backgroundFillProperties =
-                    (Element) borderPropertiesElement.getElementsByTagName("backgroundfill").item(0);
-
-            final String backgroundColor = XMLUtils.getAttributeFromChildElement(backgroundFillProperties, "Fill Color").orElse(String.valueOf(Color.WHITE.getRGB()));
-            component.setBackground(new Color(Integer.parseInt(backgroundColor)));
-
-            setSize(getWidth(), getHeight());
-        }
-
-        public void setComponent ( final JComponent component){
-            this.component = component;
-        }
-
-        public void setProperties ( final Document properties){
-            this.properties = properties;
-        }
-
-        public void setComponentSplit ( final boolean componentSplit){
-            isComponentSplit = componentSplit;
-        }
-
-        public void setAllowEditCaptionAndValue ( final boolean allowEditCaptionAndValue){
-            this.allowEditCaptionAndValue = allowEditCaptionAndValue;
-        }
-
-        public void setAllowEditOfCaptionOnClick ( final boolean allowEditOfCaptionOnClick){
-            this.allowEditOfCaptionOnClick = allowEditOfCaptionOnClick;
-        }
-
-        public void setWidgetName ( final String widgetName){
-            this.widgetName = widgetName;
-        }
-
-        public void setArrayNumber ( final int arrayNumber){
-            this.arrayNumber = arrayNumber;
-        }
-
-        public void setResizeWidthFromLeftRatio ( final double resizeWidthFromLeftRatio){
-            this.resizeWidthFromLeftRatio = resizeWidthFromLeftRatio;
-        }
-
-        public JComponent getComponent () {
-            return component;
-        }
-
-        public JComponent getBaseComponent () {
-            return baseComponent;
-        }
-
-        public boolean isAllowEditCaptionAndValue () {
-            return allowEditCaptionAndValue;
-        }
-
-        public boolean isAllowEditOfCaptionOnClick () {
-            return allowEditOfCaptionOnClick;
-        }
-
-        public Point getPosition () {
-            return position;
-        }
-
-        public double getResizeWidthFromLeftRatio () {
-            return resizeWidthFromLeftRatio;
+        if (getType() == IWidget.TEXT_FIELD) {
+            final Element keystrokeElement = XMLUtils.createAndAppendElement(properties, "keystroke", javaScriptElement);
+            keystrokeElement.appendChild(properties.createTextNode(""));
         }
     }
+
+    public void setObjectProperties(final Element parentElement) {
+    }
+
+    void setBindingProperties(final Element objectPropertiesElement) {
+        final Element bindingPropertiesElement = (Element) objectPropertiesElement.getElementsByTagName("binding").item(0);
+
+        widgetName = XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Name").orElse("");
+        arrayNumber = Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Array Number").orElse("0"));
+
+        setSize(getWidth(), getHeight());
+    }
+
+    public void setCaptionProperties(final Element captionPropertiesElement) {
+        if (isComponentSplit
+                && ((SplitComponent) baseComponent).getCaptionPosition() != SplitComponent.CAPTION_NONE) {
+
+            final Element captionProperties = (Element) properties.getElementsByTagName("caption_properties").item(0);
+
+            final String captionText = XMLUtils.getAttributeFromChildElement(captionProperties, "Text").orElse("");
+            getCaptionComponent().setText(captionText);
+
+            final Optional<String> stringLocation = XMLUtils.getAttributeFromChildElement(captionProperties, "Divisor Location");
+            if (stringLocation.isPresent() && !stringLocation.get().equals("")) {
+                final int divisorLocation = Integer.parseInt(stringLocation.get());
+                final SplitComponent ptf = (SplitComponent) baseComponent;
+                ptf.setDividerLocation(divisorLocation);
+            }
+
+            setSize(getWidth(), getHeight());
+        }
+    }
+
+    public void setBorderAndBackgroundProperties(final Element borderPropertiesElement) {
+        final JComponent component = getValueComponent();
+
+        final Element borderProperties = (Element) borderPropertiesElement.getElementsByTagName("borders").item(0);
+
+        final String borderStyle = XMLUtils.getAttributeFromChildElement(borderProperties, "Border Style").orElse("None");
+        if (borderStyle.equals("None")) {
+            component.setBorder(null);
+        } else {
+            final Optional<String> leftEdgeWidth = XMLUtils.getAttributeFromChildElement(borderProperties, "Border Width");
+            final Optional<String> leftEdgeColor = XMLUtils.getAttributeFromChildElement(borderProperties, "Border Color");
+
+            final Map<String, String> borderPropertiesMap = new HashMap<>();
+            if (borderStyle.equals("Beveled")) {
+                borderPropertiesMap.put("S", "/B");
+            }
+            if (borderStyle.equals("Solid")) {
+                borderPropertiesMap.put("S", "/S");
+            }
+            if (borderStyle.equals("Dashed")) {
+                borderPropertiesMap.put("S", "/D");
+            }
+
+            if (leftEdgeWidth.isPresent() && leftEdgeWidth.get().length() > 0) {
+                borderPropertiesMap.put("W", leftEdgeWidth.get());
+            }
+
+            final Color color = new Color(Integer.parseInt(leftEdgeColor.get()));
+            final Border border = JPedalBorderFactory.createBorderStyle(borderPropertiesMap, color, color);
+
+            component.setBorder(border);
+        }
+
+        final Element backgroundFillProperties =
+                (Element) borderPropertiesElement.getElementsByTagName("backgroundfill").item(0);
+
+        final String backgroundColor = XMLUtils.getAttributeFromChildElement(backgroundFillProperties, "Fill Color").orElse(String.valueOf(Color.WHITE.getRGB()));
+        component.setBackground(new Color(Integer.parseInt(backgroundColor)));
+
+        setSize(getWidth(), getHeight());
+    }
+
+    public void setComponent(final JComponent component) {
+        this.component = component;
+    }
+
+    public void setProperties(final Document properties) {
+        this.properties = properties;
+    }
+
+    public void setComponentSplit(final boolean componentSplit) {
+        isComponentSplit = componentSplit;
+    }
+
+    public void setAllowEditCaptionAndValue(final boolean allowEditCaptionAndValue) {
+        this.allowEditCaptionAndValue = allowEditCaptionAndValue;
+    }
+
+    public void setAllowEditOfCaptionOnClick(final boolean allowEditOfCaptionOnClick) {
+        this.allowEditOfCaptionOnClick = allowEditOfCaptionOnClick;
+    }
+
+    public void setWidgetName(final String widgetName) {
+        this.widgetName = widgetName;
+    }
+
+    public void setArrayNumber(final int arrayNumber) {
+        this.arrayNumber = arrayNumber;
+    }
+
+    public void setResizeWidthFromLeftRatio(final double resizeWidthFromLeftRatio) {
+        this.resizeWidthFromLeftRatio = resizeWidthFromLeftRatio;
+    }
+
+    public JComponent getComponent() {
+        return component;
+    }
+
+    public JComponent getBaseComponent() {
+        return baseComponent;
+    }
+
+    public boolean isAllowEditCaptionAndValue() {
+        return allowEditCaptionAndValue;
+    }
+
+    public boolean isAllowEditOfCaptionOnClick() {
+        return allowEditOfCaptionOnClick;
+    }
+
+    public Point getPosition() {
+        return position;
+    }
+
+    public double getResizeWidthFromLeftRatio() {
+        return resizeWidthFromLeftRatio;
+    }
+}
