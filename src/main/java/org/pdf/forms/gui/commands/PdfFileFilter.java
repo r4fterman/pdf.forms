@@ -11,10 +11,9 @@ public class PdfFileFilter extends FileFilter {
         return file.isFile() && file.getName().endsWith(".pdf");
     }
 
-
     @Override
     public String getDescription() {
-        return "PDF Files";
+        return "PDF File (*.pdf)";
     }
 
 }
