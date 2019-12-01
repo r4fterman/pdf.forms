@@ -79,7 +79,7 @@ public class Designer extends PdfDecoder implements IDesigner {
     private final CaptionChanger captionChanger = new CaptionChanger();
 
     private List<IWidget> widgets;
-    private Set<IWidget> selectedWidgets = new HashSet<>();
+    private final Set<IWidget> selectedWidgets = new HashSet<>();
     private int resizeType = DesignerMouseMotionListener.DEFAULT_CURSOR;
     private int widgetToAdd = IWidget.NONE;
     private Point dragBoxMouseLocation = null;
@@ -497,9 +497,10 @@ public class Designer extends PdfDecoder implements IDesigner {
 
     @Override
     public void setSelectedWidgets(final Set<IWidget> selectedWidgets) {
-        this.selectedWidgets = selectedWidgets;
+        this.selectedWidgets.clear();
+        this.selectedWidgets.addAll(selectedWidgets);
 
-        if (selectedWidgets.isEmpty()) {
+        if (this.selectedWidgets.isEmpty()) {
             widgetSelection.hideGroupingButtons();
         }
     }

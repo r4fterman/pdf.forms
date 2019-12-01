@@ -6,7 +6,6 @@ import java.net.URI;
 
 import javax.swing.JOptionPane;
 
-import org.pdf.forms.gui.IMainFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +17,7 @@ public class VisitWebsiteCommand implements Command {
     private static final String ORIGINAL_PROJECT_PAGE = "http://pdfformsdesigne.sourceforge.net";
 
     public static boolean openWebpage(final String httpAddress) {
-        final Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        final Desktop desktop = getDesktop();
         if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
             try {
                 final URI uri = URI.create(httpAddress);
@@ -31,10 +30,14 @@ public class VisitWebsiteCommand implements Command {
         return false;
     }
 
-    private IMainFrame mainFrame;
+    private static Desktop getDesktop() {
+        if (Desktop.isDesktopSupported()) {
+            return Desktop.getDesktop();
+        }
+        return null;
+    }
 
-    VisitWebsiteCommand(final IMainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+    VisitWebsiteCommand() {
     }
 
     @Override
@@ -44,8 +47,8 @@ public class VisitWebsiteCommand implements Command {
 
     private void visitWebsite() {
         if (!openWebpage(GITHUB_PROJECT_PAGE)) {
-            JOptionPane.showMessageDialog(null, "Error loading webpage");
-            LOGGER.error("Error loading web page browser");
+            JOptionPane.showMessageDialog(null, "Error loading web page " + GITHUB_PROJECT_PAGE);
+            LOGGER.error("Error loading web page {} in browser", GITHUB_PROJECT_PAGE);
         }
     }
 }

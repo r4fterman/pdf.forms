@@ -115,6 +115,7 @@ public class Commands {
     public static final int ZOOM_OUT = 1668177090;
     public static final int ADD_SELECTION_TO_LIBRARY = 1778177090;
     public static final int BUG_REPORT = 1888177090;
+    public static final int NONE = 0;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Commands.class);
 
@@ -145,18 +146,18 @@ public class Commands {
                 entry(IMPORT, new ImportPdfCommand(mainFrame, version)),
                 entry(SAVE_FILE, new SaveDesignerFileCommand(mainFrame, version)),
                 entry(SAVE_FILE_AS, new SaveDesignerFileAsCommand(mainFrame, version)),
-                entry(PUBLISH, new PublishPdfCommand(mainFrame, version)),
-                entry(FONT_MANAGEMENT, new FontManagementCommand(mainFrame, version)),
+                entry(PUBLISH, new PublishPdfCommand(mainFrame)),
+                entry(FONT_MANAGEMENT, new FontManagementCommand(mainFrame)),
                 entry(EXIT, () -> System.exit(0)),
-                entry(ZOOM_IN, new ZoomInCommand(mainFrame, version)),
-                entry(ZOOM_OUT, new ZoomOutCommand(mainFrame, version)),
-                entry(ZOOM, new ZoomCommand(mainFrame, version)),
-                entry(INSERT_PAGE, new InsertPageCommand(mainFrame, version)),
-                entry(REMOVE_PAGE, new RemovePageCommand(mainFrame, version)),
-                entry(ADD_SELECTION_TO_LIBRARY, new AddSelectionToLibraryCommand(mainFrame, version)),
+                entry(ZOOM_IN, new ZoomInCommand(mainFrame)),
+                entry(ZOOM_OUT, new ZoomOutCommand(mainFrame)),
+                entry(ZOOM, new ZoomCommand(mainFrame)),
+                entry(INSERT_PAGE, new InsertPageCommand(mainFrame)),
+                entry(REMOVE_PAGE, new RemovePageCommand(mainFrame)),
+                entry(ADD_SELECTION_TO_LIBRARY, new AddSelectionToLibraryCommand(mainFrame)),
                 entry(GROUP, new GroupCommand(mainFrame)),
                 entry(UNGROUP, new UnGroupCommand(mainFrame)),
-                entry(WEBSITE, new VisitWebsiteCommand(mainFrame)),
+                entry(WEBSITE, new VisitWebsiteCommand()),
                 entry(ABOUT, new ShowAboutPanelCommand(mainFrame)),
                 entry(BUG_REPORT, new BugReportCommand(mainFrame))
         );

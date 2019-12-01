@@ -12,7 +12,6 @@ import javax.swing.JMenuItem;
 import javax.swing.ProgressMonitor;
 
 import org.jpedal.PdfDecoder;
-import org.jpedal.examples.simpleviewer.utils.FileFilterer;
 import org.jpedal.exception.PdfException;
 import org.jpedal.objects.PdfPageData;
 import org.jpedal.utils.SwingWorker;
@@ -34,7 +33,6 @@ class ImportPdfCommand implements Command {
     private final String version;
 
     private final JMenuItem[] recentDesignerDocuments;
-    private final JMenuItem[] recentImportedDocuments;
 
     ImportPdfCommand(
             final IMainFrame mainFrame,
@@ -43,9 +41,8 @@ class ImportPdfCommand implements Command {
         this.version = version;
 
         final File configDir = new File(System.getProperty("user.dir"));
-        final int noOfRecentDocs = DesignerPropertiesFile.getInstance(configDir).getNoRecentDocumentsToDisplay();
-        recentDesignerDocuments = new JMenuItem[noOfRecentDocs];
-        recentImportedDocuments = new JMenuItem[noOfRecentDocs];
+        final int numberOfRecentDocs = DesignerPropertiesFile.getInstance(configDir).getNoRecentDocumentsToDisplay();
+        this.recentDesignerDocuments = new JMenuItem[numberOfRecentDocs];
     }
 
     @Override
@@ -55,15 +52,11 @@ class ImportPdfCommand implements Command {
 
     private void importPDF() {
         // TODO: do not allow import of a pdf into a closed document
-        final int importType = aquirePDFImportType();
+        final int importType = acquirePDQImportType();
 
         final JFileChooser chooser = new JFileChooser();
-
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        final String[] pdf = new String[] {
-                "pdf"
-        };
-        chooser.addChoosableFileFilter(new FileFilterer(pdf, "Pdf (*.pdf)"));
+        chooser.addChoosableFileFilter(new PdfFileFilter());
 
         final int state = chooser.showOpenDialog((Component) mainFrame);
         final File file = chooser.getSelectedFile();
@@ -77,27 +70,11 @@ class ImportPdfCommand implements Command {
             final String pdfPath) {
         if (importType == PDFImportChooser.IMPORT_NEW) {
             closePDF();
-
             setPanelsState(true);
-
             mainFrame.setFormsDocument(new FormsDocument(version));
         }
 
         try {
-            // final JDialog dialog= new JDialog((Frame) mainFrame, true);
-            // SwingUtilities.invokeLater(new Runnable() {
-            //     public void run() {
-            //         JPanel panel = new JPanel();
-            //         panel.setLayout(new BorderLayout());
-            //         panel.add(new JLabel(("Calculating size of import")));
-            //         //dialog.setUndecorated(true);
-            //         dialog.add(panel);
-            //         dialog.pack();
-            //         dialog.setLocationRelativeTo((Component) mainFrame);
-            //         dialog.setVisible(true);
-            //     }
-            // });
-
             final PdfDecoder pdfDecoder = new PdfDecoder();
 
             if (pdfPath.startsWith("http:") || pdfPath.startsWith("file:")) {
@@ -107,12 +84,6 @@ class ImportPdfCommand implements Command {
             }
 
             final int pageCount = pdfDecoder.getPageCount();
-            // SwingUtilities.invokeLater(new Runnable() {
-            //     public void run() {
-            //         System.out.println("setting visable = false");
-            //         dialog.setVisible(false);
-            //     }
-            // });
 
             final ProgressMonitor progressDialog = new ProgressMonitor((Component) mainFrame, "", "", 0, pageCount);
             progressDialog.setMillisToDecideToPopup(0);
@@ -151,7 +122,6 @@ class ImportPdfCommand implements Command {
 
                         mainFrame.setCurrentDesignerFileName("Untitled");
                         mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version);
-
                     } else if (importType == PDFImportChooser.IMPORT_EXISTING) {
                         for (int pdfPageNumber = 1; pdfPageNumber < pageCount + 1; pdfPageNumber++) {
                             currentLastPage++;
@@ -207,13 +177,13 @@ class ImportPdfCommand implements Command {
             final File configDir = new File(System.getProperty("user.dir"));
             final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configDir);
             properties.addRecentDocument(pdfPath, "recentpdffiles");
-            updateRecentDocuments(properties.getRecentDocuments("recentpdffiles"), "recentpdffiles");
+            updateRecentDocuments(properties.getRecentDocuments("recentpdffiles"));
         } catch (final PdfException e) {
             logger.error("Error importing PDF file {}", pdfPath, e);
         }
     }
 
-    private int aquirePDFImportType() {
+    private int acquirePDQImportType() {
         final PDFImportChooser pic = new PDFImportChooser((Component) mainFrame);
         pic.setVisible(true);
 
@@ -278,21 +248,12 @@ class ImportPdfCommand implements Command {
         pdfDecoder.closePdfFile();
     }
 
-    private void updateRecentDocuments(
-            final String[] recentDocs,
-            final String type) {
+    private void updateRecentDocuments(final String[] recentDocs) {
         if (recentDocs == null) {
             return;
         }
 
-        final JMenuItem[] recentDocuments;
-        if (type.equals("recentdesfiles")) {
-            recentDocuments = recentDesignerDocuments;
-        } else {
-            // "recentpdffiles"
-            recentDocuments = recentImportedDocuments;
-        }
-
+        final JMenuItem[] recentDocuments = recentDesignerDocuments;
         for (int i = 0; i < recentDocs.length; i++) {
             if (recentDocs[i] != null) {
                 final String shortenedFileName = getShortenedFileName(recentDocs[i], File.separator);
@@ -311,7 +272,7 @@ class ImportPdfCommand implements Command {
         }
     }
 
-    String getShortenedFileName(
+    private String getShortenedFileName(
             final String fileNameToAdd,
             final String fileSeparator) {
         final int maxChars = 30;

@@ -1,6 +1,5 @@
 package org.pdf.forms.gui.commands;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,20 +23,17 @@ class UnGroupCommand implements Command {
         final IDesigner designerPanel = mainFrame.getDesigner();
 
         final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
-
-        final IWidget gw = selectedWidgets.iterator().next();
+        final IWidget selectedWidget = selectedWidgets.iterator().next();
 
         designerPanel.removeSelectedWidgets();
-
-        final List<IWidget> widgetsInGroup = gw.getWidgetsInGroup();
+        final List<IWidget> widgetsInGroup = selectedWidget.getWidgetsInGroup();
         for (final IWidget widget : widgetsInGroup) {
             designerPanel.addWidget(widget);
         }
 
-        final Set<IWidget> widgets = new HashSet<>(widgetsInGroup);
+        final Set<IWidget> widgets = Set.copyOf(widgetsInGroup);
 
         designerPanel.setSelectedWidgets(widgets);
-
         designerPanel.getMainFrame().setPropertiesCompound(widgets);
         designerPanel.getMainFrame().setPropertiesToolBar(widgets);
 

@@ -10,13 +10,9 @@ import org.pdf.forms.utils.CustomWidgetsFile;
 
 class AddSelectionToLibraryCommand implements Command {
     private final IMainFrame mainFrame;
-    private final String version;
 
-    AddSelectionToLibraryCommand(
-            final IMainFrame mainFrame,
-            final String version) {
+    AddSelectionToLibraryCommand(final IMainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        this.version = version;
     }
 
     @Override

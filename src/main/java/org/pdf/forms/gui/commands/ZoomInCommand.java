@@ -6,13 +6,9 @@ import org.pdf.forms.gui.designer.gui.DesignerCompound;
 class ZoomInCommand implements Command {
 
     private final IMainFrame mainFrame;
-    private final String version;
 
-    ZoomInCommand(
-            final IMainFrame mainFrame,
-            final String version) {
+    ZoomInCommand(final IMainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        this.version = version;
     }
 
     @Override
@@ -22,7 +18,6 @@ class ZoomInCommand implements Command {
 
     private void zoom(final double scaling) {
         if (mainFrame.getDesignerCompoundContent() == DesignerCompound.PREVIEW) {
-
             mainFrame.setCurrentSelectedScaling(round(scaling * 100));
 
             final DesignerCompound desgnerCompound = mainFrame.getDesignerCompound();

@@ -4,12 +4,12 @@ import java.util.HashSet;
 
 import org.pdf.forms.gui.IMainFrame;
 
-public class ClosePdfCommand implements Command{
+public class ClosePdfCommand implements Command {
 
     private final IMainFrame mainFrame;
     private final String version;
 
-    public ClosePdfCommand(
+    ClosePdfCommand(
             final IMainFrame mainFrame,
             final String version) {
         this.mainFrame = mainFrame;
@@ -23,21 +23,13 @@ public class ClosePdfCommand implements Command{
 
     private void closePDF() {
         mainFrame.setFormsDocument(null);
-
         mainFrame.getDesigner().close();
-
         mainFrame.setCurrentDesignerFileName("");
         mainFrame.setTitle("PDF Forms Designer Version " + version);
-
         mainFrame.setPropertiesCompound(new HashSet<>());
         mainFrame.setPropertiesToolBar(new HashSet<>());
-
-        setPanelsState(false);
-
+        mainFrame.setPanelsState(false);
         mainFrame.setCurrentPage(0);
     }
 
-    private void setPanelsState(final boolean state) {
-        mainFrame.setPanelsState(state);
-    }
 }

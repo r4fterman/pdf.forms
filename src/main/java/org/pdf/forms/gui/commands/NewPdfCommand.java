@@ -20,52 +20,39 @@ class NewPdfCommand implements Command {
 
     @Override
     public void execute() {
-        newPDF(595, 842);
+        newPDF();
     }
 
-    private void newPDF(
-            final int width,
-            final int height) {
+    private void newPDF() {
         closePDF();
 
         mainFrame.setCurrentDesignerFileName("Untitled");
         mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version);
-
-        setPanelsState(true);
-
+        mainFrame.setPanelsState(true);
         mainFrame.setFormsDocument(new FormsDocument(version));
 
-        insertPage(width, height);
+        insertPage();
     }
 
     private void closePDF() {
         mainFrame.setFormsDocument(null);
-
         mainFrame.getDesigner().close();
-
         mainFrame.setCurrentDesignerFileName("");
         mainFrame.setTitle("PDF Forms Designer Version " + version);
-
         mainFrame.setPropertiesCompound(new HashSet<>());
         mainFrame.setPropertiesToolBar(new HashSet<>());
-
-        setPanelsState(false);
-
+        mainFrame.setPanelsState(false);
         mainFrame.setCurrentPage(0);
     }
 
-    private void insertPage(
-            final int width,
-            final int height) {
-        final Page newPage = new Page("(page " + (mainFrame.getTotalNoOfPages() + 1) + ")", width, height);
+    private void insertPage() {
+        final Page newPage = new Page("(page " + (mainFrame.getTotalNoOfPages() + 1) + ")", 595, 842);
 
         mainFrame.setCurrentPage(mainFrame.getCurrentPage() + 1);
-
         addPage(mainFrame.getCurrentPage(), newPage);
 
         mainFrame.displayPage(mainFrame.getCurrentPage());
-
-        setTotalPages();
+        mainFrame.setTotalNoOfDisplayedPages(mainFrame.getTotalNoOfPages());
     }
 
     private void addPage(
@@ -75,11 +62,4 @@ class NewPdfCommand implements Command {
         mainFrame.addPageToHierarchyPanel(pdfPage, newPage);
     }
 
-    private void setTotalPages() {
-        mainFrame.setTotalNoOfDisplayedPages(mainFrame.getTotalNoOfPages());
-    }
-
-    private void setPanelsState(final boolean state) {
-        mainFrame.setPanelsState(state);
-    }
 }

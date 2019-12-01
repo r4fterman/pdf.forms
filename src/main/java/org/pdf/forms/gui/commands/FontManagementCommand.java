@@ -10,14 +10,9 @@ import org.pdf.forms.gui.IMainFrame;
 class FontManagementCommand implements Command {
 
     private final IMainFrame mainFrame;
-    private final String version;
 
-    FontManagementCommand(
-            final IMainFrame mainFrame,
-            final String version) {
-
+    FontManagementCommand(final IMainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        this.version = version;
     }
 
     @Override
@@ -27,9 +22,9 @@ class FontManagementCommand implements Command {
 
     private void fontManagement() {
         final JDialog dialog = new JDialog((Frame) mainFrame, "Font Management", true);
-        final FontSelector fs = new FontSelector(mainFrame, dialog);
+        final FontSelector fontSelector = new FontSelector(mainFrame, dialog);
 
-        dialog.add(fs);
+        dialog.add(fontSelector);
         dialog.pack();
         dialog.setLocationRelativeTo((Frame) mainFrame);
         dialog.setVisible(true);

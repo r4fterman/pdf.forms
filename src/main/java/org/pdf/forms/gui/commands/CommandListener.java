@@ -48,16 +48,21 @@ public class CommandListener implements ActionListener {
 
     @Override
     public void actionPerformed(final ActionEvent actionEvent) {
-        final Object source = actionEvent.getSource();
-        int id = 0;
-        if (source instanceof GUIButton) {
-            id = ((GUIButton) source).getID();
-        } else if (source instanceof SwingMenuItem) {
-            id = ((SwingMenuItem) source).getID();
-        } else if (source instanceof SwingCombo) {
-            id = ((SwingCombo) source).getID();
-        }
+        final int id = getId(actionEvent.getSource());
 
         commands.executeCommand(id);
+    }
+
+    private int getId(final Object source) {
+        if (source instanceof GUIButton) {
+            return ((GUIButton) source).getID();
+        }
+        if (source instanceof SwingMenuItem) {
+            return ((SwingMenuItem) source).getID();
+        }
+        if (source instanceof SwingCombo) {
+            return ((SwingCombo) source).getID();
+        }
+        return Commands.NONE;
     }
 }

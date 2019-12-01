@@ -1,21 +1,22 @@
 package org.pdf.forms.gui.commands;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.awt.Component;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.jpedal.examples.simpleviewer.utils.FileFilterer;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
@@ -38,7 +39,6 @@ public class OpenDesignerFileCommand implements Command {
     private final IMainFrame mainFrame;
     private final String version;
     private final JMenuItem[] recentDesignerDocuments;
-    private final JMenuItem[] recentImportedDocuments;
 
     OpenDesignerFileCommand(
             final IMainFrame mainFrame,
@@ -48,8 +48,7 @@ public class OpenDesignerFileCommand implements Command {
 
         final File configDir = new File(System.getProperty("user.dir"));
         final int noOfRecentDocs = DesignerPropertiesFile.getInstance(configDir).getNoRecentDocumentsToDisplay();
-        recentDesignerDocuments = new JMenuItem[noOfRecentDocs];
-        recentImportedDocuments = new JMenuItem[noOfRecentDocs];
+        this.recentDesignerDocuments = new JMenuItem[noOfRecentDocs];
     }
 
     @Override
@@ -59,18 +58,11 @@ public class OpenDesignerFileCommand implements Command {
 
     private void openDesignerFile() {
         final JFileChooser chooser = new JFileChooser();
-
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        final String[] des = new String[] {
-                "des"
-        };
-        chooser.addChoosableFileFilter(new FileFilterer(des, "des (*.des)"));
-
+        chooser.addChoosableFileFilter(new DesFileFilter());
         final int state = chooser.showOpenDialog((Component) mainFrame);
 
         final File fileToOpen = chooser.getSelectedFile();
-
         if (fileToOpen != null && state == JFileChooser.APPROVE_OPTION) {
             openDesignerFile(fileToOpen.getAbsolutePath());
         }
@@ -102,7 +94,6 @@ public class OpenDesignerFileCommand implements Command {
             final List<Element> pages = XMLUtils.getElementsFromNodeList(root.getElementsByTagName("page"));
 
             final Map<String, String> changedFiles = getChangedPdfFileLocations(pages);
-
             for (final Element page : pages) {
                 final Optional<String> pageType = XMLUtils.getAttributeFromChildElement(page, "pagetype");
                 final Optional<String> pageName = XMLUtils.getAttributeFromChildElement(page, "pagename");
@@ -149,17 +140,14 @@ public class OpenDesignerFileCommand implements Command {
         }
 
         mainFrame.setCurrentPage(1);
-
         mainFrame.displayPage(mainFrame.getCurrentPage());
-
-        setTotalPages();
-
+        mainFrame.setTotalNoOfDisplayedPages(mainFrame.getTotalNoOfPages());
         mainFrame.setTitle(mainFrame.getCurrentDesignerFileName() + " - PDF Forms Designer Version " + version);
 
         final File configDir = new File(System.getProperty("user.dir"));
         final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configDir);
         properties.addRecentDocument(designerFileToOpen, "recentdesfiles");
-        updateRecentDocuments(properties.getRecentDocuments("recentdesfiles"), "recentdesfiles");
+        updateRecentDocuments(properties.getRecentDocuments("recentdesfiles"));
     }
 
     private void closePDF() {
@@ -179,73 +167,64 @@ public class OpenDesignerFileCommand implements Command {
     }
 
     private Map<String, String> getChangedPdfFileLocations(final List<Element> pages) {
-        final Set<String> pdfFiles = new HashSet<>();
-        for (final Element page : pages) {
-            XMLUtils.getPropertyElement(page, "pdffilelocation")
-                    .ifPresent(element ->
-                            pdfFiles.add(element.getAttributeNode("value").getValue())
-                    );
+        final Set<String> pdfFiles = pages.stream()
+                .map(page -> XMLUtils.getPropertyElement(page, "pdffilelocation"))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(element -> element.getAttributeNode("value").getValue())
+                .collect(Collectors.toUnmodifiableSet());
+
+        return pdfFiles.stream()
+                .collect(toMap(
+                        pdfFile -> pdfFile,
+                        pdfFile -> pdfFileName(pdfFile)
+                ));
+    }
+
+    private String pdfFileName(final String pdfFile) {
+        if (!new File(pdfFile).exists()) {
+            final FileFinder fileFinder = new FileFinder((Component) mainFrame, pdfFile);
+            fileFinder.setVisible(true);
+            return fileFinder.getFileLocation();
         }
-
-        final Map<String, String> changedFiles = new HashMap<>();
-        for (final String fileName : pdfFiles) {
-            String newFileName = fileName;
-
-            if (!new File(fileName).exists()) {
-                final FileFinder fileFinder = new FileFinder((Component) mainFrame, fileName);
-                fileFinder.setVisible(true);
-                newFileName = fileFinder.getFileLocation();
-            }
-
-            changedFiles.put(fileName, newFileName);
-        }
-
-        return changedFiles;
+        return pdfFile;
     }
 
     private void addButtonGroupsToPage(
             final Element page,
             final Page newPage,
             final int type) {
-        final String groupName;
-        if (type == IWidget.RADIO_BUTTON) {
-            groupName = "radiobuttongroups";
-        } else {
-            groupName = "checkboxgroups";
-        }
+        final String groupName = getGroupName(type);
 
         final Element radioButtonGroupsElement = (Element) page.getElementsByTagName(groupName).item(0);
 
-        final List<Element> radioButtonGropusList = XMLUtils.getElementsFromNodeList(radioButtonGroupsElement.getChildNodes());
+        XMLUtils.getElementsFromNodeList(radioButtonGroupsElement.getChildNodes())
+                .forEach(buttonGroupElement -> {
+                    final ButtonGroup buttonGroup = new ButtonGroup(type);
+                    XMLUtils.getAttributeFromElement(buttonGroupElement, "buttongroupname")
+                            .ifPresent(buttonGroup::setName);
 
-        for (final Element buttonGroupElement : radioButtonGropusList) {
-            final Optional<String> value = XMLUtils.getAttributeFromElement(buttonGroupElement, "buttongroupname");
-            final ButtonGroup buttonGroup = new ButtonGroup(type);
-
-            buttonGroup.setName(value.get());
-
-            if (type == IWidget.RADIO_BUTTON) {
-                newPage.getRadioButtonGroups().add(buttonGroup);
-            } else {
-                newPage.getCheckBoxGroups().add(buttonGroup);
-            }
-        }
+                    if (type == IWidget.RADIO_BUTTON) {
+                        newPage.getRadioButtonGroups().add(buttonGroup);
+                    } else {
+                        newPage.getCheckBoxGroups().add(buttonGroup);
+                    }
+                });
     }
 
-    private void updateRecentDocuments(
-            final String[] recentDocs,
-            final String type) {
+    private String getGroupName(final int type) {
+        if (type == IWidget.RADIO_BUTTON) {
+            return "radiobuttongroups";
+        }
+        return "checkboxgroups";
+    }
+
+    private void updateRecentDocuments(final String[] recentDocs) {
         if (recentDocs == null) {
             return;
         }
 
-        final JMenuItem[] recentDocuments;
-        if (type.equals("recentdesfiles")) {
-            recentDocuments = recentDesignerDocuments;
-        } else {
-            // "recentpdffiles"
-            recentDocuments = recentImportedDocuments;
-        }
+        final JMenuItem[] recentDocuments = recentDesignerDocuments;
 
         for (int i = 0; i < recentDocs.length; i++) {
             if (recentDocs[i] != null) {
@@ -265,7 +244,7 @@ public class OpenDesignerFileCommand implements Command {
         }
     }
 
-    String getShortenedFileName(
+    private String getShortenedFileName(
             final String fileNameToAdd,
             final String fileSeparator) {
         final int maxChars = 30;
@@ -297,18 +276,11 @@ public class OpenDesignerFileCommand implements Command {
     }
 
     private List<IWidget> getWidgetsFromXMLElement(final Element page) {
-        final List<Element> elementsInPage = XMLUtils.getElementsFromNodeList(page.getChildNodes());
-
-        final List<Element> widgetsInPageList = new ArrayList<>();
-
-        for (final Element element : elementsInPage) {
-            if (element.getNodeName().equals("widget")) {
-                widgetsInPageList.add(element);
-            }
-        }
+        final List<Element> widgetsInPageList = XMLUtils.getElementsFromNodeList(page.getChildNodes()).stream()
+                .filter(element -> element.getNodeName().equals("widget"))
+                .collect(Collectors.toUnmodifiableList());
 
         final List<IWidget> widgets = new ArrayList<>();
-
         for (final Element widgetElement : widgetsInPageList) {
             XMLUtils.getAttributeFromChildElement(widgetElement, "type")
                     .map(type -> IWidget.WIDGET_TYPES.getOrDefault(type.toLowerCase(), IWidget.NONE))
@@ -334,10 +306,6 @@ public class OpenDesignerFileCommand implements Command {
             final Page newPage) {
         mainFrame.getFormsDocument().addPage(pdfPage, newPage);
         mainFrame.addPageToHierarchyPanel(pdfPage, newPage);
-    }
-
-    private void setTotalPages() {
-        mainFrame.setTotalNoOfDisplayedPages(mainFrame.getTotalNoOfPages());
     }
 
     private void setPanelsState(final boolean state) {
