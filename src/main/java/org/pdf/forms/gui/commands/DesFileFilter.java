@@ -13,6 +13,6 @@ public class DesFileFilter extends FileFilter {
 
     @Override
     public String getDescription() {
-        return "PDF Designer File (*.des)";
+        return "PDF Forms Designer File (*.des)";
     }
 }
