@@ -2,9 +2,8 @@ package org.pdf.forms.utils.configuration;
 
 import java.io.File;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
+import org.pdf.forms.utils.XMLUtils;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -37,9 +36,8 @@ public class WindowConfiguration extends ConfigurationFile {
 
     @Override
     protected void writeDefaultConfiguration() throws Exception {
-        final DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-
-        setDoc(documentBuilder.newDocument());
+        final Document doc = XMLUtils.createNewDocument();
+        setDoc(doc);
 
         final Element windowConfigurationElement = getDoc().createElement("window_configuration");
         getDoc().appendChild(windowConfigurationElement);

@@ -12,16 +12,16 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.jpedal.examples.simpleviewer.gui.swing.SwingMenuItem;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.designer.IDesigner;
+import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetAlignmentAndOrder;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -66,10 +66,8 @@ public class MenuConfiguration extends ConfigurationFile {
 
     @Override
     protected void writeDefaultConfiguration() throws Exception {
-        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        final DocumentBuilder db = dbf.newDocumentBuilder();
-
-        setDoc(db.newDocument());
+        final Document doc = XMLUtils.createNewDocument();
+        setDoc(doc);
 
         final Element menuConfigurationElement = getDoc().createElement("menu_configuration");
         getDoc().appendChild(menuConfigurationElement);

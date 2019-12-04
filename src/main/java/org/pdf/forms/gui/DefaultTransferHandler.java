@@ -35,7 +35,6 @@ import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -44,12 +43,12 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.TransferHandler;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.pdf.forms.gui.commands.Commands;
+import org.pdf.forms.gui.commands.ImportPdfCommand;
+import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.IDesigner;
+import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,14 +62,17 @@ public class DefaultTransferHandler extends TransferHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DefaultTransferHandler.class);
 
-    private final Commands currentCommands;
     private final IDesigner designerPanel;
+    private final IMainFrame mainFrame;
+    private final String version;
 
     DefaultTransferHandler(
-            final Commands currentCommands,
-            final IDesigner designerPanel) {
-        this.currentCommands = currentCommands;
+            final IDesigner designerPanel,
+            final IMainFrame mainFrame,
+            final String version) {
         this.designerPanel = designerPanel;
+        this.mainFrame = mainFrame;
+        this.version = version;
     }
 
     @Override
@@ -84,7 +86,6 @@ public class DefaultTransferHandler extends TransferHandler {
     public boolean importData(
             final JComponent src,
             final Transferable transferable) {
-
         final int widgetToAdd = designerPanel.getWidgetToAdd();
 
         if (widgetToAdd == IWidget.NONE) {
@@ -103,17 +104,18 @@ public class DefaultTransferHandler extends TransferHandler {
             // Ok, now try to display the content of the drop.
             try {
                 final DataFlavor bestTextFlavor = DataFlavor.selectBestTextFlavor(flavors);
-                if (bestTextFlavor != null) { // this could be a file from a web page being dragged in
+                if (bestTextFlavor != null) {
+                    // this could be a file from a web page being dragged in
                     final Reader r = bestTextFlavor.getReaderForText(transferable);
 
-                    /* acquire the text data from the reader. */
-                    String textData = readTextDate(r);
+                    // acquire the text data from the reader.
+                    final String textData = readTextData(r);
 
-                    /* need to remove all the 0 characters that will appear in the String when importing on Linux */
-                    textData = removeChar(textData, (char) 0);
+                    // need to remove all the 0 characters that will appear in the String when importing on Linux
+                    final String clearedTextData = removeChar0(textData);
 
-                    /* get the URL from the text data */
-                    final String url = getURL(textData);
+                    // get the URL from the text data
+                    final String url = getURL(clearedTextData);
 
                     // make sure only one url is in the String
                     if (url.indexOf("file:/") != url.lastIndexOf("file:/")) {
@@ -121,8 +123,8 @@ public class DefaultTransferHandler extends TransferHandler {
                     } else {
                         openFile(url, src);
                     }
-
-                } else if (listFlavor != null) { // this is most likely a file being dragged in
+                } else if (listFlavor != null) {
+                    // this is most likely a file being dragged in
                     final List list = (List) transferable.getTransferData(listFlavor);
                     if (list.size() == 1) {
                         // we can process
@@ -133,7 +135,7 @@ public class DefaultTransferHandler extends TransferHandler {
                     }
                 }
             } catch (final Exception e) {
-                logger.error("Caught exception decoding transfer", e);
+                logger.error("Caught exception decoding drag'n'drop transferable", e);
                 return false;
             }
 
@@ -145,12 +147,7 @@ public class DefaultTransferHandler extends TransferHandler {
     private void openFile(
             final String file,
             final Component src) {
-
-        /*
-         * open any default file and selected page
-         */
         if (file != null) {
-
             final File testExists = new File(file);
             boolean isURL = false;
             if (file.startsWith("http:") || file.startsWith("file:")) {
@@ -162,7 +159,6 @@ public class DefaultTransferHandler extends TransferHandler {
             } else if ((!isURL) && (testExists.isDirectory())) {
                 JOptionPane.showMessageDialog(src, file + '\n' + "This file is a Directory and cannot be opened");
             } else {
-
                 final boolean isPdf = file.endsWith(".pdf");
                 final boolean isDes = file.endsWith(".des");
                 final boolean isImage = file.endsWith(".des") || file.endsWith(".tif")
@@ -171,10 +167,10 @@ public class DefaultTransferHandler extends TransferHandler {
                         || file.endsWith(".gif");
 
                 if (isPdf) {
-                    currentCommands.importPDF(file);
+                    new ImportPdfCommand(mainFrame, version).importPDF(file);
                 } else if (isDes) {
-                    currentCommands.openDesignerFile(file);
-                    //} else if (isImage) {
+                    new OpenDesignerFileCommand(mainFrame, version).openDesignerFile(file);
+                } else if (isImage) {
                     //currentCommands.openFile(file);
                 } else {
                     JOptionPane.showMessageDialog(src, "You may only import a valid PDF, des file or image");
@@ -183,9 +179,8 @@ public class DefaultTransferHandler extends TransferHandler {
         }
     }
 
-    private String removeChar(
-            final String s,
-            final char c) {
+    private String removeChar0(final String s) {
+        final char c = (char) 0;
         final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) != c) {
@@ -201,21 +196,16 @@ public class DefaultTransferHandler extends TransferHandler {
      * @param textData
      *         text data acquired from the transferable.
      * @return the URL of the file to open
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
      */
     private String getURL(final String textData) throws ParserConfigurationException, SAXException, IOException {
-        if (!textData.startsWith("http://") && !textData.startsWith("file://")) { // its not a url so it must be a file
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-            final Document doc = db.parse(new ByteArrayInputStream(textData.getBytes()));
-
-            final Element a = (Element) doc.getElementsByTagName("a").item(0);
-            return getHrefAttribute(a);
+        if (textData.startsWith("http://") || textData.startsWith("file://")) {
+            return textData;
         }
 
-        return textData;
+        // its not a url so it must be a file
+        final Document doc = XMLUtils.readDocument(textData);
+        final Element a = (Element) doc.getElementsByTagName("a").item(0);
+        return getHrefAttribute(a);
     }
 
     /**
@@ -223,23 +213,34 @@ public class DefaultTransferHandler extends TransferHandler {
      * Firefox this will be some html containing an "a" element with the "href" attribute linking to the to the PDF. <br/><br/>
      * IE a simple one line String containing the URL will be returned
      *
-     * @param r
+     * @param reader
      *         the reader to read from
      * @return the text data from the reader
-     * @throws IOException
      */
-    private String readTextDate(final Reader r) throws IOException {
-        final BufferedReader br = new BufferedReader(r);
-
-        final StringBuilder builder = new StringBuilder();
-        String line = br.readLine();
-        while (line != null) {
-            builder.append(line);
-            line = br.readLine();
+    private String readTextData(final Reader reader) {
+        final BufferedReader br = new BufferedReader(reader);
+        try {
+            final StringBuilder builder = new StringBuilder();
+            String line = br.readLine();
+            while (line != null) {
+                builder.append(line);
+                line = br.readLine();
+            }
+            return builder.toString();
+        } catch (final IOException e) {
+            return "";
+        } finally {
+            closeReader(br);
         }
-        br.close();
 
-        return builder.toString();
+    }
+
+    private void closeReader(final BufferedReader bufferedReader) {
+        try {
+            bufferedReader.close();
+        } catch (final IOException e) {
+            // do nothing
+        }
     }
 
     /**

@@ -36,8 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.widgets.IWidget;
@@ -73,7 +71,6 @@ public final class CustomWidgetsFile extends PropertiesFile {
 
     @Override
     public boolean checkAllElementsPresent() throws DOMException, ParserConfigurationException {
-
         //assume true and set to false if wrong
         boolean hasAllElements = true;
 
@@ -85,10 +82,8 @@ public final class CustomWidgetsFile extends PropertiesFile {
         }
 
         if (!elementsInTree.contains("custom_components")) {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-
-            setDoc(db.newDocument());
+            final Document doc = XMLUtils.createNewDocument();
+            setDoc(doc);
 
             final Element customComponentElement = getDoc().createElement("custom_components");
             getDoc().appendChild(customComponentElement);

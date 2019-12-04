@@ -3,14 +3,13 @@ package org.pdf.forms.utils.configuration;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.pdf.forms.utils.XMLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -26,17 +25,14 @@ public abstract class ConfigurationFile {
     ConfigurationFile(final File configFile) {
         this.configFile = configFile;
         try {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-
             boolean needNewFile = false;
 
             if (configFile.exists() && configFile.canRead()) {
                 try {
-                    doc = db.parse(configFile);
+                    doc = XMLUtils.readDocument(configFile);
                 } catch (final Exception e) {
                     logger.error("Error parsing config file {}", configFile.getAbsolutePath(), e);
-                    doc = db.newDocument();
+                    doc = XMLUtils.createNewDocument();
                     needNewFile = true;
                 }
             } else {
@@ -44,7 +40,7 @@ public abstract class ConfigurationFile {
                 final File configDir = new File(userDir, "configuration");
 
                 configDir.mkdirs();
-                doc = db.newDocument();
+                doc = XMLUtils.createNewDocument();
                 needNewFile = true;
             }
 

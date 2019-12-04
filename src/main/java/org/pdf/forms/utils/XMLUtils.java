@@ -31,9 +31,17 @@
 */
 package org.pdf.forms.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -41,8 +49,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class XMLUtils {
+
+    private static final DocumentBuilderFactory FACTORY = DocumentBuilderFactory.newInstance();
 
     public static Optional<Element> getPropertyElement(
             final Element parentElement,
@@ -157,5 +168,29 @@ public class XMLUtils {
         }
 
         return Optional.empty();
+    }
+
+    public static Document readDocument(final String xmlContent) throws ParserConfigurationException, IOException, SAXException {
+        final DocumentBuilder builder = createDocumentBuilder();
+        return builder.parse(new ByteArrayInputStream(xmlContent.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    public static Document readDocument(final File file) throws ParserConfigurationException, IOException, SAXException {
+        final DocumentBuilder builder = createDocumentBuilder();
+        return builder.parse(file);
+    }
+
+    public static Document readDocumentFromUri(final String uri) throws ParserConfigurationException, IOException, SAXException {
+        final DocumentBuilder builder = createDocumentBuilder();
+        return builder.parse(uri);
+    }
+
+    public static Document createNewDocument() throws ParserConfigurationException {
+        final DocumentBuilder builder = createDocumentBuilder();
+        return builder.newDocument();
+    }
+
+    private static DocumentBuilder createDocumentBuilder() throws ParserConfigurationException {
+        return FACTORY.newDocumentBuilder();
     }
 }

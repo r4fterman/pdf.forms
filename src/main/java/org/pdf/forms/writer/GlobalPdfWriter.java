@@ -25,12 +25,15 @@ class GlobalPdfWriter {
     void addAnnotation(
             final PdfFormField pdfFormField,
             final int currentPage) {
+        if (pdfFormField == null) {
+            return;
+        }
+
         writer.ifPresentOrElse(w -> w.addAnnotation(pdfFormField),
                 () -> stamper.ifPresent(s -> s.addAnnotation(pdfFormField, currentPage)));
     }
 
     PdfContentByte getContentByte(final int currentPage) {
-
         return writer.map(PdfWriter::getDirectContent)
                 .orElseGet(() -> stamper.map(s -> s.getOverContent(currentPage))
                         .orElse(null));

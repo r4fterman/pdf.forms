@@ -7,12 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -141,7 +140,6 @@ public final class DesignerPropertiesFile extends PropertiesFile {
 
     @Override
     public boolean checkAllElementsPresent() throws ParserConfigurationException {
-
         //assume true and set to false if wrong
         boolean hasAllElements = true;
 
@@ -156,10 +154,8 @@ public final class DesignerPropertiesFile extends PropertiesFile {
         if (elementsInTree.contains("properties")) {
             propertiesElement = (Element) getDoc().getElementsByTagName("properties").item(0);
         } else {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-
-            setDoc(db.newDocument());
+            final Document doc = XMLUtils.createNewDocument();
+            setDoc(doc);
 
             propertiesElement = getDoc().createElement("properties");
             getDoc().appendChild(propertiesElement);

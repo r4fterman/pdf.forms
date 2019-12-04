@@ -17,8 +17,6 @@ import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.jpedal.objects.acroforms.creation.JPedalBorderFactory;
@@ -345,9 +343,7 @@ public class Widget {
 
     protected Element setupProperties() {
         try {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-            properties = db.newDocument();
+            properties = XMLUtils.createNewDocument();
         } catch (final ParserConfigurationException e) {
             logger.error("Error setting up properties", e);
         }

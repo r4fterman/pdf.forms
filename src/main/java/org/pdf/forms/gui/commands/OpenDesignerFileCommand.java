@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
@@ -40,7 +38,7 @@ public class OpenDesignerFileCommand implements Command {
     private final String version;
     private final JMenuItem[] recentDesignerDocuments;
 
-    OpenDesignerFileCommand(
+    public OpenDesignerFileCommand(
             final IMainFrame mainFrame,
             final String version) {
         this.mainFrame = mainFrame;
@@ -76,15 +74,12 @@ public class OpenDesignerFileCommand implements Command {
         mainFrame.setCurrentDesignerFileName(designerFileToOpen);
 
         try {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-
             final String fileName = mainFrame.getCurrentDesignerFileName();
             final Document designerDocumentProperties;
             if (fileName.startsWith("http:") || fileName.startsWith("file:")) {
-                designerDocumentProperties = db.parse(fileName);
+                designerDocumentProperties = XMLUtils.readDocumentFromUri(fileName);
             } else {
-                designerDocumentProperties = db.parse(new File(fileName));
+                designerDocumentProperties = XMLUtils.readDocument(new File(fileName));
             }
 
             final Element root = designerDocumentProperties.getDocumentElement();
@@ -228,7 +223,7 @@ public class OpenDesignerFileCommand implements Command {
 
         for (int i = 0; i < recentDocs.length; i++) {
             if (recentDocs[i] != null) {
-                final String shortenedFileName = getShortenedFileName(recentDocs[i], File.separator);
+                final String shortenedFileName = FileUtil.getShortenedFileName(recentDocs[i], File.separator);
                 if (recentDocuments[i] == null) {
                     recentDocuments[i] = new JMenuItem();
                 }
@@ -242,37 +237,6 @@ public class OpenDesignerFileCommand implements Command {
                 recentDocuments[i].setName(recentDocs[i]);
             }
         }
-    }
-
-    private String getShortenedFileName(
-            final String fileNameToAdd,
-            final String fileSeparator) {
-        final int maxChars = 30;
-
-        if (fileNameToAdd.length() <= maxChars) {
-            return fileNameToAdd;
-        }
-
-        final String[] arrayedFilePath = fileNameToAdd.split(fileSeparator);
-        final int numberOfTokens = arrayedFilePath.length;
-
-        final String filePathBody = fileNameToAdd.substring(arrayedFilePath[0].length(),
-                fileNameToAdd.length() - arrayedFilePath[numberOfTokens - 1].length());
-
-        final StringBuilder builder = new StringBuilder(filePathBody);
-
-        for (int i = numberOfTokens - 2; i > 0; i--) {
-            final int start = builder.lastIndexOf(arrayedFilePath[i]);
-
-            final int end = start + arrayedFilePath[i].length();
-            builder.replace(start, end, "...");
-
-            if (builder.toString().length() <= maxChars) {
-                break;
-            }
-        }
-
-        return arrayedFilePath[0] + builder.toString() + arrayedFilePath[numberOfTokens - 1];
     }
 
     private List<IWidget> getWidgetsFromXMLElement(final Element page) {

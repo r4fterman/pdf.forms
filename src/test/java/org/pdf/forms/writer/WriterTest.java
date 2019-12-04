@@ -49,19 +49,15 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.easymock.EasyMockSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.pdf.forms.gui.commands.Commands;
+import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.IDesigner;
+import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
-import org.xml.sax.SAXException;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -77,16 +73,13 @@ import com.itextpdf.text.pdf.RadioCheckField;
 class WriterTest extends EasyMockSupport {
 
     private static final String DESIGNER_FILE = "/example.des";
-    private Writer writer;
 
-    private Commands commands;
     private MockMainFrame mainFrame;
+    private Writer writer;
 
     @BeforeEach
     void setUp() {
         mainFrame = new MockMainFrame();
-
-        commands = new Commands(mainFrame, "DEV-TEST");
         writer = new Writer(mainFrame);
     }
 
@@ -100,10 +93,10 @@ class WriterTest extends EasyMockSupport {
         final File source = getFile();
         final File target = createTargetFile(path, source);
 
-        commands.openDesignerFile(target.getAbsolutePath());
+        new OpenDesignerFileCommand(mainFrame, "DEV-TEST").openDesignerFile(target.getAbsolutePath());
 
         final File outputFile = new File(path.toFile(), "output.des");
-        final org.w3c.dom.Document properties = readDocument(source);
+        final org.w3c.dom.Document properties = XMLUtils.readDocument(source);
 
         final List<IWidget> page1Widgets = mainFrame.getFormsDocument().getPage(1).getWidgets();
         final List<IWidget> page2Widgets = mainFrame.getFormsDocument().getPage(2).getWidgets();
@@ -157,17 +150,12 @@ class WriterTest extends EasyMockSupport {
         final PdfFormField ck = bt2.getCheckField();
         writer.addAnnotation(ck);
         document.close();
+
+        assertThat("File: " + file.getAbsolutePath(), file.length(), is(4494L));
     }
 
     private BaseColor getBaseColor(final Color color) {
         return new GrayColor(color.getRGB());
-    }
-
-    private org.w3c.dom.Document readDocument(final File file) throws ParserConfigurationException, IOException, SAXException {
-        final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        final DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-
-        return documentBuilder.parse(file);
     }
 
     private File getFile() throws URISyntaxException {

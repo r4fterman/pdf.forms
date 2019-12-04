@@ -40,8 +40,6 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.utils.XMLUtils;
@@ -73,9 +71,7 @@ public class GroupWidget implements IWidget {
 
     private Element setupProperties() {
         try {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-            properties = db.newDocument();
+            properties = XMLUtils.createNewDocument();
         } catch (final ParserConfigurationException e) {
             logger.error("Error setting up properties", e);
         }

@@ -34,8 +34,6 @@ package org.pdf.forms.document;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.utils.XMLUtils;
@@ -54,9 +52,7 @@ public class FormsDocument {
 
     public FormsDocument(final String version) {
         try {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-            documentProperties = db.newDocument();
+            documentProperties = XMLUtils.createNewDocument();
 
             final Element rootElement = documentProperties.createElement("document");
             documentProperties.appendChild(rootElement);
@@ -71,9 +67,7 @@ public class FormsDocument {
 
     public FormsDocument(final Element loadedRoot) {
         try {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-            documentProperties = db.newDocument();
+            documentProperties = XMLUtils.createNewDocument();
 
             final Node newRoot = documentProperties.importNode(loadedRoot, true);
             documentProperties.appendChild(newRoot);

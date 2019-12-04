@@ -51,11 +51,15 @@ import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.commands.Commands;
+import org.pdf.forms.gui.commands.FileUtil;
+import org.pdf.forms.gui.commands.ImportPdfCommand;
+import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.Designer;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.DesignerCompound;
@@ -75,6 +79,7 @@ import org.pdf.forms.gui.toolbars.ReportToolbar;
 import org.pdf.forms.gui.toolbars.WidgetAlignmentAndOrderToolbar;
 import org.pdf.forms.gui.toolbars.WidgetPropertiesToolBar;
 import org.pdf.forms.gui.windows.SplashWindow;
+import org.pdf.forms.utils.DesignerPropertiesFile;
 import org.pdf.forms.utils.configuration.MenuConfiguration;
 import org.pdf.forms.utils.configuration.WindowConfiguration;
 import org.pdf.forms.widgets.IWidget;
@@ -110,17 +115,17 @@ public class VLFrame extends JFrame implements IMainFrame {
     private final FontPropertiesTab fontPropertiesTab;
 
     private final Map<String, Dockable> dockableNames = new HashMap<>();
-    private final Commands commands;
     private final DocumentToolBar documentToolBar;
     private final WidgetPropertiesToolBar propertiesToolBar;
     private final WidgetAlignmentAndOrderToolbar widgetAlignmentAndOrderToolbar;
     private final WidgetArrays widgetArrays = new WidgetArrays();
-    private final IMainFrame mainFrame = this;
     private final MenuConfiguration menuConfiguration;
     private final WindowConfiguration windowConfiguration;
 
     // the desktop (which will contain dockables)
     private final DockingDesktop desk = new DockingDesktop();
+    private final String version;
+
     // byte array used to save a workspace (custom layout of dockables)
     private byte[] savedWorkspace;
 
@@ -154,6 +159,7 @@ public class VLFrame extends JFrame implements IMainFrame {
     public VLFrame(
             final SplashWindow splashWindow,
             final String version) {
+        this.version = version;
         addWindowListener(new FrameCloser());
 
         toolbarContainer = ToolBarContainer.createDefaultContainer(true, false, true, false);
@@ -168,17 +174,17 @@ public class VLFrame extends JFrame implements IMainFrame {
         final Rule verticalRuler = new Rule(IMainFrame.INSET, Rule.VERTICAL, true);
         verticalRuler.setPreferredHeight(Toolkit.getDefaultToolkit().getScreenSize().height);
 
-        commands = new Commands(this, version);
+        final Commands commands = new Commands(this, version);
         final CommandListener commandListener = new CommandListener(commands);
 
         designer = new Designer(IMainFrame.INSET, horizontalRuler, verticalRuler, this, version);
-        final DefaultTransferHandler dth = new DefaultTransferHandler(commands, designer);
+        final DefaultTransferHandler dth = new DefaultTransferHandler(designer, this, version);
         designer.setTransferHandler(dth);
 
         final String userDir = System.getProperty("user.dir");
         final File configDir = new File(userDir, "configuration");
 
-        menuConfiguration = new MenuConfiguration(commandListener, designer, mainFrame, configDir);
+        menuConfiguration = new MenuConfiguration(commandListener, designer, this, configDir);
         windowConfiguration = new WindowConfiguration(configDir);
 
         libraryPanel = new LibraryPanel(designer);
@@ -421,8 +427,8 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     @Override
-    public void setPropertiesCompound(final Set<IWidget> tlwwidgets) {
-        final Set<IWidget> flatteWidgets = getFlatternedWidgets(tlwwidgets);
+    public void setPropertiesCompound(final Set<IWidget> widgets) {
+        final Set<IWidget> flatteWidgets = getFlatternedWidgets(widgets);
 
         PropertyChanger.updateSizeAndPosition(flatteWidgets);
 
@@ -493,10 +499,65 @@ public class VLFrame extends JFrame implements IMainFrame {
             menubar.add(menu);
         }
 
-        commands.recentDocumentsOption("recentdesfiles", menuConfiguration.getRecentDesignerFilesMenu());
-        commands.recentDocumentsOption("recentpdffiles", menuConfiguration.getRecentImportedFilesMenu());
+        recentDocumentsOption("recentdesfiles", menuConfiguration.getRecentDesignerFilesMenu());
+        recentDocumentsOption("recentpdffiles", menuConfiguration.getRecentImportedFilesMenu());
 
         setJMenuBar(menubar);
+    }
+
+    private void recentDocumentsOption(
+            final String type,
+            final JMenu file) {
+        final File configDir = new File(System.getProperty("user.dir"));
+        final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configDir);
+
+        final int noOfRecentDocs = properties.getNoRecentDocumentsToDisplay();
+        final JMenuItem[] recentDesignerDocuments = new JMenuItem[noOfRecentDocs];
+        final JMenuItem[] recentImportedDocuments = new JMenuItem[noOfRecentDocs];
+
+        final JMenuItem[] recentDocuments;
+        if (type.equals("recentdesfiles")) {
+            recentDocuments = recentDesignerDocuments;
+        } else {
+            // "recentpdffiles"
+            recentDocuments = recentImportedDocuments;
+        }
+
+        final String[] recentDocs = properties.getRecentDocuments(type);
+        if (recentDocs == null) {
+            return;
+        }
+
+        for (int i = 0; i < noOfRecentDocs; i++) {
+            if (recentDocs[i] == null) {
+                recentDocs[i] = "";
+            }
+
+            final String fileNameToAdd = recentDocs[i];
+            final String shortenedFileName = FileUtil.getShortenedFileName(fileNameToAdd, File.separator);
+
+            recentDocuments[i] = new JMenuItem(i + 1 + ": " + shortenedFileName);
+
+            if (recentDocuments[i].getText().equals(i + 1 + ": ")) {
+                recentDocuments[i].setVisible(false);
+            }
+
+            recentDocuments[i].setName(fileNameToAdd);
+            recentDocuments[i].addActionListener(e -> {
+                final JMenuItem item = (JMenuItem) e.getSource();
+                final String fileName = item.getName();
+
+                if (type.equals("recentdesfiles")) {
+                    // handle missing files here
+                    new OpenDesignerFileCommand(this, version).openDesignerFile(fileName);
+                } else {
+                    // "recentpdffiles"
+                    new ImportPdfCommand(this, version).importPDF(fileName);
+                }
+            });
+
+            file.add(recentDocuments[i]);
+        }
     }
 
     private void setupDockingPanes() {
@@ -637,7 +698,7 @@ public class VLFrame extends JFrame implements IMainFrame {
             final String oldName,
             final String name,
             final IWidget widget) {
-        widgetArrays.removeWidgetFromArray(widget, oldName, mainFrame);
+        widgetArrays.removeWidgetFromArray(widget, oldName, this);
     }
 
     @Override
@@ -669,16 +730,14 @@ public class VLFrame extends JFrame implements IMainFrame {
                 }
             }
         }
-
         return 0;
     }
 
     @Override
     public void handleArrayNumberOnWidgetDeletion(final Set<IWidget> selectedWidgets) {
         for (final IWidget widget : selectedWidgets) {
-            widgetArrays.removeWidgetFromArray(widget, widget.getWidgetName(), mainFrame);
+            widgetArrays.removeWidgetFromArray(widget, widget.getWidgetName(), this);
         }
-
     }
 
     @Override

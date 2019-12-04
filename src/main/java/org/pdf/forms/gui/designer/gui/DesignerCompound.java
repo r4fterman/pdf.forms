@@ -36,6 +36,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -131,39 +132,15 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
                 decodePDF.closePdfFile();
 
                 try {
-                    final File file = File.createTempFile("pdfdesigner", ".pdf");
-                    file.deleteOnExit();
+                    final File previewPDF = writePreviewPDF(mainFrame);
 
-                    final int noOfPages = mainFrame.getTotalNoOfPages();
-                    final ImmutableMap.Builder<Integer, List<IWidget>> widgets = ImmutableMap.builder();
-
-                    final FormsDocument documentProperties = mainFrame.getFormsDocument();
-
-                    for (int pageNumber = 0; pageNumber < noOfPages; pageNumber++) {
-                        widgets.put(pageNumber, documentProperties.getPage(pageNumber + 1).getWidgets());
-                    }
-
-                    final Writer writer = new Writer(mainFrame);
-                    writer.write(file, widgets.build(), documentProperties.getDocumentProperties());
-
-                    final Set<String> fontSubstitutions = writer.getFontSubstitutions();
-                    if (!fontSubstitutions.isEmpty()) {
-                        final StringBuilder builder = new StringBuilder("<html>The following fonts cannot be embedded due to licensing<br/>restrictions, so they have been substituted with Helvetica.<br/<br/");
-
-                        for (final String font : fontSubstitutions) {
-                            builder.append(font).append("<br/");
-                        }
-
-                        JOptionPane.showMessageDialog((Component) mainFrame, builder.toString());
-                    }
-
-                    currentFile = file.getAbsolutePath();
+                    currentFile = previewPDF.getAbsolutePath();
                     decodePDF.openPdfFile(currentFile);
 
                     decodePDF.setPageParameters((float) previewScaling, 1);
                     decodePDF.decodePage(1);
                 } catch (final Exception e) {
-                    logger.error("Error decoding PDF", e);
+                    logger.error("Error decoding PDF {}", currentFile, e);
                 }
 
                 this.currentPdfPage = 1;
@@ -171,6 +148,35 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
                 previewToolBar.setTotalNoOfPages(decodePDF.getPageCount());
             }
         });
+    }
+
+    private File writePreviewPDF(final IMainFrame mainFrame) throws IOException {
+        final File file = File.createTempFile("pdfdesigner", ".pdf");
+        file.deleteOnExit();
+
+        final int numberOfPages = mainFrame.getTotalNoOfPages();
+        final ImmutableMap.Builder<Integer, List<IWidget>> widgets = ImmutableMap.builder();
+
+        final FormsDocument documentProperties = mainFrame.getFormsDocument();
+
+        for (int pageNumber = 0; pageNumber < numberOfPages; pageNumber++) {
+            widgets.put(pageNumber, documentProperties.getPage(pageNumber + 1).getWidgets());
+        }
+
+        final Writer writer = new Writer(mainFrame);
+        writer.write(file, widgets.build(), documentProperties.getDocumentProperties());
+
+        final Set<String> fontSubstitutions = writer.getFontSubstitutions();
+        if (!fontSubstitutions.isEmpty()) {
+            final StringBuilder builder = new StringBuilder("<html>The following fonts cannot be embedded due to licensing<br/>restrictions, so they have been substituted with Helvetica.<br/<br/");
+
+            for (final String font : fontSubstitutions) {
+                builder.append(font).append("<br/");
+            }
+
+            JOptionPane.showMessageDialog((Component) mainFrame, builder.toString());
+        }
+        return file;
     }
 
     public void closePdfDecoderFile() {

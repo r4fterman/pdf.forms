@@ -6,19 +6,15 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.List;
 import java.util.Optional;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 class XMLUtilsTest {
@@ -107,9 +103,7 @@ class XMLUtilsTest {
 
     @Test
     void createAndAppendElement_should_return_new_element_node_under_given_parent_node() throws Exception {
-        final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        final DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        final Document document = documentBuilder.newDocument();
+        final Document document = XMLUtils.createNewDocument();
 
         final Element parent = document.createElement("root");
         final Element body = XMLUtils.createAndAppendElement(document, "body", parent);
@@ -120,9 +114,7 @@ class XMLUtilsTest {
 
     @Test
     void addBasicProperty() throws Exception {
-        final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        final DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        final Document document = documentBuilder.newDocument();
+        final Document document = XMLUtils.createNewDocument();
 
         final Element element = document.createElement("root");
 
@@ -159,10 +151,6 @@ class XMLUtilsTest {
     }
 
     private Element getElement(final String xmlElementStructure) throws ParserConfigurationException, IOException, SAXException {
-        final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        final DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-
-        final InputSource inputSource = new InputSource(new StringReader(xmlElementStructure));
-        return documentBuilder.parse(inputSource).getDocumentElement();
+        return XMLUtils.readDocument(xmlElementStructure).getDocumentElement();
     }
 }

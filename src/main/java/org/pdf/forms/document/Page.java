@@ -35,8 +35,6 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.utils.XMLUtils;
@@ -86,9 +84,7 @@ public class Page {
 
     Document getPageProperties() {
         try {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-            pageProperties = db.newDocument();
+            pageProperties = XMLUtils.createNewDocument();
 
             final Element rootElement = XMLUtils.createAndAppendElement(pageProperties, "page", pageProperties);
 
