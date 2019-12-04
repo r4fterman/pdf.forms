@@ -46,6 +46,7 @@ class SaveDesignerFileAsCommand implements Command {
             final JFileChooser chooser = new JFileChooser();
             chooser.addChoosableFileFilter(new DesFileFilter());
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
             final int approved = chooser.showSaveDialog(null);
             if (approved != JFileChooser.APPROVE_OPTION) {
                 return;
@@ -53,10 +54,12 @@ class SaveDesignerFileAsCommand implements Command {
 
             final File file = getSelectedFile(chooser);
             if (file.exists()) {
-                final int n = JOptionPane.showConfirmDialog((Component) mainFrame, "The file already exists, are you sure you wish to overwrite?",
-                        "File already exists", JOptionPane.YES_NO_OPTION);
-
-                if (n == 1) {
+                final int value = JOptionPane.showConfirmDialog(
+                        (Component) mainFrame,
+                        "The file already exists, are you sure you wish to overwrite?",
+                        "File already exists",
+                        JOptionPane.YES_NO_OPTION);
+                if (value == JOptionPane.NO_OPTION) {
                     continue;
                 }
             }

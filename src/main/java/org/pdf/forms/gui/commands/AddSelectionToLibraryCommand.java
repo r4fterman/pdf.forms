@@ -9,6 +9,7 @@ import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.utils.CustomWidgetsFile;
 
 class AddSelectionToLibraryCommand implements Command {
+
     private final IMainFrame mainFrame;
 
     AddSelectionToLibraryCommand(final IMainFrame mainFrame) {
