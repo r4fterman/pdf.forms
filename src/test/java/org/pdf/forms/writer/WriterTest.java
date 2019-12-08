@@ -32,6 +32,7 @@
 package org.pdf.forms.writer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -151,7 +152,7 @@ class WriterTest extends EasyMockSupport {
         writer.addAnnotation(ck);
         document.close();
 
-        assertThat("File: " + file.getAbsolutePath(), file.length(), is(4494L));
+        assertThat("File: " + file.getAbsolutePath(), file.length(), is(greaterThan(4480L)));
     }
 
     private BaseColor getBaseColor(final Color color) {
