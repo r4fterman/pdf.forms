@@ -41,6 +41,7 @@ import java.util.Set;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
+import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.designer.IDesigner;
@@ -72,14 +73,15 @@ public class WidgetSelection {
             final IDesigner designerPanel,
             final String version,
             final FontHandler fontHandler,
-            final WidgetFactory widgetFactory) {
+            final WidgetFactory widgetFactory,
+            final Configuration configuration) {
         groupButton.setVisible(false);
         groupButton.setSize(WIDTH, HEIGHT);
         groupButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Grouped.gif")));
         groupButton.setToolTipText("Group Selection");
 
         groupButton.addActionListener(e -> {
-            final Commands commands = new Commands(designerPanel.getMainFrame(), version, fontHandler, widgetFactory);
+            final Commands commands = new Commands(designerPanel.getMainFrame(), version, fontHandler, widgetFactory, configuration);
             commands.executeCommand(Commands.GROUP);
         });
 
@@ -89,7 +91,7 @@ public class WidgetSelection {
         unGroupButton.setToolTipText("Ungroup Selection");
 
         unGroupButton.addActionListener(e -> {
-            final Commands commands = new Commands(designerPanel.getMainFrame(), version, fontHandler, widgetFactory);
+            final Commands commands = new Commands(designerPanel.getMainFrame(), version, fontHandler, widgetFactory, configuration);
             commands.executeCommand(Commands.UNGROUP);
         });
 

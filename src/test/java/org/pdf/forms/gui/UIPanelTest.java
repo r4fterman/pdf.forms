@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.Designer;
 import org.pdf.forms.gui.designer.gui.Rule;
@@ -17,13 +18,18 @@ public abstract class UIPanelTest {
 
     @BeforeEach
     void setUp() {
+        final String version = "DEV-TEST";
+
         final Rule horizontalRuler = new Rule(IMainFrame.INSET, Rule.HORIZONTAL, true);
         final Rule verticalRuler = new Rule(IMainFrame.INSET, Rule.VERTICAL, true);
-        final SplashWindow splashWindow = new SplashWindow("DEV-TEST");
-        final FontHandler fontHandler = new FontHandler();
+
+        final SplashWindow splashWindow = new SplashWindow(version);
+
+        final Configuration configuration = new Configuration();
+        final FontHandler fontHandler = new FontHandler(configuration);
         final WidgetFactory widgetFactory = new WidgetFactory(fontHandler);
-        final IMainFrame mainFrame = new VLFrame(splashWindow, "DEV-TEST", fontHandler, widgetFactory);
-        this.designerPanel = new Designer(IMainFrame.INSET, horizontalRuler, verticalRuler, mainFrame, "DEV-TEST", fontHandler, widgetFactory);
+        final IMainFrame mainFrame = new VLFrame(splashWindow, version, fontHandler, widgetFactory, configuration);
+        this.designerPanel = new Designer(IMainFrame.INSET, horizontalRuler, verticalRuler, mainFrame, version, fontHandler, widgetFactory, configuration);
     }
 
     @Test

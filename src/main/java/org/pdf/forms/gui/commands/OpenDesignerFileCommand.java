@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 
+import org.pdf.forms.Configuration;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
@@ -38,17 +39,19 @@ public class OpenDesignerFileCommand implements Command {
     private final String version;
     private final JMenuItem[] recentDesignerDocuments;
     private final WidgetFactory widgetFactory;
+    private final Configuration configuration;
 
     public OpenDesignerFileCommand(
             final IMainFrame mainFrame,
             final String version,
-            final WidgetFactory widgetFactory) {
+            final WidgetFactory widgetFactory,
+            final Configuration configuration) {
         this.mainFrame = mainFrame;
         this.version = version;
         this.widgetFactory = widgetFactory;
+        this.configuration = configuration;
 
-        final File configDir = new File(System.getProperty("user.dir"));
-        final int noOfRecentDocs = DesignerPropertiesFile.getInstance(configDir).getNoRecentDocumentsToDisplay();
+        final int noOfRecentDocs = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory()).getNoRecentDocumentsToDisplay();
         this.recentDesignerDocuments = new JMenuItem[noOfRecentDocs];
     }
 
@@ -142,8 +145,7 @@ public class OpenDesignerFileCommand implements Command {
         mainFrame.setTotalNoOfDisplayedPages(mainFrame.getTotalNoOfPages());
         mainFrame.setTitle(mainFrame.getCurrentDesignerFileName() + " - PDF Forms Designer Version " + version);
 
-        final File configDir = new File(System.getProperty("user.dir"));
-        final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configDir);
+        final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory());
         properties.addRecentDocument(designerFileToOpen, "recentdesfiles");
         updateRecentDocuments(properties.getRecentDocuments("recentdesfiles"));
     }

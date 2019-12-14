@@ -45,6 +45,7 @@ import javax.swing.JOptionPane;
 import javax.swing.TransferHandler;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.commands.ImportPdfCommand;
 import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.IDesigner;
@@ -67,16 +68,19 @@ public class DefaultTransferHandler extends TransferHandler {
     private final IMainFrame mainFrame;
     private final String version;
     private final WidgetFactory widgetFactory;
+    private final Configuration configuration;
 
     DefaultTransferHandler(
             final IDesigner designerPanel,
             final IMainFrame mainFrame,
             final String version,
-            final WidgetFactory widgetFactory) {
+            final WidgetFactory widgetFactory,
+            final Configuration configuration) {
         this.designerPanel = designerPanel;
         this.mainFrame = mainFrame;
         this.version = version;
         this.widgetFactory = widgetFactory;
+        this.configuration = configuration;
     }
 
     @Override
@@ -171,9 +175,9 @@ public class DefaultTransferHandler extends TransferHandler {
                         || file.endsWith(".gif");
 
                 if (isPdf) {
-                    new ImportPdfCommand(mainFrame, version, widgetFactory).importPDF(file);
+                    new ImportPdfCommand(mainFrame, version, widgetFactory, configuration).importPDF(file);
                 } else if (isDes) {
-                    new OpenDesignerFileCommand(mainFrame, version, widgetFactory).openDesignerFile(file);
+                    new OpenDesignerFileCommand(mainFrame, version, widgetFactory, configuration).openDesignerFile(file);
                     //} else if (isImage) {
                     //currentCommands.openFile(file);
                 } else {

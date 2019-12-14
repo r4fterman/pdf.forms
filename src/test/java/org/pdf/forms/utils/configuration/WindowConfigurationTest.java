@@ -12,8 +12,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.pdf.forms.Configuration;
 import org.w3c.dom.Document;
 
 class WindowConfigurationTest {
@@ -27,9 +29,16 @@ class WindowConfigurationTest {
             + "<window command=\"PROPERTIES\" name=\"Properties\" visible=\"true\"/>"
             + "</window_configuration>";
 
+    private Configuration configuration;
+
+    @BeforeEach
+    void setUp() {
+        configuration = new Configuration();
+    }
+
     @Test
     void isWindowVisible_should_return_true_on_new_created_properties_file_for_known_command(@TempDir final Path configDir) {
-        final WindowConfiguration windowConfiguration = new WindowConfiguration(configDir.toFile());
+        final WindowConfiguration windowConfiguration = new WindowConfiguration(configDir.toFile(), configuration);
 
         assertThat(windowConfiguration.isWindowVisible(WindowConfiguration.SCRIPT_EDITOR), is(true));
         assertThat(windowConfiguration.isWindowVisible(WindowConfiguration.PROPERTIES), is(true));
@@ -39,14 +48,14 @@ class WindowConfigurationTest {
 
     @Test
     void isWindowVisible_should_return_false_on_new_created_properties_file_for_unknown_command(@TempDir final Path configDir) {
-        final WindowConfiguration windowConfiguration = new WindowConfiguration(configDir.toFile());
+        final WindowConfiguration windowConfiguration = new WindowConfiguration(configDir.toFile(), configuration);
 
         assertThat(windowConfiguration.isWindowVisible("unknown"), is(false));
     }
 
     @Test
     void writeDefaultConfiguration(@TempDir final Path configDir) throws Exception {
-        final WindowConfiguration windowConfiguration = new WindowConfiguration(configDir.toFile());
+        final WindowConfiguration windowConfiguration = new WindowConfiguration(configDir.toFile(), configuration);
 
         windowConfiguration.writeDefaultConfiguration();
 

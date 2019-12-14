@@ -4,6 +4,7 @@ import static java.util.Map.entry;
 
 import java.util.Map;
 
+import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.widgets.utils.WidgetFactory;
@@ -60,23 +61,24 @@ public class Commands {
             final IMainFrame mainFrame,
             final String version,
             final FontHandler fontHandler,
-            final WidgetFactory widgetFactory) {
+            final WidgetFactory widgetFactory,
+            final Configuration configuration) {
         commandMap = Map.ofEntries(
                 entry(NEW, new NewPdfCommand(mainFrame, version)),
-                entry(OPEN, new OpenDesignerFileCommand(mainFrame, version, widgetFactory)),
+                entry(OPEN, new OpenDesignerFileCommand(mainFrame, version, widgetFactory, configuration)),
                 entry(CLOSE, new ClosePdfCommand(mainFrame, version)),
-                entry(IMPORT, new ImportPdfCommand(mainFrame, version, widgetFactory)),
+                entry(IMPORT, new ImportPdfCommand(mainFrame, version, widgetFactory, configuration)),
                 entry(SAVE_FILE, new SaveDesignerFileCommand(mainFrame, version)),
                 entry(SAVE_FILE_AS, new SaveDesignerFileAsCommand(mainFrame, version)),
                 entry(PUBLISH, new PublishPdfCommand(mainFrame, fontHandler)),
-                entry(FONT_MANAGEMENT, new FontManagementCommand(mainFrame, fontHandler)),
+                entry(FONT_MANAGEMENT, new FontManagementCommand(mainFrame, fontHandler, configuration)),
                 entry(EXIT, () -> System.exit(0)),
                 entry(ZOOM_IN, new ZoomInCommand(mainFrame)),
                 entry(ZOOM_OUT, new ZoomOutCommand(mainFrame)),
                 entry(ZOOM, new ZoomCommand(mainFrame)),
                 entry(INSERT_PAGE, new InsertPageCommand(mainFrame)),
                 entry(REMOVE_PAGE, new RemovePageCommand(mainFrame)),
-                entry(ADD_SELECTION_TO_LIBRARY, new AddSelectionToLibraryCommand(mainFrame)),
+                entry(ADD_SELECTION_TO_LIBRARY, new AddSelectionToLibraryCommand(mainFrame, configuration)),
                 entry(GROUP, new GroupCommand(mainFrame)),
                 entry(UNGROUP, new UnGroupCommand(mainFrame)),
                 entry(WEBSITE, new VisitWebsiteCommand()),

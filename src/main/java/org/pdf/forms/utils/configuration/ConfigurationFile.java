@@ -9,6 +9,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.pdf.forms.Configuration;
 import org.pdf.forms.utils.XMLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,9 @@ public abstract class ConfigurationFile {
 
     private Document doc;
 
-    ConfigurationFile(final File configFile) {
+    ConfigurationFile(
+            final File configFile,
+            final Configuration configuration) {
         this.configFile = configFile;
         try {
             boolean needNewFile = false;
@@ -36,8 +39,7 @@ public abstract class ConfigurationFile {
                     needNewFile = true;
                 }
             } else {
-                final String userDir = System.getProperty("user.dir");
-                final File configDir = new File(userDir, "configuration");
+                final File configDir = new File(configuration.getConfigDirectory(), "configuration");
 
                 configDir.mkdirs();
                 doc = XMLUtils.createNewDocument();

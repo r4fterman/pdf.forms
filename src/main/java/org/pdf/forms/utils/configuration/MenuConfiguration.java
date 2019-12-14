@@ -14,6 +14,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 
 import org.jpedal.examples.simpleviewer.gui.swing.SwingMenuItem;
+import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.commands.Commands;
@@ -50,8 +51,9 @@ public class MenuConfiguration extends ConfigurationFile {
             final CommandListener commandListener,
             final IDesigner designer,
             final IMainFrame mainFrame,
-            final File configDir) {
-        super(new File(configDir, "menus.xml"));
+            final File configDir,
+            final Configuration configuration) {
+        super(new File(configDir, "menus.xml"), configuration);
 
         this.commandListener = commandListener;
         this.designer = designer;

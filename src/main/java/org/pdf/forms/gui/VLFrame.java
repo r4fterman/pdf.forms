@@ -53,6 +53,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import org.pdf.forms.Configuration;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.fonts.FontHandler;
@@ -129,6 +130,7 @@ public class VLFrame extends JFrame implements IMainFrame {
     private final String version;
     private final ToolBarContainer toolbarContainer;
     private final WidgetFactory widgetFactory;
+    private final Configuration configuration;
 
     private int designerCompoundContent = DesignerCompound.DESIGNER;
     // byte array used to save a workspace (custom layout of dockables)
@@ -157,9 +159,11 @@ public class VLFrame extends JFrame implements IMainFrame {
             final SplashWindow splashWindow,
             final String version,
             final FontHandler fontHandler,
-            final WidgetFactory widgetFactory) {
+            final WidgetFactory widgetFactory,
+            final Configuration configuration) {
         this.version = version;
         this.widgetFactory = widgetFactory;
+        this.configuration = configuration;
 
         addWindowListener(new FrameCloser());
 
@@ -175,18 +179,17 @@ public class VLFrame extends JFrame implements IMainFrame {
         final Rule verticalRuler = new Rule(IMainFrame.INSET, Rule.VERTICAL, true);
         verticalRuler.setPreferredHeight(Toolkit.getDefaultToolkit().getScreenSize().height);
 
-        final Commands commands = new Commands(this, version, fontHandler, widgetFactory);
+        final Commands commands = new Commands(this, version, fontHandler, widgetFactory, configuration);
         final CommandListener commandListener = new CommandListener(commands);
 
-        designer = new Designer(IMainFrame.INSET, horizontalRuler, verticalRuler, this, version, fontHandler, this.widgetFactory);
-        final DefaultTransferHandler dth = new DefaultTransferHandler(designer, this, version, this.widgetFactory);
+        designer = new Designer(IMainFrame.INSET, horizontalRuler, verticalRuler, this, version, fontHandler, this.widgetFactory, configuration);
+        final DefaultTransferHandler dth = new DefaultTransferHandler(designer, this, version, this.widgetFactory, configuration);
         designer.setTransferHandler(dth);
 
-        final String userDir = System.getProperty("user.dir");
-        final File configDir = new File(userDir, "configuration");
+        final File configDir = new File(configuration.getConfigDirectory(), "configuration");
 
-        menuConfiguration = new MenuConfiguration(commandListener, designer, this, configDir);
-        windowConfiguration = new WindowConfiguration(configDir);
+        menuConfiguration = new MenuConfiguration(commandListener, designer, this, configDir, configuration);
+        windowConfiguration = new WindowConfiguration(configDir, configuration);
 
         libraryPanel = new LibraryPanel(designer, widgetFactory);
         hierarchyPanel = new HierarchyPanel(designer);
@@ -509,8 +512,7 @@ public class VLFrame extends JFrame implements IMainFrame {
     private void recentDocumentsOption(
             final String type,
             final JMenu file) {
-        final File configDir = new File(System.getProperty("user.dir"));
-        final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configDir);
+        final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory());
 
         final int noOfRecentDocs = properties.getNoRecentDocumentsToDisplay();
         final JMenuItem[] recentDesignerDocuments = new JMenuItem[noOfRecentDocs];
@@ -550,10 +552,10 @@ public class VLFrame extends JFrame implements IMainFrame {
 
                 if (type.equals("recentdesfiles")) {
                     // handle missing files here
-                    new OpenDesignerFileCommand(this, version, widgetFactory).openDesignerFile(fileName);
+                    new OpenDesignerFileCommand(this, version, widgetFactory, configuration).openDesignerFile(fileName);
                 } else {
                     // "recentpdffiles"
-                    new ImportPdfCommand(this, version, widgetFactory).importPDF(fileName);
+                    new ImportPdfCommand(this, version, widgetFactory, configuration).importPDF(fileName);
                 }
             });
 

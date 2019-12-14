@@ -2,6 +2,7 @@ package org.pdf.forms.utils.configuration;
 
 import java.io.File;
 
+import org.pdf.forms.Configuration;
 import org.pdf.forms.utils.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -14,8 +15,10 @@ public class WindowConfiguration extends ConfigurationFile {
     public static final String HIERARCHY = "HIERARCHY";
     public static final String SCRIPT_EDITOR = "SCRIPT_EDITOR";
 
-    public WindowConfiguration(final File configDir) {
-        super(new File(configDir, "windows.xml"));
+    public WindowConfiguration(
+            final File configDir,
+            final Configuration configuration) {
+        super(new File(configDir, "windows.xml"), configuration);
     }
 
     public boolean isWindowVisible(final String windowCommand) {

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.pdf.forms.Configuration;
 import org.pdf.forms.utils.DesignerPropertiesFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +19,16 @@ import com.google.common.collect.ImmutableList;
 
 public final class FontHandler {
 
-    private static final Map<Font, String> FONT_FILE_MAP = new TreeMap<>((o1, o2) -> {
-        final String font1 = o1.getFontName();
-        final String font2 = o2.getFontName();
+    private static final Map<Font, String> FONT_FILE_MAP = new TreeMap<>((font1, font2) -> {
+        final String fontName1 = font1.getFontName();
+        final String fontName2 = font2.getFontName();
 
-        return font1.compareToIgnoreCase(font2);
+        return fontName1.compareToIgnoreCase(fontName2);
     });
 
     private final Logger logger = LoggerFactory.getLogger(FontHandler.class);
 
-    public FontHandler() {
+    public FontHandler(final Configuration configuration) {
         final String javaFontDir = System.getProperty("java.home") + "/lib/fonts";
         final String[] fontDirectoriesWindows = {
                 "c:/windows/fonts",
@@ -52,8 +53,7 @@ public final class FontHandler {
         fontDirectories.forEach(this::registerDirectory);
 
         //TODO need to check if file has moved, and if so offer user chance to browse
-        final File configDir = new File(System.getProperty("user.dir"));
-        DesignerPropertiesFile.getInstance(configDir).getCustomFonts().forEach((key, value) -> registerFont(new File(value)));
+        DesignerPropertiesFile.getInstance(configuration.getConfigDirectory()).getCustomFonts().forEach((key, value) -> registerFont(new File(value)));
     }
 
     private void registerDirectory(final String fontDirectory) {

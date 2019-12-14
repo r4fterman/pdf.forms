@@ -52,9 +52,10 @@ public final class Application {
 
         splashWindow.setProgress(1, "Initializing window");
 
-        final FontHandler fontHandler = new FontHandler();
+        final Configuration configuration = new Configuration();
+        final FontHandler fontHandler = new FontHandler(configuration);
         final WidgetFactory widgetFactory = new WidgetFactory(fontHandler);
-        final VLFrame frame = new VLFrame(splashWindow, version, fontHandler, widgetFactory);
+        final VLFrame frame = new VLFrame(splashWindow, version, fontHandler, widgetFactory, configuration);
 
         // get local graphics environment
         GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();

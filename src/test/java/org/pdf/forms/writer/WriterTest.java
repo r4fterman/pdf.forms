@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.IDesigner;
@@ -53,7 +54,8 @@ class WriterTest extends EasyMockSupport {
     @BeforeEach
     void setUp() {
         mainFrame = new MockMainFrame();
-        fontHandler = new FontHandler();
+        final Configuration configuration = new Configuration();
+        fontHandler = new FontHandler(configuration);
         writer = new Writer(mainFrame, fontHandler);
     }
 
@@ -69,7 +71,8 @@ class WriterTest extends EasyMockSupport {
 
         final WidgetFactory widgetFactory = new WidgetFactory(fontHandler);
 
-        new OpenDesignerFileCommand(mainFrame, "DEV-TEST", widgetFactory).openDesignerFile(target.getAbsolutePath());
+        final Configuration configuration = new Configuration();
+        new OpenDesignerFileCommand(mainFrame, "DEV-TEST", widgetFactory, configuration).openDesignerFile(target.getAbsolutePath());
 
         final File outputFile = new File(path.toFile(), "output.des");
         final org.w3c.dom.Document properties = XMLUtils.readDocument(source);

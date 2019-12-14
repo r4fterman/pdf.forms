@@ -19,6 +19,7 @@ import javax.swing.JComponent;
 import javax.swing.JToolTip;
 
 import org.jpedal.PdfDecoder;
+import org.pdf.forms.Configuration;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
@@ -72,13 +73,14 @@ public class Designer extends PdfDecoder implements IDesigner {
             final IMainFrame mainFrame,
             final String version,
             final FontHandler fontHandler,
-            final WidgetFactory widgetFactory) {
+            final WidgetFactory widgetFactory,
+            final Configuration configuration) {
         super();
 
         setBackground(BACKGROUND_COLOR);
 
         selectionBox = new DesignerSelectionBox(this);
-        widgetSelection = new WidgetSelection(this, version, fontHandler, widgetFactory);
+        widgetSelection = new WidgetSelection(this, version, fontHandler, widgetFactory, configuration);
 
         this.horizontalRuler = horizontalRuler;
         this.verticalRuler = verticalRuler;

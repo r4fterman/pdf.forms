@@ -11,6 +11,7 @@ import javax.swing.JMenu;
 import org.easymock.EasyMockSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.designer.IDesigner;
@@ -23,7 +24,8 @@ class MenuConfigurationTest extends EasyMockSupport {
         final IDesigner designer = createMock(IDesigner.class);
         final IMainFrame mainFrame = createMock(IMainFrame.class);
 
-        final MenuConfiguration menuConfiguration = new MenuConfiguration(cmdListener, designer, mainFrame, configDir.toFile());
+        final Configuration configuration = new Configuration();
+        final MenuConfiguration menuConfiguration = new MenuConfiguration(cmdListener, designer, mainFrame, configDir.toFile(), configuration);
 
         final JMenu[] menus = menuConfiguration.getMenus();
 

@@ -1,19 +1,23 @@
 package org.pdf.forms.gui.commands;
 
 import java.awt.Component;
-import java.io.File;
 
 import javax.swing.JOptionPane;
 
+import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.utils.CustomWidgetsFile;
 
 class AddSelectionToLibraryCommand implements Command {
 
     private final IMainFrame mainFrame;
+    private final Configuration configuration;
 
-    AddSelectionToLibraryCommand(final IMainFrame mainFrame) {
+    AddSelectionToLibraryCommand(
+            final IMainFrame mainFrame,
+            final Configuration configuration) {
         this.mainFrame = mainFrame;
+        this.configuration = configuration;
     }
 
     @Override
@@ -22,8 +26,7 @@ class AddSelectionToLibraryCommand implements Command {
     }
 
     private void addSelectionToLibrary() {
-        final File configDir = new File(System.getProperty("user.dir"));
-        final CustomWidgetsFile customWidgetsFile = CustomWidgetsFile.getInstance(configDir);
+        final CustomWidgetsFile customWidgetsFile = CustomWidgetsFile.getInstance(configuration.getConfigDirectory());
         boolean finished = false;
 
         String name = JOptionPane.showInputDialog((Component) mainFrame, "Enter a name for the new component", "New component name",

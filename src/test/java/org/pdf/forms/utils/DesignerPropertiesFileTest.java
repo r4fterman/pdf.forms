@@ -52,7 +52,6 @@ class DesignerPropertiesFileTest {
         assertThat(url, is(notNullValue()));
 
         final File configDir = new File(url.toURI()).getParentFile();
-        System.out.println("Config dir: " + configDir.getAbsolutePath());
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir);
 
         final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments("recentdesfiles");

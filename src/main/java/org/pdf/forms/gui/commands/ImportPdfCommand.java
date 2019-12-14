@@ -15,6 +15,7 @@ import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 import org.jpedal.objects.PdfPageData;
 import org.jpedal.utils.SwingWorker;
+import org.pdf.forms.Configuration;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
@@ -32,20 +33,22 @@ public class ImportPdfCommand implements Command {
 
     private final IMainFrame mainFrame;
     private final String version;
+    private final WidgetFactory widgetFactory;
+    private final Configuration configuration;
 
     private final JMenuItem[] recentDesignerDocuments;
-    private final WidgetFactory widgetFactory;
 
     public ImportPdfCommand(
             final IMainFrame mainFrame,
             final String version,
-            final WidgetFactory widgetFactory) {
+            final WidgetFactory widgetFactory,
+            final Configuration configuration) {
         this.mainFrame = mainFrame;
         this.version = version;
         this.widgetFactory = widgetFactory;
+        this.configuration = configuration;
 
-        final File configDir = new File(System.getProperty("user.dir"));
-        final int numberOfRecentDocs = DesignerPropertiesFile.getInstance(configDir).getNoRecentDocumentsToDisplay();
+        final int numberOfRecentDocs = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory()).getNoRecentDocumentsToDisplay();
         this.recentDesignerDocuments = new JMenuItem[numberOfRecentDocs];
     }
 
@@ -183,8 +186,7 @@ public class ImportPdfCommand implements Command {
             };
             worker.start();
 
-            final File configDir = new File(System.getProperty("user.dir"));
-            final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configDir);
+            final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory());
             properties.addRecentDocument(pdfPath, "recentpdffiles");
             updateRecentDocuments(properties.getRecentDocuments("recentpdffiles"));
         } catch (final PdfException e) {

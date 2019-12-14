@@ -14,6 +14,7 @@ import javax.swing.JScrollPane;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
+import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.utils.DesignerPropertiesFile;
 
@@ -22,16 +23,19 @@ public class FontSelector extends javax.swing.JPanel {
     private final FontHandler fontHandler;
     private final IMainFrame mainFrame;
     private final JDialog parentDialog;
+    private final Configuration configuration;
 
     private final JList<String> fontsList;
 
     public FontSelector(
             final FontHandler fontHandler,
             final IMainFrame mainFrame,
-            final JDialog parentDialog) {
+            final JDialog parentDialog,
+            final Configuration configuration) {
         this.fontHandler = fontHandler;
         this.parentDialog = parentDialog;
         this.mainFrame = mainFrame;
+        this.configuration = configuration;
         this.fontsList = new JList<>();
 
         initComponents();
@@ -99,8 +103,7 @@ public class FontSelector extends javax.swing.JPanel {
 
         if (fileToOpen != null && state == JFileChooser.APPROVE_OPTION) {
             final String name = fontHandler.registerFont(fileToOpen);
-            final File configDir = new File(System.getProperty("user.dir"));
-            DesignerPropertiesFile.getInstance(configDir).addCustomFont(name, fileToOpen.getAbsolutePath());
+            DesignerPropertiesFile.getInstance(configuration.getConfigDirectory()).addCustomFont(name, fileToOpen.getAbsolutePath());
 
             populateFontsAvailable();
         }
