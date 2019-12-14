@@ -1,34 +1,3 @@
-/*
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-*  This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* BorderPropertiesPanel.java
-* ---------------
-*/
 package org.pdf.forms.gui.properties.border;
 
 import java.awt.Color;
@@ -81,26 +50,19 @@ public class BorderPropertiesPanel extends JPanel {
     }
 
     private void initComponents() {
-
         final JPanel jPanel1 = new JPanel();
-        final JLabel leftEdgesIcon = new JLabel();
-        borderStyleBox = new JComboBox<>();
-        borderWidthBox = new JTextField();
-        borderColorButton = new JButton();
-        final JPanel jPanel2 = new JPanel();
-        final JLabel jLabel6 = new JLabel();
-        backgroundFillBox = new JComboBox<>();
-        backgroundFillColorButton = new JButton();
-
         jPanel1.setBorder(BorderFactory.createTitledBorder("Borders"));
 
+        final JLabel leftEdgesIcon = new JLabel();
         leftEdgesIcon.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Border Together.png")));
         leftEdgesIcon.setOpaque(true);
 
+        borderStyleBox = new JComboBox<>();
         borderStyleBox.setModel(new DefaultComboBoxModel<>(new String[] {
                 "None", "Solid", "Beveled" }));
         borderStyleBox.addActionListener(this::updateBorderStyle);
 
+        borderWidthBox = new JTextField();
         borderWidthBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent evt) {
@@ -108,6 +70,7 @@ public class BorderPropertiesPanel extends JPanel {
             }
         });
 
+        borderColorButton = new JButton();
         borderColorButton.setContentAreaFilled(false);
         borderColorButton.setOpaque(true);
         borderColorButton.addActionListener(this::borderColorButtonClicked);
@@ -141,15 +104,19 @@ public class BorderPropertiesPanel extends JPanel {
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        final JPanel jPanel2 = new JPanel();
         jPanel2.setBorder(BorderFactory.createTitledBorder("Background Fill"));
 
+        final JLabel jLabel6 = new JLabel();
         jLabel6.setText("Style:");
 
+        backgroundFillBox = new JComboBox<>();
         backgroundFillBox.setModel(new DefaultComboBoxModel<>(new String[] {
                 "None", "Solid" }));
         backgroundFillBox.setEnabled(false);
         backgroundFillBox.addActionListener(this::updateFillStyle);
 
+        backgroundFillColorButton = new JButton();
         backgroundFillColorButton.setEnabled(false);
         backgroundFillColorButton.setContentAreaFilled(false);
         backgroundFillColorButton.setOpaque(true);
@@ -178,7 +145,7 @@ public class BorderPropertiesPanel extends JPanel {
         );
 
         final GroupLayout layout = new GroupLayout(this);
-        this.setLayout(layout);
+        setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.LEADING)
                         .add(GroupLayout.TRAILING, layout.createSequentialGroup()

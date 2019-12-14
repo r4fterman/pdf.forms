@@ -33,6 +33,12 @@ public class PdfButtonWriter implements PdfComponentWriter {
 
     private final Set<String> fontSubstitutions = new HashSet<>();
 
+    private final FontHandler fontHandler;
+
+    public PdfButtonWriter(final FontHandler fontHandler) {
+        this.fontHandler = fontHandler;
+    }
+
     @Override
     public Set<String> getFontSubstitutions() {
         return Set.copyOf(fontSubstitutions);
@@ -124,7 +130,7 @@ public class PdfButtonWriter implements PdfComponentWriter {
     }
 
     private BaseFont getBaseFont(final Font font) throws IOException, DocumentException {
-        final String fontPath = FontHandler.getInstance().getAbsoluteFontPath(font);
+        final String fontPath = fontHandler.getAbsoluteFontPath(font);
         try {
             return BaseFont.createFont(fontPath, BaseFont.CP1250, BaseFont.EMBEDDED);
         } catch (final DocumentException e) {

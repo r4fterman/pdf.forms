@@ -1,34 +1,3 @@
-/*
- * ===========================================
- * PDF Forms Designer
- * ===========================================
- * <p>
- * Project Info:  http://pdfformsdesigne.sourceforge.net
- * (C) Copyright 2006-2008..
- * Lead Developer: Simon Barnett (n6vale@googlemail.com)
- * <p>
- * This file is part of the PDF Forms Designer
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * <p>
- * <p>
- * <p>
- * ---------------
- * DesignerCompound.java
- * ---------------
- */
 package org.pdf.forms.gui.designer.gui;
 
 import java.awt.BorderLayout;
@@ -48,6 +17,7 @@ import javax.swing.ScrollPaneConstants;
 
 import org.jpedal.PdfDecoder;
 import org.pdf.forms.document.FormsDocument;
+import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.toolbars.DesignNavigationToolbar;
@@ -77,9 +47,9 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
     private final NavigationToolbar designToolBar = new DesignNavigationToolbar(this);
     private final NavigationToolbar previewToolBar = new PreviewNavigationToolbar(this);
 
-    private final IMainFrame mainFrame;
-
     private final PdfDecoder decodePDF = new PdfDecoder();
+    private final IMainFrame mainFrame;
+    private final FontHandler fontHandler;
 
     private int currentPdfPage = 1;
     private double previewScaling = 1;
@@ -89,9 +59,10 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
             final IDesigner designer,
             final Rule horizontalRuler,
             final Rule verticalRuler,
-            final IMainFrame mainFrame) {
-
+            final IMainFrame mainFrame,
+            final FontHandler fontHandler) {
         this.mainFrame = mainFrame;
+        this.fontHandler = fontHandler;
 
         final ToolBarContainer designerContainer = ToolBarContainer.createDefaultContainer(true, false, true, false, FlowLayout.CENTER);
 
@@ -163,7 +134,7 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
             widgets.put(pageNumber, documentProperties.getPage(pageNumber + 1).getWidgets());
         }
 
-        final Writer writer = new Writer(mainFrame);
+        final Writer writer = new Writer(mainFrame, fontHandler);
         writer.write(file, widgets.build(), documentProperties.getDocumentProperties());
 
         final Set<String> fontSubstitutions = writer.getFontSubstitutions();

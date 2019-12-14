@@ -42,6 +42,7 @@ public class Widget {
     private final Point position;
     private final int type;
     private final Icon icon;
+    private final FontHandler fontHandler;
 
     private JComponent component;
     private Document properties;
@@ -61,13 +62,14 @@ public class Widget {
             final int type,
             final JComponent baseComponent,
             final JComponent component,
-            final String iconLocation) {
-        position = new Point(0, 0);
-
+            final String iconLocation,
+            final FontHandler fontHandler) {
         this.type = type;
         this.component = component;
         this.baseComponent = baseComponent;
+        this.fontHandler = fontHandler;
 
+        position = new Point(0, 0);
         icon = new ImageIcon(getClass().getResource(iconLocation));
     }
 
@@ -168,7 +170,6 @@ public class Widget {
     }
 
     public JComponent getValueComponent() {
-
         final JComponent value;
         if (isComponentSplit) {
             value = ((SplitComponent) baseComponent).getValue();
@@ -361,7 +362,7 @@ public class Widget {
         final Optional<String> strikethroughProperty = XMLUtils.getAttributeFromChildElement(properties, "Strikethrough");
         final Optional<String> colorProperty = XMLUtils.getAttributeFromChildElement(properties, "Color");
 
-        final Font baseFont = FontHandler.getInstance().getFontFromName(fontNameProperty.get());
+        final Font baseFont = fontHandler.getFontFromName(fontNameProperty.get());
 
         final Map<TextAttribute, Float> fontAttrs = new HashMap<>();
         fontAttrs.put(TextAttribute.SIZE, Float.valueOf(fontSizeProperty.get()));
@@ -395,7 +396,7 @@ public class Widget {
         component.setUnderlineType(underline);
 
         final boolean isStrikethrough = Integer.parseInt(strikethroughProperty.get()) == IWidget.STRIKETHROUGH_ON;
-        component.setStikethrough(isStrikethrough);
+        component.setStrikethrough(isStrikethrough);
 
         final Color color = new Color(Integer.parseInt(colorProperty.get()));
         component.setForeground(color);

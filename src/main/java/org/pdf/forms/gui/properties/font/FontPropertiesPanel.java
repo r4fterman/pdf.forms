@@ -1,38 +1,6 @@
-/*
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-*  This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* FontPropertiesPanel.java
-* ---------------
-*/
 package org.pdf.forms.gui.properties.font;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -57,24 +25,23 @@ import org.w3c.dom.Element;
 
 public class FontPropertiesPanel extends JPanel {
 
-    //fontNameBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Times-Roman", "Times-Bold", "Times-Italic", "Times-BoldItalic", "Helvetica", "Helvetica-Bold", "Helvetica-Oblique", "Helvetica-BoldOblique", "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique", "Symbol", "ZapfDingbats" }));
+    private final FontHandler fontHandler;
 
     private ColorComboBoxEditor editor;
     private IDesigner designerPanel;
     private Map<IWidget, Element> widgetsAndProperties;
 
     private JComboBox<Object> colorBox;
-    private javax.swing.JComboBox<String> currentlyEditingBox;
-    private javax.swing.JComboBox<String> fontNameBox;
-    private javax.swing.JComboBox<String> fontSizeBox;
-    private javax.swing.JComboBox<String> fontStyleBox;
-    private javax.swing.JComboBox<String> strikethroughBox;
-    private javax.swing.JComboBox<String> underlineBox;
+    private JComboBox<String> currentlyEditingBox;
+    private JComboBox<String> fontNameBox;
+    private JComboBox<String> fontSizeBox;
+    private JComboBox<String> fontStyleBox;
+    private JComboBox<String> strikethroughBox;
+    private JComboBox<String> underlineBox;
 
-    /**
-     * Creates new form FontPropertiesPanel.
-     */
-    FontPropertiesPanel() {
+    FontPropertiesPanel(final FontHandler fontHandler) {
+        this.fontHandler = fontHandler;
+
         initComponents();
     }
 
@@ -83,47 +50,42 @@ public class FontPropertiesPanel extends JPanel {
     }
 
     private void initComponents() {
+        final String[] fontFamilies = fontHandler.getFontFamilies();
 
         final JLabel jLabel1 = new JLabel();
-        currentlyEditingBox = new JComboBox<>();
-        final JLabel jLabel2 = new JLabel();
-        final JLabel jLabel3 = new JLabel();
-        final JLabel jLabel4 = new JLabel();
-        final JLabel jLabel5 = new JLabel();
-        final JLabel jLabel6 = new JLabel();
-        final JLabel jLabel7 = new JLabel();
-        final String[] fontFamilies = getFonts();
-        fontNameBox = new JComboBox<>(fontFamilies);
-        fontStyleBox = new JComboBox<>();
-        underlineBox = new JComboBox<>();
-        strikethroughBox = new JComboBox<>();
-        colorBox = new JComboBox<>();
-        fontSizeBox = new JComboBox<>();
-
         jLabel1.setText("Currently Editing:");
 
+        currentlyEditingBox = new JComboBox<>();
         currentlyEditingBox.setModel(new DefaultComboBoxModel<>(new String[] {
                 "Caption and Value",
                 "Caption properties",
                 "Value properties" }));
         currentlyEditingBox.addActionListener(this::updateCurrentlyEditingBox);
 
+        final JLabel jLabel2 = new JLabel();
         jLabel2.setText("Font:");
 
+        final JLabel jLabel3 = new JLabel();
         jLabel3.setText("Font Size:");
 
+        final JLabel jLabel4 = new JLabel();
         jLabel4.setText("Font Style:");
 
+        final JLabel jLabel5 = new JLabel();
         jLabel5.setText("Underline:");
         jLabel5.setEnabled(false);
 
+        final JLabel jLabel6 = new JLabel();
         jLabel6.setText("Strikethrough:");
         jLabel6.setEnabled(false);
 
+        final JLabel jLabel7 = new JLabel();
         jLabel7.setText("Color:");
 
+        fontNameBox = new JComboBox<>(fontFamilies);
         fontNameBox.addActionListener(this::updateFont);
 
+        fontStyleBox = new JComboBox<>();
         fontStyleBox.setModel(new DefaultComboBoxModel<>(new String[] {
                 "Plain",
                 "Bold",
@@ -131,6 +93,7 @@ public class FontPropertiesPanel extends JPanel {
                 "Bold Italic" }));
         fontStyleBox.addActionListener(this::updateFont);
 
+        underlineBox = new JComboBox<>();
         underlineBox.setModel(new DefaultComboBoxModel<>(new String[] {
                 "No Underline",
                 "Underline",
@@ -140,12 +103,14 @@ public class FontPropertiesPanel extends JPanel {
         underlineBox.setEnabled(false);
         underlineBox.addActionListener(this::updateFont);
 
+        strikethroughBox = new JComboBox<>();
         strikethroughBox.setModel(new DefaultComboBoxModel<>(new String[] {
                 "Off",
                 "On" }));
         strikethroughBox.setEnabled(false);
         strikethroughBox.addActionListener(this::updateFont);
 
+        colorBox = new JComboBox<>();
         colorBox.setEditable(true);
         colorBox.setMaximumRowCount(5);
         colorBox.setModel(new DefaultComboBoxModel<>(new Object[] {
@@ -157,12 +122,16 @@ public class FontPropertiesPanel extends JPanel {
                 Color.white,
                 Color.yellow,
                 "Custom" }));
+
         final Color color = (Color) colorBox.getSelectedItem();
+
         editor = new ColorComboBoxEditor(color, colorBox);
+
         colorBox.setEditor(editor);
         colorBox.setRenderer(new ColorCellRenderer());
         colorBox.addActionListener(this::updateColor);
 
+        fontSizeBox = new JComboBox<>();
         fontSizeBox.setEditable(true);
         fontSizeBox.setModel(new DefaultComboBoxModel<>(new String[] {
                 "6", "8", "10", "12", "14", "16", "18", "20", "24", "28", "36", "48", "72" }));
@@ -240,21 +209,8 @@ public class FontPropertiesPanel extends JPanel {
         );
     }
 
-    private String[] getFonts() {
-        final FontHandler fontHandler = FontHandler.getInstance();
-        final Map fontFileMap = fontHandler.getFontFileMap();
-        final Font[] fonts = (Font[]) fontFileMap.keySet().toArray(new Font[0]);
-        final String[] fontFamilies = new String[fonts.length];
-        for (int i = 0; i < fonts.length; i++) {
-            fontFamilies[i] = fonts[i].getFontName();
-        }
-
-        return fontFamilies;
-    }
-
-    private void updateFont(final ActionEvent evt) {
+    private void updateFont(final ActionEvent event) {
         final Set<IWidget> widgets = widgetsAndProperties.keySet();
-
         for (final IWidget widget : widgets) {
             final Element fontElement = widgetsAndProperties.get(widget);
 
@@ -333,7 +289,7 @@ public class FontPropertiesPanel extends JPanel {
         designerPanel.repaint();
     }
 
-    private void updateColor(final ActionEvent evt) {
+    private void updateColor(final ActionEvent event) {
         if ("Custom".equals(colorBox.getSelectedItem())) {
             final Color currentBackground = (Color) editor.getItem();
             final Color color = JColorChooser.showDialog(null, "Color Chooser", currentBackground);
@@ -365,13 +321,13 @@ public class FontPropertiesPanel extends JPanel {
         }
     }
 
-    private void updateCurrentlyEditingBox(final ActionEvent evt) {
+    private void updateCurrentlyEditingBox(final ActionEvent event) {
         setProperties(widgetsAndProperties, currentlyEditingBox.getSelectedIndex());
     }
 
     public void updateAvailableFonts() {
-        final String[] fonts = getFonts();
-        final DefaultComboBoxModel model = new DefaultComboBoxModel<>(fonts);
+        final String[] fonts = fontHandler.getFontFamilies();
+        final DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(fonts);
         fontNameBox.setModel(model);
     }
 
@@ -541,7 +497,7 @@ public class FontPropertiesPanel extends JPanel {
     }
 
     private void setComboValue(
-            final JComboBox comboBox,
+            final JComboBox<?> comboBox,
             final Object value) {
         final ActionListener listener = comboBox.getActionListeners()[0];
         comboBox.removeActionListener(listener);

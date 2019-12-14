@@ -1,34 +1,3 @@
-/*
- * ===========================================
- * PDF Forms Designer
- * ===========================================
- * <p>
- * Project Info:  http://pdfformsdesigne.sourceforge.net
- * (C) Copyright 2006-2008..
- * Lead Developer: Simon Barnett (n6vale@googlemail.com)
- * <p>
- * This file is part of the PDF Forms Designer
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * <p>
- * <p>
- * <p>
- * ---------------
- * TextWidget.java
- * ---------------
- */
 package org.pdf.forms.widgets;
 
 import java.awt.Color;
@@ -47,11 +16,15 @@ public class TextWidget extends Widget implements IWidget {
 
     private static int nextWidgetNumber = 1;
 
+    private final FontHandler fontHandler;
+
     public TextWidget(
             final int type,
             final JComponent baseComponent,
-            final JComponent component) {
-        super(type, baseComponent, component, "/org/pdf/forms/res/Text.gif");
+            final JComponent component,
+            final FontHandler fontHandler) {
+        super(type, baseComponent, component, "/org/pdf/forms/res/Text.gif", fontHandler);
+        this.fontHandler = fontHandler;
 
         setComponentSplit(false);
         setAllowEditCaptionAndValue(false);
@@ -74,9 +47,10 @@ public class TextWidget extends Widget implements IWidget {
             final int type,
             final JComponent baseComponent,
             final JComponent component,
-            final Element root) {
-
-        super(type, baseComponent, component, "/org/pdf/forms/res/Text.gif");
+            final Element root,
+            final FontHandler fontHandler) {
+        super(type, baseComponent, component, "/org/pdf/forms/res/Text.gif", fontHandler);
+        this.fontHandler = fontHandler;
 
         setComponentSplit(false);
         setAllowEditCaptionAndValue(false);
@@ -117,7 +91,7 @@ public class TextWidget extends Widget implements IWidget {
         final Element fontElement = XMLUtils.createAndAppendElement(getProperties(), "font", propertiesElement);
 
         final Element caption = XMLUtils.createAndAppendElement(getProperties(), "font_caption", fontElement);
-        XMLUtils.addBasicProperty(getProperties(), "Font Name", FontHandler.getInstance().getDefaultFont().getFontName(), caption);
+        XMLUtils.addBasicProperty(getProperties(), "Font Name", fontHandler.getDefaultFont().getFontName(), caption);
         XMLUtils.addBasicProperty(getProperties(), "Font Size", "11", caption);
         XMLUtils.addBasicProperty(getProperties(), "Font Style", "0", caption);
         XMLUtils.addBasicProperty(getProperties(), "Underline", "0", caption);
@@ -177,14 +151,9 @@ public class TextWidget extends Widget implements IWidget {
     public void setParagraphProperties(
             final Element paragraphPropertiesElement,
             final int currentlyEditing) {
-
         final IPdfComponent text = (IPdfComponent) getBaseComponent();
-
-        final Element paragraphCaptionElement =
-                (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
-
+        final Element paragraphCaptionElement = (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
         setParagraphProperties(paragraphCaptionElement, text);
-
     }
 
     @Override
@@ -196,24 +165,17 @@ public class TextWidget extends Widget implements IWidget {
     public void setFontProperties(
             final Element fontProperties,
             final int currentlyEditing) {
-
         final IPdfComponent text = (IPdfComponent) getBaseComponent();
-
         final Element captionProperties = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
-
         setFontProperties(captionProperties, text);
-
         setSize(getWidth(), getHeight());
     }
 
     @Override
     public void setCaptionProperties(final Element captionProperties) {
         final Element captionElement = (Element) getProperties().getElementsByTagName("caption_properties").item(0);
-
         final String captionText = XMLUtils.getAttributeFromChildElement(captionElement, "Text").orElse("");
-
         getCaptionComponent().setText(captionText);
-
         setSize(getWidth(), getHeight());
     }
 

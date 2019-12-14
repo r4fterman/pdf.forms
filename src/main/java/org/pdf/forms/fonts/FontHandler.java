@@ -1,34 +1,3 @@
-/*
- * ===========================================
- * PDF Forms Designer
- * ===========================================
- * <p>
- * Project Info:  http://pdfformsdesigne.sourceforge.net
- * (C) Copyright 2006-2008..
- * Lead Developer: Simon Barnett (n6vale@googlemail.com)
- * <p>
- * This file is part of the PDF Forms Designer
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * <p>
- * <p>
- * <p>
- * ---------------
- * FontHandler.java
- * ---------------
- */
 package org.pdf.forms.fonts;
 
 import java.awt.Font;
@@ -49,8 +18,6 @@ import com.google.common.collect.ImmutableList;
 
 public final class FontHandler {
 
-    private static FontHandler instance;
-
     private static final Map<Font, String> FONT_FILE_MAP = new TreeMap<>((o1, o2) -> {
         final String font1 = o1.getFontName();
         final String font2 = o2.getFontName();
@@ -60,7 +27,7 @@ public final class FontHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FontHandler.class);
 
-    private FontHandler() {
+    public FontHandler() {
         final String javaFontDir = System.getProperty("java.home") + "/lib/fonts";
         final String[] fontDirectoriesWindows = {
                 "c:/windows/fonts",
@@ -112,7 +79,7 @@ public final class FontHandler {
         try {
             final String fontLocation = file.getPath();
             final FileInputStream fontStream = new FileInputStream(fontLocation);
-            final Font font = Font.createFont(java.awt.Font.TRUETYPE_FONT, fontStream);
+            final Font font = Font.createFont(Font.TRUETYPE_FONT, fontStream);
 
             FONT_FILE_MAP.put(font, fontLocation);
 
@@ -122,14 +89,6 @@ public final class FontHandler {
         }
 
         return null;
-    }
-
-    public static FontHandler getInstance() {
-        if (instance == null) {
-            instance = new FontHandler();
-        }
-
-        return instance;
     }
 
     public Font getDefaultFont() {
@@ -161,5 +120,11 @@ public final class FontHandler {
                 .filter(font -> font.getName().equals(fontName))
                 .findFirst()
                 .orElseGet(this::getDefaultFont);
+    }
+
+    public String[] getFontFamilies() {
+        return FONT_FILE_MAP.keySet().stream()
+                .map(Font::getFontName)
+                .toArray(String[]::new);
     }
 }

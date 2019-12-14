@@ -1,6 +1,7 @@
 package org.pdf.forms.writer;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.io.ByteArrayOutputStream;
@@ -55,22 +56,28 @@ public class Writer {
 
     private final Logger logger = LoggerFactory.getLogger(Writer.class);
 
-    private final Map<Integer, PdfComponentWriter> componentWriterMap = Map.of(
-            IWidget.TEXT_FIELD, new PdfTextFieldWriter(),
-            IWidget.TEXT, new PdfTextWriter(),
-            IWidget.IMAGE, new PdfImageWriter(),
-            IWidget.RADIO_BUTTON, new PdfRadioButtonWriter(),
-            IWidget.CHECK_BOX, new PdfCheckBoxWriter(),
-            IWidget.COMBO_BOX, new PdfComboBoxWriter(),
-            IWidget.LIST_BOX, new PdfListBoxWriter(),
-            IWidget.BUTTON, new PdfButtonWriter()
-    );
-
     private final Set<String> fontSubstitutions = new HashSet<>();
-    private final IMainFrame mainFrame;
 
-    public Writer(final IMainFrame mainFrame) {
+    private final IMainFrame mainFrame;
+    private final FontHandler fontHandler;
+    private final Map<Integer, PdfComponentWriter> componentWriterMap;
+
+    public Writer(
+            final IMainFrame mainFrame,
+            final FontHandler fontHandler) {
         this.mainFrame = mainFrame;
+        this.fontHandler = fontHandler;
+
+        componentWriterMap = Map.of(
+                IWidget.TEXT_FIELD, new PdfTextFieldWriter(fontHandler),
+                IWidget.TEXT, new PdfTextWriter(fontHandler),
+                IWidget.IMAGE, new PdfImageWriter(),
+                IWidget.RADIO_BUTTON, new PdfRadioButtonWriter(),
+                IWidget.CHECK_BOX, new PdfCheckBoxWriter(fontHandler),
+                IWidget.COMBO_BOX, new PdfComboBoxWriter(fontHandler),
+                IWidget.LIST_BOX, new PdfListBoxWriter(fontHandler),
+                IWidget.BUTTON, new PdfButtonWriter(fontHandler)
+        );
     }
 
     public Set<String> getFontSubstitutions() {
@@ -378,7 +385,7 @@ public class Writer {
 
     private void addBorder(
             final IWidget widget,
-            final BaseField tf) {
+            final BaseField baseField) {
         final org.w3c.dom.Document document = widget.getProperties();
         final Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
 
@@ -390,13 +397,13 @@ public class Writer {
 
         switch (style) {
             case "Solid":
-                tf.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
+                baseField.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
                 break;
             case "Dashed":
-                tf.setBorderStyle(PdfBorderDictionary.STYLE_DASHED);
+                baseField.setBorderStyle(PdfBorderDictionary.STYLE_DASHED);
                 break;
             case "Beveled":
-                tf.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
+                baseField.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
                 break;
             case "None":
                 return;
@@ -404,8 +411,8 @@ public class Writer {
                 return;
         }
 
-        tf.setBorderColor(new GrayColor(Integer.parseInt(color)));
-        tf.setBorderWidth(Integer.parseInt(width));
+        baseField.setBorderColor(new GrayColor(Integer.parseInt(color)));
+        baseField.setBorderWidth(Integer.parseInt(width));
     }
 
     private void addJavaScriptToFormField(
@@ -425,7 +432,7 @@ public class Writer {
 
         for (final Element page : pages) {
             final Optional<Element> fileLocationElement = XMLUtils.getPropertyElement(page, "pdffilelocation");
-            if (!fileLocationElement.isPresent()) {
+            if (fileLocationElement.isEmpty()) {
                 // is a hand made page
                 pdfDocumentLayout.addPage(false);
             } else {
@@ -443,11 +450,8 @@ public class Writer {
     }
 
     private Map<PdfName, String> getEventAndScriptMap(final Element javaScriptElement) {
-
         final Map<PdfName, String> actionAndScriptMap = new HashMap<>();
-
         final List<Element> javaScriptProperties = XMLUtils.getElementsFromNodeList(javaScriptElement.getChildNodes());
-
         for (final Element property : javaScriptProperties) {
             final String event = property.getNodeName();
 
@@ -491,7 +495,6 @@ public class Writer {
             final Rectangle pageSize,
             final int currentPage,
             final GlobalPdfWriter globalPdfWriter) {
-
         final PdfCaption caption = widget.getCaptionComponent();
         if (caption == null) {
             return;
@@ -517,8 +520,8 @@ public class Writer {
         cb.saveState();
         cb.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
 
-        final java.awt.Font font = caption.getFont();
-        final String fontDirectory = FontHandler.getInstance().getFontDirectory(font);
+        final Font font = caption.getFont();
+        final String fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
 
@@ -536,13 +539,13 @@ public class Writer {
             fontSubstitutions.add(font.getFontName());
         }
 
-        final Graphics2D g2 = cb.createGraphics(captionBounds.width, captionBounds.height, mapper, true, .95f);
+        final Graphics2D graphics2D = cb.createGraphics(captionBounds.width, captionBounds.height, mapper, true, .95f);
 
-        //Graphics2D g2 = cb.createGraphicsShapes(captionBounds.width, captionBounds.height, true, 0.95f);
+        //Graphics2D graphics2D = cb.createGraphicsShapes(captionBounds.width, captionBounds.height, true, 0.95f);
 
-        caption.paint(g2);
+        caption.paint(graphics2D);
 
-        g2.dispose();
+        graphics2D.dispose();
         cb.restoreState();
     }
 
@@ -555,7 +558,6 @@ public class Writer {
         final float javaX2 = javaX1 + bounds.width;
 
         final float pdfY1 = pageSize.getHeight() - javaY1 - bounds.height;
-
         final float pdfY2 = pdfY1 + bounds.height;
 
         return new Rectangle(javaX1, pdfY1, javaX2, pdfY2);

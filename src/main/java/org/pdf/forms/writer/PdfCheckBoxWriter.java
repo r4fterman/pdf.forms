@@ -15,6 +15,7 @@ import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.components.PdfCheckBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.itextpdf.awt.DefaultFontMapper;
@@ -33,6 +34,12 @@ public class PdfCheckBoxWriter implements PdfComponentWriter {
     private final Logger logger = LoggerFactory.getLogger(PdfComboBoxWriter.class);
 
     private final Set<String> fontSubstitutions = new HashSet<>();
+
+    private final FontHandler fontHandler;
+
+    public PdfCheckBoxWriter(final FontHandler fontHandler) {
+        this.fontHandler = fontHandler;
+    }
 
     @Override
     public Set<String> getFontSubstitutions() {
@@ -104,7 +111,7 @@ public class PdfCheckBoxWriter implements PdfComponentWriter {
         cb.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
 
         final java.awt.Font font = caption.getFont();
-        final String fontDirectory = FontHandler.getInstance().getFontDirectory(font);
+        final String fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
 
@@ -122,20 +129,20 @@ public class PdfCheckBoxWriter implements PdfComponentWriter {
             fontSubstitutions.add(font.getFontName());
         }
 
-        final Graphics2D g2 = cb.createGraphics(captionBounds.width, captionBounds.height, mapper, true, .95f);
+        final Graphics2D graphics2D = cb.createGraphics(captionBounds.width, captionBounds.height, mapper, true, .95f);
 
-        //Graphics2D g2 = cb.createGraphicsShapes(captionBounds.width, captionBounds.height, true, 0.95f);
+        //Graphics2D graphics2D = cb.createGraphicsShapes(captionBounds.width, captionBounds.height, true, 0.95f);
 
-        caption.paint(g2);
+        caption.paint(graphics2D);
 
-        g2.dispose();
+        graphics2D.dispose();
         cb.restoreState();
     }
 
     private void addBorder(
             final IWidget widget,
             final BaseField tf) {
-        final org.w3c.dom.Document document = widget.getProperties();
+        final Document document = widget.getProperties();
         final Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
 
         final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);

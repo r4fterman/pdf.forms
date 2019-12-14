@@ -4,11 +4,11 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-public class DesFileFilter extends FileFilter {
+class DesFileFilter extends FileFilter {
 
     @Override
-    public boolean accept(final File f) {
-        return f.isFile() && f.getName().endsWith(".des");
+    public boolean accept(final File file) {
+        return file.isFile() && file.getName().endsWith(".des");
     }
 
     @Override

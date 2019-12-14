@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.TextWidget;
 import org.pdf.forms.widgets.components.PdfCaption;
@@ -45,9 +46,10 @@ class CustomWidgetsFileTest {
     void addCustomWidget_should_add_widget_component(@TempDir final Path configDir) {
         customWidgetFile = CustomWidgetsFile.getInstance(configDir.toFile());
 
-        final PdfCaption pdfCaption = new PdfCaption("Text");
+        final FontHandler fontHandler = new FontHandler();
+        final PdfCaption pdfCaption = new PdfCaption("Text", fontHandler);
         final JLabel jLabel = new JLabel("Text");
-        final TextWidget textWidget = new TextWidget(IWidget.TEXT, pdfCaption, jLabel);
+        final TextWidget textWidget = new TextWidget(IWidget.TEXT, pdfCaption, jLabel, fontHandler);
         final Set<IWidget> widgets = Set.of(textWidget);
         customWidgetFile.addCustomWidget("foo", widgets);
 

@@ -25,6 +25,12 @@ public class PdfTextWriter implements PdfComponentWriter {
 
     private final Set<String> fontSubstitutions = new HashSet<>();
 
+    private final FontHandler fontHandler;
+
+    public PdfTextWriter(final FontHandler fontHandler) {
+        this.fontHandler = fontHandler;
+    }
+
     @Override
     public Set<String> getFontSubstitutions() {
         return Set.copyOf(fontSubstitutions);
@@ -74,7 +80,7 @@ public class PdfTextWriter implements PdfComponentWriter {
         cb.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
 
         final java.awt.Font font = caption.getFont();
-        final String fontDirectory = FontHandler.getInstance().getFontDirectory(font);
+        final String fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
 

@@ -1,34 +1,3 @@
-/*
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* PdfList.java
-* ---------------
-*/
 package org.pdf.forms.widgets.components;
 
 import javax.swing.DefaultListModel;
@@ -46,8 +15,8 @@ public class PdfList extends JScrollPane implements IPdfComponent {
         return list;
     }
 
-    public PdfList() {
-        list = new Lst(new DefaultListModel<>());
+    public PdfList(final FontHandler fontHandler) {
+        list = new Lst(new DefaultListModel<>(), fontHandler);
 
         setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -69,7 +38,7 @@ public class PdfList extends JScrollPane implements IPdfComponent {
     }
 
     @Override
-    public void setStikethrough(final boolean isStrikethrough) {
+    public void setStrikethrough(final boolean isStrikethrough) {
     }
 
     @Override
@@ -86,9 +55,11 @@ class Lst extends JList<String> {
 
     private static final float FONT_SIZE = 11f;
 
-    Lst(final DefaultListModel<String> defaultListModel) {
+    Lst(
+            final DefaultListModel<String> defaultListModel,
+            final FontHandler fontHandler) {
         super(defaultListModel);
-        setFont(FontHandler.getInstance().getDefaultFont().deriveFont(FONT_SIZE));
+        setFont(fontHandler.getDefaultFont().deriveFont(FONT_SIZE));
     }
 
 }

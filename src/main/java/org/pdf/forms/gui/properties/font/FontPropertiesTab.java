@@ -41,6 +41,7 @@ import java.util.Set;
 import javax.swing.JPanel;
 
 import org.pdf.forms.document.Page;
+import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Document;
@@ -51,10 +52,13 @@ import com.vlsolutions.swing.docking.Dockable;
 
 public class FontPropertiesTab extends JPanel implements Dockable {
 
-    private final FontPropertiesPanel fontPanel = new FontPropertiesPanel();
     private final DockKey key = new DockKey("Font");
+    private final FontPropertiesPanel fontPanel;
 
-    public FontPropertiesTab(final IDesigner designer) {
+    public FontPropertiesTab(
+            final IDesigner designer,
+            final FontHandler fontHandler) {
+        this.fontPanel = new FontPropertiesPanel(fontHandler);
         fontPanel.setDesignerPanel(designer);
 
         setLayout(new BorderLayout());

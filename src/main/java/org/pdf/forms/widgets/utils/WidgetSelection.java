@@ -41,6 +41,7 @@ import java.util.Set;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
+import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
@@ -60,28 +61,25 @@ public class WidgetSelection {
 
     private final Logger logger = LoggerFactory.getLogger(WidgetSelection.class);
 
-    private Rectangle selectionBoxBounds = new Rectangle();
-    private int lastY;
-    private int lastX;
     private final JButton groupButton = new JButton();
     private final JButton unGroupButton = new JButton();
 
+    private Rectangle selectionBoxBounds = new Rectangle();
+    private int lastY;
+    private int lastX;
+
     public WidgetSelection(
             final IDesigner designerPanel,
-            final String version) {
-        setupGroupingButtons(designerPanel, version);
-    }
-
-    private void setupGroupingButtons(
-            final IDesigner designerPanel,
-            final String version) {
+            final String version,
+            final FontHandler fontHandler,
+            final WidgetFactory widgetFactory) {
         groupButton.setVisible(false);
         groupButton.setSize(WIDTH, HEIGHT);
         groupButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Grouped.gif")));
         groupButton.setToolTipText("Group Selection");
 
         groupButton.addActionListener(e -> {
-            final Commands commands = new Commands(designerPanel.getMainFrame(), version);
+            final Commands commands = new Commands(designerPanel.getMainFrame(), version, fontHandler, widgetFactory);
             commands.executeCommand(Commands.GROUP);
         });
 
@@ -91,7 +89,7 @@ public class WidgetSelection {
         unGroupButton.setToolTipText("Ungroup Selection");
 
         unGroupButton.addActionListener(e -> {
-            final Commands commands = new Commands(designerPanel.getMainFrame(), version);
+            final Commands commands = new Commands(designerPanel.getMainFrame(), version, fontHandler, widgetFactory);
             commands.executeCommand(Commands.UNGROUP);
         });
 

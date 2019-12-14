@@ -1,34 +1,3 @@
-/*
- * ===========================================
- * PDF Forms Designer
- * ===========================================
- * <p>
- * Project Info:  http://pdfformsdesigne.sourceforge.net
- * (C) Copyright 2006-2008..
- * Lead Developer: Simon Barnett (n6vale@googlemail.com)
- * <p>
- * This file is part of the PDF Forms Designer
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * <p>
- * <p>
- * <p>
- * ---------------
- * PdfCaption.java
- * ---------------
- */
 package org.pdf.forms.widgets.components;
 
 import java.awt.FontMetrics;
@@ -44,9 +13,11 @@ public class PdfCaption extends JLabel implements IPdfComponent {
 
     private static final float FONT_SIZE = 11f;
 
-    public PdfCaption(final String text) {
+    public PdfCaption(
+            final String text,
+            final FontHandler fontHandler) {
         super(text);
-        setFont(FontHandler.getInstance().getDefaultFont().deriveFont(FONT_SIZE));
+        setFont(fontHandler.getDefaultFont().deriveFont(FONT_SIZE));
     }
 
     private boolean standardUnderline;
@@ -55,41 +26,38 @@ public class PdfCaption extends JLabel implements IPdfComponent {
     private boolean wordUnderline;
 
     @Override
-    public void paintComponent(final Graphics g) {
-        super.paintComponent(g);
+    public void paintComponent(final Graphics graphics) {
+        super.paintComponent(graphics);
 
         final String text = getText();
 
         final FontMetrics f = getFontMetrics(getFont());
 
-        final Rectangle2D textBounds = f.getStringBounds(text, g);
+        final Rectangle2D textBounds = f.getStringBounds(text, graphics);
 
         int x = getInsets().left;
         int y = getHeight() / 2 + (int) (textBounds.getHeight() / 2);
         final int w = (int) textBounds.getWidth() + x;
 
         if (standardUnderline) {
-
-            g.drawLine(x, y, w, y);
+            graphics.drawLine(x, y, w, y);
 
             if (doubleUnderline) {
-                g.drawLine(x, y + 2, w, y + 2);
+                graphics.drawLine(x, y + 2, w, y + 2);
             }
-
         } else if (wordUnderline) {
             final int startX = x;
 
             for (int i = 0; i < text.length(); i++) {
                 final char currentChar = text.charAt(i);
-
                 final int charWidth = f.charWidth(currentChar);
 
                 if (currentChar != ' ') {
-                    g.drawLine(x, y, x + charWidth, y);
+                    graphics.drawLine(x, y, x + charWidth, y);
 
                     if (doubleUnderline) {
                         y += 2;
-                        g.drawLine(x, y, x + charWidth, y);
+                        graphics.drawLine(x, y, x + charWidth, y);
                         y -= 2;
                     }
                 }
@@ -103,7 +71,7 @@ public class PdfCaption extends JLabel implements IPdfComponent {
         if (isStrikethrough) {
             y = getHeight() / 2;
 
-            g.drawLine(x, y, w, y);
+            graphics.drawLine(x, y, w, y);
         }
     }
 
@@ -140,7 +108,7 @@ public class PdfCaption extends JLabel implements IPdfComponent {
     }
 
     @Override
-    public void setStikethrough(final boolean isStrikethrough) {
+    public void setStrikethrough(final boolean isStrikethrough) {
         this.isStrikethrough = isStrikethrough;
     }
 }

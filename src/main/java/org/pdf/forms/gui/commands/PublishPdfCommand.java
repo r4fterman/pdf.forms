@@ -8,6 +8,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.pdf.forms.document.FormsDocument;
+import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.writer.Writer;
@@ -17,9 +18,13 @@ import com.google.common.collect.ImmutableMap;
 class PublishPdfCommand implements Command {
 
     private final IMainFrame mainFrame;
+    private final FontHandler fontHandler;
 
-    PublishPdfCommand(final IMainFrame mainFrame) {
+    PublishPdfCommand(
+            final IMainFrame mainFrame,
+            final FontHandler fontHandler) {
         this.mainFrame = mainFrame;
+        this.fontHandler = fontHandler;
     }
 
     @Override
@@ -50,7 +55,7 @@ class PublishPdfCommand implements Command {
                 }
             }
 
-            final Writer writer = new Writer(mainFrame);
+            final Writer writer = new Writer(mainFrame, fontHandler);
             final int numberOfPages = mainFrame.getTotalNoOfPages();
             final FormsDocument documentProperties = mainFrame.getFormsDocument();
 

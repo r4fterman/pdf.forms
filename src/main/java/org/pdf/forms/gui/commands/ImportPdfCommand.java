@@ -21,6 +21,7 @@ import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.PDFImportChooser;
 import org.pdf.forms.utils.DesignerPropertiesFile;
 import org.pdf.forms.widgets.IWidget;
+import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.pdf.forms.widgets.utils.WidgetParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +34,15 @@ public class ImportPdfCommand implements Command {
     private final String version;
 
     private final JMenuItem[] recentDesignerDocuments;
+    private final WidgetFactory widgetFactory;
 
     public ImportPdfCommand(
             final IMainFrame mainFrame,
-            final String version) {
+            final String version,
+            final WidgetFactory widgetFactory) {
         this.mainFrame = mainFrame;
         this.version = version;
+        this.widgetFactory = widgetFactory;
 
         final File configDir = new File(System.getProperty("user.dir"));
         final int numberOfRecentDocs = DesignerPropertiesFile.getInstance(configDir).getNoRecentDocumentsToDisplay();
@@ -246,7 +250,7 @@ public class ImportPdfCommand implements Command {
          * when parsing a widget we don't want to be updating the display until all widgets are parsed, so add all the widgets to a list
          * so, after parsing, the list can be iterated and the widgets added to the page.
          */
-        WidgetParser.parseWidgets(pdfDecoder.getFormRenderer(), newPage, pageHeight, cropHeight, cropX, cropY, mainFrame, widgetsOnPage);
+        new WidgetParser(widgetFactory).parseWidgets(pdfDecoder.getFormRenderer(), newPage, pageHeight, cropHeight, cropX, cropY, mainFrame, widgetsOnPage);
 
         //newPage.setWidgets(widgetsList);
 

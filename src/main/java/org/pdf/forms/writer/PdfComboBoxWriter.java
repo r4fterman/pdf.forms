@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.pdf.forms.fonts.FontHandler;
@@ -16,6 +15,7 @@ import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.components.PdfComboBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.itextpdf.awt.DefaultFontMapper;
@@ -36,6 +36,11 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
     private Logger logger = LoggerFactory.getLogger(PdfComboBoxWriter.class);
 
     private final Set<String> fontSubstitutions = new HashSet<>();
+    private final FontHandler fontHandler;
+
+    public PdfComboBoxWriter(final FontHandler fontHandler) {
+        this.fontHandler = fontHandler;
+    }
 
     @Override
     public Set<String> getFontSubstitutions() {
@@ -61,13 +66,9 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
 
         final Element itemsElement = (Element) rootElement.getElementsByTagName("items").item(0);
 
-        final List list = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes());
-
-        final String[] items = new String[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            final Element item = (Element) list.get(i);
-            items[i] = XMLUtils.getAttributeFromElement(item, "item").get();
-        }
+        final String[] items = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes()).stream()
+                .map(item -> XMLUtils.getAttributeFromElement(item, "item").get())
+                .toArray(String[]::new);
 
         final Font font = value.getFont();
 
@@ -129,7 +130,7 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
         cb.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
 
         final java.awt.Font font = caption.getFont();
-        final String fontDirectory = FontHandler.getInstance().getFontDirectory(font);
+        final String fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
 
@@ -147,20 +148,20 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
             fontSubstitutions.add(font.getFontName());
         }
 
-        final Graphics2D g2 = cb.createGraphics(captionBounds.width, captionBounds.height, mapper, true, .95f);
+        final Graphics2D graphics2D = cb.createGraphics(captionBounds.width, captionBounds.height, mapper, true, .95f);
 
-        //Graphics2D g2 = cb.createGraphicsShapes(captionBounds.width, captionBounds.height, true, 0.95f);
+        //Graphics2D graphics2D = cb.createGraphicsShapes(captionBounds.width, captionBounds.height, true, 0.95f);
 
-        caption.paint(g2);
+        caption.paint(graphics2D);
 
-        g2.dispose();
+        graphics2D.dispose();
         cb.restoreState();
     }
 
     private void addBorder(
             final IWidget widget,
             final BaseField tf) {
-        final org.w3c.dom.Document document = widget.getProperties();
+        final Document document = widget.getProperties();
         final Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
 
         final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
@@ -198,14 +199,13 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
         final float javaX2 = javaX1 + bounds.width;
 
         final float pdfY1 = pageSize.getHeight() - javaY1 - bounds.height;
-
         final float pdfY2 = pdfY1 + bounds.height;
 
         return new Rectangle(javaX1, pdfY1, javaX2, pdfY2);
     }
 
     private BaseFont getBaseFont(final Font font) throws IOException, DocumentException {
-        final String fontPath = FontHandler.getInstance().getAbsoluteFontPath(font);
+        final String fontPath = fontHandler.getAbsoluteFontPath(font);
         try {
             return BaseFont.createFont(fontPath, BaseFont.CP1250, BaseFont.EMBEDDED);
         } catch (final DocumentException e) {

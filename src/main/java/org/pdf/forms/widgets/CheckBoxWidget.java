@@ -42,8 +42,6 @@ import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.CheckBoxIcon;
 import org.pdf.forms.widgets.components.PdfCheckBox;
 import org.pdf.forms.widgets.components.SplitComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -51,13 +49,15 @@ public class CheckBoxWidget extends Widget implements IWidget {
 
     private static int nextWidgetNumber = 1;
 
-    private final Logger logger = LoggerFactory.getLogger(CheckBoxWidget.class);
+    private final FontHandler fontHandler;
 
     public CheckBoxWidget(
             final int type,
             final JComponent baseComponent,
-            final JComponent component) {
-        super(type, baseComponent, component, "/org/pdf/forms/res/Check Box.gif");
+            final JComponent component,
+            final FontHandler fontHandler) {
+        super(type, baseComponent, component, "/org/pdf/forms/res/Check Box.gif", fontHandler);
+        this.fontHandler = fontHandler;
 
         setComponentSplit(true);
         setAllowEditCaptionAndValue(false);
@@ -82,9 +82,10 @@ public class CheckBoxWidget extends Widget implements IWidget {
             final int type,
             final JComponent baseComponent,
             final JComponent component,
-            final Element root) {
-
-        super(type, baseComponent, component, "/org/pdf/forms/res/Check Box.gif");
+            final Element root,
+            final FontHandler fontHandler) {
+        super(type, baseComponent, component, "/org/pdf/forms/res/Check Box.gif", fontHandler);
+        this.fontHandler = fontHandler;
 
         setComponentSplit(true);
         setAllowEditCaptionAndValue(false);
@@ -128,7 +129,7 @@ public class CheckBoxWidget extends Widget implements IWidget {
         final Element fontElement = XMLUtils.createAndAppendElement(getProperties(), "font", propertiesElement);
 
         final Element caption = XMLUtils.createAndAppendElement(getProperties(), "font_caption", fontElement);
-        XMLUtils.addBasicProperty(getProperties(), "Font Name", FontHandler.getInstance().getDefaultFont().getFontName(), caption);
+        XMLUtils.addBasicProperty(getProperties(), "Font Name", fontHandler.getDefaultFont().getFontName(), caption);
         XMLUtils.addBasicProperty(getProperties(), "Font Size", "11", caption);
         XMLUtils.addBasicProperty(getProperties(), "Font Style", "0", caption);
         XMLUtils.addBasicProperty(getProperties(), "Underline", "0", caption);

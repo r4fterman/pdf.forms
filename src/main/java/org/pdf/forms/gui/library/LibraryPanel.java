@@ -48,6 +48,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 
 import org.pdf.forms.gui.designer.IDesigner;
+import org.pdf.forms.widgets.utils.WidgetFactory;
 
 import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
@@ -58,7 +59,9 @@ public class LibraryPanel extends JPanel implements Dockable {
     private final JList<String> list;
     private final ListSelectionListener listener;
 
-    public LibraryPanel(final IDesigner designer) {
+    public LibraryPanel(
+            final IDesigner designer,
+            final WidgetFactory widgetFactory) {
         setLayout(new BorderLayout());
 
         list = new JList<>(new String[] {
@@ -85,7 +88,7 @@ public class LibraryPanel extends JPanel implements Dockable {
         list.addListSelectionListener(listener);
 
         final DragSource dragSource = new DragSource();
-        dragSource.createDefaultDragGestureRecognizer(list, DnDConstants.ACTION_COPY_OR_MOVE, new DragableComponent(dragSource, designer));
+        dragSource.createDefaultDragGestureRecognizer(list, DnDConstants.ACTION_COPY_OR_MOVE, new DragableComponent(dragSource, designer, widgetFactory));
 
         final JScrollPane listScroller = new JScrollPane(list);
 

@@ -1,19 +1,18 @@
-package org.pdf.forms.gui.commands;
+package org.pdf.forms.fonts;
 
 import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-class PdfFileFilter extends FileFilter {
+class TTFFileFilter extends FileFilter {
 
     @Override
     public boolean accept(final File file) {
-        return file.isFile() && file.getName().endsWith(".pdf");
+        return file.isFile() && file.getName().endsWith(".ttf");
     }
 
     @Override
     public String getDescription() {
-        return "PDF File (*.pdf)";
+        return "TTF Files (*.ttf)";
     }
-
 }

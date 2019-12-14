@@ -32,7 +32,6 @@
 package org.pdf.forms.gui.toolbars;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +56,10 @@ import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public class WidgetPropertiesToolBar extends VLToolBar {
 
-    private Logger logger = LoggerFactory.getLogger(WidgetPropertiesToolBar.class);
+    private final Logger logger = LoggerFactory.getLogger(WidgetPropertiesToolBar.class);
+
+    private final FontHandler fontHandler;
+    private final IDesigner designerPanel;
 
     private final ButtonGroup alignmentGroup;
     private final JComboBox<String> fontBox;
@@ -68,18 +70,14 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     private final ToolBarToggleButton alignCenter;
     private final ToolBarToggleButton alignRight;
 
-    private final IDesigner designerPanel;
 
-    public WidgetPropertiesToolBar(final IDesigner designerPanel) {
+    public WidgetPropertiesToolBar(
+            final FontHandler fontHandler,
+            final IDesigner designerPanel) {
+        this.fontHandler = fontHandler;
         this.designerPanel = designerPanel;
 
-        final Map fontFileMap = FontHandler.getInstance().getFontFileMap();
-        final Font[] fonts = (Font[]) fontFileMap.keySet().toArray(new Font[0]);
-        final String[] fontFamilies = new String[fonts.length];
-        for (int i = 0; i < fonts.length; i++) {
-            fontFamilies[i] = fonts[i].getFontName();
-        }
-        fontBox = new JComboBox<>(fontFamilies);
+        fontBox = new JComboBox<>(fontHandler.getFontFamilies());
         fontBox.setPreferredSize(new Dimension(160, 24));
         fontBox.addActionListener(actionEvent -> updateFont());
         add(fontBox);

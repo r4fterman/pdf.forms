@@ -1,34 +1,3 @@
-/*
- * ===========================================
- * PDF Forms Designer
- * ===========================================
- * <p>
- * Project Info:  http://pdfformsdesigne.sourceforge.net
- * (C) Copyright 2006-2008..
- * Lead Developer: Simon Barnett (n6vale@googlemail.com)
- * <p>
- * This file is part of the PDF Forms Designer
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * <p>
- * <p>
- * <p>
- * ---------------
- * ComboBoxWidget.java
- * ---------------
- */
 package org.pdf.forms.widgets;
 
 import java.awt.Color;
@@ -41,8 +10,6 @@ import javax.swing.JComponent;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.SplitComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -50,13 +17,15 @@ public class ComboBoxWidget extends Widget implements IWidget {
 
     private static int nextWidgetNumber = 1;
 
-    private final Logger logger = LoggerFactory.getLogger(CheckBoxWidget.class);
+    private final FontHandler fontHandler;
 
     public ComboBoxWidget(
             final int type,
             final JComponent baseComponent,
-            final JComponent component) {
-        super(type, baseComponent, component, "/org/pdf/forms/res/Drop-down List.gif");
+            final JComponent component,
+            final FontHandler fontHandler) {
+        super(type, baseComponent, component, "/org/pdf/forms/res/Drop-down List.gif", fontHandler);
+        this.fontHandler = fontHandler;
 
         setComponentSplit(true);
         setAllowEditCaptionAndValue(true);
@@ -81,9 +50,10 @@ public class ComboBoxWidget extends Widget implements IWidget {
             final int type,
             final JComponent baseComponent,
             final JComponent component,
-            final Element root) {
-
-        super(type, baseComponent, component, "/org/pdf/forms/res/Drop-down List.gif");
+            final Element root,
+            final FontHandler fontHandler) {
+        super(type, baseComponent, component, "/org/pdf/forms/res/Drop-down List.gif", fontHandler);
+        this.fontHandler = fontHandler;
 
         setComponentSplit(true);
         setAllowEditCaptionAndValue(true);
@@ -127,7 +97,7 @@ public class ComboBoxWidget extends Widget implements IWidget {
         final Element fontElement = XMLUtils.createAndAppendElement(getProperties(), "font", propertiesElement);
 
         final Element caption = XMLUtils.createAndAppendElement(getProperties(), "font_caption", fontElement);
-        XMLUtils.addBasicProperty(getProperties(), "Font Name", FontHandler.getInstance().getDefaultFont().getFontName(), caption);
+        XMLUtils.addBasicProperty(getProperties(), "Font Name", fontHandler.getDefaultFont().getFontName(), caption);
         XMLUtils.addBasicProperty(getProperties(), "Font Size", "11", caption);
         XMLUtils.addBasicProperty(getProperties(), "Font Style", "0", caption);
         XMLUtils.addBasicProperty(getProperties(), "Underline", "0", caption);
@@ -135,7 +105,7 @@ public class ComboBoxWidget extends Widget implements IWidget {
         XMLUtils.addBasicProperty(getProperties(), "Color", Color.BLACK.getRGB() + "", caption);
 
         final Element value = XMLUtils.createAndAppendElement(getProperties(), "font_value", fontElement);
-        XMLUtils.addBasicProperty(getProperties(), "Font Name", FontHandler.getInstance().getDefaultFont().getFontName(), value);
+        XMLUtils.addBasicProperty(getProperties(), "Font Name", fontHandler.getDefaultFont().getFontName(), value);
         XMLUtils.addBasicProperty(getProperties(), "Font Size", "11", value);
         XMLUtils.addBasicProperty(getProperties(), "Font Style", "0", value);
         XMLUtils.addBasicProperty(getProperties(), "Underline", "0", value);
@@ -266,14 +236,14 @@ public class ComboBoxWidget extends Widget implements IWidget {
 
     @Override
     public void setObjectProperties(final Element objectProperties) {
-        final JComboBox comboBox = (JComboBox) getValueComponent();
+        final JComboBox<String> comboBox = (JComboBox<String>) getValueComponent();
 
         /* add items to combo box list */
         final Element itemsElement = (Element) objectProperties.getElementsByTagName("items").item(0);
 
         final List<Element> items = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes());
 
-        final DefaultComboBoxModel model = (DefaultComboBoxModel) comboBox.getModel();
+        final DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) comboBox.getModel();
         model.removeAllElements();
 
         for (final Element item : items) {
@@ -288,10 +258,8 @@ public class ComboBoxWidget extends Widget implements IWidget {
         if (defaultText.equals("< None >")) {
             defaultText = "";
         }
-
         comboBox.setSelectedItem(defaultText);
 
-        /* set binding getProperties() */
         setBindingProperties(objectProperties);
 
         setSize(getWidth(), getHeight());

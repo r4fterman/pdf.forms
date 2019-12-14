@@ -1,34 +1,3 @@
-/*
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-* This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* DesignerMouseListener.java
-* ---------------
-*/
 package org.pdf.forms.gui.designer.listeners;
 
 import java.awt.Cursor;
@@ -56,9 +25,13 @@ public class DesignerMouseListener implements MouseListener {
     private final CaptionChanger captionChanger;
 
     private final WidgetSelection widgetSelection;
+    private final WidgetFactory widgetFactory;
 
-    public DesignerMouseListener(final IDesigner designerPanel) {
+    public DesignerMouseListener(
+            final IDesigner designerPanel,
+            final WidgetFactory widgetFactory) {
         this.designerPanel = designerPanel;
+        this.widgetFactory = widgetFactory;
 
         this.widgetSelection = designerPanel.getWidgetSelection();
         this.captionChanger = designerPanel.getCaptionChanger();
@@ -202,14 +175,14 @@ public class DesignerMouseListener implements MouseListener {
             final IWidget widget;
             if (widgetToAdd == IWidget.RADIO_BUTTON) {
                 final IMainFrame mainFrame = designerPanel.getMainFrame();
-                widget = WidgetFactory.createRadioButtonWidget(
+                widget = widgetFactory.createRadioButtonWidget(
                         mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage()), bounds);
             } else if (widgetToAdd == IWidget.CHECK_BOX) {
                 final IMainFrame mainFrame = designerPanel.getMainFrame();
-                widget = WidgetFactory.createCheckBoxWidget(
+                widget = widgetFactory.createCheckBoxWidget(
                         mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage()), bounds);
             } else {
-                widget = WidgetFactory.createWidget(widgetToAdd, bounds);
+                widget = widgetFactory.createWidget(widgetToAdd, bounds);
             }
             widget.setX(bounds.x);
             widget.setY(bounds.y);

@@ -16,6 +16,7 @@ import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.components.PdfTextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.itextpdf.awt.DefaultFontMapper;
@@ -38,6 +39,12 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
     private Logger logger = LoggerFactory.getLogger(PdfTextFieldWriter.class);
 
     private final Set<String> fontSubstitutions = new HashSet<>();
+
+    private final FontHandler fontHandler;
+
+    public PdfTextFieldWriter(final FontHandler fontHandler) {
+        this.fontHandler = fontHandler;
+    }
 
     @Override
     public Set<String> getFontSubstitutions() {
@@ -87,7 +94,6 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
             final Rectangle pageSize,
             final int currentPage,
             final GlobalPdfWriter globalPdfWriter) {
-
         final PdfCaption caption = widget.getCaptionComponent();
         if (caption == null) {
             return;
@@ -113,8 +119,8 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
         cb.saveState();
         cb.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
 
-        final java.awt.Font font = caption.getFont();
-        final String fontDirectory = FontHandler.getInstance().getFontDirectory(font);
+        final Font font = caption.getFont();
+        final String fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
 
@@ -132,20 +138,20 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
             fontSubstitutions.add(font.getFontName());
         }
 
-        final Graphics2D g2 = cb.createGraphics(captionBounds.width, captionBounds.height, mapper, true, .95f);
+        final Graphics2D graphics2D = cb.createGraphics(captionBounds.width, captionBounds.height, mapper, true, .95f);
 
-        //Graphics2D g2 = cb.createGraphicsShapes(captionBounds.width, captionBounds.height, true, 0.95f);
+        //Graphics2D graphics2D = cb.createGraphicsShapes(captionBounds.width, captionBounds.height, true, 0.95f);
 
-        caption.paint(g2);
+        caption.paint(graphics2D);
 
-        g2.dispose();
+        graphics2D.dispose();
         cb.restoreState();
     }
 
     private void addBorder(
             final IWidget widget,
-            final BaseField tf) {
-        final org.w3c.dom.Document document = widget.getProperties();
+            final BaseField baseField) {
+        final Document document = widget.getProperties();
         final Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
 
         final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
@@ -156,13 +162,13 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
 
         switch (style) {
             case "Solid":
-                tf.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
+                baseField.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
                 break;
             case "Dashed":
-                tf.setBorderStyle(PdfBorderDictionary.STYLE_DASHED);
+                baseField.setBorderStyle(PdfBorderDictionary.STYLE_DASHED);
                 break;
             case "Beveled":
-                tf.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
+                baseField.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
                 break;
             case "None":
                 return;
@@ -170,8 +176,8 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
                 return;
         }
 
-        tf.setBorderColor(new GrayColor(Integer.parseInt(color)));
-        tf.setBorderWidth(Integer.parseInt(width));
+        baseField.setBorderColor(new GrayColor(Integer.parseInt(color)));
+        baseField.setBorderWidth(Integer.parseInt(width));
     }
 
     private Rectangle convertJavaCoordsToPdfCoords(
@@ -183,7 +189,6 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
         final float javaX2 = javaX1 + bounds.width;
 
         final float pdfY1 = pageSize.getHeight() - javaY1 - bounds.height;
-
         final float pdfY2 = pdfY1 + bounds.height;
 
         return new Rectangle(javaX1, pdfY1, javaX2, pdfY2);
@@ -202,23 +207,21 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
         }
     }
 
-    private BaseFont getBaseFont(final java.awt.Font font) throws IOException, DocumentException {
-        final String fontPath = FontHandler.getInstance().getAbsoluteFontPath(font);
-        BaseFont baseFont;
+    private BaseFont getBaseFont(final Font font) throws IOException, DocumentException {
+        final String fontPath = fontHandler.getAbsoluteFontPath(font);
         try {
-            baseFont = BaseFont.createFont(fontPath, "Cp1250", BaseFont.EMBEDDED);
+            return BaseFont.createFont(fontPath, "Cp1250", BaseFont.EMBEDDED);
         } catch (final DocumentException e) {
             logger.error("Error embedding font. So use Helvetica instead.", e);
+
             /*
              * A document exception has been thrown meaning that the font cannot be embedded
              * due to licensing restrictions so substitute with Helvetica
              */
-
-            baseFont = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
-
+            final BaseFont baseFont = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
             fontSubstitutions.add(font.getFontName());
+            return baseFont;
         }
-        return baseFont;
     }
 
     private BaseColor getBaseColor(final Color color) {

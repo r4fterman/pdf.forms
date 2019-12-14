@@ -1,34 +1,3 @@
-/*
- * ===========================================
- * PDF Forms Designer
- * ===========================================
- * <p>
- * Project Info:  http://pdfformsdesigne.sourceforge.net
- * (C) Copyright 2006-2008..
- * Lead Developer: Simon Barnett (n6vale@googlemail.com)
- * <p>
- * This file is part of the PDF Forms Designer
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * <p>
- * <p>
- * <p>
- * ---------------
- * Designer.java
- * ---------------
- */
 package org.pdf.forms.gui.designer;
 
 import java.awt.BasicStroke;
@@ -51,6 +20,7 @@ import javax.swing.JToolTip;
 
 import org.jpedal.PdfDecoder;
 import org.pdf.forms.document.Page;
+import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.captionchanger.CaptionChanger;
 import org.pdf.forms.gui.designer.gui.DesignerSelectionBox;
@@ -60,6 +30,7 @@ import org.pdf.forms.gui.designer.listeners.DesignerMouseListener;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
+import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.pdf.forms.widgets.utils.WidgetSelection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,20 +70,22 @@ public class Designer extends PdfDecoder implements IDesigner {
             final Rule horizontalRuler,
             final Rule verticalRuler,
             final IMainFrame mainFrame,
-            final String version) {
+            final String version,
+            final FontHandler fontHandler,
+            final WidgetFactory widgetFactory) {
         super();
 
         setBackground(BACKGROUND_COLOR);
 
         selectionBox = new DesignerSelectionBox(this);
-        widgetSelection = new WidgetSelection(this, version);
+        widgetSelection = new WidgetSelection(this, version, fontHandler, widgetFactory);
 
         this.horizontalRuler = horizontalRuler;
         this.verticalRuler = verticalRuler;
         this.inset = inset;
         this.mainFrame = mainFrame;
 
-        addMouseListener(new DesignerMouseListener(this));
+        addMouseListener(new DesignerMouseListener(this, widgetFactory));
         addMouseMotionListener(new DesignerMouseMotionListener(this));
         addKeyListener(new DesignerKeyListener(this));
 

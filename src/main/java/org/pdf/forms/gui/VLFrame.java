@@ -55,6 +55,7 @@ import javax.swing.JMenuItem;
 
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
+import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.commands.FileUtil;
@@ -84,6 +85,7 @@ import org.pdf.forms.utils.configuration.MenuConfiguration;
 import org.pdf.forms.utils.configuration.WindowConfiguration;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetArrays;
+import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,12 +127,13 @@ public class VLFrame extends JFrame implements IMainFrame {
     // the desktop (which will contain dockables)
     private final DockingDesktop desk = new DockingDesktop();
     private final String version;
+    private final ToolBarContainer toolbarContainer;
+    private final WidgetFactory widgetFactory;
 
+    private int designerCompoundContent = DesignerCompound.DESIGNER;
     // byte array used to save a workspace (custom layout of dockables)
     private byte[] savedWorkspace;
-
     private FormsDocument formsDocument;
-
     private int currentPage = 0;
     private String currentDesignerFileName = "Untitled";
 
@@ -149,17 +152,15 @@ public class VLFrame extends JFrame implements IMainFrame {
             loadWorkspace();
         }
     };
-    private final ToolBarContainer toolbarContainer;
 
-    private int designerCompoundContent = DesignerCompound.DESIGNER;
-
-    /**
-     * Default and only frame constructor.
-     */
     public VLFrame(
             final SplashWindow splashWindow,
-            final String version) {
+            final String version,
+            final FontHandler fontHandler,
+            final WidgetFactory widgetFactory) {
         this.version = version;
+        this.widgetFactory = widgetFactory;
+
         addWindowListener(new FrameCloser());
 
         toolbarContainer = ToolBarContainer.createDefaultContainer(true, false, true, false);
@@ -174,11 +175,11 @@ public class VLFrame extends JFrame implements IMainFrame {
         final Rule verticalRuler = new Rule(IMainFrame.INSET, Rule.VERTICAL, true);
         verticalRuler.setPreferredHeight(Toolkit.getDefaultToolkit().getScreenSize().height);
 
-        final Commands commands = new Commands(this, version);
+        final Commands commands = new Commands(this, version, fontHandler, widgetFactory);
         final CommandListener commandListener = new CommandListener(commands);
 
-        designer = new Designer(IMainFrame.INSET, horizontalRuler, verticalRuler, this, version);
-        final DefaultTransferHandler dth = new DefaultTransferHandler(designer, this, version);
+        designer = new Designer(IMainFrame.INSET, horizontalRuler, verticalRuler, this, version, fontHandler, this.widgetFactory);
+        final DefaultTransferHandler dth = new DefaultTransferHandler(designer, this, version, this.widgetFactory);
         designer.setTransferHandler(dth);
 
         final String userDir = System.getProperty("user.dir");
@@ -187,7 +188,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         menuConfiguration = new MenuConfiguration(commandListener, designer, this, configDir);
         windowConfiguration = new WindowConfiguration(configDir);
 
-        libraryPanel = new LibraryPanel(designer);
+        libraryPanel = new LibraryPanel(designer, widgetFactory);
         hierarchyPanel = new HierarchyPanel(designer);
 
         formsDocument = new FormsDocument(version);
@@ -210,14 +211,14 @@ public class VLFrame extends JFrame implements IMainFrame {
 
         splashWindow.setProgress(2, "Setting up designer panel");
         /* setup the designerTabs */
-        designerCompound = new DesignerCompound(designer, horizontalRuler, verticalRuler, this);
+        designerCompound = new DesignerCompound(designer, horizontalRuler, verticalRuler, this, fontHandler);
 
         splashWindow.setProgress(3, "Setting up properties panels");
         paragraphPropertiesTab = new ParagraphPropertiesTab(designer);
         borderPropertiesTab = new BorderPropertiesTab(designer);
         layoutPropertiesTab = new LayoutPropertiesTab(designer);
         objectPropertiesTab = new ObjectPropertiesTab(designer);
-        fontPropertiesTab = new FontPropertiesTab(designer);
+        fontPropertiesTab = new FontPropertiesTab(designer, fontHandler);
 
         /* create a compound to hold the property tabs in */
         propertiesCompound = new PropertiesCompound(objectPropertiesTab, fontPropertiesTab, layoutPropertiesTab,
@@ -231,7 +232,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         documentToolBar = new DocumentToolBar(commandListener);
         toolBarPanel.add(documentToolBar, new ToolBarConstraints(0, 0));
 
-        propertiesToolBar = new WidgetPropertiesToolBar(designer);
+        propertiesToolBar = new WidgetPropertiesToolBar(fontHandler, designer);
         toolBarPanel.add(propertiesToolBar, new ToolBarConstraints(0, 1));
 
         widgetAlignmentAndOrderToolbar = new WidgetAlignmentAndOrderToolbar(designer);
@@ -549,10 +550,10 @@ public class VLFrame extends JFrame implements IMainFrame {
 
                 if (type.equals("recentdesfiles")) {
                     // handle missing files here
-                    new OpenDesignerFileCommand(this, version).openDesignerFile(fileName);
+                    new OpenDesignerFileCommand(this, version, widgetFactory).openDesignerFile(fileName);
                 } else {
                     // "recentpdffiles"
-                    new ImportPdfCommand(this, version).importPDF(fileName);
+                    new ImportPdfCommand(this, version, widgetFactory).importPDF(fileName);
                 }
             });
 

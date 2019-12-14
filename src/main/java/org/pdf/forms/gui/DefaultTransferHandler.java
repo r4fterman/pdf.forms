@@ -50,6 +50,7 @@ import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
+import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -65,14 +66,17 @@ public class DefaultTransferHandler extends TransferHandler {
     private final IDesigner designerPanel;
     private final IMainFrame mainFrame;
     private final String version;
+    private final WidgetFactory widgetFactory;
 
     DefaultTransferHandler(
             final IDesigner designerPanel,
             final IMainFrame mainFrame,
-            final String version) {
+            final String version,
+            final WidgetFactory widgetFactory) {
         this.designerPanel = designerPanel;
         this.mainFrame = mainFrame;
         this.version = version;
+        this.widgetFactory = widgetFactory;
     }
 
     @Override
@@ -167,9 +171,9 @@ public class DefaultTransferHandler extends TransferHandler {
                         || file.endsWith(".gif");
 
                 if (isPdf) {
-                    new ImportPdfCommand(mainFrame, version).importPDF(file);
+                    new ImportPdfCommand(mainFrame, version, widgetFactory).importPDF(file);
                 } else if (isDes) {
-                    new OpenDesignerFileCommand(mainFrame, version).openDesignerFile(file);
+                    new OpenDesignerFileCommand(mainFrame, version, widgetFactory).openDesignerFile(file);
                     //} else if (isImage) {
                     //currentCommands.openFile(file);
                 } else {

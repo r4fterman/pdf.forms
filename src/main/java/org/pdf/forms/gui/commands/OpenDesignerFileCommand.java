@@ -37,12 +37,15 @@ public class OpenDesignerFileCommand implements Command {
     private final IMainFrame mainFrame;
     private final String version;
     private final JMenuItem[] recentDesignerDocuments;
+    private final WidgetFactory widgetFactory;
 
     public OpenDesignerFileCommand(
             final IMainFrame mainFrame,
-            final String version) {
+            final String version,
+            final WidgetFactory widgetFactory) {
         this.mainFrame = mainFrame;
         this.version = version;
+        this.widgetFactory = widgetFactory;
 
         final File configDir = new File(System.getProperty("user.dir"));
         final int noOfRecentDocs = DesignerPropertiesFile.getInstance(configDir).getNoRecentDocumentsToDisplay();
@@ -256,7 +259,7 @@ public class OpenDesignerFileCommand implements Command {
                             final List<IWidget> widgetsInGroup = getWidgetsFromXMLElement(XMLUtils.getElementsFromNodeList(widgetElement.getElementsByTagName("widgets")).get(0));
                             widget.setWidgetsInGroup(widgetsInGroup);
                         } else {
-                            widget = WidgetFactory.createWidget(widgetType, widgetElement);
+                            widget = widgetFactory.createWidget(widgetType, widgetElement);
                         }
                         return widget;
                     })

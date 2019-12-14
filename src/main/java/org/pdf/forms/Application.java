@@ -12,8 +12,10 @@ import java.util.jar.Manifest;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.VLFrame;
 import org.pdf.forms.gui.windows.SplashWindow;
+import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +51,10 @@ public final class Application {
         }
 
         splashWindow.setProgress(1, "Initializing window");
-        final VLFrame frame = new VLFrame(splashWindow, version);
+
+        final FontHandler fontHandler = new FontHandler();
+        final WidgetFactory widgetFactory = new WidgetFactory(fontHandler);
+        final VLFrame frame = new VLFrame(splashWindow, version, fontHandler, widgetFactory);
 
         // get local graphics environment
         GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();

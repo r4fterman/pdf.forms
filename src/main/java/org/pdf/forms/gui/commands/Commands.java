@@ -4,7 +4,9 @@ import static java.util.Map.entry;
 
 import java.util.Map;
 
+import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.widgets.utils.WidgetFactory;
 
 public class Commands {
 
@@ -56,16 +58,18 @@ public class Commands {
 
     public Commands(
             final IMainFrame mainFrame,
-            final String version) {
+            final String version,
+            final FontHandler fontHandler,
+            final WidgetFactory widgetFactory) {
         commandMap = Map.ofEntries(
                 entry(NEW, new NewPdfCommand(mainFrame, version)),
-                entry(OPEN, new OpenDesignerFileCommand(mainFrame, version)),
+                entry(OPEN, new OpenDesignerFileCommand(mainFrame, version, widgetFactory)),
                 entry(CLOSE, new ClosePdfCommand(mainFrame, version)),
-                entry(IMPORT, new ImportPdfCommand(mainFrame, version)),
+                entry(IMPORT, new ImportPdfCommand(mainFrame, version, widgetFactory)),
                 entry(SAVE_FILE, new SaveDesignerFileCommand(mainFrame, version)),
                 entry(SAVE_FILE_AS, new SaveDesignerFileAsCommand(mainFrame, version)),
-                entry(PUBLISH, new PublishPdfCommand(mainFrame)),
-                entry(FONT_MANAGEMENT, new FontManagementCommand(mainFrame)),
+                entry(PUBLISH, new PublishPdfCommand(mainFrame, fontHandler)),
+                entry(FONT_MANAGEMENT, new FontManagementCommand(mainFrame, fontHandler)),
                 entry(EXIT, () -> System.exit(0)),
                 entry(ZOOM_IN, new ZoomInCommand(mainFrame)),
                 entry(ZOOM_OUT, new ZoomOutCommand(mainFrame)),

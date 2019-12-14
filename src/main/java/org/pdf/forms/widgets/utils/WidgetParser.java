@@ -1,34 +1,3 @@
-/*
- * ===========================================
- * PDF Forms Designer
- * ===========================================
- * <p>
- * Project Info:  http://pdfformsdesigne.sourceforge.net
- * (C) Copyright 2006-2008..
- * Lead Developer: Simon Barnett (n6vale@googlemail.com)
- * <p>
- * This file is part of the PDF Forms Designer
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * <p>
- * <p>
- * <p>
- * ---------------
- * WidgetParser.java
- * ---------------
- */
 package org.pdf.forms.widgets.utils;
 
 import java.awt.Color;
@@ -56,10 +25,13 @@ import org.w3c.dom.Element;
 
 public final class WidgetParser {
 
-    private WidgetParser() {
+    private final WidgetFactory widgetFactory;
+
+    public WidgetParser(final WidgetFactory widgetFactory) {
+        this.widgetFactory = widgetFactory;
     }
 
-    public static void parseWidgets(
+    public void parseWidgets(
             final AcroRenderer currentFormRenderer,
             final Page page,
             final int pageHeight,
@@ -183,7 +155,7 @@ public final class WidgetParser {
         }
     }
 
-    private static int getNextArrayNumberForName(
+    private int getNextArrayNumberForName(
             final String name,
             final IWidget widgetToTest,
             final WidgetArrays widgetArrays,
@@ -211,7 +183,7 @@ public final class WidgetParser {
         return 0;
     }
 
-    private static void addCheckBox(
+    private void addCheckBox(
             final FormObject formObject,
             final Page page,
             final String groupName,
@@ -240,7 +212,7 @@ public final class WidgetParser {
 
             final Rectangle bounds = getBounds(formObject, pageHeight, cropHeight, cropX, cropY);
 
-            final IWidget widget = WidgetFactory.createCheckBoxWidget(page, bounds, group);
+            final IWidget widget = widgetFactory.createCheckBoxWidget(page, bounds, group);
             final Document document = widget.getProperties();
 
             setGenericWidgetProperties(formObject, bounds, widget, document, mainFrame, widgetList);
@@ -278,7 +250,7 @@ public final class WidgetParser {
         }
     }
 
-    private static IWidget getBasicWidget(
+    private IWidget getBasicWidget(
             final FormObject formObject,
             final int type,
             final int pageHeight,
@@ -290,7 +262,7 @@ public final class WidgetParser {
 
         final Rectangle bounds = getBounds(formObject, pageHeight, cropHeight, cropX, cropY);
 
-        final IWidget widget = WidgetFactory.createWidget(type, bounds);
+        final IWidget widget = widgetFactory.createWidget(type, bounds);
 
         final Document document = widget.getProperties();
 
@@ -299,7 +271,7 @@ public final class WidgetParser {
         return widget;
     }
 
-    private static void setGenericWidgetProperties(
+    private void setGenericWidgetProperties(
             final FormObject formObject,
             final Rectangle bounds,
             final IWidget widget,
@@ -347,7 +319,7 @@ public final class WidgetParser {
         widget.setObjectProperties(objectProperties);
     }
 
-    private static Rectangle getBounds(
+    private Rectangle getBounds(
             final FormObject formObject,
             final int pageHeight,
             final int cropHeight,
@@ -371,7 +343,7 @@ public final class WidgetParser {
         return bounds;
     }
 
-    private static void handleChoiceField(
+    private void handleChoiceField(
             final FormObject formObject,
             final IWidget widget) {
         final Document document = widget.getProperties();
@@ -406,7 +378,7 @@ public final class WidgetParser {
         handleVisibility(formObject, document);
     }
 
-    private static void handleBorder(
+    private void handleBorder(
             final FormObject formObject,
             final IWidget widget) {
         Map<String, String> border = (Map) formObject.getBorder();
@@ -451,7 +423,7 @@ public final class WidgetParser {
         widget.setBorderAndBackgroundProperties(borderProperties);
     }
 
-    private static void setProperty(
+    private void setProperty(
             final Element borderProperties,
             final String attribute,
             final String value) {
@@ -459,7 +431,7 @@ public final class WidgetParser {
         leftEdgeWidthElement.getAttributeNode("value").setValue(value);
     }
 
-    private static void handleVisibility(
+    private void handleVisibility(
             final FormObject formObject,
             final Document document) {
         final Element objectProperties;
@@ -470,7 +442,7 @@ public final class WidgetParser {
         }
     }
 
-    private static void appearanceImages(
+    private void appearanceImages(
             final FormObject form,
             final IWidget widget) {
 
