@@ -11,13 +11,14 @@ import org.pdf.forms.utils.CustomWidgetsFile;
 class AddSelectionToLibraryCommand implements Command {
 
     private final IMainFrame mainFrame;
-    private final Configuration configuration;
+    private final CustomWidgetsFile customWidgetsFile;
 
     AddSelectionToLibraryCommand(
             final IMainFrame mainFrame,
             final Configuration configuration) {
         this.mainFrame = mainFrame;
-        this.configuration = configuration;
+        this.customWidgetsFile = CustomWidgetsFile.getInstance(configuration.getConfigDirectory());
+
     }
 
     @Override
@@ -26,26 +27,36 @@ class AddSelectionToLibraryCommand implements Command {
     }
 
     private void addSelectionToLibrary() {
-        final CustomWidgetsFile customWidgetsFile = CustomWidgetsFile.getInstance(configuration.getConfigDirectory());
-        boolean finished = false;
-
-        String name = JOptionPane.showInputDialog((Component) mainFrame, "Enter a name for the new component", "New component name",
-                JOptionPane.QUESTION_MESSAGE);
-
-        while (!finished) {
-            if (name == null) {
-                return;
-            }
-
-            if (customWidgetsFile.isNameTaken(name)) {
-                name = JOptionPane.showInputDialog((Component) mainFrame, "The name you have entered is already taken, please enter another name", "New component name",
-                        JOptionPane.WARNING_MESSAGE);
-            } else {
-                finished = true;
-            }
+        String newComponentName = askForNewComponentName();
+        while (canNotUseComponentName(newComponentName)) {
+            newComponentName = askForOtherComponentName();
         }
 
-        customWidgetsFile.addCustomWidget(name, mainFrame.getDesigner().getSelectedWidgets());
+        if (newComponentName != null) {
+            addComponentWithName(newComponentName);
+        }
+    }
+
+    private boolean canNotUseComponentName(final String newComponentName) {
+        if (newComponentName == null) {
+            return false;
+        }
+
+        return customWidgetsFile.isNameTaken(newComponentName);
+    }
+
+    private void addComponentWithName(final String newComponentName) {
+        customWidgetsFile.addCustomWidget(newComponentName, mainFrame.getDesigner().getSelectedWidgets());
+    }
+
+    private String askForOtherComponentName() {
+        return JOptionPane.showInputDialog((Component) mainFrame, "The name you have entered is already taken, please enter another name", "New component name",
+                JOptionPane.WARNING_MESSAGE);
+    }
+
+    private String askForNewComponentName() {
+        return JOptionPane.showInputDialog((Component) mainFrame, "Enter a name for the new component", "New component name",
+                    JOptionPane.QUESTION_MESSAGE);
     }
 
 }

@@ -5,6 +5,7 @@ import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.swing.JDialog;
 import javax.xml.transform.Transformer;
@@ -30,17 +31,23 @@ class BugReportCommand implements Command {
 
     @Override
     public void execute() {
-        sendBugReport();
+        final Map<String, Double> filesAndSizes = writeBugReportFile();
+
+        final JDialog dialog = new JDialog((Frame) mainFrame, "Bug report", true);
+        dialog.add(new BugReportPanel(filesAndSizes, dialog));
+        dialog.pack();
+        dialog.setLocationRelativeTo((Component) mainFrame);
+        dialog.setVisible(true);
     }
 
-    private void sendBugReport() {
-        final LinkedHashMap<String, Double> filesAndSizes = new LinkedHashMap<>();
-        final Document documentProperties = mainFrame.getFormsDocument().getDocumentProperties();
+    private Map<String, Double> writeBugReportFile() {
+        final Map<String, Double> filesAndSizes = new LinkedHashMap<>();
 
         try {
             final File designerFile = File.createTempFile("bugreport", ".des");
             designerFile.deleteOnExit();
 
+            final Document documentProperties = mainFrame.getFormsDocument().getDocumentProperties();
             writeXML(documentProperties, designerFile.getAbsolutePath());
 
             final Double size = round(designerFile.length() / 1000d);
@@ -49,34 +56,16 @@ class BugReportCommand implements Command {
             logger.error("Unable to create temporary bug report file", e);
         }
 
-        final JDialog dialog = new JDialog((Frame) mainFrame, "Bug report", true);
-
-        final BugReportPanel bugReportPanel = new BugReportPanel(filesAndSizes, dialog);
-
-        dialog.add(bugReportPanel);
-        dialog.pack();
-        dialog.setLocationRelativeTo((Component) mainFrame);
-        dialog.setVisible(true);
+        return filesAndSizes;
     }
 
     private void writeXML(
             final Document documentProperties,
             final String fileName) {
-        //        try {
-        // InputStream stylesheet = this.getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
-        //
-        // TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        // Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
-        // transformer.transform(new DOMSource(documentProperties), new StreamResult(mainFrame.getCurrentDesignerFileName()));
-        //        } catch (TransformerException e) {
-        // e.printStackTrace();
-        //        }
-
         try {
             final Transformer transformer = TransformerFactory.newInstance().newTransformer();
             // transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-            //initialize StreamResult with File object to save to file
             transformer.transform(new DOMSource(documentProperties), new StreamResult(fileName));
         } catch (final TransformerException e) {
             logger.error("Error writing xml to file {}", fileName, e);

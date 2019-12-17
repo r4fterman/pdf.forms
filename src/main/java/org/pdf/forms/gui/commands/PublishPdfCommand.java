@@ -3,6 +3,7 @@ package org.pdf.forms.gui.commands;
 import java.awt.Component;
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -29,21 +30,13 @@ class PublishPdfCommand implements Command {
 
     @Override
     public void execute() {
-        publishPDF();
+        getSelectedPdfFile().ifPresent(this::writePdfFile);
     }
 
-    private void publishPDF() {
-        boolean finished = false;
-        while (!finished) {
-            final JFileChooser chooser = new JFileChooser();
-            chooser.addChoosableFileFilter(new PdfFileFilter());
-            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            final int approved = chooser.showSaveDialog(null);
-            if (approved != JFileChooser.APPROVE_OPTION) {
-                return;
-            }
-
-            final File file = getSelectedFile(chooser);
+    private Optional<File> getSelectedPdfFile() {
+        final Optional<File> pdfFile = choosePdfFile().map(this::ensurePdfFileExtension);
+        if (pdfFile.isPresent()) {
+            final File file = pdfFile.get();
             if (file.exists()) {
                 final int value = JOptionPane.showConfirmDialog(
                         (Component) mainFrame,
@@ -51,29 +44,44 @@ class PublishPdfCommand implements Command {
                         "File already exists",
                         JOptionPane.YES_NO_OPTION);
                 if (value == JOptionPane.NO_OPTION) {
-                    continue;
+                    return getSelectedPdfFile();
                 }
             }
-
-            final Writer writer = new Writer(mainFrame, fontHandler);
-            final int numberOfPages = mainFrame.getTotalNoOfPages();
-            final FormsDocument documentProperties = mainFrame.getFormsDocument();
-
-            final ImmutableMap.Builder<Integer, List<IWidget>> widgets = ImmutableMap.builder();
-            for (int pageNumber = 0; pageNumber < numberOfPages; pageNumber++) {
-                widgets.put(pageNumber, documentProperties.getPage(pageNumber + 1).getWidgets());
-            }
-
-            writer.write(file, widgets.build(), documentProperties.getDocumentProperties());
-            finished = true;
+            return Optional.of(file);
         }
+        return Optional.empty();
     }
 
-    private File getSelectedFile(final JFileChooser chooser) {
-        final File file = chooser.getSelectedFile();
+    private void writePdfFile(final File file) {
+        final Writer writer = new Writer(mainFrame, fontHandler);
+        final int numberOfPages = mainFrame.getTotalNoOfPages();
+        final FormsDocument documentProperties = mainFrame.getFormsDocument();
+
+        final ImmutableMap.Builder<Integer, List<IWidget>> widgets = ImmutableMap.builder();
+        for (int pageNumber = 0; pageNumber < numberOfPages; pageNumber++) {
+            widgets.put(pageNumber, documentProperties.getPage(pageNumber + 1).getWidgets());
+        }
+
+        writer.write(file, widgets.build(), documentProperties.getDocumentProperties());
+    }
+
+    private Optional<File> choosePdfFile() {
+        final JFileChooser chooser = new JFileChooser();
+        chooser.addChoosableFileFilter(new PdfFileFilter());
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        final int state = chooser.showSaveDialog(null);
+        if (state != JFileChooser.APPROVE_OPTION) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(chooser.getSelectedFile());
+    }
+
+    private File ensurePdfFileExtension(final File file) {
         if (!file.getAbsolutePath().endsWith(".pdf")) {
             return new File(file.getAbsolutePath() + ".pdf");
         }
         return file;
     }
+
 }

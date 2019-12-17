@@ -1,16 +1,16 @@
 package org.pdf.forms.gui.commands;
 
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toUnmodifiableList;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
 import java.awt.Component;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
@@ -57,19 +57,18 @@ public class OpenDesignerFileCommand implements Command {
 
     @Override
     public void execute() {
-        openDesignerFile();
+        selectDesignerFile().ifPresent(file -> openDesignerFile(file.getAbsolutePath()));
     }
 
-    private void openDesignerFile() {
+    private Optional<File> selectDesignerFile() {
         final JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.addChoosableFileFilter(new DesFileFilter());
         final int state = chooser.showOpenDialog((Component) mainFrame);
-
-        final File fileToOpen = chooser.getSelectedFile();
-        if (fileToOpen != null && state == JFileChooser.APPROVE_OPTION) {
-            openDesignerFile(fileToOpen.getAbsolutePath());
+        if (state == JFileChooser.APPROVE_OPTION) {
+            return Optional.ofNullable(chooser.getSelectedFile());
         }
+        return Optional.empty();
     }
 
     public void openDesignerFile(final String designerFileToOpen) {
@@ -158,8 +157,8 @@ public class OpenDesignerFileCommand implements Command {
         mainFrame.setCurrentDesignerFileName("");
         mainFrame.setTitle("PDF Forms Designer Version " + version);
 
-        mainFrame.setPropertiesCompound(new HashSet<>());
-        mainFrame.setPropertiesToolBar(new HashSet<>());
+        mainFrame.setPropertiesCompound(Set.of());
+        mainFrame.setPropertiesToolBar(Set.of());
 
         setPanelsState(false);
 
@@ -172,7 +171,7 @@ public class OpenDesignerFileCommand implements Command {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(element -> element.getAttributeNode("value").getValue())
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(toUnmodifiableSet());
 
         return pdfFiles.stream()
                 .collect(toMap(
@@ -247,7 +246,7 @@ public class OpenDesignerFileCommand implements Command {
     private List<IWidget> getWidgetsFromXMLElement(final Element page) {
         final List<Element> widgetsInPageList = XMLUtils.getElementsFromNodeList(page.getChildNodes()).stream()
                 .filter(element -> element.getNodeName().equals("widget"))
-                .collect(Collectors.toUnmodifiableList());
+                .collect(toUnmodifiableList());
 
         final List<IWidget> widgets = new ArrayList<>();
         for (final Element widgetElement : widgetsInPageList) {

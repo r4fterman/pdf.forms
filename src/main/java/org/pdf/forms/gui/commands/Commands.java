@@ -11,7 +11,7 @@ import org.pdf.forms.widgets.utils.WidgetFactory;
 
 public class Commands {
 
-    public static final int NEW = 77184; //"NEW".hashCode();
+    public static final int NEW = 77184;
     public static final int OPEN = 2432586;
     public static final int RECENT_OPEN = 159636910;
     public static final int CLOSE = 64218584;

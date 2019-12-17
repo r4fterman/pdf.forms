@@ -1,6 +1,6 @@
 package org.pdf.forms.gui.commands;
 
-import java.util.HashSet;
+import java.util.Set;
 
 import org.pdf.forms.gui.IMainFrame;
 
@@ -18,16 +18,12 @@ public class ClosePdfCommand implements Command {
 
     @Override
     public void execute() {
-        closePDF();
-    }
-
-    private void closePDF() {
         mainFrame.setFormsDocument(null);
         mainFrame.getDesigner().close();
         mainFrame.setCurrentDesignerFileName("");
         mainFrame.setTitle("PDF Forms Designer Version " + version);
-        mainFrame.setPropertiesCompound(new HashSet<>());
-        mainFrame.setPropertiesToolBar(new HashSet<>());
+        mainFrame.setPropertiesCompound(Set.of());
+        mainFrame.setPropertiesToolBar(Set.of());
         mainFrame.setPanelsState(false);
         mainFrame.setCurrentPage(0);
     }

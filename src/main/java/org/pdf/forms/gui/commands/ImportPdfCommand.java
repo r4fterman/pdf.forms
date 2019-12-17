@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
@@ -54,22 +55,21 @@ public class ImportPdfCommand implements Command {
 
     @Override
     public void execute() {
-        importPDF();
-    }
-
-    private void importPDF() {
         // TODO: do not allow import of a pdf into a closed document
         final int importType = acquirePDFImportType();
+        selectPdfImportFile()
+                .ifPresent(file -> importPDF(importType, file.getAbsolutePath()));
+    }
 
+    private Optional<File> selectPdfImportFile() {
         final JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.addChoosableFileFilter(new PdfFileFilter());
-
         final int state = chooser.showOpenDialog((Component) mainFrame);
-        final File file = chooser.getSelectedFile();
-        if (file != null && state == JFileChooser.APPROVE_OPTION) {
-            importPDF(importType, file.getAbsolutePath());
+        if (state == JFileChooser.APPROVE_OPTION) {
+            return Optional.ofNullable(chooser.getSelectedFile());
         }
+        return Optional.empty();
     }
 
     public void importPDF(final String pdfPath) {
@@ -195,10 +195,9 @@ public class ImportPdfCommand implements Command {
     }
 
     private int acquirePDFImportType() {
-        final PDFImportChooser pic = new PDFImportChooser((Component) mainFrame);
-        pic.setVisible(true);
-
-        return pic.getImportType();
+        final PDFImportChooser pdfImportChooser = new PDFImportChooser((Component) mainFrame);
+        pdfImportChooser.setVisible(true);
+        return pdfImportChooser.getImportType();
     }
 
     private boolean decodePDFPage(

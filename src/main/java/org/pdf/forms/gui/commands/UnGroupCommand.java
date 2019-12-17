@@ -8,6 +8,7 @@ import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.IWidget;
 
 class UnGroupCommand implements Command {
+
     private IMainFrame mainFrame;
 
     UnGroupCommand(final IMainFrame mainFrame) {
@@ -16,10 +17,6 @@ class UnGroupCommand implements Command {
 
     @Override
     public void execute() {
-        ungroup();
-    }
-
-    private void ungroup() {
         final IDesigner designerPanel = mainFrame.getDesigner();
 
         final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
@@ -39,4 +36,5 @@ class UnGroupCommand implements Command {
 
         designerPanel.repaint();
     }
+
 }

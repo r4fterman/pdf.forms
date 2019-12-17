@@ -1,8 +1,9 @@
 package org.pdf.forms.gui.commands;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.IDesigner;
@@ -19,22 +20,33 @@ class GroupCommand implements Command {
 
     @Override
     public void execute() {
-        group();
-    }
+        final GroupWidget groupWidget = buildGroupWidget();
 
-    private void group() {
-        final IDesigner designerPanel = mainFrame.getDesigner();
-        final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
-
-        final List<IWidget> widgetsInGroup = designerPanel.getWidgets().stream()
-                .filter(selectedWidgets::contains)
-                .collect(Collectors.toList());
-
-        final GroupWidget groupWidget = new GroupWidget();
-        groupWidget.setWidgetsInGroup(widgetsInGroup);
+        final IDesigner designerPanel = getDesignerPanel();
         designerPanel.addWidget(groupWidget);
         designerPanel.removeSelectedWidgets();
         designerPanel.setSelectedWidgets(Set.of(groupWidget));
         designerPanel.repaint();
+    }
+
+    private GroupWidget buildGroupWidget() {
+        final IDesigner designerPanel = getDesignerPanel();
+        final List<IWidget> widgetsInGroup = getWidgetInGroup(designerPanel.getSelectedWidgets(), designerPanel.getWidgets());
+
+        final GroupWidget groupWidget = new GroupWidget();
+        groupWidget.setWidgetsInGroup(widgetsInGroup);
+        return groupWidget;
+    }
+
+    private List<IWidget> getWidgetInGroup(
+            final Set<IWidget> selectedWidgets,
+            final List<IWidget> widgets) {
+        return widgets.stream()
+                .filter(selectedWidgets::contains)
+                .collect(toUnmodifiableList());
+    }
+
+    private IDesigner getDesignerPanel() {
+        return mainFrame.getDesigner();
     }
 }

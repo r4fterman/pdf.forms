@@ -424,7 +424,7 @@ public class VLFrame extends JFrame implements IMainFrame {
     public void setPropertiesToolBar(final Set<IWidget> widgets) {
         menuConfiguration.setProperties(widgets);
 
-        final Set<IWidget> flattenWidgets = getFlatternedWidgets(widgets);
+        final Set<IWidget> flattenWidgets = getFlattenWidgets(widgets);
 
         propertiesToolBar.setProperties(flattenWidgets);
         widgetAlignmentAndOrderToolbar.setState(!flattenWidgets.isEmpty());
@@ -432,20 +432,21 @@ public class VLFrame extends JFrame implements IMainFrame {
 
     @Override
     public void setPropertiesCompound(final Set<IWidget> widgets) {
-        final Set<IWidget> flatteWidgets = getFlatternedWidgets(widgets);
+        final Set<IWidget> flattenWidgets = getFlattenWidgets(widgets);
 
-        PropertyChanger.updateSizeAndPosition(flatteWidgets);
+        PropertyChanger.updateSizeAndPosition(flattenWidgets);
 
-        //        if (flatteWidgets.isEmpty() && formsDocument != null) {
+        //        if (flattenWidgets.isEmpty() && formsDocument != null) {
         //            widgets.add(formsDocument.getPage(currentPage));
         //        }
 
-        propertiesCompound.setProperties(flatteWidgets);
+        propertiesCompound.setProperties(flattenWidgets);
 
-        Set<IWidget> newSet = new HashSet<>(flatteWidgets);
-        if (flatteWidgets.isEmpty()) {
+        final Set<IWidget> newSet;
+        if (flattenWidgets.isEmpty()) {
             newSet = new HashSet<>();
-            //newSet.add(formsDocument);
+        } else {
+            newSet = new HashSet<>(flattenWidgets);
         }
 
         javaScriptEditor.setScript(newSet);
@@ -465,7 +466,6 @@ public class VLFrame extends JFrame implements IMainFrame {
     public void setDockableVisible(
             final String dockableName,
             final boolean visible) {
-
         if (dockableName.equals("Toolbars")) {
             toolbarContainer.getToolBarPanelAt(BorderLayout.NORTH).setVisible(visible);
             toolbarContainer.getToolBarPanelAt(BorderLayout.SOUTH).setVisible(visible);
@@ -481,12 +481,12 @@ public class VLFrame extends JFrame implements IMainFrame {
         }
     }
 
-    private Set<IWidget> getFlatternedWidgets(final Set<IWidget> widgets) {
+    private Set<IWidget> getFlattenWidgets(final Set<IWidget> widgets) {
         final Set<IWidget> set = new HashSet<>();
 
         for (final IWidget widget : widgets) {
             if (widget.getType() == IWidget.GROUP) {
-                set.addAll(getFlatternedWidgets(new HashSet<>(widget.getWidgetsInGroup())));
+                set.addAll(getFlattenWidgets(new HashSet<>(widget.getWidgetsInGroup())));
             } else {
                 set.add(widget);
             }

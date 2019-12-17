@@ -20,8 +20,8 @@ class ZoomInCommand implements Command {
         if (mainFrame.getDesignerCompoundContent() == DesignerCompound.PREVIEW) {
             mainFrame.setCurrentSelectedScaling(round(scaling * 100));
 
-            final DesignerCompound desgnerCompound = mainFrame.getDesignerCompound();
-            desgnerCompound.previewZoom(scaling);
+            final DesignerCompound designerCompound = mainFrame.getDesignerCompound();
+            designerCompound.previewZoom(scaling);
         }
         //mainFrame.setScaling(mainFrame.getScaling() * scaling); @scale
     }

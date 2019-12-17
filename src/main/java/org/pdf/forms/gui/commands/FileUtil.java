@@ -1,13 +1,14 @@
 package org.pdf.forms.gui.commands;
 
-public class FileUtil {
+public final class FileUtil {
+
+    private static final int MAX_CHARS = 30;
 
     public static String getShortenedFileName(
             final String fileNameToAdd,
             final String fileSeparator) {
-        final int maxChars = 30;
 
-        if (fileNameToAdd.length() <= maxChars) {
+        if (fileNameToAdd.length() <= MAX_CHARS) {
             return fileNameToAdd;
         }
 
@@ -25,7 +26,7 @@ public class FileUtil {
             final int end = start + arrayedFilePath[i].length();
             builder.replace(start, end, "...");
 
-            if (builder.toString().length() <= maxChars) {
+            if (builder.toString().length() <= MAX_CHARS) {
                 break;
             }
         }

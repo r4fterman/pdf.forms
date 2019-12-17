@@ -34,6 +34,7 @@ package org.pdf.forms.utils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -97,7 +98,9 @@ public final class CustomWidgetsFile extends PropertiesFile {
     public boolean isNameTaken(final String name) {
         return XMLUtils.getElementsFromNodeList(getDoc().getElementsByTagName("custom_component")).stream()
                 .map(element -> XMLUtils.getAttributeFromChildElement(element, "name"))
-                .anyMatch(value -> value.equals(name));
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .anyMatch(text -> text.equals(name));
     }
 
     public void addCustomWidget(

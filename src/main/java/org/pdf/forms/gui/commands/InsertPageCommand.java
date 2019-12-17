@@ -13,10 +13,6 @@ class InsertPageCommand implements Command {
 
     @Override
     public void execute() {
-        insertPage();
-    }
-
-    private void insertPage() {
         final Page newPage = new Page("(page " + (mainFrame.getTotalNoOfPages() + 1) + ")", 595, 842);
         mainFrame.setCurrentPage(mainFrame.getCurrentPage() + 1);
 

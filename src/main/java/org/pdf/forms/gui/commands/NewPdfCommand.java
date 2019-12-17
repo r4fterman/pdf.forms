@@ -1,6 +1,6 @@
 package org.pdf.forms.gui.commands;
 
-import java.util.HashSet;
+import java.util.Set;
 
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
@@ -20,10 +20,6 @@ class NewPdfCommand implements Command {
 
     @Override
     public void execute() {
-        newPDF();
-    }
-
-    private void newPDF() {
         closePDF();
 
         mainFrame.setCurrentDesignerFileName("Untitled");
@@ -39,16 +35,16 @@ class NewPdfCommand implements Command {
         mainFrame.getDesigner().close();
         mainFrame.setCurrentDesignerFileName("");
         mainFrame.setTitle("PDF Forms Designer Version " + version);
-        mainFrame.setPropertiesCompound(new HashSet<>());
-        mainFrame.setPropertiesToolBar(new HashSet<>());
+        mainFrame.setPropertiesCompound(Set.of());
+        mainFrame.setPropertiesToolBar(Set.of());
         mainFrame.setPanelsState(false);
         mainFrame.setCurrentPage(0);
     }
 
     private void insertPage() {
-        final Page newPage = new Page("(page " + (mainFrame.getTotalNoOfPages() + 1) + ")", 595, 842);
-
         mainFrame.setCurrentPage(mainFrame.getCurrentPage() + 1);
+
+        final Page newPage = new Page("(page " + (mainFrame.getTotalNoOfPages() + 1) + ")", 595, 842);
         addPage(mainFrame.getCurrentPage(), newPage);
 
         mainFrame.displayPage(mainFrame.getCurrentPage());

@@ -17,10 +17,7 @@ class ShowAboutPanelCommand implements Command {
 
     @Override
     public void execute() {
-        about();
-    }
-
-    private void about() {
         JOptionPane.showMessageDialog((Component) mainFrame, new AboutPanel(), "About", JOptionPane.PLAIN_MESSAGE);
     }
+
 }

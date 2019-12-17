@@ -2,6 +2,7 @@ package org.pdf.forms.gui.commands;
 
 import java.awt.Component;
 import java.io.File;
+import java.util.Optional;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -32,27 +33,37 @@ class SaveDesignerFileAsCommand implements Command {
 
     @Override
     public void execute() {
-        saveDesignerFileAs();
-    }
-
-    private void saveDesignerFileAs() {
         final Document documentProperties = mainFrame.getFormsDocument().getDocumentProperties();
-        saveDesignerFileAs(documentProperties);
+        getSelectedDesignerFile().ifPresent(file -> saveDesignerFile(file, documentProperties));
     }
 
-    private void saveDesignerFileAs(final Document documentProperties) {
-        boolean finished = false;
-        while (!finished) {
-            final JFileChooser chooser = new JFileChooser();
-            chooser.addChoosableFileFilter(new DesFileFilter());
-            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    private void saveDesignerFile(
+            final File file,
+            final Document documentProperties) {
+        final String fileToSave = file.getAbsolutePath();
 
-            final int approved = chooser.showSaveDialog(null);
-            if (approved != JFileChooser.APPROVE_OPTION) {
-                return;
-            }
+        mainFrame.setCurrentDesignerFileName(fileToSave);
+        writeDesignerFile(documentProperties, file);
+        mainFrame.setTitle(fileToSave + " - PDF Forms Designer Version " + version);
+    }
 
-            final File file = getSelectedFile(chooser);
+    private void writeDesignerFile(
+            final Document documentProperties,
+            final File file) {
+        final String fileToSave = file.getAbsolutePath();
+        try {
+            final Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            //initialize StreamResult with File object to save to file
+            transformer.transform(new DOMSource(documentProperties), new StreamResult(fileToSave));
+        } catch (final TransformerException e) {
+            logger.error("Error writing xml to file {}", fileToSave, e);
+        }
+    }
+
+    private Optional<File> getSelectedDesignerFile() {
+        final Optional<File> designerFile = chooseDesignerFile().map(this::ensureDesignerFileExtension);
+        if (designerFile.isPresent()) {
+            final File file = designerFile.get();
             if (file.exists()) {
                 final int value = JOptionPane.showConfirmDialog(
                         (Component) mainFrame,
@@ -60,38 +71,29 @@ class SaveDesignerFileAsCommand implements Command {
                         "File already exists",
                         JOptionPane.YES_NO_OPTION);
                 if (value == JOptionPane.NO_OPTION) {
-                    continue;
+                    return getSelectedDesignerFile();
                 }
             }
-
-            final String fileToSave = file.getAbsolutePath();
-            mainFrame.setCurrentDesignerFileName(fileToSave);
-
-            writeXML(documentProperties, mainFrame.getCurrentDesignerFileName());
-
-            mainFrame.setTitle(fileToSave + " - PDF Forms Designer Version " + version);
-
-            finished = true;
+            return Optional.of(file);
         }
+        return Optional.empty();
     }
 
-    private File getSelectedFile(final JFileChooser chooser) {
-        final File file = chooser.getSelectedFile();
+    private Optional<File> chooseDesignerFile() {
+        final JFileChooser chooser = new JFileChooser();
+        chooser.addChoosableFileFilter(new DesFileFilter());
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        final int state = chooser.showSaveDialog(null);
+        if (state != JFileChooser.APPROVE_OPTION) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(chooser.getSelectedFile());
+    }
+
+    private File ensureDesignerFileExtension(final File file) {
         if (!file.getAbsolutePath().endsWith(".des")) {
             return new File(file.getAbsolutePath() + ".des");
         }
         return file;
-    }
-
-    private void writeXML(
-            final Document documentProperties,
-            final String fileName) {
-        try {
-            final Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            //initialize StreamResult with File object to save to file
-            transformer.transform(new DOMSource(documentProperties), new StreamResult(fileName));
-        } catch (final TransformerException e) {
-            logger.error("Error writing xml to file {}", fileName, e);
-        }
     }
 }

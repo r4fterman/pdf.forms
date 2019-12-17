@@ -26,18 +26,13 @@ class FontManagementCommand implements Command {
 
     @Override
     public void execute() {
-        fontManagement();
-    }
-
-    private void fontManagement() {
         final JDialog dialog = new JDialog((Frame) mainFrame, "Font Management", true);
-        final FontSelector fontSelector = new FontSelector(fontHandler, mainFrame, dialog, configuration);
-
-        dialog.add(fontSelector);
+        dialog.add(new FontSelector(fontHandler, mainFrame, dialog, configuration));
         dialog.pack();
         dialog.setLocationRelativeTo((Frame) mainFrame);
         dialog.setVisible(true);
 
         mainFrame.updateAvailiableFonts();
     }
+
 }
