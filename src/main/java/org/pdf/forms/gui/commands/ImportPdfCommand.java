@@ -87,14 +87,7 @@ public class ImportPdfCommand implements Command {
         }
 
         try {
-            final PdfDecoder pdfDecoder = new PdfDecoder();
-
-            if (pdfPath.startsWith("http:") || pdfPath.startsWith("file:")) {
-                pdfDecoder.openPdfFileFromURL(pdfPath);
-            } else {
-                pdfDecoder.openPdfFile(pdfPath);
-            }
-
+            final PdfDecoder pdfDecoder = getDecoder(pdfPath);
             final int pageCount = pdfDecoder.getPageCount();
 
             final ProgressMonitor progressDialog = new ProgressMonitor((Component) mainFrame, "", "", 0, pageCount);
@@ -226,14 +219,7 @@ public class ImportPdfCommand implements Command {
             final Page newPage,
             final List<IWidget> widgetsOnPage) {
         try {
-            final PdfDecoder decoder = new PdfDecoder();
-
-            if (pdfPath.startsWith("http:") || pdfPath.startsWith("file:")) {
-                decoder.openPdfFileFromURL(pdfPath);
-            } else {
-                decoder.openPdfFile(pdfPath);
-            }
-
+            final PdfDecoder decoder = getDecoder(pdfPath);
             decoder.decodePage(pdfPageNumber);
         } catch (final Exception e) {
             logger.error("Error decoding PDF page {} of file {}", pdfPageNumber, pdfPath, e);
@@ -256,6 +242,16 @@ public class ImportPdfCommand implements Command {
         //newPage.setWidgets(widgetsList);
 
         pdfDecoder.closePdfFile();
+    }
+
+    private PdfDecoder getDecoder(final String pdfPath) throws PdfException {
+        final PdfDecoder decoder = new PdfDecoder();
+        if (pdfPath.startsWith("http:") || pdfPath.startsWith("file:")) {
+            decoder.openPdfFileFromURL(pdfPath);
+        } else {
+            decoder.openPdfFile(pdfPath);
+        }
+        return decoder;
     }
 
     private void updateRecentDocuments(final String[] recentDocs) {

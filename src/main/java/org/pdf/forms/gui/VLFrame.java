@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
@@ -203,11 +204,11 @@ public class VLFrame extends JFrame implements IMainFrame {
             }
 
             @Override
-            public void dockingActionPerformed(final DockingActionEvent arg0) {
-                if (arg0.getActionType() == DockingActionEvent.ACTION_CLOSE) {
-                    final DockingActionCloseEvent closeAction = (DockingActionCloseEvent) arg0;
+            public void dockingActionPerformed(final DockingActionEvent event) {
+                if (event.getActionType() == DockingActionEvent.ACTION_CLOSE) {
+                    final DockingActionCloseEvent closeAction = (DockingActionCloseEvent) event;
                     final Dockable dockable = closeAction.getDockable();
-                    menuConfiguration.setDockableVisible(getNameFromDockable(dockable), false);  //@old
+                    menuConfiguration.setDockableVisible(getNameFromDockable(dockable).orElse(""), false);
                 }
             }
         });
@@ -273,14 +274,14 @@ public class VLFrame extends JFrame implements IMainFrame {
         getContentPane().add(toolbarContainer, BorderLayout.CENTER);
     }
 
-    private String getNameFromDockable(final Dockable name) {
-        for (final Object o : dockableNames.entrySet()) {
-            final Map.Entry entry = (Map.Entry) o;
+    private Optional<String> getNameFromDockable(final Dockable name) {
+        final Set<Map.Entry<String, Dockable>> entries = dockableNames.entrySet();
+        for (Map.Entry<String, Dockable> entry : entries) {
             if (name == entry.getValue()) {
-                return (String) entry.getKey();
+                return Optional.ofNullable(entry.getKey());
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override

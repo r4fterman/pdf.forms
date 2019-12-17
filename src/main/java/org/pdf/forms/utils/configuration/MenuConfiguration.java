@@ -28,24 +28,19 @@ import org.w3c.dom.NodeList;
 
 public class MenuConfiguration extends ConfigurationFile {
 
-    private final CommandListener commandListener;
-
     private final List<JMenuItem> closeItems = new ArrayList<>();
     private final List<JMenuItem> previewItems = new ArrayList<>();
+    private final List<JMenuItem> alignAndOrderMenuItems = new ArrayList<>();
+    private final List<JMenuItem> groupMenuItems = new ArrayList<>();
+    private final Map<String, JMenuItem> windowNames = new HashMap<>();
+
+    private final CommandListener commandListener;
+    private final IDesigner designer;
+    private final IMainFrame mainFrame;
+    private final JMenu[] menus;
 
     private JMenu recentDesignerFiles;
     private JMenu recentImportedFiles;
-
-    private final List<JMenuItem> alignAndOrderMenuItems = new ArrayList<>();
-    private final List<JMenuItem> groupMenuItems = new ArrayList<>();
-
-    private final Map<String, JMenuItem> windowNames = new HashMap<>();
-
-    private final IDesigner designer;
-
-    private final IMainFrame mainFrame;
-
-    private final JMenu[] menus;
 
     public MenuConfiguration(
             final CommandListener commandListener,
@@ -62,158 +57,169 @@ public class MenuConfiguration extends ConfigurationFile {
         menus = generateMenus();
     }
 
+    private JMenu[] generateMenus() {
+        final List<JMenu> menus = new ArrayList<>();
+
+        final NodeList nodeList = getDoc().getElementsByTagName("menu");
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            final Element menuElement = (Element) nodeList.item(i);
+            if (isElementVisible(menuElement)) {
+                final String menuName = menuElement.getAttribute("name");
+                final JMenu menu = new JMenu(menuName);
+                addItemsToMenu(menuElement, menu);
+                menus.add(menu);
+            }
+        }
+
+        return menus.toArray(new JMenu[0]);
+    }
+
     public JMenu[] getMenus() {
         return menus;
     }
 
     @Override
     protected void writeDefaultConfiguration() throws Exception {
-        final Document doc = XMLUtils.createNewDocument();
-        setDoc(doc);
+        final Document document = XMLUtils.createNewDocument();
 
-        final Element menuConfigurationElement = getDoc().createElement("menu_configuration");
-        getDoc().appendChild(menuConfigurationElement);
+        final Element menuConfigurationElement = document.createElement("menu_configuration");
+        document.appendChild(menuConfigurationElement);
 
-        writeDefaultFileMenuConfiguration(menuConfigurationElement);
-        writeDefaultInsertMenuConfiguration(menuConfigurationElement);
-        writeDefaultLayoutMenuConfiguration(menuConfigurationElement);
-        writeDefaultWindowMenuConfiguration(menuConfigurationElement);
-        writeDefaultHelpMenuConfiguration(menuConfigurationElement);
+        writeDefaultFileMenuConfiguration(menuConfigurationElement, document);
+        writeDefaultInsertMenuConfiguration(menuConfigurationElement, document);
+        writeDefaultLayoutMenuConfiguration(menuConfigurationElement, document);
+        writeDefaultWindowMenuConfiguration(menuConfigurationElement, document);
+        writeDefaultHelpMenuConfiguration(menuConfigurationElement, document);
+
+        setDoc(document);
     }
 
-    private void writeDefaultHelpMenuConfiguration(final Element menuConfigurationElement) {
-        final Element windowElement = getDoc().createElement("menu");
+    private void writeDefaultHelpMenuConfiguration(
+            final Element menuConfigurationElement,
+            final Document document) {
+        final Element windowElement = document.createElement("menu");
         windowElement.setAttribute("name", "Help");
         windowElement.setAttribute("visible", "true");
         menuConfigurationElement.appendChild(windowElement);
 
-        addItemToXMLTree(windowElement, "Visit Website", "WEBSITE");
-        addItemToXMLTree(windowElement, "About", "ABOUT");
+        addItemToXMLTree(windowElement, "Visit Website", "WEBSITE", document);
+        addItemToXMLTree(windowElement, "About", "ABOUT", document);
     }
 
-    private void writeDefaultWindowMenuConfiguration(final Element menuConfigurationElement) {
-        final Element windowElement = getDoc().createElement("menu");
+    private void writeDefaultWindowMenuConfiguration(
+            final Element menuConfigurationElement,
+            final Document document) {
+        final Element windowElement = document.createElement("menu");
         windowElement.setAttribute("name", "Window");
         windowElement.setAttribute("visible", "true");
         menuConfigurationElement.appendChild(windowElement);
 
-        addItemToXMLTree(windowElement, "Toolbars", "TOOLBARS");
-        addItemToXMLTree(windowElement, "Script Editor", "SCRIPT_EDITOR");
-        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR");
-        addItemToXMLTree(windowElement, "Hierarchy", "HIERARCHY");
-        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR");
-        addItemToXMLTree(windowElement, "Library", "LIBRARY");
-        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR");
-        addItemToXMLTree(windowElement, "Properties", "PROPERTIES");
-        addItemToXMLTree(windowElement, "Layout", "LAYOUT");
-        addItemToXMLTree(windowElement, "Border", "BORDER");
-        addItemToXMLTree(windowElement, "Object", "OBJECT");
-        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR");
-        addItemToXMLTree(windowElement, "Font", "FONT");
-        addItemToXMLTree(windowElement, "Paragraph", "PARAGRAPH");
+        addItemToXMLTree(windowElement, "Toolbars", "TOOLBARS", document);
+        addItemToXMLTree(windowElement, "Script Editor", "SCRIPT_EDITOR", document);
+        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR", document);
+        addItemToXMLTree(windowElement, "Hierarchy", "HIERARCHY", document);
+        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR", document);
+        addItemToXMLTree(windowElement, "Library", "LIBRARY", document);
+        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR", document);
+        addItemToXMLTree(windowElement, "Properties", "PROPERTIES", document);
+        addItemToXMLTree(windowElement, "Layout", "LAYOUT", document);
+        addItemToXMLTree(windowElement, "Border", "BORDER", document);
+        addItemToXMLTree(windowElement, "Object", "OBJECT", document);
+        addItemToXMLTree(windowElement, "Seperator", "SEPERATOR", document);
+        addItemToXMLTree(windowElement, "Font", "FONT", document);
+        addItemToXMLTree(windowElement, "Paragraph", "PARAGRAPH", document);
     }
 
-    private void writeDefaultLayoutMenuConfiguration(final Element menuConfigurationElement) {
-        final Element layoutElement = getDoc().createElement("menu");
+    private void writeDefaultLayoutMenuConfiguration(
+            final Element menuConfigurationElement,
+            final Document document) {
+        final Element layoutElement = document.createElement("menu");
         layoutElement.setAttribute("name", "Layout");
         layoutElement.setAttribute("visible", "true");
         menuConfigurationElement.appendChild(layoutElement);
 
-        addItemToXMLTree(layoutElement, "Align", "ALIGN");
-        addItemToXMLTree(layoutElement, "Seperator", "SEPERATOR");
-        addItemToXMLTree(layoutElement, "Group", "GROUP");
-        addItemToXMLTree(layoutElement, "Ungroup", "UNGROUP");
-        addItemToXMLTree(layoutElement, "Seperator", "SEPERATOR");
-        addItemToXMLTree(layoutElement, "Bring to Front", "BRING_TO_FRONT");
-        addItemToXMLTree(layoutElement, "Send to Back", "SEND_TO_BACK");
-        addItemToXMLTree(layoutElement, "Bring Forwards", "BRING_FORWARDS");
-        addItemToXMLTree(layoutElement, "Send Backwards", "SEND_BACKWARDS");
+        addItemToXMLTree(layoutElement, "Align", "ALIGN", document);
+        addItemToXMLTree(layoutElement, "Seperator", "SEPERATOR", document);
+        addItemToXMLTree(layoutElement, "Group", "GROUP", document);
+        addItemToXMLTree(layoutElement, "Ungroup", "UNGROUP", document);
+        addItemToXMLTree(layoutElement, "Seperator", "SEPERATOR", document);
+        addItemToXMLTree(layoutElement, "Bring to Front", "BRING_TO_FRONT", document);
+        addItemToXMLTree(layoutElement, "Send to Back", "SEND_TO_BACK", document);
+        addItemToXMLTree(layoutElement, "Bring Forwards", "BRING_FORWARDS", document);
+        addItemToXMLTree(layoutElement, "Send Backwards", "SEND_BACKWARDS", document);
     }
 
-    private void writeDefaultInsertMenuConfiguration(final Element menuConfigurationElement) {
-        final Element insertElement = getDoc().createElement("menu");
+    private void writeDefaultInsertMenuConfiguration(
+            final Element menuConfigurationElement,
+            final Document document) {
+        final Element insertElement = document.createElement("menu");
         insertElement.setAttribute("name", "Insert");
         insertElement.setAttribute("visible", "true");
         menuConfigurationElement.appendChild(insertElement);
 
-        addItemToXMLTree(insertElement, "Insert Page", "INSERT_PAGE");
-        addItemToXMLTree(insertElement, "Remove Page", "REMOVE_PAGE");
+        addItemToXMLTree(insertElement, "Insert Page", "INSERT_PAGE", document);
+        addItemToXMLTree(insertElement, "Remove Page", "REMOVE_PAGE", document);
     }
 
-    private void writeDefaultFileMenuConfiguration(final Element menuConfigurationElement) {
-        final Element fileElement = getDoc().createElement("menu");
+    private void writeDefaultFileMenuConfiguration(
+            final Element menuConfigurationElement,
+            final Document document) {
+        final Element fileElement = document.createElement("menu");
         fileElement.setAttribute("name", "File");
         fileElement.setAttribute("visible", "true");
         menuConfigurationElement.appendChild(fileElement);
 
-        addItemToXMLTree(fileElement, "New", "NEW");
-        addItemToXMLTree(fileElement, "Open Designer File", "OPEN");
-        addItemToXMLTree(fileElement, "Recently Designer Files", "RECENT_OPEN");
-        addItemToXMLTree(fileElement, "Close", "CLOSE");
-        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR");
-        addItemToXMLTree(fileElement, "Import PDF Document", "IMPORT");
-        addItemToXMLTree(fileElement, "Recently Imported PDF Documents", "RECENT_IMPORT");
-        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR");
-        addItemToXMLTree(fileElement, "Save Designer File", "SAVE_FILE");
-        addItemToXMLTree(fileElement, "Save Designer File As", "SAVE_FILE_AS");
-        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR");
-        addItemToXMLTree(fileElement, "Publish PDF Document", "PUBLISH");
-        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR");
-        addItemToXMLTree(fileElement, "Font Management", "FONT_MANAGEMENT");
-        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR");
-        addItemToXMLTree(fileElement, "Exit", "EXIT");
+        addItemToXMLTree(fileElement, "New", "NEW", document);
+        addItemToXMLTree(fileElement, "Open Designer File", "OPEN", document);
+        addItemToXMLTree(fileElement, "Recently Designer Files", "RECENT_OPEN", document);
+        addItemToXMLTree(fileElement, "Close", "CLOSE", document);
+        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR", document);
+        addItemToXMLTree(fileElement, "Import PDF Document", "IMPORT", document);
+        addItemToXMLTree(fileElement, "Recently Imported PDF Documents", "RECENT_IMPORT", document);
+        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR", document);
+        addItemToXMLTree(fileElement, "Save Designer File", "SAVE_FILE", document);
+        addItemToXMLTree(fileElement, "Save Designer File As", "SAVE_FILE_AS", document);
+        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR", document);
+        addItemToXMLTree(fileElement, "Publish PDF Document", "PUBLISH", document);
+        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR", document);
+        addItemToXMLTree(fileElement, "Font Management", "FONT_MANAGEMENT", document);
+        addItemToXMLTree(fileElement, "Seperator", "SEPERATOR", document);
+        addItemToXMLTree(fileElement, "Exit", "EXIT", document);
     }
 
     private void addItemToXMLTree(
             final Element element,
             final String name,
-            final String command) {
-        final Element item = getDoc().createElement("item");
+            final String command,
+            final Document document) {
+        final Element item = document.createElement("item");
         item.setAttribute("name", name);
         item.setAttribute("visible", "true");
         item.setAttribute("command", command);
         element.appendChild(item);
     }
 
-    private JMenu[] generateMenus() {
-        final NodeList nl = getDoc().getElementsByTagName("menu");
-
-        final List<JMenu> menus = new ArrayList<>();
-        for (int i = 0; i < nl.getLength(); i++) {
-            final Element menuElement = (Element) nl.item(i);
-
-            String visible = menuElement.getAttribute("visible");
-            boolean isVisible = visible.toLowerCase().equals("true");
-            if (!isVisible) {
-                continue;
-            }
-
-            final String menuName = menuElement.getAttribute("name");
-            final JMenu menu = new JMenu(menuName);
-
-            final NodeList menuItems = menuElement.getElementsByTagName("item");
-            for (int j = 0; j < menuItems.getLength(); j++) {
-                final Element itemElement = (Element) menuItems.item(j);
-
-                visible = itemElement.getAttribute("visible");
-                isVisible = visible.toLowerCase().equals("true");
-                if (!isVisible) {
-                    continue;
-                }
-
+    private void addItemsToMenu(
+            final Element menuElement,
+            final JMenu menu) {
+        final NodeList menuItems = menuElement.getElementsByTagName("item");
+        for (int i = 0; i < menuItems.getLength(); i++) {
+            final Element itemElement = (Element) menuItems.item(i);
+            if (isElementVisible(itemElement)) {
                 final String itemName = itemElement.getAttribute("name");
                 if (itemName.equals("Seperator")) {
                     menu.add(new JSeparator());
                 } else {
                     final String command = itemElement.getAttribute("command");
-                    //System.out.println("Adding "+itemName+" command ="+ command);
                     addMenuItemMain(itemName, command.hashCode(), menu);
                 }
             }
-            menus.add(menu);
         }
+    }
 
-        return menus.toArray(new JMenu[0]);
+    private boolean isElementVisible(final Element element) {
+        final String visible = element.getAttribute("visible");
+        return visible.toLowerCase().equals("true");
     }
 
     private JMenuItem addBasicMenuItem(
@@ -276,7 +282,6 @@ public class MenuConfiguration extends ConfigurationFile {
             final int command,
             final JMenu menu) {
         switch (command) {
-
             case Commands.NEW:
                 previewItems.add(addBasicMenuItem(name, command, menu));
                 break;
@@ -419,7 +424,7 @@ public class MenuConfiguration extends ConfigurationFile {
         return recentImportedFiles;
     }
 
-    public void setProperties(final Set widgets) {
+    public void setProperties(final Set<IWidget> widgets) {
         if (widgets.isEmpty()) {
             setItemsEnabled(false);
             groupMenuItems.get(0).setEnabled(false);
@@ -427,7 +432,7 @@ public class MenuConfiguration extends ConfigurationFile {
         } else {
             setItemsEnabled(true);
 
-            if (widgets.size() == 1 && ((IWidget) widgets.iterator().next()).getType() == IWidget.GROUP) {
+            if (widgets.size() == 1 && widgets.iterator().next().getType() == IWidget.GROUP) {
                 groupMenuItems.get(0).setEnabled(false);
                 groupMenuItems.get(1).setEnabled(true);
             } else if (widgets.size() > 1) {

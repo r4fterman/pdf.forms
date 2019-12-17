@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toUnmodifiableSet;
 
 import java.awt.Component;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.Configuration;
 import org.pdf.forms.document.FormsDocument;
@@ -28,8 +30,8 @@ import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 public class OpenDesignerFileCommand implements Command {
 
@@ -78,16 +80,22 @@ public class OpenDesignerFileCommand implements Command {
 
         mainFrame.setCurrentDesignerFileName(designerFileToOpen);
 
+        readDesignerFile(designerFileToOpen);
+
+        mainFrame.setCurrentPage(1);
+        mainFrame.displayPage(mainFrame.getCurrentPage());
+        mainFrame.setTotalNoOfDisplayedPages(mainFrame.getTotalNoOfPages());
+        mainFrame.setTitle(mainFrame.getCurrentDesignerFileName() + " - PDF Forms Designer Version " + version);
+
+        final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory());
+        properties.addRecentDocument(designerFileToOpen, "recentdesfiles");
+        updateRecentDocuments(properties.getRecentDocuments("recentdesfiles"));
+    }
+
+    private void readDesignerFile(final String designerFileToOpen) {
         try {
             final String fileName = mainFrame.getCurrentDesignerFileName();
-            final Document designerDocumentProperties;
-            if (fileName.startsWith("http:") || fileName.startsWith("file:")) {
-                designerDocumentProperties = XMLUtils.readDocumentFromUri(fileName);
-            } else {
-                designerDocumentProperties = XMLUtils.readDocument(new File(fileName));
-            }
-
-            final Element root = designerDocumentProperties.getDocumentElement();
+            final Element root = readDesignerDocument(fileName);
 
             mainFrame.setFormsDocument(new FormsDocument(root));
 
@@ -117,10 +125,7 @@ public class OpenDesignerFileCommand implements Command {
                     newPage = new Page(pageName.get(), width, height);
                 }
 
-                /* add radio button groups to page */
                 addButtonGroupsToPage(page, newPage, IWidget.RADIO_BUTTON);
-
-                /* add check box groups to page */
                 addButtonGroupsToPage(page, newPage, IWidget.CHECK_BOX);
 
                 mainFrame.setCurrentPage(mainFrame.getCurrentPage() + 1);
@@ -128,25 +133,21 @@ public class OpenDesignerFileCommand implements Command {
                 addPage(mainFrame.getCurrentPage(), newPage);
 
                 final List<IWidget> widgets = getWidgetsFromXMLElement(page);
-
                 for (final IWidget widget : widgets) {
                     mainFrame.addWidgetToHierarchy(widget);
                 }
-
                 newPage.setWidgets(widgets);
             }
         } catch (final Exception e) {
             logger.error("Error opening designer file {}", designerFileToOpen, e);
         }
+    }
 
-        mainFrame.setCurrentPage(1);
-        mainFrame.displayPage(mainFrame.getCurrentPage());
-        mainFrame.setTotalNoOfDisplayedPages(mainFrame.getTotalNoOfPages());
-        mainFrame.setTitle(mainFrame.getCurrentDesignerFileName() + " - PDF Forms Designer Version " + version);
-
-        final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory());
-        properties.addRecentDocument(designerFileToOpen, "recentdesfiles");
-        updateRecentDocuments(properties.getRecentDocuments("recentdesfiles"));
+    private Element readDesignerDocument(final String fileName) throws ParserConfigurationException, IOException, SAXException {
+        if (fileName.startsWith("http:") || fileName.startsWith("file:")) {
+            return XMLUtils.readDocumentFromUri(fileName).getDocumentElement();
+        }
+        return XMLUtils.readDocument(new File(fileName)).getDocumentElement();
     }
 
     private void closePDF() {
@@ -252,21 +253,23 @@ public class OpenDesignerFileCommand implements Command {
         for (final Element widgetElement : widgetsInPageList) {
             XMLUtils.getAttributeFromChildElement(widgetElement, "type")
                     .map(type -> IWidget.WIDGET_TYPES.getOrDefault(type.toLowerCase(), IWidget.NONE))
-                    .map(widgetType -> {
-                        final IWidget widget;
-                        // TODO: move to WidgetFactory
-                        if (widgetType == IWidget.GROUP) {
-                            widget = new GroupWidget();
-                            final List<IWidget> widgetsInGroup = getWidgetsFromXMLElement(XMLUtils.getElementsFromNodeList(widgetElement.getElementsByTagName("widgets")).get(0));
-                            widget.setWidgetsInGroup(widgetsInGroup);
-                        } else {
-                            widget = widgetFactory.createWidget(widgetType, widgetElement);
-                        }
-                        return widget;
-                    })
+                    .map(widgetType -> createWidgetByType(widgetElement, widgetType))
                     .ifPresent(widgets::add);
         }
         return widgets;
+    }
+
+    private IWidget createWidgetByType(
+            final Element widgetElement,
+            final Integer widgetType) {
+        // TODO: move to WidgetFactory
+        if (widgetType == IWidget.GROUP) {
+            final GroupWidget widget = new GroupWidget();
+            final List<IWidget> widgetsInGroup = getWidgetsFromXMLElement(XMLUtils.getElementsFromNodeList(widgetElement.getElementsByTagName("widgets")).get(0));
+            widget.setWidgetsInGroup(widgetsInGroup);
+            return widget;
+        }
+        return widgetFactory.createWidget(widgetType, widgetElement);
     }
 
     private void addPage(
