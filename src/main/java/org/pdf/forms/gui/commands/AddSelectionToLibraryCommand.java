@@ -18,7 +18,6 @@ class AddSelectionToLibraryCommand implements Command {
             final Configuration configuration) {
         this.mainFrame = mainFrame;
         this.customWidgetsFile = CustomWidgetsFile.getInstance(configuration.getConfigDirectory());
-
     }
 
     @Override

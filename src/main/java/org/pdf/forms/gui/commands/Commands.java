@@ -81,6 +81,7 @@ public class Commands {
             entry("SCRIPT_EDITOR", SCRIPT_EDITOR),
             entry("HIERARCHY", HIERARCHY),
             entry("LIBRARY", LIBRARY),
+            entry("PROPERTIES", PROPERTIES),
             entry("LAYOUT", LAYOUT),
             entry("BORDER", BORDER),
             entry("OBJECT", OBJECT),
