@@ -11,49 +11,93 @@ import org.pdf.forms.widgets.utils.WidgetFactory;
 
 public class Commands {
 
-    public static final int NEW = 77184;
-    public static final int OPEN = 2432586;
-    public static final int RECENT_OPEN = 159636910;
-    public static final int CLOSE = 64218584;
-    public static final int IMPORT = -2131466331;
-    public static final int RECENT_IMPORT = -1381966327;
-    public static final int SAVE_FILE = -1295101186;
-    public static final int SAVE_FILE_AS = -668118765;
-    public static final int PUBLISH = 482617583;
-    public static final int FONT_MANAGEMENT = 1780825651;
-    public static final int EXIT = 2142494;
-
-    public static final int INSERT_PAGE = 2079238229;
-    public static final int REMOVE_PAGE = 1888835946;
-
-    public static final int ALIGN = 62365413;
-    public static final int GROUP = 68091487;
-    public static final int UNGROUP = 429566822;
-    public static final int BRING_TO_FRONT = 88902514;
-    public static final int SEND_TO_BACK = -452041100;
-    public static final int BRING_FORWARDS = 1102378619;
-    public static final int SEND_BACKWARDS = 122730713;
-
-    public static final int TOOLBARS = -200551336;
-    public static final int SCRIPT_EDITOR = 947938145;
-    public static final int HIERARCHY = 606773781;
-    public static final int LIBRARY = 884191387;
-    public static final int PROPERTIES = -440960717;
-    public static final int LAYOUT = -2056392918;
-    public static final int BORDER = 1964992556;
-    public static final int OBJECT = -1970038977;
-    public static final int FONT = 2163791;
-    public static final int PARAGRAPH = 440916302;
-
-    public static final int WEBSITE = 1942318203;
-    public static final int ABOUT = 62073709;
-
-    public static final int ZOOM_IN = 2759635;
-    public static final int ZOOM = 608001297;
-    public static final int ZOOM_OUT = 1668177090;
-    public static final int ADD_SELECTION_TO_LIBRARY = 1778177090;
-    public static final int BUG_REPORT = 1888177090;
     public static final int NONE = 0;
+
+    public static final int NEW = 1;
+    public static final int OPEN = 2;
+    public static final int RECENT_OPEN = 3;
+    public static final int CLOSE = 4;
+    public static final int IMPORT = 5;
+    public static final int RECENT_IMPORT = 6;
+    public static final int SAVE_FILE = 7;
+    public static final int SAVE_FILE_AS = 8;
+    public static final int PUBLISH = 9;
+    public static final int FONT_MANAGEMENT = 10;
+    public static final int EXIT = 11;
+
+    public static final int INSERT_PAGE = 12;
+    public static final int REMOVE_PAGE = 13;
+
+    public static final int ALIGN = 14;
+    public static final int GROUP = 15;
+    public static final int UNGROUP = 16;
+    public static final int BRING_TO_FRONT = 17;
+    public static final int SEND_TO_BACK = 18;
+    public static final int BRING_FORWARDS = 19;
+    public static final int SEND_BACKWARDS = 20;
+
+    public static final int TOOLBARS = 21;
+    public static final int SCRIPT_EDITOR = 22;
+    public static final int HIERARCHY = 23;
+    public static final int LIBRARY = 24;
+    public static final int PROPERTIES = 25;
+    public static final int LAYOUT = 26;
+    public static final int BORDER = 27;
+    public static final int OBJECT = 28;
+    public static final int FONT = 29;
+    public static final int PARAGRAPH = 30;
+
+    public static final int WEBSITE = 31;
+    public static final int ABOUT = 32;
+
+    public static final int ZOOM_IN = 33;
+    public static final int ZOOM = 34;
+    public static final int ZOOM_OUT = 35;
+    public static final int ADD_SELECTION_TO_LIBRARY = 36;
+    public static final int BUG_REPORT = 37;
+
+    private static final Map<String, Integer> COMMAND_LOOKUP = Map.ofEntries(
+            entry("NEW", NEW),
+            entry("OPEN", OPEN),
+            entry("RECENT_OPEN", RECENT_OPEN),
+            entry("CLOSE", CLOSE),
+            entry("IMPORT", IMPORT),
+            entry("RECENT_IMPORT", RECENT_IMPORT),
+            entry("SAVE_FILE", SAVE_FILE),
+            entry("SAVE_FILE_AS", SAVE_FILE_AS),
+            entry("PUBLISH", PUBLISH),
+            entry("FONT_MANAGEMENT", FONT_MANAGEMENT),
+            entry("EXIT", EXIT),
+            entry("INSERT_PAGE", INSERT_PAGE),
+            entry("REMOVE_PAGE", REMOVE_PAGE),
+            entry("ALIGN", ALIGN),
+            entry("GROUP", GROUP),
+            entry("UNGROUP", UNGROUP),
+            entry("BRING_TO_FRONT", BRING_TO_FRONT),
+            entry("SEND_TO_BACK", SEND_TO_BACK),
+            entry("BRING_FORWARDS", BRING_FORWARDS),
+            entry("SEND_BACKWARDS", SEND_BACKWARDS),
+            entry("TOOLBARS", TOOLBARS),
+            entry("SCRIPT_EDITOR", SCRIPT_EDITOR),
+            entry("HIERARCHY", HIERARCHY),
+            entry("LIBRARY", LIBRARY),
+            entry("LAYOUT", LAYOUT),
+            entry("BORDER", BORDER),
+            entry("OBJECT", OBJECT),
+            entry("FONT", FONT),
+            entry("PARAGRAPH", PARAGRAPH),
+            entry("WEBSITE", WEBSITE),
+            entry("ABOUT", ABOUT),
+            entry("ZOOM_IN", ZOOM_IN),
+            entry("ZOOM_OUT", ZOOM_OUT),
+            entry("ZOOM", ZOOM),
+            entry("ADD_SELECTION_TO_LIBRARY", ADD_SELECTION_TO_LIBRARY),
+            entry("BUG_REPORT", BUG_REPORT)
+    );
+
+    public static int fromValue(final String command) {
+        return COMMAND_LOOKUP.getOrDefault(command, NONE);
+    }
 
     private final Map<Integer, Command> commandMap;
 

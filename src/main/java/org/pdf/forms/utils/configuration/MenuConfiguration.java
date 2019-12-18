@@ -211,7 +211,7 @@ public class MenuConfiguration extends ConfigurationFile {
                     menu.add(new JSeparator());
                 } else {
                     final String command = itemElement.getAttribute("command");
-                    addMenuItemMain(itemName, command.hashCode(), menu);
+                    addMenuItemMain(itemName, Commands.fromValue(command), menu);
                 }
             }
         }
