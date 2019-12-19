@@ -83,8 +83,8 @@ import org.pdf.forms.gui.toolbars.WidgetAlignmentAndOrderToolbar;
 import org.pdf.forms.gui.toolbars.WidgetPropertiesToolBar;
 import org.pdf.forms.gui.windows.SplashWindow;
 import org.pdf.forms.utils.DesignerPropertiesFile;
-import org.pdf.forms.utils.configuration.MenuConfiguration;
-import org.pdf.forms.utils.configuration.WindowConfiguration;
+import org.pdf.forms.utils.configuration.MenuConfigurationFile;
+import org.pdf.forms.utils.configuration.WindowConfigurationFile;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetArrays;
 import org.pdf.forms.widgets.utils.WidgetFactory;
@@ -123,8 +123,8 @@ public class VLFrame extends JFrame implements IMainFrame {
     private final WidgetPropertiesToolBar propertiesToolBar;
     private final WidgetAlignmentAndOrderToolbar widgetAlignmentAndOrderToolbar;
     private final WidgetArrays widgetArrays = new WidgetArrays();
-    private final MenuConfiguration menuConfiguration;
-    private final WindowConfiguration windowConfiguration;
+    private final MenuConfigurationFile menuConfigurationFile;
+    private final WindowConfigurationFile windowConfigurationFile;
 
     // the desktop (which will contain dockables)
     private final DockingDesktop desk = new DockingDesktop();
@@ -189,8 +189,8 @@ public class VLFrame extends JFrame implements IMainFrame {
 
         final File configDir = new File(configuration.getConfigDirectory(), "configuration");
 
-        menuConfiguration = new MenuConfiguration(commandListener, designer, this, configDir, configuration);
-        windowConfiguration = new WindowConfiguration(configDir, configuration);
+        menuConfigurationFile = new MenuConfigurationFile(commandListener, designer, this, configDir, configuration);
+        windowConfigurationFile = new WindowConfigurationFile(configDir, configuration);
 
         libraryPanel = new LibraryPanel(designer, widgetFactory);
         hierarchyPanel = new HierarchyPanel(designer);
@@ -208,7 +208,7 @@ public class VLFrame extends JFrame implements IMainFrame {
                 if (event.getActionType() == DockingActionEvent.ACTION_CLOSE) {
                     final DockingActionCloseEvent closeAction = (DockingActionCloseEvent) event;
                     final Dockable dockable = closeAction.getDockable();
-                    menuConfiguration.setDockableVisible(getNameFromDockable(dockable).orElse(""), false);
+                    menuConfigurationFile.setDockableVisible(getNameFromDockable(dockable).orElse(""), false);
                 }
             }
         });
@@ -364,7 +364,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         javaScriptEditor.setState(state);
         documentToolBar.setSaveState(state);
         documentToolBar.setState(state);
-        menuConfiguration.setState(state);
+        menuConfigurationFile.setState(state);
         designerCompound.setState(true);
     }
 
@@ -379,7 +379,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         libraryPanel.setState(state);
         designerCompound.setState(state);
         javaScriptEditor.setState(state);
-        menuConfiguration.setState(state);
+        menuConfigurationFile.setState(state);
         documentToolBar.setSaveState(state);
 
         designer.getWidgetSelection().hideGroupingButtons();
@@ -423,7 +423,7 @@ public class VLFrame extends JFrame implements IMainFrame {
 
     @Override
     public void setPropertiesToolBar(final Set<IWidget> widgets) {
-        menuConfiguration.setProperties(widgets);
+        menuConfigurationFile.setProperties(widgets);
 
         final Set<IWidget> flattenWidgets = getFlattenWidgets(widgets);
 
@@ -499,13 +499,13 @@ public class VLFrame extends JFrame implements IMainFrame {
     private void setupMenuBar() {
         final JMenuBar menubar = new JMenuBar();
 
-        final JMenu[] menus = menuConfiguration.getMenus();
+        final JMenu[] menus = menuConfigurationFile.getMenus();
         for (final JMenu menu : menus) {
             menubar.add(menu);
         }
 
-        recentDocumentsOption("recentdesfiles", menuConfiguration.getRecentDesignerFilesMenu());
-        recentDocumentsOption("recentpdffiles", menuConfiguration.getRecentImportedFilesMenu());
+        recentDocumentsOption("recentdesfiles", menuConfigurationFile.getRecentDesignerFilesMenu());
+        recentDocumentsOption("recentpdffiles", menuConfigurationFile.getRecentImportedFilesMenu());
 
         setJMenuBar(menubar);
     }
@@ -579,19 +579,19 @@ public class VLFrame extends JFrame implements IMainFrame {
         // set the initial dockable
         desk.addDockable(designerCompound);
 
-        if (windowConfiguration.isWindowVisible(WindowConfiguration.SCRIPT_EDITOR)) {
+        if (windowConfigurationFile.isWindowVisible(WindowConfigurationFile.SCRIPT_EDITOR)) {
             desk.split(designerCompound, javaScriptEditor, DockingConstants.SPLIT_TOP);
         }
 
-        if (windowConfiguration.isWindowVisible(WindowConfiguration.HIERARCHY)) {
+        if (windowConfigurationFile.isWindowVisible(WindowConfigurationFile.HIERARCHY)) {
             desk.split(designerCompound, hierarchyPanel, DockingConstants.SPLIT_LEFT);
         }
 
-        if (windowConfiguration.isWindowVisible(WindowConfiguration.LIBRARY)) {
+        if (windowConfigurationFile.isWindowVisible(WindowConfigurationFile.LIBRARY)) {
             desk.split(designerCompound, libraryPanel, DockingConstants.SPLIT_RIGHT);
         }
 
-        if (windowConfiguration.isWindowVisible(WindowConfiguration.PROPERTIES)) {
+        if (windowConfigurationFile.isWindowVisible(WindowConfigurationFile.PROPERTIES)) {
             desk.split(libraryPanel, propertiesCompound, DockingConstants.SPLIT_BOTTOM);
         }
 

@@ -8,14 +8,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class WindowConfiguration extends ConfigurationFile {
+public class WindowConfigurationFile extends ConfigurationFile {
 
     public static final String PROPERTIES = "PROPERTIES";
     public static final String LIBRARY = "LIBRARY";
     public static final String HIERARCHY = "HIERARCHY";
     public static final String SCRIPT_EDITOR = "SCRIPT_EDITOR";
 
-    public WindowConfiguration(
+    public WindowConfigurationFile(
             final File configDir,
             final Configuration configuration) {
         super(new File(configDir, "windows.xml"), configuration);
@@ -29,12 +29,16 @@ public class WindowConfiguration extends ConfigurationFile {
             final Element element = (Element) windowElements.item(i);
             final String command = element.getAttribute("command");
             if (command.equals(windowCommand)) {
-                final String visible = element.getAttribute("visible");
-                return visible.toLowerCase().equals("true");
+                return isElementVisible(element);
             }
         }
 
         return false;
+    }
+
+    private boolean isElementVisible(final Element element) {
+        final String visible = element.getAttribute("visible");
+        return visible.toLowerCase().equals("true");
     }
 
     @Override

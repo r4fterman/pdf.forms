@@ -18,7 +18,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.pdf.forms.Configuration;
 import org.w3c.dom.Document;
 
-class WindowConfigurationTest {
+class WindowConfigurationFileTest {
 
     private static final String DEFAULT_WINDOW_CONFIGURATION = ""
             + "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>"
@@ -38,28 +38,28 @@ class WindowConfigurationTest {
 
     @Test
     void isWindowVisible_should_return_true_on_new_created_properties_file_for_known_command(@TempDir final Path configDir) {
-        final WindowConfiguration windowConfiguration = new WindowConfiguration(configDir.toFile(), configuration);
+        final WindowConfigurationFile windowConfigurationFile = new WindowConfigurationFile(configDir.toFile(), configuration);
 
-        assertThat(windowConfiguration.isWindowVisible(WindowConfiguration.SCRIPT_EDITOR), is(true));
-        assertThat(windowConfiguration.isWindowVisible(WindowConfiguration.PROPERTIES), is(true));
-        assertThat(windowConfiguration.isWindowVisible(WindowConfiguration.LIBRARY), is(true));
-        assertThat(windowConfiguration.isWindowVisible(WindowConfiguration.HIERARCHY), is(true));
+        assertThat(windowConfigurationFile.isWindowVisible(WindowConfigurationFile.SCRIPT_EDITOR), is(true));
+        assertThat(windowConfigurationFile.isWindowVisible(WindowConfigurationFile.PROPERTIES), is(true));
+        assertThat(windowConfigurationFile.isWindowVisible(WindowConfigurationFile.LIBRARY), is(true));
+        assertThat(windowConfigurationFile.isWindowVisible(WindowConfigurationFile.HIERARCHY), is(true));
     }
 
     @Test
     void isWindowVisible_should_return_false_on_new_created_properties_file_for_unknown_command(@TempDir final Path configDir) {
-        final WindowConfiguration windowConfiguration = new WindowConfiguration(configDir.toFile(), configuration);
+        final WindowConfigurationFile windowConfigurationFile = new WindowConfigurationFile(configDir.toFile(), configuration);
 
-        assertThat(windowConfiguration.isWindowVisible("unknown"), is(false));
+        assertThat(windowConfigurationFile.isWindowVisible("unknown"), is(false));
     }
 
     @Test
     void writeDefaultConfiguration(@TempDir final Path configDir) throws Exception {
-        final WindowConfiguration windowConfiguration = new WindowConfiguration(configDir.toFile(), configuration);
+        final WindowConfigurationFile windowConfigurationFile = new WindowConfigurationFile(configDir.toFile(), configuration);
 
-        windowConfiguration.writeDefaultConfiguration();
+        windowConfigurationFile.writeDefaultConfiguration();
 
-        final Document document = windowConfiguration.getDoc();
+        final Document document = windowConfigurationFile.getDoc();
         assertThat(serialize(document), is(DEFAULT_WINDOW_CONFIGURATION));
     }
 

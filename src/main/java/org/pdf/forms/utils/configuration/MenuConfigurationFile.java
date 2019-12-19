@@ -26,7 +26,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class MenuConfiguration extends ConfigurationFile {
+public class MenuConfigurationFile extends ConfigurationFile {
 
     private final List<JMenuItem> closeItems = new ArrayList<>();
     private final List<JMenuItem> previewItems = new ArrayList<>();
@@ -42,7 +42,7 @@ public class MenuConfiguration extends ConfigurationFile {
     private JMenu recentDesignerFiles;
     private JMenu recentImportedFiles;
 
-    public MenuConfiguration(
+    public MenuConfigurationFile(
             final CommandListener commandListener,
             final IDesigner designer,
             final IMainFrame mainFrame,
@@ -222,59 +222,46 @@ public class MenuConfiguration extends ConfigurationFile {
         return visible.toLowerCase().equals("true");
     }
 
-    private JMenuItem addBasicMenuItem(
-            final String text,
-            final int command,
-            final JMenu menu) {
-        final SwingMenuItem item = new SwingMenuItem(text);
-        item.setID(command);
-        item.addActionListener(commandListener);
-        menu.add(item);
-
-        return item;
+    private JMenu createMenu(final String text) {
+        return new JMenu(text);
     }
 
-    private JMenu addRecentFilesMenu(
-            final String text,
-            final JMenu menu) {
-        final JMenu item = new JMenu(text);
-        menu.add(item);
-        return item;
-    }
-
-    private JMenuItem addAlignAndOrderMenuItems(
+    private JMenuItem createAlignAndOrderMenuItem(
             final String text,
             final String type,
-            final String url,
-            final JMenu menu) {
+            final String url) {
         final JMenuItem item = new JMenuItem(text);
         item.setIcon(new ImageIcon(getClass().getResource(url)));
         item.addActionListener(e -> WidgetAlignmentAndOrder.alignAndOrder(designer, type));
-        menu.add(item);
-
         return item;
     }
 
-    private JMenuItem addGoupMenuItems(
+    private JMenuItem createMenuItem(
+            final String text,
+            final int command) {
+        final SwingMenuItem item = new SwingMenuItem(text);
+        item.setID(command);
+        item.addActionListener(commandListener);
+        return item;
+    }
+
+    private JMenuItem createMenuItemWithIcon(
             final String text,
             final String url,
-            final int command,
-            final JMenu menu) {
+            final int command) {
         final SwingMenuItem item = new SwingMenuItem(text);
         item.setIcon(new ImageIcon(getClass().getResource(url)));
         item.setID(command);
         item.addActionListener(commandListener);
-        menu.add(item);
-
         return item;
     }
 
-    private JCheckBoxMenuItem addMenuItem(final String text) {
-        final JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(text, true);
-        menuItem.addActionListener(e -> mainFrame.setDockableVisible(text, menuItem.isSelected()));
-        windowNames.put(text, menuItem);
+    private JCheckBoxMenuItem createCheckBoxMenuItem(final String text) {
+        final JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(text, true);
+        checkBoxMenuItem.addActionListener(e -> mainFrame.setDockableVisible(text, checkBoxMenuItem.isSelected()));
+        windowNames.put(text, checkBoxMenuItem);
 
-        return menuItem;
+        return checkBoxMenuItem;
     }
 
     private void addMenuItemMain(
@@ -283,50 +270,44 @@ public class MenuConfiguration extends ConfigurationFile {
             final JMenu menu) {
         switch (command) {
             case Commands.NEW:
-                previewItems.add(addBasicMenuItem(name, command, menu));
-                break;
             case Commands.OPEN:
-                previewItems.add(addBasicMenuItem(name, command, menu));
+            case Commands.INSERT_PAGE:
+            case Commands.REMOVE_PAGE:
+                final JMenuItem item = createMenuItem(name, command);
+                menu.add(item);
+                previewItems.add(item);
                 break;
             case Commands.RECENT_OPEN:
-                recentDesignerFiles = addRecentFilesMenu(name, menu);
+                final JMenu recentOpenMenu = createMenu(name);
+                menu.add(recentOpenMenu);
+                recentDesignerFiles = recentOpenMenu;
                 previewItems.add(recentDesignerFiles);
                 break;
             case Commands.CLOSE:
-                closeItems.add(addBasicMenuItem(name, command, menu));
-                break;
             case Commands.IMPORT:
-                closeItems.add(addBasicMenuItem(name, command, menu));
+            case Commands.SAVE_FILE:
+            case Commands.SAVE_FILE_AS:
+            case Commands.PUBLISH:
+            case Commands.FONT_MANAGEMENT:
+                final JMenuItem closeMenuItem = createMenuItem(name, command);
+                menu.add(closeMenuItem);
+                closeItems.add(closeMenuItem);
                 break;
             case Commands.RECENT_IMPORT:
-                recentImportedFiles = addRecentFilesMenu(name, menu);
+                final JMenu recentImportMenu = createMenu(name);
+                menu.add(recentImportMenu);
+                recentImportedFiles = recentImportMenu;
                 previewItems.add(recentImportedFiles);
                 break;
-            case Commands.SAVE_FILE:
-                closeItems.add(addBasicMenuItem(name, command, menu));
-                break;
-            case Commands.SAVE_FILE_AS:
-                closeItems.add(addBasicMenuItem(name, command, menu));
-                break;
-            case Commands.PUBLISH:
-                closeItems.add(addBasicMenuItem(name, command, menu));
-                break;
-            case Commands.FONT_MANAGEMENT:
-                closeItems.add(addBasicMenuItem(name, command, menu));
-                break;
             case Commands.EXIT:
-                addBasicMenuItem(name, command, menu);
-                break;
-            case Commands.INSERT_PAGE:
-                previewItems.add(addBasicMenuItem(name, command, menu));
-                break;
-            case Commands.REMOVE_PAGE:
-                previewItems.add(addBasicMenuItem(name, command, menu));
+            case Commands.WEBSITE:
+            case Commands.ABOUT:
+                final JMenuItem menuItem = createMenuItem(name, command);
+                menu.add(menuItem);
                 break;
             case Commands.ALIGN:
-
-                final JMenu align = new JMenu(name);
-                menu.add(align);
+                final JMenu alignMenu = new JMenu(name);
+                menu.add(alignMenu);
 
                 final String[] alignButtons = WidgetAlignmentAndOrder.getAlignButtons();
                 for (final String url : alignButtons) {
@@ -334,68 +315,59 @@ public class MenuConfiguration extends ConfigurationFile {
                         final String[] splitFilename = url.split("/");
                         final String type = splitFilename[splitFilename.length - 1].split("\\.")[0];
 
-                        alignAndOrderMenuItems.add(addAlignAndOrderMenuItems(type, type, url, align));
+                        final JMenuItem alignOrderMenuItem = createAlignAndOrderMenuItem(type, type, url);
+                        menu.add(alignOrderMenuItem);
+                        alignAndOrderMenuItems.add(alignOrderMenuItem);
                     }
                 }
 
                 break;
             case Commands.GROUP:
-                groupMenuItems.add(addGoupMenuItems(name, "/org/pdf/forms/res/Grouped.gif", Commands.GROUP, menu));
+                final JMenuItem groupMenuItem = createMenuItemWithIcon(name, "/org/pdf/forms/res/Grouped.gif", command);
+                menu.add(groupMenuItem);
+                groupMenuItems.add(groupMenuItem);
                 break;
             case Commands.UNGROUP:
-                groupMenuItems.add(addGoupMenuItems(name, "/org/pdf/forms/res/Ungrouped.gif", Commands.UNGROUP, menu));
+                final JMenuItem ungroupMenuItem = createMenuItemWithIcon(name, "/org/pdf/forms/res/Ungrouped.gif", command);
+                menu.add(ungroupMenuItem);
+                groupMenuItems.add(ungroupMenuItem);
                 break;
             case Commands.BRING_TO_FRONT:
-                alignAndOrderMenuItems.add(addAlignAndOrderMenuItems(name, WidgetAlignmentAndOrder.BRING_TO_FRONT,
-                        "/org/pdf/forms/res/Bring to Front.gif", menu));
+                final JMenuItem bringToFrontMenuItem = createAlignAndOrderMenuItem(name, WidgetAlignmentAndOrder.BRING_TO_FRONT,
+                        "/org/pdf/forms/res/Bring to Front.gif");
+                menu.add(bringToFrontMenuItem);
+                alignAndOrderMenuItems.add(bringToFrontMenuItem);
                 break;
             case Commands.SEND_TO_BACK:
-                alignAndOrderMenuItems.add(addAlignAndOrderMenuItems(name, WidgetAlignmentAndOrder.SEND_TO_BACK,
-                        "/org/pdf/forms/res/Send to Back.gif", menu));
+                final JMenuItem sendToBackMenuItem = createAlignAndOrderMenuItem(name, WidgetAlignmentAndOrder.SEND_TO_BACK,
+                        "/org/pdf/forms/res/Send to Back.gif");
+                menu.add(sendToBackMenuItem);
+                alignAndOrderMenuItems.add(sendToBackMenuItem);
                 break;
             case Commands.BRING_FORWARDS:
-                alignAndOrderMenuItems.add(addAlignAndOrderMenuItems(name, WidgetAlignmentAndOrder.BRING_FORWARDS,
-                        "/org/pdf/forms/res/Bring Forwards.gif", menu));
+                final JMenuItem bringForwardsMenuItem = createAlignAndOrderMenuItem(name, WidgetAlignmentAndOrder.BRING_FORWARDS,
+                        "/org/pdf/forms/res/Bring Forwards.gif");
+                menu.add(bringForwardsMenuItem);
+                alignAndOrderMenuItems.add(bringForwardsMenuItem);
                 break;
             case Commands.SEND_BACKWARDS:
-                alignAndOrderMenuItems.add(addAlignAndOrderMenuItems(name, WidgetAlignmentAndOrder.SEND_BACKWARDS,
-                        "/org/pdf/forms/res/Send Backwards.gif", menu));
+                final JMenuItem sendBackwardsMenuItem = createAlignAndOrderMenuItem(name, WidgetAlignmentAndOrder.SEND_BACKWARDS,
+                        "/org/pdf/forms/res/Send Backwards.gif");
+                menu.add(sendBackwardsMenuItem);
+                alignAndOrderMenuItems.add(sendBackwardsMenuItem);
                 break;
             case Commands.TOOLBARS:
-                menu.add(addMenuItem(name));
-                break;
             case Commands.SCRIPT_EDITOR:
-                menu.add(addMenuItem(name));
-                break;
             case Commands.HIERARCHY:
-                menu.add(addMenuItem(name));
-                break;
             case Commands.LIBRARY:
-                menu.add(addMenuItem(name));
-                break;
             case Commands.PROPERTIES:
-                menu.add(addMenuItem(name));
-                break;
             case Commands.LAYOUT:
-                menu.add(addMenuItem(name));
-                break;
             case Commands.BORDER:
-                menu.add(addMenuItem(name));
-                break;
             case Commands.OBJECT:
-                menu.add(addMenuItem(name));
-                break;
             case Commands.FONT:
-                menu.add(addMenuItem(name));
-                break;
             case Commands.PARAGRAPH:
-                menu.add(addMenuItem(name));
-                break;
-            case Commands.WEBSITE:
-                addBasicMenuItem(name, command, menu);
-                break;
-            case Commands.ABOUT:
-                addBasicMenuItem(name, command, menu);
+                final JCheckBoxMenuItem checkBoxMenuItem = createCheckBoxMenuItem(name);
+                menu.add(checkBoxMenuItem);
                 break;
             default:
                 break;
@@ -431,7 +403,6 @@ public class MenuConfiguration extends ConfigurationFile {
             groupMenuItems.get(1).setEnabled(false);
         } else {
             setItemsEnabled(true);
-
             if (widgets.size() == 1 && widgets.iterator().next().getType() == IWidget.GROUP) {
                 groupMenuItems.get(0).setEnabled(false);
                 groupMenuItems.get(1).setEnabled(true);

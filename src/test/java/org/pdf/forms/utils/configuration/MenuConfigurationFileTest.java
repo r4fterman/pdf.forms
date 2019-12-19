@@ -16,7 +16,7 @@ import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.designer.IDesigner;
 
-class MenuConfigurationTest extends EasyMockSupport {
+class MenuConfigurationFileTest extends EasyMockSupport {
 
     @Test
     void getMenus(@TempDir final Path configDir) {
@@ -26,8 +26,8 @@ class MenuConfigurationTest extends EasyMockSupport {
 
         replayAll();
         final Configuration configuration = new Configuration();
-        final MenuConfiguration menuConfiguration = new MenuConfiguration(cmdListener, designer, mainFrame, configDir.toFile(), configuration);
-        final JMenu[] menus = menuConfiguration.getMenus();
+        final MenuConfigurationFile menuConfigurationFile = new MenuConfigurationFile(cmdListener, designer, mainFrame, configDir.toFile(), configuration);
+        final JMenu[] menus = menuConfigurationFile.getMenus();
         verifyAll();
 
         assertThat(menus.length, is(5));
