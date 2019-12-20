@@ -316,7 +316,7 @@ public class MenuConfigurationFile extends ConfigurationFile {
                         final String type = splitFilename[splitFilename.length - 1].split("\\.")[0];
 
                         final JMenuItem alignOrderMenuItem = createAlignAndOrderMenuItem(type, type, url);
-                        menu.add(alignOrderMenuItem);
+                        alignMenu.add(alignOrderMenuItem);
                         alignAndOrderMenuItems.add(alignOrderMenuItem);
                     }
                 }
@@ -398,11 +398,11 @@ public class MenuConfigurationFile extends ConfigurationFile {
 
     public void setProperties(final Set<IWidget> widgets) {
         if (widgets.isEmpty()) {
-            setItemsEnabled(false);
+            setAlignAndOrderMenuItemsEnabled(false);
             groupMenuItems.get(0).setEnabled(false);
             groupMenuItems.get(1).setEnabled(false);
         } else {
-            setItemsEnabled(true);
+            setAlignAndOrderMenuItemsEnabled(true);
             if (widgets.size() == 1 && widgets.iterator().next().getType() == IWidget.GROUP) {
                 groupMenuItems.get(0).setEnabled(false);
                 groupMenuItems.get(1).setEnabled(true);
@@ -413,7 +413,7 @@ public class MenuConfigurationFile extends ConfigurationFile {
         }
     }
 
-    private void setItemsEnabled(final boolean enabled) {
+    private void setAlignAndOrderMenuItemsEnabled(final boolean enabled) {
         for (final JMenuItem menu : alignAndOrderMenuItems) {
             menu.setEnabled(enabled);
         }
