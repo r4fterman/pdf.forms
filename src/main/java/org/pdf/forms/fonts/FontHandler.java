@@ -57,6 +57,7 @@ public final class FontHandler {
     }
 
     private void registerDirectory(final String fontDirectory) {
+        System.out.println("FontHandler.registerDirectory: " + fontDirectory);
         try {
             final File folder = new File(fontDirectory);
             if (!folder.exists() || !folder.isDirectory()) {
