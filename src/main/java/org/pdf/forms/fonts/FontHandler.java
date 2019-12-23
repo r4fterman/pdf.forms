@@ -39,6 +39,7 @@ public final class FontHandler {
         final String[] fontDirectoriesUnix = {
                 "/usr/X/lib/X11/fonts/TrueType",
                 "/usr/openwin/lib/X11/fonts/TrueType",
+                "/usr/share/fonts",
                 "/usr/share/fonts/default/TrueType",
                 "/usr/X11R6/lib/X11/fonts/ttf",
                 "/Library/Fonts",
