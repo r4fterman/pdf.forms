@@ -21,7 +21,8 @@ services:
   - xvfb
 
 script:
-  - mvn clean install -Pci -X
+  - mvn clean install -Pci
+  - cat /home/travis/build/r4fterman/pdf.forms/target/surefire-reports/TEST-org.pdf.forms.widgets.utils.WidgetFactoryTest.xml
   - JACOCO_SOURCE_PATH=src/main/java ./cc-test-reporter format-coverage ./target/coverage-reports/jacoco.xml --input-type jacoco
 # Specify a display with xvfb for UI testing
 
