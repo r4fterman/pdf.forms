@@ -58,6 +58,7 @@ public final class FontHandler {
 
     private void registerDirectory(final String fontDirectory) {
         System.out.println("FontHandler.registerDirectory: " + fontDirectory);
+        logger.info("FontHandler.registerDirectory: {}", fontDirectory);
         try {
             final File folder = new File(fontDirectory);
             if (!folder.exists() || !folder.isDirectory()) {
@@ -77,6 +78,7 @@ public final class FontHandler {
 
     String registerFont(final File file) {
         System.out.println("FontHandler.registerFont: " + file);
+        logger.info("FontHandler.registerFont: {}", file);
         // TODO adapt this method to handle a duff file, behave nicely, and tell
         try {
             final String fontLocation = file.getPath();
