@@ -41,6 +41,7 @@ public final class FontHandler {
                 "/usr/openwin/lib/X11/fonts/TrueType",
                 "/usr/share/fonts",
                 "/usr/share/fonts/default/TrueType",
+                "/usr/share/fonts/truetype/liberation",
                 "/usr/X11R6/lib/X11/fonts/ttf",
                 "/Library/Fonts",
                 "/System/Library/Fonts"
