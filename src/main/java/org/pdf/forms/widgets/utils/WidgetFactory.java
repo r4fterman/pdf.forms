@@ -80,21 +80,22 @@ public class WidgetFactory {
     }
 
     private final Logger logger = LoggerFactory.getLogger(WidgetFactory.class);
-    private final Map<Integer, BiFunction<Element, Rectangle, IWidget>> factoryMethods = Map.of(
-            IWidget.TEXT_FIELD, this::createTextField,
-            IWidget.TEXT, this::createLabel,
-            IWidget.BUTTON, this::createButton,
-            IWidget.RADIO_BUTTON, this::createRadioButton,
-            IWidget.CHECK_BOX, this::createCheckBox,
-            IWidget.COMBO_BOX, this::createComboBox,
-            IWidget.LIST_BOX, this::createListBox,
-            IWidget.IMAGE, this::createImageWidget
-    );
+    private final Map<Integer, BiFunction<Element, Rectangle, IWidget>> factoryMethods;
 
     private final FontHandler fontHandler;
 
     public WidgetFactory(final FontHandler fontHandler) {
         this.fontHandler = fontHandler;
+        factoryMethods = Map.of(
+                IWidget.TEXT_FIELD, this::createTextField,
+                IWidget.TEXT, this::createLabel,
+                IWidget.BUTTON, this::createButton,
+                IWidget.RADIO_BUTTON, this::createRadioButton,
+                IWidget.CHECK_BOX, this::createCheckBox,
+                IWidget.COMBO_BOX, this::createComboBox,
+                IWidget.LIST_BOX, this::createListBox,
+                IWidget.IMAGE, this::createImageWidget
+        );
     }
 
     public IWidget createCheckBoxWidget(

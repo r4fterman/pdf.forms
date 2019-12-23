@@ -75,6 +75,7 @@ public final class FontHandler {
     }
 
     String registerFont(final File file) {
+        System.out.println("FontHandler.registerFont: " + file);
         // TODO adapt this method to handle a duff file, behave nicely, and tell
         try {
             final String fontLocation = file.getPath();

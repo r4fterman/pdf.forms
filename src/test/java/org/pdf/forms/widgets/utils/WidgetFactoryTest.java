@@ -41,9 +41,19 @@ class WidgetFactoryTest extends EasyMockSupport {
 
     @Test
     void createTextFieldWidget() {
-        final IWidget widget = widgetFactory.createWidget(IWidget.TEXT_FIELD, bounds);
+        try {
+            final IWidget widget = widgetFactory
+                    .createWidget(
+                            IWidget.TEXT_FIELD,
+                            bounds
+                    );
 
-        assertThat(widget, is(instanceOf(TextFieldWidget.class)));
+            assertThat(widget, is(instanceOf(TextFieldWidget.class)));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
     }
 
     @Test
