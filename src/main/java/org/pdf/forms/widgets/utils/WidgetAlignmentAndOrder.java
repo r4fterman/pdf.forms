@@ -26,7 +26,7 @@ public class WidgetAlignmentAndOrder {
 
     private static final String RES_ROOT = "/org/pdf/forms/res/";
 
-    private static final String[] ALIGN_BUTTONS = new String[] {
+    private static final List<String> ALIGN_BUTTONS = List.of(
             RES_ROOT + ALIGN_LEFT + ".gif",
             RES_ROOT + ALIGN_RIGHT + ".gif",
             RES_ROOT + ALIGN_TOP + ".gif",
@@ -34,13 +34,15 @@ public class WidgetAlignmentAndOrder {
             "Seperator",
             RES_ROOT + ALIGN_VERTICALLY + ".gif",
             RES_ROOT + ALIGN_HORIZONTALLY + ".gif",
-            "Seperator", };
+            "Seperator"
+    );
 
-    private static final String[] ORDER_BUTTONS = new String[] {
+    private static final List<String> ORDER_BUTTONS = List.of(
             RES_ROOT + BRING_TO_FRONT + ".gif",
             RES_ROOT + SEND_TO_BACK + ".gif",
             RES_ROOT + BRING_FORWARDS + ".gif",
-            RES_ROOT + SEND_BACKWARDS + ".gif" };
+            RES_ROOT + SEND_BACKWARDS + ".gif"
+    );
 
     private static final Map<String, Consumer<Set<IWidget>>> ALIGNMENT_MAP = Map.of(
             WidgetAlignmentAndOrder.ALIGN_LEFT, WidgetAlignmentAndOrder::alignLeft,
@@ -51,13 +53,12 @@ public class WidgetAlignmentAndOrder {
             WidgetAlignmentAndOrder.ALIGN_HORIZONTALLY, WidgetAlignmentAndOrder::alignHorizontally
     );
 
-
     public static String[] getAlignButtons() {
-        return ALIGN_BUTTONS;
+        return ALIGN_BUTTONS.toArray(new String[0]);
     }
 
     public static String[] getOrderButtons() {
-        return ORDER_BUTTONS;
+        return ORDER_BUTTONS.toArray(new String[0]);
     }
 
     public static void alignAndOrder(
@@ -78,181 +79,200 @@ public class WidgetAlignmentAndOrder {
         designerPanel.repaint();
     }
 
-    /**
-     * Note: This method takes a reference to the list of widgets stored in the
-     * designer panel.  It then alters the list here.
-     */
     private static void changeOrderOfSelectedWidgets(
             final String type,
-            final List<IWidget> widgets,
+            final List<IWidget> allWidgets,
             final Set<IWidget> selectedWidgets) {
-        final int size = widgets.size() - 1;
+        // Note: This method takes a reference to the list of widgets stored in the
+        // designer panel. It then alters the list here.
+
+        final int size = allWidgets.size() - 1;
+        if (WidgetAlignmentAndOrder.BRING_TO_FRONT.equals(type)) {
+            bringToFront(allWidgets, size, selectedWidgets);
+        } else if (WidgetAlignmentAndOrder.SEND_TO_BACK.equals(type)) {
+            sendToBack(allWidgets, size, selectedWidgets);
+        } else if (WidgetAlignmentAndOrder.BRING_FORWARDS.equals(type)) {
+            bringForwards(allWidgets, size, selectedWidgets);
+        } else if (WidgetAlignmentAndOrder.SEND_BACKWARDS.equals(type)) {
+            sendBackwards(allWidgets, size, selectedWidgets);
+        }
+    }
+
+    private static void sendBackwards(
+            final List<IWidget> allWidgets,
+            final int size,
+            final Set<IWidget> selectedWidgets) {
         final Set<IWidget> newSet = new HashSet<>(Set.copyOf(selectedWidgets));
 
-        switch (type) {
-            case WidgetAlignmentAndOrder.BRING_TO_FRONT:
-                for (int i = 0; i < size; i++) {
-                    final IWidget widget = widgets.get(i);
-                    if (newSet.remove(widget)) {
-                        widgets.add(size, widgets.remove(i));
-                        i = -1;
-                    }
+        for (int i = size; i >= 0; i--) {
+            final IWidget widget = allWidgets.get(i);
+            if (newSet.remove(widget)) {
+                if (i > 0) {
+                    allWidgets.add(i - 1, allWidgets.remove(i));
                 }
-                break;
-            case WidgetAlignmentAndOrder.SEND_TO_BACK:
-                for (int i = size; i >= 0; i--) {
-                    final IWidget widget = widgets.get(i);
-                    if (newSet.remove(widget)) {
-                        if (i > 0) {
-                            widgets.add(0, widgets.remove(i));
-                        }
-                        i = size + 1;
-                    }
-                }
-                break;
-            case WidgetAlignmentAndOrder.BRING_FORWARDS:
-                for (int i = 0; i < size; i++) {
-                    final IWidget widget = widgets.get(i);
-                    if (newSet.remove(widget)) {
-                        widgets.add(i + 1, widgets.remove(i));
-                        i = -1;
-                    }
-                }
-                break;
-            case WidgetAlignmentAndOrder.SEND_BACKWARDS:
-                for (int i = size; i >= 0; i--) {
-                    final IWidget widget = widgets.get(i);
-                    if (newSet.remove(widget)) {
-                        if (i > 0) {
-                            widgets.add(i - 1, widgets.remove(i));
-                        }
+                i = size + 1;
+            }
+        }
+    }
 
-                        i = size + 1;
-                    }
+    private static void bringForwards(
+            final List<IWidget> allWidgets,
+            final int size,
+            final Set<IWidget> selectedWidgets) {
+        final Set<IWidget> newSet = new HashSet<>(Set.copyOf(selectedWidgets));
+
+        for (int i = 0; i < size; i++) {
+            final IWidget widget = allWidgets.get(i);
+            if (newSet.remove(widget)) {
+                allWidgets.add(i + 1, allWidgets.remove(i));
+                i = -1;
+            }
+        }
+    }
+
+    private static void sendToBack(
+            final List<IWidget> allWidgets,
+            final int size,
+            final Set<IWidget> selectedWidgets) {
+        final Set<IWidget> newSet = new HashSet<>(Set.copyOf(selectedWidgets));
+
+        for (int i = size; i >= 0; i--) {
+            final IWidget widget = allWidgets.get(i);
+            if (newSet.remove(widget)) {
+                if (i > 0) {
+                    allWidgets.add(0, allWidgets.remove(i));
                 }
-                break;
-            default:
-                break;
+                i = size + 1;
+            }
+        }
+    }
+
+    private static void bringToFront(
+            final List<IWidget> allWidgets,
+            final int size,
+            final Set<IWidget> selectedWidgets) {
+        final Set<IWidget> newSet = new HashSet<>(Set.copyOf(selectedWidgets));
+
+        for (int i = 0; i < size; i++) {
+            final IWidget widget = allWidgets.get(i);
+            if (newSet.remove(widget)) {
+                allWidgets.add(size, allWidgets.remove(i));
+                i = -1;
+            }
         }
     }
 
     private static void alignHorizontally(final Set<IWidget> selectedWidgets) {
-        int averageCenterPoint = 0;
-        for (final Object widget1 : selectedWidgets) {
-            final IWidget widget = (IWidget) widget1;
-            final Rectangle bounds = widget.getBounds();
-
-            averageCenterPoint += bounds.x + bounds.width / 2;
-        }
-
-        averageCenterPoint = averageCenterPoint / selectedWidgets.size();
-
+        final int averageCenterPoint = calculateAverageXCenterPoint(selectedWidgets);
         for (final IWidget widget : selectedWidgets) {
             widget.setX(averageCenterPoint - widget.getBounds().width / 2);
         }
     }
 
     private static void alignVertically(final Set<IWidget> selectedWidgets) {
-        int averageCenterPoint = 0;
-        for (final Object widget1 : selectedWidgets) {
-            final IWidget widget = (IWidget) widget1;
-            final Rectangle bounds = widget.getBounds();
-
-            averageCenterPoint += bounds.y + bounds.height / 2;
-        }
-
-        averageCenterPoint = averageCenterPoint / selectedWidgets.size();
-
+        final int averageCenterPoint = calculateAverageYCenterPoint(selectedWidgets);
         for (final IWidget widget : selectedWidgets) {
             widget.setY(averageCenterPoint - widget.getBounds().height / 2);
         }
     }
 
     private static void alignBottom(final Set<IWidget> selectedWidgets) {
-        int bottomPoint = 0;
-        boolean firstPass = true;
-        for (final IWidget widget : selectedWidgets) {
-            final Rectangle bounds = widget.getBounds();
-
-            if (firstPass) {
-                bottomPoint = bounds.y + bounds.height;
-                firstPass = false;
-            } else {
-                final int tempBottomPoint = bounds.y + bounds.height;
-                if (tempBottomPoint > bottomPoint) {
-                    bottomPoint = tempBottomPoint;
-                }
-            }
-        }
-
+        final int bottomPoint = calculateBottomPoint(selectedWidgets);
         for (final IWidget widget : selectedWidgets) {
             widget.setY(bottomPoint - widget.getBounds().height);
         }
     }
 
     private static void alignTop(final Set<IWidget> selectedWidgets) {
-        int topPoint = 0;
-        boolean firstPass = true;
-        for (final IWidget widget : selectedWidgets) {
-            final Rectangle bounds = widget.getBounds();
-
-            if (firstPass) {
-                topPoint = bounds.y;
-                firstPass = false;
-            } else {
-                final int tempTopPoint = bounds.y;
-                if (tempTopPoint < topPoint) {
-                    topPoint = tempTopPoint;
-                }
-            }
-        }
-
+        final int topPoint = calculateTopPoint(selectedWidgets);
         for (final IWidget widget : selectedWidgets) {
             widget.setY(topPoint);
         }
     }
 
     private static void alignRight(final Set<IWidget> selectedWidgets) {
-        int rightPoint = 0;
-        boolean firstPass = true;
-        for (final IWidget widget : selectedWidgets) {
-            final Rectangle bounds = widget.getBounds();
-
-            if (firstPass) {
-                rightPoint = bounds.x + bounds.width;
-                firstPass = false;
-            } else {
-                final int tempRightPoint = bounds.x + bounds.width;
-                if (tempRightPoint > rightPoint) {
-                    rightPoint = tempRightPoint;
-                }
-            }
-        }
-
+        final int rightPoint = calculateRightPoint(selectedWidgets);
         for (final IWidget widget : selectedWidgets) {
             widget.setX(rightPoint - widget.getBounds().width);
         }
     }
 
     private static void alignLeft(final Set<IWidget> selectedWidgets) {
-        int leftPoint = 0;
-        boolean firstPass = true;
-        for (final IWidget widget : selectedWidgets) {
-            final Rectangle bounds = widget.getBounds();
-
-            if (firstPass) {
-                leftPoint = bounds.x;
-                firstPass = false;
-            } else {
-                final int tempLeftPoint = bounds.x;
-                if (tempLeftPoint < leftPoint) {
-                    leftPoint = tempLeftPoint;
-                }
-            }
-        }
-
+        final int leftPoint = calculateLeftPoint(selectedWidgets);
         for (final IWidget widget : selectedWidgets) {
             widget.setX(leftPoint);
         }
+    }
+
+    private static int calculateBottomPoint(final Set<IWidget> widgets) {
+        int bottomPoint = 0;
+        for (final IWidget widget : widgets) {
+            final Rectangle bounds = widget.getBounds();
+
+            final int point = bounds.y + bounds.height;
+            if (point > bottomPoint) {
+                bottomPoint = point;
+            }
+        }
+        return bottomPoint;
+    }
+
+    private static int calculateTopPoint(final Set<IWidget> widgets) {
+        int topPoint = 0;
+        for (final IWidget widget : widgets) {
+            final Rectangle bounds = widget.getBounds();
+
+            final int point = bounds.y;
+            if (point < topPoint) {
+                topPoint = point;
+            }
+        }
+        return topPoint;
+    }
+
+    private static int calculateRightPoint(final Set<IWidget> widgets) {
+        int rightPoint = 0;
+        for (final IWidget widget : widgets) {
+            final Rectangle bounds = widget.getBounds();
+
+            final int point = bounds.x + bounds.width;
+            if (point > rightPoint) {
+                rightPoint = point;
+            }
+        }
+        return rightPoint;
+    }
+
+    private static int calculateLeftPoint(final Set<IWidget> widgets) {
+        int leftPoint = 0;
+        for (final IWidget widget : widgets) {
+            final Rectangle bounds = widget.getBounds();
+
+            final int point = bounds.x;
+            if (point < leftPoint) {
+                leftPoint = point;
+            }
+        }
+        return leftPoint;
+    }
+
+    private static int calculateAverageXCenterPoint(final Set<IWidget> widgets) {
+        int averageCenterPoint = 0;
+        for (final IWidget widget : widgets) {
+            final Rectangle bounds = widget.getBounds();
+            averageCenterPoint += bounds.x + bounds.width / 2;
+        }
+
+        return averageCenterPoint / widgets.size();
+    }
+
+    private static int calculateAverageYCenterPoint(final Set<IWidget> widgets) {
+        int averageCenterPoint = 0;
+        for (final IWidget widget : widgets) {
+            final Rectangle bounds = widget.getBounds();
+            averageCenterPoint += bounds.y + bounds.height / 2;
+        }
+
+        return averageCenterPoint / widgets.size();
     }
 }

@@ -702,7 +702,8 @@ public class VLFrame extends JFrame implements IMainFrame {
             final String oldName,
             final String name,
             final IWidget widget) {
-        widgetArrays.removeWidgetFromArray(widget, oldName, this);
+        widgetArrays.removeWidgetFromArray(widget, oldName);
+        updateHierarchyPanelUI();
     }
 
     @Override
@@ -718,7 +719,6 @@ public class VLFrame extends JFrame implements IMainFrame {
         final List<Page> pages = formsDocument.getPages();
         for (Page page : pages) {
             final List<IWidget> widgetsOnPage = page.getWidgets();
-
             for (final IWidget widget : widgetsOnPage) {
                 final String widgetName = widget.getWidgetName();
                 if (name.equals(widgetName) && !widget.equals(widgetToTest)) {
@@ -738,10 +738,11 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     @Override
-    public void handleArrayNumberOnWidgetDeletion(final Set<IWidget> selectedWidgets) {
-        for (final IWidget widget : selectedWidgets) {
-            widgetArrays.removeWidgetFromArray(widget, widget.getWidgetName(), this);
+    public void handleArrayNumberOnWidgetDeletion(final Set<IWidget> widgets) {
+        for (final IWidget widget : widgets) {
+            widgetArrays.removeWidgetFromArray(widget, widget.getWidgetName());
         }
+        updateHierarchyPanelUI();
     }
 
     @Override

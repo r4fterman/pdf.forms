@@ -1,34 +1,3 @@
-/*
- * ===========================================
- * PDF Forms Designer
- * ===========================================
- * <p>
- * Project Info:  http://pdfformsdesigne.sourceforge.net
- * (C) Copyright 2006-2008..
- * Lead Developer: Simon Barnett (n6vale@googlemail.com)
- * <p>
- * This file is part of the PDF Forms Designer
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * <p>
- * <p>
- * <p>
- * ---------------
- * WidgetFactory.java
- * ---------------
- */
 package org.pdf.forms.widgets.utils;
 
 import java.awt.Color;
@@ -37,6 +6,9 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -73,25 +45,24 @@ public class WidgetFactory {
     private static final JFrame FRAME = new JFrame();
 
     public static JLabel createResizedComponent(
-            final JComponent comp,
+            final JComponent component,
             final int width,
             final int height) {
-        return getComponentAsLabel(comp, width, height);
+        return getComponentAsLabel(component, new Dimension(width, height));
     }
 
     private static JLabel getComponentAsLabel(
             final JComponent component,
-            final int width,
-            final int height) {
-        component.setSize(width, height);
+            final Dimension size) {
+        component.setSize(size);
 
         FRAME.getContentPane().setLayout(null);
         FRAME.getContentPane().add(component);
         FRAME.pack();
 
-        final JLabel label = new JLabel(new ImageIcon(createImage(component)));
-        label.setSize(width, height);
-        return label;
+        final JLabel labelWithIcon = new JLabel(new ImageIcon(createImage(component)));
+        labelWithIcon.setSize(size);
+        return labelWithIcon;
     }
 
     private static BufferedImage createImage(final JComponent component) {
@@ -109,37 +80,21 @@ public class WidgetFactory {
     }
 
     private final Logger logger = LoggerFactory.getLogger(WidgetFactory.class);
+    private final Map<Integer, BiFunction<Element, Rectangle, IWidget>> factoryMethods = Map.of(
+            IWidget.TEXT_FIELD, this::createTextField,
+            IWidget.TEXT, this::createLabel,
+            IWidget.BUTTON, this::createButton,
+            IWidget.RADIO_BUTTON, this::createRadioButton,
+            IWidget.CHECK_BOX, this::createCheckBox,
+            IWidget.COMBO_BOX, this::createComboBox,
+            IWidget.LIST_BOX, this::createListBox,
+            IWidget.IMAGE, this::createImageWidget
+    );
 
     private final FontHandler fontHandler;
-    private Rectangle bounds;
-    private Element root;
 
     public WidgetFactory(final FontHandler fontHandler) {
         this.fontHandler = fontHandler;
-    }
-
-    IWidget createCheckBoxWidget(
-            final Page page,
-            final Rectangle bounds,
-            final String groupName) {
-        final IWidget widget = createWidget(IWidget.CHECK_BOX, bounds);
-
-        ButtonGroup buttonGroup;
-        if (groupName == null) {
-            final List<ButtonGroup> checkBoxGroups = page.getCheckBoxGroups();
-            buttonGroup = new ButtonGroup(IWidget.CHECK_BOX);
-            checkBoxGroups.add(buttonGroup);
-        } else {
-            buttonGroup = page.getCheckBoxGroup(groupName);
-            if (buttonGroup == null) {
-                final List<ButtonGroup> checkBoxGroups = page.getCheckBoxGroups();
-                buttonGroup = new ButtonGroup(IWidget.CHECK_BOX, groupName);
-                checkBoxGroups.add(buttonGroup);
-            }
-        }
-        ((CheckBoxWidget) widget).setCheckBoxGroupName(buttonGroup.getName());
-
-        return widget;
     }
 
     public IWidget createCheckBoxWidget(
@@ -148,30 +103,37 @@ public class WidgetFactory {
         return createCheckBoxWidget(page, bounds, null);
     }
 
+    IWidget createCheckBoxWidget(
+            final Page page,
+            final Rectangle bounds,
+            final String groupName) {
+        final CheckBoxWidget widget = createCheckBox(null, bounds);
+        final ButtonGroup buttonGroup = createButtonGroup(page, groupName);
+        widget.setCheckBoxGroupName(buttonGroup.getName());
+        return widget;
+    }
+
     public IWidget createRadioButtonWidget(
             final Page page,
             final Rectangle bounds) {
-        final IWidget widget = createWidget(IWidget.RADIO_BUTTON, bounds);
-
+        final RadioButtonWidget widget = createRadioButton(null, bounds);
         final List<ButtonGroup> radioButtonGroups = page.getRadioButtonGroups();
-        final ButtonGroup rbg;
+
+        final ButtonGroup buttonGroup;
         if (radioButtonGroups.isEmpty()) {
-            rbg = new ButtonGroup(IWidget.RADIO_BUTTON);
-            radioButtonGroups.add(rbg);
+            buttonGroup = new ButtonGroup(IWidget.RADIO_BUTTON);
+            radioButtonGroups.add(buttonGroup);
         } else {
-            rbg = radioButtonGroups.get(radioButtonGroups.size() - 1);
+            buttonGroup = radioButtonGroups.get(radioButtonGroups.size() - 1);
         }
 
-        ((RadioButtonWidget) widget).setRadioButtonGroupName(rbg.getName());
-
+        widget.setRadioButtonGroupName(buttonGroup.getName());
         return widget;
     }
 
     public IWidget createWidget(
             final int widgetToAdd,
             final Rectangle bounds) {
-        this.bounds = bounds;
-
         if (bounds != null) {
             if (bounds.height < 0) {
                 bounds.height = -bounds.height;
@@ -184,207 +146,169 @@ public class WidgetFactory {
             }
         }
 
-        return createWidget(widgetToAdd);
+        return createWidgetWithBounds(widgetToAdd, null, bounds);
     }
 
     public IWidget createWidget(
             final int widgetToAdd,
             final Element root) {
-        this.root = root;
-
-        final IWidget widget = createWidget(widgetToAdd);
-
-        this.root = null;
-
-        return widget;
+        return createWidgetWithBounds(widgetToAdd, root, null);
     }
 
-    private IWidget createWidget(final int widgetToAdd) {
-        IWidget w = null;
-
-        switch (widgetToAdd) {
-            case IWidget.TEXT_FIELD:
-                w = createTextField();
-                break;
-            case IWidget.TEXT:
-                w = createLabel();
-                break;
-            case IWidget.BUTTON:
-                w = createButton();
-                break;
-            case IWidget.RADIO_BUTTON:
-                w = createRadioButton();
-                break;
-            case IWidget.CHECK_BOX:
-                w = createCheckBox();
-                break;
-            case IWidget.COMBO_BOX:
-                w = createComboBox();
-                break;
-            case IWidget.LIST_BOX:
-                w = createListBox();
-                break;
-            case IWidget.IMAGE:
-                w = createImageWidget();
-                break;
-            default:
-                logger.warn("Manual exit because of impossible situation in WidgetFactory, trying to add widget type {}", widgetToAdd);
-                break;
-        }
-
-        return w;
+    private IWidget createWidgetWithBounds(
+            final int widgetToAdd,
+            final Element root,
+            final Rectangle bounds) {
+        return factoryMethods.getOrDefault(widgetToAdd, (r, b) -> {
+            logger.warn("Manual exit because of impossible situation in WidgetFactory, trying to add widget type {}", widgetToAdd);
+            return null;
+        }).apply(root, bounds);
     }
 
-    private IWidget createImageWidget() {
+    private IWidget createImageWidget(
+            final Element root,
+            final Rectangle bounds) {
         final JLabel image = new JLabel();
         image.setBackground(Color.WHITE);
 
-        final int[] size = getSize(150, 150);
-
-        final int width = size[0];
-        final int height = size[1];
-
+        final JLabel label = getComponentAsLabel(image, getSize(150, 150, bounds));
         if (root == null) {
-            return new ImageWidget(IWidget.IMAGE, image, getComponentAsLabel(image, width, height), fontHandler);
+            return new ImageWidget(IWidget.IMAGE, image, label, fontHandler);
         }
-
-        return new ImageWidget(IWidget.IMAGE, image, getComponentAsLabel(image, width, height), root, fontHandler);
+        return new ImageWidget(IWidget.IMAGE, image, label, root, fontHandler);
     }
 
-    private IWidget createTextField() {
+    private IWidget createTextField(
+            final Element root,
+            final Rectangle bounds) {
         final SplitComponent tf = new SplitComponent("Text Field", new PdfTextField("Text Field", fontHandler), SplitComponent.CAPTION_LEFT, fontHandler);
 
-        final int[] size = getSize(150, 20);
-
-        final int width = size[0];
-        final int height = size[1];
-
+        final JLabel label = getComponentAsLabel(tf, getSize(150, 20, bounds));
         if (root == null) {
-            return new TextFieldWidget(IWidget.TEXT_FIELD, tf, getComponentAsLabel(tf, width, height), fontHandler);
+            return new TextFieldWidget(IWidget.TEXT_FIELD, tf, label, fontHandler);
         }
-
-        return new TextFieldWidget(IWidget.TEXT_FIELD, tf, getComponentAsLabel(tf, width, height), root, fontHandler);
+        return new TextFieldWidget(IWidget.TEXT_FIELD, tf, label, root, fontHandler);
     }
 
-    private IWidget createLabel() {
+    private IWidget createLabel(
+            final Element root,
+            final Rectangle bounds) {
         final PdfCaption label = new PdfCaption("Text", fontHandler);
         label.setBackground(IDesigner.PAGE_COLOR);
 
-        final int[] size = getSize(100, 20);
-
-        final int width = size[0];
-        final int height = size[1];
-
+        final JLabel componentAsLabel = getComponentAsLabel(label, getSize(100, 20, bounds));
         if (root == null) {
-            return new TextWidget(IWidget.TEXT, label, getComponentAsLabel(label, width, height), fontHandler);
+            return new TextWidget(IWidget.TEXT, label, componentAsLabel, fontHandler);
         }
-
-        return new TextWidget(IWidget.TEXT, label, getComponentAsLabel(label, width, height), root, fontHandler);
+        return new TextWidget(IWidget.TEXT, label, componentAsLabel, root, fontHandler);
     }
 
-    private IWidget createCheckBox() {
-        final int[] size = getSize(100, 20);
-        final int width = size[0];
-        final int height = size[1];
-
+    private CheckBoxWidget createCheckBox(
+            final Element root,
+            final Rectangle bounds) {
         final PdfCheckBox cb = new PdfCheckBox();
         cb.setBackground(IDesigner.PAGE_COLOR);
 
         final SplitComponent checkBox = new SplitComponent("Check Box", cb, SplitComponent.CAPTION_RIGHT, fontHandler);
-
+        final JLabel label = getComponentAsLabel(checkBox, getSize(100, 20, bounds));
         if (root == null) {
-            return new CheckBoxWidget(IWidget.CHECK_BOX, checkBox, getComponentAsLabel(checkBox, width, height), fontHandler);
+            return new CheckBoxWidget(IWidget.CHECK_BOX, checkBox, label, fontHandler);
         }
-
-        return new CheckBoxWidget(IWidget.CHECK_BOX, checkBox, getComponentAsLabel(checkBox, width, height), root, fontHandler);
+        return new CheckBoxWidget(IWidget.CHECK_BOX, checkBox, label, root, fontHandler);
     }
 
-    private IWidget createComboBox() {
+    private IWidget createComboBox(
+            final Element root,
+            final Rectangle bounds) {
         final PdfComboBox pdfComboBox = new PdfComboBox(fontHandler);
 
         final SplitComponent combo = new SplitComponent("Drop-down list", pdfComboBox, SplitComponent.CAPTION_LEFT, fontHandler);
-
-        final int[] size = getSize(200, 20);
-
-        final int width = size[0];
-        final int height = size[1];
-
+        final JLabel label = getComponentAsLabel(combo, getSize(200, 20, bounds));
         if (root == null) {
-            return new ComboBoxWidget(IWidget.COMBO_BOX, combo, getComponentAsLabel(combo, width, height), fontHandler);
+            return new ComboBoxWidget(IWidget.COMBO_BOX, combo, label, fontHandler);
         }
-
-        return new ComboBoxWidget(IWidget.COMBO_BOX, combo, getComponentAsLabel(combo, width, height), root, fontHandler);
+        return new ComboBoxWidget(IWidget.COMBO_BOX, combo, label, root, fontHandler);
     }
 
-    private IWidget createListBox() {
+    private IWidget createListBox(
+            final Element root,
+            final Rectangle bounds) {
         final PdfList pdfList = new PdfList(fontHandler);
+
         final SplitComponent scroll = new SplitComponent("List", pdfList, SplitComponent.CAPTION_TOP, fontHandler);
-
-        final int[] size = getSize(100, 100);
-
-        final int width = size[0];
-        final int height = size[1];
-
+        final JLabel label = getComponentAsLabel(scroll, getSize(100, 100, bounds));
         if (root == null) {
-            return new ListBoxWidget(IWidget.LIST_BOX, scroll, getComponentAsLabel(scroll, width, height), fontHandler);
+            return new ListBoxWidget(IWidget.LIST_BOX, scroll, label, fontHandler);
         }
-
-        return new ListBoxWidget(IWidget.LIST_BOX, scroll, getComponentAsLabel(scroll, width, height), root, fontHandler);
+        return new ListBoxWidget(IWidget.LIST_BOX, scroll, label, root, fontHandler);
     }
 
-    private IWidget createButton() {
+    private IWidget createButton(
+            final Element root,
+            final Rectangle bounds) {
         final PdfButton pdfButton = new PdfButton("Button", fontHandler);
 
-        final int[] size = getSize(100, 50);
-
-        final int width = size[0];
-        final int height = size[1];
-
+        final Dimension size = getSize(100, 50, bounds);
+        final JLabel label = getComponentAsLabel(pdfButton, size);
         if (root == null) {
-            return new ButtonWidget(IWidget.BUTTON, pdfButton, getComponentAsLabel(pdfButton, width, height), fontHandler);
+            return new ButtonWidget(IWidget.BUTTON, pdfButton, label, fontHandler);
         }
-
-        return new ButtonWidget(IWidget.BUTTON, pdfButton, getComponentAsLabel(pdfButton, width, height), root, fontHandler);
+        return new ButtonWidget(IWidget.BUTTON, pdfButton, label, root, fontHandler);
     }
 
-    private IWidget createRadioButton() {
+    private RadioButtonWidget createRadioButton(
+            final Element root,
+            final Rectangle bounds) {
         final PdfRadioButton pdfRadioButton = new PdfRadioButton();
         pdfRadioButton.setBackground(IDesigner.PAGE_COLOR);
 
         final SplitComponent radioButton = new SplitComponent("Radio Button", pdfRadioButton, SplitComponent.CAPTION_RIGHT, fontHandler);
-
-        final int[] size = getSize(200, 20);
-
-        final int width = size[0];
-        final int height = size[1];
-
+        final JLabel label = getComponentAsLabel(radioButton, getSize(200, 20, bounds));
         if (root == null) {
-            return new RadioButtonWidget(IWidget.RADIO_BUTTON, radioButton, getComponentAsLabel(radioButton, width, height), fontHandler);
+            return new RadioButtonWidget(IWidget.RADIO_BUTTON, radioButton, label, fontHandler);
         }
-
-        return new RadioButtonWidget(IWidget.RADIO_BUTTON, radioButton, getComponentAsLabel(radioButton, width, height), root, fontHandler);
+        return new RadioButtonWidget(IWidget.RADIO_BUTTON, radioButton, label, root, fontHandler);
     }
 
-    private int[] getSize(
-            final int defaultWidth,
-            final int defaultHeight) {
-        int width = defaultWidth;
-        int height = defaultHeight;
-        if (this.bounds != null) {
-            if (this.bounds.width != 0) {
-                width = this.bounds.width;
-            }
-
-            if (this.bounds.height != 0) {
-                height = this.bounds.height;
-            }
-
-            this.bounds = null;
+    private ButtonGroup createButtonGroup(
+            final Page page,
+            final String groupName) {
+        if (groupName == null) {
+            final ButtonGroup buttonGroup = new ButtonGroup(IWidget.CHECK_BOX);
+            page.getCheckBoxGroups().add(buttonGroup);
+            return buttonGroup;
         }
 
-        return new int[] {
-                width, height
-        };
+        ButtonGroup buttonGroup = page.getCheckBoxGroup(groupName);
+        if (buttonGroup == null) {
+            buttonGroup = new ButtonGroup(groupName);
+            page.getCheckBoxGroups().add(buttonGroup);
+        }
+        return buttonGroup;
+    }
+
+    private Dimension getSize(
+            final int defaultWidth,
+            final int defaultHeight,
+            final Rectangle bounds) {
+        return Optional.ofNullable(bounds)
+                .map(b -> {
+                    final int width;
+                    if (bounds.width != 0) {
+                        width = bounds.width;
+                    } else {
+                        width = defaultWidth;
+                    }
+
+                    final int height;
+                    if (bounds.height != 0) {
+                        height = bounds.height;
+                    } else {
+                        height = defaultHeight;
+                    }
+                    return new Dimension(width, height);
+                })
+                .orElseGet(() -> new Dimension(defaultWidth, defaultHeight));
     }
 
 }
