@@ -21,7 +21,7 @@ services:
   - xvfb
 
 script:
-  - mvn clean install -Pci
+  - mvn clean install -Pci -X
   - JACOCO_SOURCE_PATH=src/main/java ./cc-test-reporter format-coverage ./target/coverage-reports/jacoco.xml --input-type jacoco
 # Specify a display with xvfb for UI testing
 
