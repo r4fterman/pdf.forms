@@ -1,9 +1,10 @@
 package org.pdf.forms.gui.properties.layout;
 
+import static java.util.stream.Collectors.toUnmodifiableMap;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,18 +36,16 @@ public class LayoutPropertiesTab extends JPanel implements Dockable {
         if (widgets.isEmpty() || (widgets.iterator().next() instanceof Page)) {
             removeAll();
         } else {
-            final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
-
-            for (final IWidget widget : widgets) {
-                final Document properties = widget.getProperties();
-
-                final Element layoutProperties = (Element) properties.getElementsByTagName("layout").item(0);
-
-                widgetsAndProperties.put(widget, layoutProperties);
-            }
+            final Map<IWidget, Element> widgetsAndProperties = widgets.stream()
+                    .collect(toUnmodifiableMap(
+                            widget -> widget,
+                            widget -> {
+                                final Document properties = widget.getProperties();
+                                return (Element) properties.getElementsByTagName("layout").item(0);
+                            }
+                    ));
 
             layoutPanel.setProperties(widgetsAndProperties);
-
             add(layoutPanel);
         }
 
