@@ -6,7 +6,6 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -19,7 +18,6 @@ import javax.swing.JTextField;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
-import org.jpedal.examples.simpleviewer.utils.FileFilterer;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
@@ -39,14 +37,10 @@ public class ImageDrawPanel extends JPanel {
     }
 
     private void initComponents() {
-        final JLabel jLabel1 = new JLabel();
+        final JLabel locationLabel = new JLabel();
+        locationLabel.setText("Location:");
+
         imageLocationBox = new JTextField();
-        final JButton jButton1 = new JButton();
-        final JLabel jLabel2 = new JLabel();
-        sizingBox = new javax.swing.JComboBox<>();
-
-        jLabel1.setText("Location:");
-
         imageLocationBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent evt) {
@@ -54,11 +48,14 @@ public class ImageDrawPanel extends JPanel {
             }
         });
 
-        jButton1.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/open.gif")));
-        jButton1.addActionListener(this::loadImageFileChooser);
+        final JButton chooseImageButton = new JButton();
+        chooseImageButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/open.gif")));
+        chooseImageButton.addActionListener(this::loadImageFileChooser);
 
-        jLabel2.setText("Sizing:");
+        final JLabel sizingLabel = new JLabel();
+        sizingLabel.setText("Sizing:");
 
+        sizingBox = new JComboBox<>();
         sizingBox.setModel(new DefaultComboBoxModel<>(new String[] {
                 "Stretch Image To Fit", "Use Image Size" }));
         sizingBox.addActionListener(this::updateSizing);
@@ -70,14 +67,14 @@ public class ImageDrawPanel extends JPanel {
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.LEADING)
-                                        .add(jLabel1)
-                                        .add(jLabel2))
+                                        .add(locationLabel)
+                                        .add(sizingLabel))
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(GroupLayout.LEADING, false)
                                         .add(layout.createSequentialGroup()
                                                 .add(imageLocationBox, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(jButton1, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
+                                                .add(chooseImageButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
                                         .add(sizingBox, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap(19, Short.MAX_VALUE))
         );
@@ -86,29 +83,28 @@ public class ImageDrawPanel extends JPanel {
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.LEADING)
-                                        .add(jButton1, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+                                        .add(chooseImageButton, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
                                         .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                                .add(jLabel1)
+                                                .add(locationLabel)
                                                 .add(imageLocationBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
                                 .add(14, 14, 14)
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel2)
+                                        .add(sizingLabel)
                                         .add(sizingBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(42, Short.MAX_VALUE))
         );
     }
 
-    private void updateSizing(final ActionEvent evt) {
-        final Set<IWidget> widgets = widgetsAndProperties.keySet();
+    private void updateSizing(final ActionEvent event) {
+        if (widgetsAndProperties == null) {
+            return;
+        }
 
         final String sizing = (String) sizingBox.getSelectedItem();
-
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget : widgetsAndProperties.keySet()) {
             if (sizing != null) {
                 final Element widgetProperties = widgetsAndProperties.get(widget);
-
                 final Element sizingElement = XMLUtils.getPropertyElement(widgetProperties, "Sizing").get();
-
                 sizingElement.getAttributeNode("value").setValue(sizing);
             }
 
@@ -118,20 +114,14 @@ public class ImageDrawPanel extends JPanel {
         designerPanel.repaint();
     }
 
-    private void loadImageFileChooser(final ActionEvent evt) {
+    private void loadImageFileChooser(final ActionEvent event) {
         final String path = imageLocationBox.getText();
         final JFileChooser chooser = new JFileChooser(path);
-
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        final String[] images = new String[] {
-                "gif", "jpeg", "png" }; // gif jpeg png
-        chooser.addChoosableFileFilter(new FileFilterer(images, "Images (gif, jpeg, png)"));
+        chooser.addChoosableFileFilter(new ImageFileFilter());
 
         final int state = chooser.showOpenDialog(null);
-
         final File fileToOpen = chooser.getSelectedFile();
-
         if (fileToOpen != null && state == JFileChooser.APPROVE_OPTION) {
             imageLocationBox.setText(fileToOpen.getAbsolutePath());
             updateImageLocation(null);
@@ -139,20 +129,19 @@ public class ImageDrawPanel extends JPanel {
     }
 
     private void updateImageLocation(final FocusEvent event) {
-        final Set<IWidget> widgets = widgetsAndProperties.keySet();
+        if (widgetsAndProperties == null) {
+            return;
+        }
 
         final String location = imageLocationBox.getText();
-
-        for (final IWidget widget : widgets) {
+        for (Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
+            final IWidget widget = entry.getKey();
+            final Element widgetProperties = entry.getValue();
             if (location != null && !location.equals("mixed")) {
-                final Element widgetProperties = widgetsAndProperties.get(widget);
-
                 final Element locationElement = XMLUtils.getPropertyElement(widgetProperties, "Location").get();
-
                 locationElement.getAttributeNode("value").setValue(location);
             }
-
-            widget.setObjectProperties(widgetsAndProperties.get(widget));
+            widget.setObjectProperties(widgetProperties);
         }
 
         designerPanel.repaint();
@@ -165,8 +154,8 @@ public class ImageDrawPanel extends JPanel {
         String sizingToUse = null;
 
         /* iterate through the widgets */
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
-            final Element objectProperties = widgetsAndProperties.get(widget);
+        for (Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
+            final Element objectProperties = entry.getValue();
 
             /* get draw properties */
             final Element drawProperties = (Element) objectProperties.getElementsByTagName("draw").item(0);
@@ -200,7 +189,7 @@ public class ImageDrawPanel extends JPanel {
     }
 
     private void setComboValue(
-            final JComboBox comboBox,
+            final JComboBox<String> comboBox,
             final Object value) {
         final ActionListener listener = comboBox.getActionListeners()[0];
         comboBox.removeActionListener(listener);

@@ -34,6 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
+import com.google.common.base.Strings;
+
 public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxParent {
 
     private final Logger logger = LoggerFactory.getLogger(LayoutPropertiesPanel.class);
@@ -385,20 +387,19 @@ public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxPar
     }
 
     private void updateCaptionPosition(final ActionEvent evt) {
-        final Set<IWidget> widgets = widgetsAndProperties.keySet();
-
         final Object captionPosition = captionLocationBox.getSelectedItem();
-
-        for (final IWidget widget : widgets) {
-            if (widget.isComponentSplit() && captionPosition != null) {
-                final Element widgetProperties = widgetsAndProperties.get(widget);
-                final Element captionPositionElement = XMLUtils.getPropertyElement(widgetProperties, "Position").get();
-                captionPositionElement.getAttributeNode("value").setValue(captionPosition.toString());
-                widget.setLayoutProperties(widgetProperties);
-            }
+        if (captionPosition != null) {
+            widgetsAndProperties.entrySet().stream()
+                    .filter(entry -> entry.getKey().isComponentSplit())
+                    .forEach(entry -> {
+                        final Element widgetProperties = entry.getValue();
+                        final Element captionPositionElement = XMLUtils.getPropertyElement(widgetProperties, "Position").get();
+                        captionPositionElement.getAttributeNode("value").setValue(captionPosition.toString());
+                        entry.getKey().setLayoutProperties(widgetProperties);
+                    });
+            designerPanel.repaint();
         }
 
-        designerPanel.repaint();
 
     }
 
@@ -413,7 +414,6 @@ public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxPar
 
     private void updateAnchor(final ActionEvent evt) {
         final Object anchor = anchorLocationBox.getSelectedItem();
-
         if (anchor != null) {
             widgetsAndProperties.forEach((key, widgetProperties) -> {
                 final Element anchorElement = XMLUtils.getPropertyElement(widgetProperties, "Anchor").get();
@@ -428,38 +428,37 @@ public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxPar
 
         if (!xBox.getText().equals("mixed")) {
             final String xText = xBox.getText().replaceAll("cm", "");
-
-            double x = Double.parseDouble(xText);
+            double x = asDouble(xText);
             xBox.setText(x + " cm");
 
             x = x * units;
 
             props[0] = (int) (Math.round(x) + IMainFrame.INSET);
         }
+
         if (!yBox.getText().equals("mixed")) {
             final String yText = yBox.getText().replaceAll("cm", "");
-
-            double y = Double.parseDouble(yText);
+            double y = asDouble(yText);
             yBox.setText(y + " cm");
 
             y = y * units;
 
             props[1] = (int) (Math.round(y) + IMainFrame.INSET);
         }
+
         if (!widthBox.getText().equals("mixed")) {
             final String widthText = widthBox.getText().replaceAll("cm", "");
-
-            double width = Double.parseDouble(widthText);
+            double width = asDouble(widthText);
             widthBox.setText(width + " cm");
 
             width = width * units;
 
             props[2] = (int) Math.round(width);
         }
+
         if (!heightBox.getText().equals("mixed")) {
             final String heightText = heightBox.getText().replaceAll("cm", "");
-
-            double height = Double.parseDouble(heightText);
+            double height = asDouble(heightText);
             heightBox.setText(height + " cm");
 
             height = height * units;
@@ -479,7 +478,7 @@ public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxPar
     }
 
     @Override
-    public void checkboxClicked(final MouseEvent e) {
+    public void checkboxClicked(final MouseEvent event) {
         final TristateCheckBox.State xExpandState = (((TristateCheckBox) xExpandToFitBox).getState());
         final TristateCheckBox.State yExpandState = (((TristateCheckBox) yExpandToFitBox).getState());
 
@@ -537,9 +536,9 @@ public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxPar
         /* set the caption alignment box */
         captionLocationBox.setEnabled(isComponentSplit);
 
-        /* iterate through the widgets */
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
-            final Element props = widgetsAndProperties.get(widget);
+        for (Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
+            final IWidget widget = entry.getKey();
+            final Element props = entry.getValue();
 
             /* add size & position properties */
             final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
@@ -630,7 +629,7 @@ public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxPar
         if ("mixed".equals(xCordToUse)) {
             xBox.setText("mixed");
         } else {
-            double x = Integer.parseInt(xCordToUse);
+            double x = asInteger(xCordToUse);
             x = round((x - IMainFrame.INSET) / units);
             xBox.setText(x + " cm");
         }
@@ -638,7 +637,7 @@ public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxPar
         if ("mixed".equals(yCordToUse)) {
             yBox.setText("mixed");
         } else {
-            double y = Integer.parseInt(yCordToUse);
+            double y = asInteger(yCordToUse);
             y = round((y - IMainFrame.INSET) / units);
             yBox.setText(y + " cm");
         }
@@ -646,7 +645,7 @@ public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxPar
         if ("mixed".equals(widthToUse)) {
             widthBox.setText("mixed");
         } else {
-            double width = Integer.parseInt(widthToUse);
+            double width = asInteger(widthToUse);
             width = round(width / units);
             widthBox.setText(width + " cm");
         }
@@ -654,7 +653,7 @@ public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxPar
         if ("mixed".equals(heightToUse)) {
             heightBox.setText("mixed");
         } else {
-            double height = Integer.parseInt(heightToUse);
+            double height = asInteger(heightToUse);
             height = round(height / units);
             heightBox.setText(height + " cm");
         }
@@ -717,6 +716,20 @@ public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxPar
         //
         //        captionLocationBox.setSelectedItem(position);
         //        reserveBox.setText(reserve);
+    }
+
+    private double asDouble(final String doubleNumber) {
+        if (Strings.isNullOrEmpty(doubleNumber)) {
+            return 0d;
+        }
+        return Double.parseDouble(doubleNumber);
+    }
+
+    private double asInteger(final String integerNumber) {
+        if (Strings.isNullOrEmpty(integerNumber)) {
+            return 0d;
+        }
+        return Integer.parseInt(integerNumber);
     }
 
     private double round(final double number) {

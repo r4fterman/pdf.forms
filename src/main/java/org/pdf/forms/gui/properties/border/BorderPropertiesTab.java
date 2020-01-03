@@ -25,9 +25,7 @@ public class BorderPropertiesTab extends JPanel implements Dockable {
 
     public BorderPropertiesTab(final IDesigner designer) {
         borderPanel.setDesignerPanel(designer);
-
         setLayout(new BorderLayout());
-
         setMinimumSize(new Dimension(0, 0));
     }
 
@@ -36,7 +34,6 @@ public class BorderPropertiesTab extends JPanel implements Dockable {
             removeAll();
         } else {
             final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
-
             for (final IWidget widget : widgets) {
                 if (widget.getType() == IWidget.IMAGE) {
                     removeAll();
@@ -44,14 +41,11 @@ public class BorderPropertiesTab extends JPanel implements Dockable {
                 }
 
                 final Document properties = widget.getProperties();
-
                 final Element layoutProperties = (Element) properties.getElementsByTagName("border").item(0);
-
                 widgetsAndProperties.put(widget, layoutProperties);
             }
 
             borderPanel.setProperties(widgetsAndProperties);
-
             add(borderPanel);
         }
 

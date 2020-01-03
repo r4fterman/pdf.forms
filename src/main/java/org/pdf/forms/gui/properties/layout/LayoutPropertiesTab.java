@@ -26,9 +26,7 @@ public class LayoutPropertiesTab extends JPanel implements Dockable {
 
     public LayoutPropertiesTab(final IDesigner designer) {
         layoutPanel.setDesignerPanel(designer);
-
         setLayout(new BorderLayout());
-
         setMinimumSize(new Dimension(0, 0));
     }
 

@@ -34,6 +34,7 @@ import javax.swing.plaf.ActionMapUIResource;
  * wraps the original button model and does state management.
  */
 public class TristateCheckBox extends JCheckBox {
+
     /**
      * This is a type-safe enumerated type.
      */
@@ -67,7 +68,6 @@ public class TristateCheckBox extends JCheckBox {
             final State initial,
             final TristateCheckBoxParent parent) {
         super(text, icon);
-        // Add a listener for when the mouse is pressed
         super.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(final MouseEvent e) {
@@ -77,7 +77,7 @@ public class TristateCheckBox extends JCheckBox {
                 parent.checkboxClicked(e);
             }
         });
-        // Reset the keyboard action map
+
         final ActionMap map = new ActionMapUIResource();
         map.put("pressed", new AbstractAction() {
             @Override
@@ -88,6 +88,7 @@ public class TristateCheckBox extends JCheckBox {
         });
         map.put("released", null);
         SwingUtilities.replaceUIActionMap(this, map);
+
         // set the model to the adapted model
         model = new TristateDecorator(getModel());
         setModel(model);
@@ -135,8 +136,8 @@ public class TristateCheckBox extends JCheckBox {
     }
 
     @Override
-    public void setSelected(final boolean b) {
-        if (b) {
+    public void setSelected(final boolean selected) {
+        if (selected) {
             setState(SELECTED);
         } else {
             setState(NOT_SELECTED);
@@ -186,13 +187,15 @@ public class TristateCheckBox extends JCheckBox {
             if (isSelected() && !isArmed()) {
                 // normal black tick
                 return SELECTED;
-            } else if (isSelected() && isArmed()) {
+            }
+
+            if (isSelected() && isArmed()) {
                 // don't care grey tick
                 return DONT_CARE;
-            } else {
-                // normal deselected
-                return NOT_SELECTED;
             }
+
+            // normal deselected
+            return NOT_SELECTED;
         }
 
         /**
@@ -209,27 +212,19 @@ public class TristateCheckBox extends JCheckBox {
             }
         }
 
-        /**
-         * Filter: No one may change the armed status except us.
-         */
         @Override
-        public void setArmed(final boolean b) {
+        public void setArmed(final boolean armed) {
+            // Filter: No one may change the armed status except us.
         }
 
-        /**
-         * We disable focusing on the component when it is not
-         * enabled.
-         */
         @Override
-        public void setEnabled(final boolean b) {
-            setFocusable(b);
-            other.setEnabled(b);
+        public void setEnabled(final boolean enabled) {
+            // We disable focusing on the component when it is not
+            // enabled.
+            setFocusable(enabled);
+            other.setEnabled(enabled);
         }
 
-        /**
-         * All these methods simply delegate to the "other" model
-         * that is being decorated.
-         */
         @Override
         public boolean isArmed() {
             return other.isArmed();
@@ -256,18 +251,18 @@ public class TristateCheckBox extends JCheckBox {
         }
 
         @Override
-        public void setSelected(final boolean b) {
-            other.setSelected(b);
+        public void setSelected(final boolean selected) {
+            other.setSelected(selected);
         }
 
         @Override
-        public void setPressed(final boolean b) {
-            other.setPressed(b);
+        public void setPressed(final boolean pressed) {
+            other.setPressed(pressed);
         }
 
         @Override
-        public void setRollover(final boolean b) {
-            other.setRollover(b);
+        public void setRollover(final boolean rollover) {
+            other.setRollover(rollover);
         }
 
         @Override
@@ -281,8 +276,8 @@ public class TristateCheckBox extends JCheckBox {
         }
 
         @Override
-        public void setActionCommand(final String s) {
-            other.setActionCommand(s);
+        public void setActionCommand(final String actionCommand) {
+            other.setActionCommand(actionCommand);
         }
 
         @Override
@@ -296,33 +291,33 @@ public class TristateCheckBox extends JCheckBox {
         }
 
         @Override
-        public void addActionListener(final ActionListener l) {
-            other.addActionListener(l);
+        public void addActionListener(final ActionListener listener) {
+            other.addActionListener(listener);
         }
 
         @Override
-        public void removeActionListener(final ActionListener l) {
-            other.removeActionListener(l);
+        public void removeActionListener(final ActionListener listener) {
+            other.removeActionListener(listener);
         }
 
         @Override
-        public void addItemListener(final ItemListener l) {
-            other.addItemListener(l);
+        public void addItemListener(final ItemListener listener) {
+            other.addItemListener(listener);
         }
 
         @Override
-        public void removeItemListener(final ItemListener l) {
-            other.removeItemListener(l);
+        public void removeItemListener(final ItemListener listener) {
+            other.removeItemListener(listener);
         }
 
         @Override
-        public void addChangeListener(final ChangeListener l) {
-            other.addChangeListener(l);
+        public void addChangeListener(final ChangeListener listener) {
+            other.addChangeListener(listener);
         }
 
         @Override
-        public void removeChangeListener(final ChangeListener l) {
-            other.removeChangeListener(l);
+        public void removeChangeListener(final ChangeListener listener) {
+            other.removeChangeListener(listener);
         }
 
         @Override

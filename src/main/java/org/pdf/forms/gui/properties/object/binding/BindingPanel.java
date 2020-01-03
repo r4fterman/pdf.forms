@@ -1,39 +1,7 @@
-/*
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-*  This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* BindingPanel.java
-* ---------------
-*/
 package org.pdf.forms.gui.properties.object.binding;
 
 import java.awt.event.FocusEvent;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -64,12 +32,10 @@ public class BindingPanel extends JPanel {
     }
 
     private void initComponents() {
-        final JLabel jLabel1 = new JLabel();
+        final JLabel nameLabel = new JLabel();
+        nameLabel.setText("Name:");
+
         nameField = new JTextField();
-        arrayField = new JTextField();
-
-        jLabel1.setText("Name:");
-
         nameField.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent evt) {
@@ -77,6 +43,7 @@ public class BindingPanel extends JPanel {
             }
         });
 
+        arrayField = new JTextField();
         arrayField.setEnabled(false);
 
         final GroupLayout layout = new GroupLayout(this);
@@ -85,7 +52,7 @@ public class BindingPanel extends JPanel {
                 layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(jLabel1)
+                                .add(nameLabel)
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(nameField, GroupLayout.PREFERRED_SIZE, 152, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(LayoutStyle.RELATED)
@@ -97,7 +64,7 @@ public class BindingPanel extends JPanel {
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel1)
+                                        .add(nameLabel)
                                         .add(nameField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                         .add(arrayField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(268, Short.MAX_VALUE))
@@ -105,15 +72,15 @@ public class BindingPanel extends JPanel {
     }
 
     private void updateName(final FocusEvent evt) {
-        final Set<IWidget> widgets = widgetsAndProperties.keySet();
+        if (widgetsAndProperties == null) {
+            return;
+        }
 
         final String name = nameField.getText();
-
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget : widgetsAndProperties.keySet()) {
             final IMainFrame mainFrame = designerPanel.getMainFrame();
             final Element widgetProperties = widgetsAndProperties.get(widget);
             if (name != null && !name.equals("mixed")) {
-
                 final String oldName = widget.getWidgetName();
                 if (!oldName.equals(name)) {
                     mainFrame.renameWidget(oldName, name, widget);

@@ -30,10 +30,10 @@ import org.w3c.dom.Element;
 
 public class BorderPropertiesPanel extends JPanel {
 
+    private final int units = (int) (Rule.INCH / 2.54);
+
     private IDesigner designerPanel;
     private Map<IWidget, Element> widgetsAndProperties;
-
-    private final int units = (int) (Rule.INCH / 2.54);
 
     private JComboBox<String> backgroundFillBox;
     private JButton backgroundFillColorButton;
@@ -50,23 +50,46 @@ public class BorderPropertiesPanel extends JPanel {
     }
 
     private void initComponents() {
-        final JPanel jPanel1 = new JPanel();
-        jPanel1.setBorder(BorderFactory.createTitledBorder("Borders"));
+        final JPanel panel = createBordersPanel();
+        final JPanel backgroundPanel = createBackgroundPanel();
+
+        final GroupLayout layout = new GroupLayout(this);
+        setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(GroupLayout.LEADING)
+                        .add(GroupLayout.TRAILING, layout.createSequentialGroup()
+                                .add(layout.createParallelGroup(GroupLayout.TRAILING)
+                                        .add(backgroundPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .add(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(GroupLayout.LEADING)
+                        .add(layout.createSequentialGroup()
+                                .add(panel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.RELATED)
+                                .add(backgroundPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(16, Short.MAX_VALUE))
+        );
+    }
+
+    private JPanel createBordersPanel() {
+        final JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createTitledBorder("Borders"));
 
         final JLabel leftEdgesIcon = new JLabel();
         leftEdgesIcon.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Border Together.png")));
         leftEdgesIcon.setOpaque(true);
 
         borderStyleBox = new JComboBox<>();
-        borderStyleBox.setModel(new DefaultComboBoxModel<>(new String[] {
-                "None", "Solid", "Beveled" }));
+        borderStyleBox.setModel(new DefaultComboBoxModel<>(new String[] { "None", "Solid", "Beveled" }));
         borderStyleBox.addActionListener(this::updateBorderStyle);
 
         borderWidthBox = new JTextField();
         borderWidthBox.addFocusListener(new FocusAdapter() {
             @Override
-            public void focusLost(final FocusEvent evt) {
-                updateBorderSize(evt);
+            public void focusLost(final FocusEvent event) {
+                updateBorderSize(event);
             }
         });
 
@@ -75,11 +98,11 @@ public class BorderPropertiesPanel extends JPanel {
         borderColorButton.setOpaque(true);
         borderColorButton.addActionListener(this::borderColorButtonClicked);
 
-        final GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-                jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
+        final GroupLayout groupLayout = new GroupLayout(panel);
+        panel.setLayout(groupLayout);
+        groupLayout.setHorizontalGroup(
+                groupLayout.createParallelGroup(GroupLayout.LEADING)
+                        .add(GroupLayout.TRAILING, groupLayout.createSequentialGroup()
                                 .add(12, 12, 12)
                                 .add(leftEdgesIcon, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(LayoutStyle.RELATED)
@@ -90,29 +113,31 @@ public class BorderPropertiesPanel extends JPanel {
                                 .add(borderColorButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-                jPanel1Layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(jPanel1Layout.createSequentialGroup()
-                                .add(jPanel1Layout.createParallelGroup(GroupLayout.TRAILING)
-                                        .add(jPanel1Layout.createSequentialGroup()
+        groupLayout.setVerticalGroup(
+                groupLayout.createParallelGroup(GroupLayout.LEADING)
+                        .add(groupLayout.createSequentialGroup()
+                                .add(groupLayout.createParallelGroup(GroupLayout.TRAILING)
+                                        .add(groupLayout.createSequentialGroup()
                                                 .add(leftEdgesIcon, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
                                                 .add(4, 4, 4))
-                                        .add(jPanel1Layout.createParallelGroup(GroupLayout.BASELINE)
+                                        .add(groupLayout.createParallelGroup(GroupLayout.BASELINE)
                                                 .add(borderColorButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
                                                 .add(borderStyleBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                                 .add(borderWidthBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+        return panel;
+    }
 
-        final JPanel jPanel2 = new JPanel();
-        jPanel2.setBorder(BorderFactory.createTitledBorder("Background Fill"));
+    private JPanel createBackgroundPanel() {
+        final JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createTitledBorder("Background Fill"));
 
-        final JLabel jLabel6 = new JLabel();
-        jLabel6.setText("Style:");
+        final JLabel styleLabel = new JLabel();
+        styleLabel.setText("Style:");
 
         backgroundFillBox = new JComboBox<>();
-        backgroundFillBox.setModel(new DefaultComboBoxModel<>(new String[] {
-                "None", "Solid" }));
+        backgroundFillBox.setModel(new DefaultComboBoxModel<>(new String[] { "None", "Solid" }));
         backgroundFillBox.setEnabled(false);
         backgroundFillBox.addActionListener(this::updateFillStyle);
 
@@ -122,46 +147,28 @@ public class BorderPropertiesPanel extends JPanel {
         backgroundFillColorButton.setOpaque(true);
         backgroundFillColorButton.addActionListener(this::fillColorClicked);
 
-        final GroupLayout jPanel2Layout = new GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-                jPanel2Layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(jPanel2Layout.createSequentialGroup()
-                                .add(jLabel6)
+        final GroupLayout groupLayout = new GroupLayout(panel);
+        panel.setLayout(groupLayout);
+        groupLayout.setHorizontalGroup(
+                groupLayout.createParallelGroup(GroupLayout.LEADING)
+                        .add(groupLayout.createSequentialGroup()
+                                .add(styleLabel)
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(backgroundFillBox, 0, 191, Short.MAX_VALUE)
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(backgroundFillColorButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap())
         );
-        jPanel2Layout.setVerticalGroup(
-                jPanel2Layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(jPanel2Layout.createSequentialGroup()
-                                .add(jPanel2Layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel6)
+        groupLayout.setVerticalGroup(
+                groupLayout.createParallelGroup(GroupLayout.LEADING)
+                        .add(groupLayout.createSequentialGroup()
+                                .add(groupLayout.createParallelGroup(GroupLayout.BASELINE)
+                                        .add(styleLabel)
                                         .add(backgroundFillColorButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
                                         .add(backgroundFillBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        final GroupLayout layout = new GroupLayout(this);
-        setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(GroupLayout.TRAILING, layout.createSequentialGroup()
-                                .add(layout.createParallelGroup(GroupLayout.TRAILING)
-                                        .add(jPanel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .add(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(layout.createSequentialGroup()
-                                .add(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(jPanel2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(16, Short.MAX_VALUE))
-        );
+        return panel;
     }
 
     private void fillColorClicked(final ActionEvent evt) {
@@ -244,11 +251,7 @@ public class BorderPropertiesPanel extends JPanel {
         String backgroundStyleToUse = null;
         String backgroundColorToUse = null;
 
-        /* iterate through the widgets */
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
-            final Element borderProperties = widgetsAndProperties.get(widget);
-
-            /* add borders properties */
+        for (Element borderProperties : widgetsAndProperties.values()) {
             final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
 
             final String borderStyle = XMLUtils.getAttributeFromChildElement(border, "Border Style").get();

@@ -29,9 +29,6 @@ public class ObjectPropertiesPanel extends JPanel {
 
     ObjectPropertiesPanel() {
         setLayout(new BorderLayout());
-
-        //tabs.setBorder(BorderFactory.createBevelBorder(5,Color.yellow,Color.yellow));
-
         add(tabs);
     }
 
@@ -59,9 +56,7 @@ public class ObjectPropertiesPanel extends JPanel {
             final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
             for (final IWidget widget : widgets) {
                 final Document properties = widget.getProperties();
-
                 final Element objectProperties = (Element) properties.getElementsByTagName("object").item(0);
-
                 widgetsAndProperties.put(widget, objectProperties);
             }
             final BindingPanel bindingPanel = new BindingPanel();

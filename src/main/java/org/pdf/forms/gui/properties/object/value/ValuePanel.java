@@ -1,34 +1,3 @@
-/*
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-*  This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* ValuePanel.java
-* ---------------
-*/
 package org.pdf.forms.gui.properties.object.value;
 
 import java.awt.event.ActionEvent;
@@ -53,9 +22,10 @@ import org.pdf.forms.widgets.RadioButtonWidget;
 import org.w3c.dom.Element;
 
 public class ValuePanel extends JPanel {
-    private Map<IWidget, Element> widgetsAndProperties;
-    private IDesigner designerPanel;
 
+    private Map<IWidget, Element> widgetsAndProperties;
+
+    private IDesigner designerPanel;
     private JComboBox<String> defaultBox;
 
     public ValuePanel() {
@@ -67,11 +37,6 @@ public class ValuePanel extends JPanel {
     }
 
     private void initComponents() {
-        final JLabel jLabel1 = new JLabel();
-        final JComboBox<String> typeBox = new JComboBox<>();
-        final JLabel jLabel2 = new JLabel();
-        defaultBox = new JComboBox<>();
-
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(final ComponentEvent evt) {
@@ -79,15 +44,19 @@ public class ValuePanel extends JPanel {
             }
         });
 
-        jLabel1.setText("Type:");
-        jLabel1.setEnabled(false);
+        final JLabel typeLabel = new JLabel();
+        typeLabel.setText("Type:");
+        typeLabel.setEnabled(false);
 
+        final JComboBox<String> typeBox = new JComboBox<>();
         typeBox.setModel(new DefaultComboBoxModel<>(new String[] {
                 "User Entered - Optional", "User Entered - Recommended", "User Entered - Required", "Read Only" }));
         typeBox.setEnabled(false);
 
-        jLabel2.setText("Default:");
+        final JLabel defaultLabel = new JLabel();
+        defaultLabel.setText("Default:");
 
+        defaultBox = new JComboBox<>();
         defaultBox.addActionListener(this::updateDefaultText);
 
         final GroupLayout layout = new GroupLayout(this);
@@ -98,12 +67,12 @@ public class ValuePanel extends JPanel {
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.LEADING, false)
                                         .add(layout.createSequentialGroup()
-                                                .add(jLabel1)
+                                                .add(typeLabel)
                                                 .addPreferredGap(LayoutStyle.RELATED)
                                                 .add(typeBox, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                         .add(GroupLayout.TRAILING, layout.createSequentialGroup()
                                                 .add(10, 10, 10)
-                                                .add(jLabel2)
+                                                .add(defaultLabel)
                                                 .addPreferredGap(LayoutStyle.RELATED)
                                                 .add(defaultBox, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap())
@@ -113,11 +82,11 @@ public class ValuePanel extends JPanel {
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel1)
+                                        .add(typeLabel)
                                         .add(typeBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel2)
+                                        .add(defaultLabel)
                                         .add(defaultBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );

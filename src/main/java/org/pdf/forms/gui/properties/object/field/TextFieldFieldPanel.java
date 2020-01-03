@@ -1,41 +1,9 @@
-/*
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-*  This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* TextFieldFieldPanel.java
-* ---------------
-*/
 package org.pdf.forms.gui.properties.object.field;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -67,44 +35,44 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
 
     private void initComponents() {
         allowMultipleLinesBox = new TristateCheckBox("Allow Multiple Line", TristateCheckBox.NOT_SELECTED, this);
-        limitLengthBox = new TristateCheckBox("Limit Length", TristateCheckBox.NOT_SELECTED, this);
-        final JLabel jLabel2 = new JLabel();
-        maxCharsBox = new JTextField();
-        final JSeparator jSeparator1 = new JSeparator();
-        final JLabel jLabel3 = new JLabel();
-        final JComboBox<String> presenceBox = new JComboBox<>();
-        final JComboBox<String> appearanceBox = new JComboBox<>();
-        final JLabel jLabel1 = new JLabel();
-
         allowMultipleLinesBox.setText("Allow Multiple Lines");
         allowMultipleLinesBox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         allowMultipleLinesBox.setMargin(new java.awt.Insets(0, 0, 0, 0));
 
+        limitLengthBox = new TristateCheckBox("Limit Length", TristateCheckBox.NOT_SELECTED, this);
         limitLengthBox.setText("Limit Length");
         limitLengthBox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         limitLengthBox.setMargin(new java.awt.Insets(0, 0, 0, 0));
 
-        jLabel2.setText("Max Chars:");
+        final JLabel maxCharsLabel = new JLabel();
+        maxCharsLabel.setText("Max Chars:");
 
+        maxCharsBox = new JTextField();
         maxCharsBox.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent evt) {
-                updateMaxChars(evt);
+                updateMaxChars();
             }
         });
 
-        jLabel3.setText("Presence");
+        final JLabel presenceLabel = new JLabel();
+        presenceLabel.setText("Presence");
 
+        final JComboBox<String> presenceBox = new JComboBox<>();
         presenceBox.setModel(new DefaultComboBoxModel<>(new String[] {
                 "Visible" }));
 
+        final JComboBox<String> appearanceBox = new JComboBox<>();
         appearanceBox.setModel(new DefaultComboBoxModel<>(new String[] {
                 "None", "Underline", "Solid", "Sunken Box", "Custom..." }));
         appearanceBox.setSelectedIndex(3);
         appearanceBox.setEnabled(false);
 
-        jLabel1.setText("Apperance:");
-        jLabel1.setEnabled(false);
+        final JLabel appearanceLabel = new JLabel();
+        appearanceLabel.setText("Appearance:");
+        appearanceLabel.setEnabled(false);
+
+        final JSeparator jSeparator1 = new JSeparator();
 
         final GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -115,7 +83,7 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
                                 .add(layout.createParallelGroup(GroupLayout.TRAILING)
                                         .add(jSeparator1, GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
                                         .add(GroupLayout.LEADING, layout.createSequentialGroup()
-                                                .add(jLabel1)
+                                                .add(appearanceLabel)
                                                 .addPreferredGap(LayoutStyle.RELATED)
                                                 .add(appearanceBox, 0, 190, Short.MAX_VALUE))
                                         .add(GroupLayout.LEADING, layout.createSequentialGroup()
@@ -124,12 +92,12 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
                                                         .add(layout.createSequentialGroup()
                                                                 .add(limitLengthBox)
                                                                 .addPreferredGap(LayoutStyle.RELATED, 42, Short.MAX_VALUE)
-                                                                .add(jLabel2)
+                                                                .add(maxCharsLabel)
                                                                 .addPreferredGap(LayoutStyle.RELATED)
                                                                 .add(maxCharsBox, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
                                                         .add(allowMultipleLinesBox)))
                                         .add(GroupLayout.LEADING, layout.createSequentialGroup()
-                                                .add(jLabel3)
+                                                .add(presenceLabel)
                                                 .addPreferredGap(LayoutStyle.RELATED)
                                                 .add(presenceBox, 0, 202, Short.MAX_VALUE)))
                                 .add(16, 16, 16))
@@ -139,36 +107,30 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel1)
+                                        .add(appearanceLabel)
                                         .add(appearanceBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(allowMultipleLinesBox)
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(limitLengthBox)
-                                        .add(jLabel2)
+                                        .add(maxCharsLabel)
                                         .add(maxCharsBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(jSeparator1, GroupLayout.PREFERRED_SIZE, 10, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel3)
+                                        .add(presenceLabel)
                                         .add(presenceBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }
 
-    private void updateMaxChars(final FocusEvent evt) {
-        final Set<IWidget> widgets = widgetsAndProperties.keySet();
-
+    private void updateMaxChars() {
         final String maxChars = maxCharsBox.getText();
-
-        for (final IWidget widget : widgets) {
-            if (maxChars != null && !maxChars.equals("mixed")) {
-                final Element widgetProperties = widgetsAndProperties.get(widget);
-
+        if (maxChars != null && !maxChars.equals("mixed")) {
+            for (Element widgetProperties : widgetsAndProperties.values()) {
                 final Element maxCharsElement = XMLUtils.getPropertyElement(widgetProperties, "Max Chars").get();
-
                 maxCharsElement.getAttributeNode("value").setValue(maxChars);
             }
         }
@@ -183,11 +145,7 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
         //Boolean allowMultipleLinesToUse = null, limitLengthToUse = null;
         String maxCharsToUse = null;
 
-        /* iterate through the widgets */
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
-            final Element objectPropertiesElement = widgetsAndProperties.get(widget);
-
-            /* add field properties */
+        for (Element objectPropertiesElement : widgetsAndProperties.values()) {
             final Element fieldProperties = (Element) objectPropertiesElement.getElementsByTagName("field").item(0);
 
             final boolean allowMultipleLines = Boolean.parseBoolean(XMLUtils.getAttributeFromChildElement(fieldProperties, "Allow Multiple Lines").orElse("false"));
@@ -208,7 +166,6 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
 
                 maxCharsToUse = maxChars;
             } else {
-
                 if (allowMultipleLinesToUse != TristateCheckBox.DONT_CARE) {
                     if (allowMultipleLinesToUse == TristateCheckBox.SELECTED && !allowMultipleLines) {
                         allowMultipleLinesToUse = TristateCheckBox.DONT_CARE;
@@ -244,20 +201,14 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
     }
 
     @Override
-    public void checkboxClicked(final MouseEvent e) {
-        final Set<IWidget> widgets = widgetsAndProperties.keySet();
-
+    public void checkboxClicked(final MouseEvent event) {
         final TristateCheckBox.State allowMultipleLinesState = (((TristateCheckBox) allowMultipleLinesBox).getState());
         final TristateCheckBox.State limitLengthState = (((TristateCheckBox) limitLengthBox).getState());
 
-        for (final IWidget widget : widgets) {
-            final List<Element> objectProperties = XMLUtils.getElementsFromNodeList(
-                    widgetsAndProperties.get(widget).getChildNodes());
+        for (Element propertiesElement : widgetsAndProperties.values()) {
+            final List<Element> objectProperties = XMLUtils.getElementsFromNodeList(propertiesElement.getChildNodes());
 
-            /* add field properties */
-            final List<Element> fieldProperties = XMLUtils.getElementsFromNodeList(
-                    objectProperties.get(0).getChildNodes());
-
+            final List<Element> fieldProperties = XMLUtils.getElementsFromNodeList(objectProperties.get(0).getChildNodes());
             if (allowMultipleLinesState != TristateCheckBox.DONT_CARE) {
                 final Element allowMultipleLines = fieldProperties.get(1);
                 final String value;

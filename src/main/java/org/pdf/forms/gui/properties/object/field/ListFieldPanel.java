@@ -1,40 +1,12 @@
-/*
-* ===========================================
-* PDF Forms Designer
-* ===========================================
-*
-* Project Info:  http://pdfformsdesigne.sourceforge.net
-* (C) Copyright 2006-2008..
-* Lead Developer: Simon Barnett (n6vale@googlemail.com)
-*
-*  This file is part of the PDF Forms Designer
-*
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-*
-* ---------------
-* ListFieldPanel.java
-* ---------------
-*/
 package org.pdf.forms.gui.properties.object.field;
+
+import static java.util.stream.Collectors.toUnmodifiableMap;
 
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,8 +38,7 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
     private Map<IWidget, Element> widgetsAndProperties;
     private IDesigner designerPanel;
 
-    private final String[] HEADINGS = {
-            "Text" };
+    private final String[] HEADINGS = { "Text" };
 
     private final MyTableModel tableModel;
     private JButton addButton;
@@ -91,53 +62,48 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
     }
 
     private void initComponents() {
-        final JLabel jLabel1;
-        final JLabel jLabel3;
-        final JScrollPane jScrollPane3;
+        final JLabel appearanceLabel = new JLabel();
+        appearanceLabel.setText("Appearance:");
+        appearanceLabel.setEnabled(false);
 
-        jLabel1 = new JLabel();
         final JComboBox<String> appearanceBox = new JComboBox<>();
-        listLabel = new JLabel();
-        addButton = new JButton();
-        removeButton = new JButton();
-        upButton = new JButton();
-        downButton = new JButton();
-        jScrollPane3 = new JScrollPane();
-        itemsTable = new JTable();
-        jLabel3 = new JLabel();
-        final JComboBox<String> presenceBox = new JComboBox<>();
-        allowCustomTextEntryBox = new TristateCheckBox("Allow Custom Text Entry", TristateCheckBox.NOT_SELECTED, this);
-
-        jLabel1.setText("Appearance:");
-        jLabel1.setEnabled(false);
-
-        appearanceBox.setModel(new DefaultComboBoxModel<>(new String[] {
-                "None", "Underline", "Solid", "Sunken Box", "Custom..." }));
+        appearanceBox.setModel(new DefaultComboBoxModel<>(new String[] { "None", "Underline", "Solid", "Sunken Box", "Custom..." }));
         appearanceBox.setSelectedIndex(3);
         appearanceBox.setEnabled(false);
 
+        listLabel = new JLabel();
         listLabel.setText("List Items:");
 
+        addButton = new JButton();
         addButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/plus.gif")));
         addButton.addActionListener(this::addRow);
 
+        removeButton = new JButton();
         removeButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Cross.gif")));
         removeButton.addActionListener(this::removeRow);
 
+        upButton = new JButton();
         upButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Up.gif")));
         upButton.addActionListener(this::moveUp);
 
+        downButton = new JButton();
         downButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Down.gif")));
         downButton.addActionListener(this::moveDown);
 
+        itemsTable = new JTable();
         itemsTable.setModel(tableModel);
-        jScrollPane3.setViewportView(itemsTable);
 
-        jLabel3.setText("Presence:");
+        final JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(itemsTable);
 
+        final JLabel presenceLabel = new JLabel();
+        presenceLabel.setText("Presence:");
+
+        final JComboBox<String> presenceBox = new JComboBox<>();
         presenceBox.setModel(new DefaultComboBoxModel<>(new String[] {
                 "Visible" }));
 
+        allowCustomTextEntryBox = new TristateCheckBox("Allow Custom Text Entry", TristateCheckBox.NOT_SELECTED, this);
         allowCustomTextEntryBox.setText("Allow Custom Text Entry");
         allowCustomTextEntryBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         allowCustomTextEntryBox.setMargin(new Insets(0, 0, 0, 0));
@@ -152,7 +118,7 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
                                         .add(layout.createSequentialGroup()
                                                 .add(10, 10, 10)
                                                 .add(layout.createParallelGroup(GroupLayout.TRAILING, false)
-                                                        .add(GroupLayout.LEADING, jScrollPane3, 0, 0, Short.MAX_VALUE)
+                                                        .add(GroupLayout.LEADING, scrollPane, 0, 0, Short.MAX_VALUE)
                                                         .add(layout.createSequentialGroup()
                                                                 .add(layout.createParallelGroup(GroupLayout.TRAILING)
                                                                         .add(GroupLayout.LEADING, listLabel)
@@ -168,11 +134,11 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
                                                 .addContainerGap())
                                         .add(layout.createParallelGroup(GroupLayout.LEADING)
                                                 .add(layout.createSequentialGroup()
-                                                        .add(jLabel1)
+                                                        .add(appearanceLabel)
                                                         .addPreferredGap(LayoutStyle.RELATED)
                                                         .add(appearanceBox, GroupLayout.PREFERRED_SIZE, 198, GroupLayout.PREFERRED_SIZE))
                                                 .add(GroupLayout.TRAILING, layout.createSequentialGroup()
-                                                        .add(jLabel3)
+                                                        .add(presenceLabel)
                                                         .addPreferredGap(LayoutStyle.RELATED)
                                                         .add(presenceBox, 0, 135, Short.MAX_VALUE)
                                                         .add(84, 84, 84)))))
@@ -182,7 +148,7 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel1)
+                                        .add(appearanceLabel)
                                         .add(appearanceBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(GroupLayout.LEADING)
@@ -192,20 +158,19 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
                                         .add(removeButton, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
                                         .add(upButton, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(LayoutStyle.RELATED)
-                                .add(jScrollPane3, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
+                                .add(scrollPane, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(allowCustomTextEntryBox)
                                 .add(23, 23, 23)
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel3)
+                                        .add(presenceLabel)
                                         .add(presenceBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }
 
-    private void moveDown(final ActionEvent evt) {
+    private void moveDown(final ActionEvent event) {
         final int selectedRow = itemsTable.getSelectedRow();
-
         if (selectedRow != -1 && selectedRow != tableModel.getRowCount() - 1) {
             tableModel.moveRow(selectedRow, 1);
         }
@@ -213,9 +178,8 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
         updateItems();
     }
 
-    private void moveUp(final ActionEvent evt) {
+    private void moveUp(final ActionEvent event) {
         final int selectedRow = itemsTable.getSelectedRow();
-
         if (selectedRow > 0) {
             tableModel.moveRow(selectedRow, -1);
         }
@@ -223,9 +187,8 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
         updateItems();
     }
 
-    private void removeRow(final ActionEvent evt) {
+    private void removeRow(final ActionEvent event) {
         final int selectedRow = itemsTable.getSelectedRow();
-
         if (selectedRow != -1) {
             tableModel.deleteRow(selectedRow);
         }
@@ -233,13 +196,11 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
         updateItems();
     }
 
-    private void addRow(final ActionEvent evt) {
+    private void addRow(final ActionEvent event) {
         int selectedRow = itemsTable.getSelectedRow();
-
         if (selectedRow == -1) {
             selectedRow = tableModel.getRowCount();
         }
-
         tableModel.insertRow(selectedRow);
 
         updateItems();
@@ -247,14 +208,10 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
 
     private void updateItems() {
         final Set<IWidget> widgets = widgetsAndProperties.keySet();
-
         if (widgets.size() == 1) {
             final IWidget widget = widgets.iterator().next();
-
             final Element widgetProperties = widgetsAndProperties.get(widget);
-
             final Element itemsElement = (Element) widgetProperties.getElementsByTagName("items").item(0);
-
             final List<Element> items = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes());
 
             /* remove all elements from list before re-populating */
@@ -264,7 +221,6 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
 
             for (int i = 0; i < tableModel.getRowCount(); i++) {
                 final String value = (String) tableModel.getValueAt(i, 0);
-
                 if (value != null && !value.equals("")) {
                     XMLUtils.addBasicProperty(widget.getProperties(), "item", value, itemsElement);
                 }
@@ -280,18 +236,13 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
         this.widgetsAndProperties = widgetsAndProperties;
 
         final TristateCheckBox.State allowCustomTextEntryToUse = null;
-
         if (widgetsAndProperties.size() == 1) {
             setItemsEnabled(true);
         } else {
             setItemsEnabled(false);
         }
 
-        /* iterate through the widgets */
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
-            final Element objectProperties = widgetsAndProperties.get(widget);
-
-            /* add field properties */
+        for (Element objectProperties : widgetsAndProperties.values()) {
             if (widgetsAndProperties.size() == 1) {
                 // only 1 widget is currently selected
                 final Element itemElement = (Element) objectProperties.getElementsByTagName("items").item(0);
@@ -340,28 +291,16 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
     }
 
     @Override
-    public void checkboxClicked(final MouseEvent e) {
-        final Set<IWidget> widgets = widgetsAndProperties.keySet();
-
+    public void checkboxClicked(final MouseEvent event) {
         final TristateCheckBox.State allowCustomTextEntryState = (((TristateCheckBox) allowCustomTextEntryBox).getState());
 
+        final Set<IWidget> widgets = widgetsAndProperties.keySet();
         for (final IWidget widget : widgets) {
-            final List<Element> objectProperties = XMLUtils.getElementsFromNodeList(
-                    widgetsAndProperties.get(widget).getChildNodes());
-
-            /* add field properties */
-            final List<Element> fieldProperties = XMLUtils.getElementsFromNodeList(
-                    objectProperties.get(0).getChildNodes());
-
+            final List<Element> objectProperties = XMLUtils.getElementsFromNodeList(widgetsAndProperties.get(widget).getChildNodes());
+            final List<Element> fieldProperties = XMLUtils.getElementsFromNodeList(objectProperties.get(0).getChildNodes());
             if (allowCustomTextEntryState != TristateCheckBox.DONT_CARE) {
-                final Element allowMultipleLines = fieldProperties.get(2);
-                final String value;
-                if (allowCustomTextEntryState == TristateCheckBox.SELECTED) {
-                    value = "true";
-                } else {
-                    value = "false";
-                }
-                allowMultipleLines.getAttributeNode("value").setValue(value);
+                final boolean value = allowCustomTextEntryState == TristateCheckBox.SELECTED;
+                fieldProperties.get(2).getAttributeNode("value").setValue(String.valueOf(value));
             }
         }
     }
@@ -373,16 +312,15 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
         private int rows;
 
         void insertRow(final int selectedRow) {
-            final Map<String, Object> map = new HashMap<>();
             if (selectedRow != -1) {
-                for (final String heading : HEADINGS) {
-                    map.put(heading, null);
-                }
-
+                final Map<String, Object> map = Arrays.stream(HEADINGS).collect(toUnmodifiableMap(
+                        heading -> heading,
+                        heading -> new Object()
+                ));
                 values.add(selectedRow /*+ 1*/, map);
             }
-
             rows++;
+
             fireTableDataChanged();
         }
 
@@ -390,7 +328,6 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
                 final int index,
                 final int move) {
             final Map<String, Object> item = values.remove(index);
-
             values.add(index + move, item);
 
             fireTableDataChanged();
@@ -398,8 +335,8 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
 
         void deleteRow(final int selectedRow) {
             values.remove(selectedRow);
-
             rows--;
+
             fireTableDataChanged();
         }
 
@@ -424,7 +361,6 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
                 final int columnIndex) {
             if (rowIndex < values.size()) {
                 final Map<String, Object> map = values.get(rowIndex);
-
                 return map.get(HEADINGS[columnIndex]);
             }
 
