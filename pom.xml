@@ -9,6 +9,13 @@
 
     <name>PDF Designer Form</name>
 
+    <repositories>
+        <repository>
+            <id>clojars</id>
+            <url>https://repo.clojars.org/</url>
+        </repository>
+    </repositories>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -29,12 +36,23 @@
             <artifactId>swing-layout</artifactId>
             <version>1.0.3</version>
         </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.jpedal</groupId>-->
+        <!--            <artifactId>jpedal-lgpl</artifactId>-->
+        <!--            <version>1.0</version>-->
+        <!--            <scope>system</scope>-->
+        <!--            <systemPath>${basedir}/libs/jpedal.jar</systemPath>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.jpedal</groupId>
             <artifactId>jpedal-lgpl</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/jpedal.jar</systemPath>
+            <version>4.74b27</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.media</groupId>
+                    <artifactId>jai_core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

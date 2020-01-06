@@ -11,11 +11,11 @@ import java.util.Optional;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.ProgressMonitor;
+import javax.swing.SwingWorker;
 
 import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 import org.jpedal.objects.PdfPageData;
-import org.jpedal.utils.SwingWorker;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
@@ -98,8 +98,7 @@ public class ImportPdfCommand implements Command {
 
             final SwingWorker worker = new SwingWorker() {
                 @Override
-                public Object construct() {
-
+                protected Object doInBackground() throws Exception {
                     boolean isCancelled;
 
                     final List<Object[]> pages = new ArrayList<>();
@@ -177,7 +176,7 @@ public class ImportPdfCommand implements Command {
                     return null;
                 }
             };
-            worker.start();
+            worker.execute();
 
             final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory());
             properties.addRecentDocument(pdfPath, "recentpdffiles");

@@ -1,37 +1,7 @@
-/*
- * ===========================================
- * PDF Forms Designer
- * ===========================================
- * <p>
- * Project Info:  http://pdfformsdesigne.sourceforge.net
- * (C) Copyright 2006-2008..
- * Lead Developer: Simon Barnett (n6vale@googlemail.com)
- * <p>
- * This file is part of the PDF Forms Designer
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * <p>
- * <p>
- * <p>
- * ---------------
- * FileFinder.java
- * ---------------
- */
 package org.pdf.forms.gui.windows;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.io.File;
 
 import javax.swing.JButton;
@@ -43,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.jdesktop.layout.GroupLayout;
-import org.jpedal.examples.simpleviewer.utils.FileFilterer;
+import org.pdf.forms.gui.commands.DesFileFilter;
 
 public class FileFinder extends JDialog {
 
@@ -140,34 +110,27 @@ public class FileFinder extends JDialog {
         pack();
     }
 
-    private void skipClicked(final java.awt.event.ActionEvent evt) {
+    private void skipClicked(final ActionEvent evt) {
         fileLocation = null;
         setVisible(false);
     }
 
-    private void browseClicked(final java.awt.event.ActionEvent evt) {
+    private void browseClicked(final ActionEvent evt) {
         final String path = locationBox.getText();
         final JFileChooser chooser = new JFileChooser(path);
 
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        final String[] pdf = new String[] {
-                "pdf"
-        };
-        chooser.addChoosableFileFilter(new FileFilterer(pdf, "des (*.des)"));
-
+        chooser.addChoosableFileFilter(new DesFileFilter());
         final int state = chooser.showOpenDialog(this);
 
         final File fileToOpen = chooser.getSelectedFile();
-
         if (fileToOpen != null && state == JFileChooser.APPROVE_OPTION) {
             locationBox.setText(fileToOpen.getAbsolutePath());
         }
     }
 
-    private void okClicked(final java.awt.event.ActionEvent evt) {
+    private void okClicked(final ActionEvent evt) {
         final String newFile = locationBox.getText();
-
         if (!new File(newFile).exists()) {
             JOptionPane.showMessageDialog(this,
                     "The file you have entered does not exist, please select an existing file",

@@ -7,8 +7,6 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 
-import org.jpedal.examples.simpleviewer.gui.swing.SwingButton;
-import org.jpedal.examples.simpleviewer.gui.swing.SwingCombo;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.commands.Commands;
 

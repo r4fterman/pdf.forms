@@ -13,7 +13,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 
-import org.jpedal.examples.simpleviewer.gui.swing.SwingMenuItem;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.commands.CommandListener;

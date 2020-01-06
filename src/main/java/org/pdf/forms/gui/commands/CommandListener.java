@@ -3,9 +3,9 @@ package org.pdf.forms.gui.commands;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import org.jpedal.examples.simpleviewer.gui.generic.GUIButton;
-import org.jpedal.examples.simpleviewer.gui.swing.SwingCombo;
-import org.jpedal.examples.simpleviewer.gui.swing.SwingMenuItem;
+import org.pdf.forms.gui.toolbars.SwingButton;
+import org.pdf.forms.gui.toolbars.SwingCombo;
+import org.pdf.forms.utils.configuration.SwingMenuItem;
 
 public class CommandListener implements ActionListener {
 
@@ -22,8 +22,8 @@ public class CommandListener implements ActionListener {
     }
 
     private int getId(final Object source) {
-        if (source instanceof GUIButton) {
-            return ((GUIButton) source).getID();
+        if (source instanceof SwingButton) {
+            return ((SwingButton) source).getID();
         }
         if (source instanceof SwingMenuItem) {
             return ((SwingMenuItem) source).getID();
