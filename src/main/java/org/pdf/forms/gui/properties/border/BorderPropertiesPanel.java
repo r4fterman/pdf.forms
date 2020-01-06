@@ -30,6 +30,16 @@ import org.w3c.dom.Element;
 
 public class BorderPropertiesPanel extends JPanel {
 
+    private static final String[] BORDER_STYLES = {
+            "None",
+            "Solid",
+            "Beveled"
+    };
+    private static final String[] BACKGROUND_FILL_STYLES = {
+            "None",
+            "Solid"
+    };
+
     private final int units = (int) (Rule.INCH / 2.54);
 
     private IDesigner designerPanel;
@@ -82,7 +92,7 @@ public class BorderPropertiesPanel extends JPanel {
         leftEdgesIcon.setOpaque(true);
 
         borderStyleBox = new JComboBox<>();
-        borderStyleBox.setModel(new DefaultComboBoxModel<>(new String[] { "None", "Solid", "Beveled" }));
+        borderStyleBox.setModel(new DefaultComboBoxModel<>(BORDER_STYLES));
         borderStyleBox.addActionListener(this::updateBorderStyle);
 
         borderWidthBox = new JTextField();
@@ -137,7 +147,7 @@ public class BorderPropertiesPanel extends JPanel {
         styleLabel.setText("Style:");
 
         backgroundFillBox = new JComboBox<>();
-        backgroundFillBox.setModel(new DefaultComboBoxModel<>(new String[] { "None", "Solid" }));
+        backgroundFillBox.setModel(new DefaultComboBoxModel<>(BACKGROUND_FILL_STYLES));
         backgroundFillBox.setEnabled(false);
         backgroundFillBox.addActionListener(this::updateFillStyle);
 

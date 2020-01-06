@@ -35,12 +35,22 @@ import org.w3c.dom.Element;
 
 public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
 
+    private static final String[] HEADINGS = {
+            "Text"
+    };
+    private static final String[] APPEARANCES = {
+            "None",
+            "Underline",
+            "Solid",
+            "Sunken Box",
+            "Custom..."
+    };
+
+    private final MyTableModel tableModel;
+
     private Map<IWidget, Element> widgetsAndProperties;
     private IDesigner designerPanel;
 
-    private final String[] HEADINGS = { "Text" };
-
-    private final MyTableModel tableModel;
     private JButton addButton;
     private JCheckBox allowCustomTextEntryBox;
     private JButton downButton;
@@ -67,7 +77,7 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
         appearanceLabel.setEnabled(false);
 
         final JComboBox<String> appearanceBox = new JComboBox<>();
-        appearanceBox.setModel(new DefaultComboBoxModel<>(new String[] { "None", "Underline", "Solid", "Sunken Box", "Custom..." }));
+        appearanceBox.setModel(new DefaultComboBoxModel<>(APPEARANCES));
         appearanceBox.setSelectedIndex(3);
         appearanceBox.setEnabled(false);
 
@@ -305,7 +315,7 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
         }
     }
 
-    class MyTableModel extends AbstractTableModel {
+    static class MyTableModel extends AbstractTableModel {
 
         private final List<Map<String, Object>> values = new ArrayList<>();
 

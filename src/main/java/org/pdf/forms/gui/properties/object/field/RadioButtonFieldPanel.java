@@ -27,6 +27,15 @@ import org.pdf.forms.widgets.RadioButtonWidget;
 import org.w3c.dom.Element;
 
 public class RadioButtonFieldPanel extends JPanel {
+
+    private static final String[] APPEARANCES = {
+            "None",
+            "Underline",
+            "Solid",
+            "Sunken Box",
+            "Custom..."
+    };
+
     private Map<IWidget, Element> widgetsAndProperties;
 
     private IDesigner designerPanel;
@@ -48,7 +57,7 @@ public class RadioButtonFieldPanel extends JPanel {
 
     private void initComponents() {
         final JComboBox<String> appearanceBox = new JComboBox<>();
-        appearanceBox.setModel(new DefaultComboBoxModel<>(new String[] { "None", "Underline", "Solid", "Sunken Box", "Custom..." }));
+        appearanceBox.setModel(new DefaultComboBoxModel<>(APPEARANCES));
         appearanceBox.setEnabled(false);
 
         final JLabel appearanceLabel = new JLabel();

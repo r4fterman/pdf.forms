@@ -400,7 +400,6 @@ public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxPar
             designerPanel.repaint();
         }
 
-
     }
 
     private void updateRotation(final ActionEvent evt) {
@@ -466,15 +465,19 @@ public class LayoutPropertiesPanel extends JPanel implements TristateCheckBoxPar
             props[3] = (int) Math.round(height);
         }
 
-        final Set<IWidget> widgets = widgetsAndProperties.keySet();
+        if (widgetsAndProperties != null) {
+            final Set<IWidget> widgets = widgetsAndProperties.keySet();
 
-        PropertyChanger.updateSizeAndPosition(widgets, props);
+            PropertyChanger.updateSizeAndPosition(widgets, props);
 
-        for (final IWidget widget : widgets) {
-            widget.setLayoutProperties(widgetsAndProperties.get(widget));
+            for (final IWidget widget : widgets) {
+                widget.setLayoutProperties(widgetsAndProperties.get(widget));
+            }
         }
 
-        designerPanel.repaint();
+        if (designerPanel != null) {
+            designerPanel.repaint();
+        }
     }
 
     @Override

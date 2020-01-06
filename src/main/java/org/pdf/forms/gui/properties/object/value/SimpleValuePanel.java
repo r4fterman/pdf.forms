@@ -119,16 +119,18 @@ public class SimpleValuePanel extends JPanel {
     private void updateDefaultText(final FocusEvent event) {
         final String defaultText = defaultTextBox.getText();
 
-        for (final Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
-            final IWidget widget = entry.getKey();
-            final Element widgetProperties = entry.getValue();
+        if (widgetsAndProperties != null) {
+            for (final Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
+                final IWidget widget = entry.getKey();
+                final Element widgetProperties = entry.getValue();
 
-            if (defaultText != null && !defaultText.equals("mixed")) {
-                final Element defaultTextElement = XMLUtils.getPropertyElement(widgetProperties, "Default").get();
-                defaultTextElement.getAttributeNode("value").setValue(defaultText);
+                if (defaultText != null && !defaultText.equals("mixed")) {
+                    final Element defaultTextElement = XMLUtils.getPropertyElement(widgetProperties, "Default").get();
+                    defaultTextElement.getAttributeNode("value").setValue(defaultText);
+                }
+
+                widget.setObjectProperties(widgetProperties);
             }
-
-            widget.setObjectProperties(widgetProperties);
         }
     }
 

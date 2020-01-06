@@ -24,6 +24,37 @@ import org.w3c.dom.Element;
 
 public class FontPropertiesPanel extends JPanel {
 
+    private static final String[] FONT_SIZES = {
+            "6",
+            "8",
+            "10",
+            "12",
+            "14",
+            "16",
+            "18",
+            "20",
+            "24",
+            "28",
+            "36",
+            "48",
+            "72"
+    };
+    private static final String[] FONT_STYLES = {
+            "Plain",
+            "Bold",
+            "Italic",
+            "Bold Italic" };
+    private static final String[] UNDERLINE_TYPES = {
+            "No Underline",
+            "Underline",
+            "Double Underline",
+            "Word Underline",
+            "Word Double Underline" };
+    private static final String[] STRIKETHROUGH_VALUES = {
+            "Off",
+            "On" };
+    private static final String CUSTOM_COLOR = "Custom";
+
     private final FontHandler fontHandler;
 
     private ColorComboBoxEditor editor;
@@ -85,27 +116,16 @@ public class FontPropertiesPanel extends JPanel {
         fontNameBox.addActionListener(this::updateFont);
 
         fontStyleBox = new JComboBox<>();
-        fontStyleBox.setModel(new DefaultComboBoxModel<>(new String[] {
-                "Plain",
-                "Bold",
-                "Italic",
-                "Bold Italic" }));
+        fontStyleBox.setModel(new DefaultComboBoxModel<>(FONT_STYLES));
         fontStyleBox.addActionListener(this::updateFont);
 
         underlineBox = new JComboBox<>();
-        underlineBox.setModel(new DefaultComboBoxModel<>(new String[] {
-                "No Underline",
-                "Underline",
-                "Double Underline",
-                "Word Underline",
-                "Word Double Underline" }));
+        underlineBox.setModel(new DefaultComboBoxModel<>(UNDERLINE_TYPES));
         underlineBox.setEnabled(false);
         underlineBox.addActionListener(this::updateFont);
 
         strikethroughBox = new JComboBox<>();
-        strikethroughBox.setModel(new DefaultComboBoxModel<>(new String[] {
-                "Off",
-                "On" }));
+        strikethroughBox.setModel(new DefaultComboBoxModel<>(STRIKETHROUGH_VALUES));
         strikethroughBox.setEnabled(false);
         strikethroughBox.addActionListener(this::updateFont);
 
@@ -120,7 +140,7 @@ public class FontPropertiesPanel extends JPanel {
                 Color.red,
                 Color.white,
                 Color.yellow,
-                "Custom" }));
+                CUSTOM_COLOR }));
 
         final Color color = (Color) colorBox.getSelectedItem();
         editor = new ColorComboBoxEditor(color, colorBox);
@@ -129,10 +149,9 @@ public class FontPropertiesPanel extends JPanel {
         colorBox.setRenderer(new ColorCellRenderer());
         colorBox.addActionListener(this::updateColor);
 
-
         fontSizeBox = new JComboBox<>();
         fontSizeBox.setEditable(true);
-        fontSizeBox.setModel(new DefaultComboBoxModel<>(new String[] { "6", "8", "10", "12", "14", "16", "18", "20", "24", "28", "36", "48", "72" }));
+        fontSizeBox.setModel(new DefaultComboBoxModel<>(FONT_SIZES));
         fontSizeBox.addActionListener(this::updateFont);
 
         final GroupLayout layout = new GroupLayout(this);
@@ -287,7 +306,7 @@ public class FontPropertiesPanel extends JPanel {
     }
 
     private void updateColor(final ActionEvent event) {
-        if ("Custom".equals(colorBox.getSelectedItem())) {
+        if (CUSTOM_COLOR.equals(colorBox.getSelectedItem())) {
             final Color currentBackground = (Color) editor.getItem();
             final Color color = JColorChooser.showDialog(null, "Color Chooser", currentBackground);
             if ((color != null) && (currentBackground != color)) {
@@ -515,34 +534,22 @@ public class FontPropertiesPanel extends JPanel {
             final int currentlyEditing,
             final String captionProperty,
             final String valueProperty) {
-        String propertyToUse = null;
-
-        switch (currentlyEditing) {
-            case IWidget.COMPONENT_BOTH:
-                if (captionProperty.equals(valueProperty)) { // both are the same
-                    propertyToUse = captionProperty;
-                } else {
-                    /* properties are different */
-                    propertyToUse = "mixed";
-                }
-
-                break;
-            case IWidget.COMPONENT_CAPTION:
-                /* just set the caption properties */
-                propertyToUse = captionProperty;
-
-                break;
-
-            case IWidget.COMPONENT_VALUE:
-                /* just set the value properties */
-                propertyToUse = valueProperty;
-
-                break;
-            default:
-                break;
+        if (currentlyEditing == IWidget.COMPONENT_BOTH) {
+            if (captionProperty.equals(valueProperty)) {
+                // both are the same
+                return captionProperty;
+            }
+            // properties are different
+            return "mixed";
+        } else if (currentlyEditing == IWidget.COMPONENT_CAPTION) {
+            // just set the caption properties
+            return captionProperty;
+        } else if (currentlyEditing == IWidget.COMPONENT_VALUE) {
+            // just set the value properties
+            return valueProperty;
         }
 
-        return propertyToUse;
+        return null;
     }
 
 }

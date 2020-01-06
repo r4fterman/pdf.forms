@@ -28,6 +28,13 @@ import com.itextpdf.text.PageSize;
 
 public class PagePanel extends JPanel {
 
+    private static final String[] PAPER_TYPES = {
+            "A4",
+            "A5",
+            "Letter",
+            "Custom"
+    };
+
     private final Dimension A4 = new Dimension((int) PageSize.A4.getWidth(), (int) PageSize.A4.getHeight());
     private final Dimension A5 = new Dimension((int) PageSize.A5.getWidth(), (int) PageSize.A5.getHeight());
     private final Dimension LETTER = new Dimension((int) PageSize.LETTER.getWidth(), (int) PageSize.LETTER.getHeight());
@@ -58,7 +65,7 @@ public class PagePanel extends JPanel {
         paperTypeLabel.setText("Paper Type:");
 
         paperTypeBox = new JComboBox<>();
-        paperTypeBox.setModel(new DefaultComboBoxModel<>(new String[] { "A4", "A5", "Letter", "Custom" }));
+        paperTypeBox.setModel(new DefaultComboBoxModel<>(PAPER_TYPES));
         paperTypeBox.addActionListener(this::updatePaperType);
 
         final JLabel heightLabel = new JLabel();
