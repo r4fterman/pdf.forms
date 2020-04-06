@@ -15,6 +15,8 @@ before_install:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
   - sudo fc-cache -f -v
+  #- export DISPLAY=:99.0                # Display number for xvfb (for headless browser testing)
+  #- sh -e /etc/init.d/xvfb start        # Start xvfb (for headless browser testing)
 
 install: true
 
@@ -23,10 +25,10 @@ services:
 
 script:
   - mvn clean install -Pci
-  - cat /home/travis/build/r4fterman/pdf.forms/target/surefire-reports/TEST-org.pdf.forms.widgets.utils.WidgetFactoryTest.xml
-  - JACOCO_SOURCE_PATH=src/main/java ./cc-test-reporter format-coverage ./target/coverage-reports/jacoco.xml --input-type jacoco
 # Specify a display with xvfb for UI testing
 
+after_script:
+  - ./cc-test-reporter after-build
+
 after_success:
-  - ./cc-test-reporter upload-coverage -r $CC_TEST_REPORTER_ID
   - bash <(curl -s https://codecov.io/bash)

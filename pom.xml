@@ -146,9 +146,6 @@
                                 <requireJavaVersion>
                                     <version>${java.version}</version>
                                 </requireJavaVersion>
-                                <requireOS>
-                                    <family>unix</family>
-                                </requireOS>
                             </rules>
                         </configuration>
                     </execution>
@@ -282,7 +279,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
 
                     <plugin>
                         <groupId>org.jacoco</groupId>
