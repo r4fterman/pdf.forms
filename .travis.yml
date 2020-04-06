@@ -29,8 +29,8 @@ script:
 # Specify a display with xvfb for UI testing
 
 after_script:
-  - JACOCO_SOURCE_PATH=./src/main/java ./cc-test-reporter format-coverage ./target/coverage-reports/jacoco.xml -t jacoco -o ./coverage/codeclimate.json
-  - ./cc-test-reporter after-build
+  - JACOCO_SOURCE_PATH=./src/main/java ./cc-test-reporter format-coverage ./target/coverage-reports/jacoco.xml -t jacoco -o ./target/coverage/codeclimate.json
+  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage -i ./target/coverage/codeclimate.json; fi
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
