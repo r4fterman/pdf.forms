@@ -1,6 +1,5 @@
 env:
   global:
-    - CODECOV_ID=017a4ebc-080c-4947-81e4-253f2294a5d0
     - CC_TEST_REPORTER_ID=7f97b09b52df4212c66f57cc09bdc7e3225161c2c6b149012a0b1335616b8831
 
 language: java
