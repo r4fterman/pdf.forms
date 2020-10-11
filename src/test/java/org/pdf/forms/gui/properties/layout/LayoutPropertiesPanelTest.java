@@ -8,6 +8,6 @@ class LayoutPropertiesPanelTest extends UIPanelTest {
 
     @Override
     protected JPanel createPanel() {
-        return new LayoutPropertiesPanel();
+        return new LayoutPropertiesPanel(new TestDesginer());
     }
 }
