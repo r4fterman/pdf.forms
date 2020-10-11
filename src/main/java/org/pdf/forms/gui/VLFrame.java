@@ -258,7 +258,7 @@ public class VLFrame extends JFrame implements IMainFrame {
 
         //windowMenu = new WindowMenu(this);
 
-        splashWindow.setProgress(4, "Creating blank doucment");
+        splashWindow.setProgress(4, "Creating blank document");
 
         /* add a blank page to strat with */
         commands.executeCommand(Commands.INSERT_PAGE);
