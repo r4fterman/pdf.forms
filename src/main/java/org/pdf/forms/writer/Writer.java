@@ -1,9 +1,7 @@
 package org.pdf.forms.writer;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import javax.swing.*;
+import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,23 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import javax.swing.AbstractButton;
-import javax.swing.Icon;
-
-import org.pdf.forms.fonts.FontHandler;
-import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.XMLUtils;
-import org.pdf.forms.widgets.CheckBoxWidget;
-import org.pdf.forms.widgets.IWidget;
-import org.pdf.forms.widgets.RadioButtonWidget;
-import org.pdf.forms.widgets.components.PdfCaption;
-import org.pdf.forms.writer.PdfDocumentLayout.Page;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 import com.itextpdf.awt.DefaultFontMapper;
 import com.itextpdf.text.Document;
@@ -51,6 +32,19 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.RadioCheckField;
+import org.pdf.forms.fonts.FontHandler;
+import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.widgets.CheckBoxWidget;
+import org.pdf.forms.widgets.IWidget;
+import org.pdf.forms.widgets.RadioButtonWidget;
+import org.pdf.forms.widgets.components.PdfCaption;
+import org.pdf.forms.writer.PdfDocumentLayout.Page;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 public class Writer {
 
@@ -173,7 +167,7 @@ public class Writer {
             final PdfDocumentLayout pdfDocumentLayout) throws DocumentException, IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        //TODO: use PdfCopy instead
+        //todo: use PdfCopy instead
         final PdfCopyFields pdfCopyFields = new PdfCopyFields(baos);
 
         for (int i = 0; i < pages.size(); i++) {
