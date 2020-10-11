@@ -9,7 +9,7 @@
 <!--                                                                -->
 <configuration>
     <appender name="appLogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>log/pdfdesigner.log</file>
+        <file>logs/pdfdesigner.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
             <fileNamePattern>logs/pdfdesigner.log.%d{yyyy-MM-dd}.log</fileNamePattern>
@@ -17,7 +17,6 @@
             <!-- keep 30 days' worth of history capped at 3GB total size -->
             <maxHistory>30</maxHistory>
             <totalSizeCap>3GB</totalSizeCap>
-
         </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</pattern>
@@ -31,7 +30,7 @@
             <pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
+            <level>INFO</level>
         </filter>
     </appender>
     <logger name="org.pdf.forms" level="DEBUG">
