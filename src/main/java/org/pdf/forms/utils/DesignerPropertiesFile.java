@@ -1,13 +1,12 @@
 package org.pdf.forms.utils;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +17,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public final class DesignerPropertiesFile extends PropertiesFile {
+
+    private static final String RECENT_DESIGNER_FILES = "recentdesfiles";
+    private static final String RECENT_PDF_FILES = "recentpdffiles";
+    private static final String CUSTOM_FONTS = "customfonts";
 
     private static DesignerPropertiesFile instance;
 
@@ -30,14 +33,20 @@ public final class DesignerPropertiesFile extends PropertiesFile {
     public static DesignerPropertiesFile getInstance(final File configDir) {
         if (instance == null) {
             final File configFile = new File(configDir, ".properties.xml");
-
             instance = new DesignerPropertiesFile(configFile);
         }
-
         return instance;
     }
 
-    public String[] getRecentDocuments(final String type) {
+    public String[] getRecentDesignerDocuments() {
+        return getRecentDocuments(RECENT_DESIGNER_FILES);
+    }
+
+    public String[] getRecentPDFDocuments() {
+        return getRecentDocuments(RECENT_PDF_FILES);
+    }
+
+    private String[] getRecentDocuments(final String type) {
         final String[] recentDocuments;
 
         try {
@@ -66,11 +75,19 @@ public final class DesignerPropertiesFile extends PropertiesFile {
             return recentDocuments;
         } catch (final Exception e) {
             logger.error("Error getting recent documents", e);
-            return null;
+            return new String[0];
         }
     }
 
-    public void addRecentDocument(
+    public void addRecentDesignerDocument(final String file) {
+        addRecentDocument(file, RECENT_DESIGNER_FILES);
+    }
+
+    public void addRecentPDFDocument(final String file) {
+        addRecentDocument(file, RECENT_PDF_FILES);
+    }
+
+    private void addRecentDocument(
             final String file,
             final String type) {
         try {
@@ -95,7 +112,7 @@ public final class DesignerPropertiesFile extends PropertiesFile {
             final String name,
             final String path) {
         try {
-            final Element customFontsElement = (Element) getDoc().getElementsByTagName("customfonts").item(0);
+            final Element customFontsElement = (Element) getDoc().getElementsByTagName(CUSTOM_FONTS).item(0);
 
             checkExists(name, customFontsElement);
 
@@ -115,7 +132,7 @@ public final class DesignerPropertiesFile extends PropertiesFile {
         final Map<String, String> customFonts = new HashMap<>();
 
         try {
-            final NodeList nl = getDoc().getElementsByTagName("customfonts");
+            final NodeList nl = getDoc().getElementsByTagName(CUSTOM_FONTS);
 
             if (nl != null && nl.getLength() > 0) {
                 final NodeList allCustomFonts = ((Element) nl.item(0)).getElementsByTagName("*");
@@ -170,22 +187,22 @@ public final class DesignerPropertiesFile extends PropertiesFile {
             hasAllElements = false;
         }
 
-        if (!elementsInTree.contains("recentdesfiles")) {
-            final Element recentDes = getDoc().createElement("recentdesfiles");
+        if (!elementsInTree.contains(RECENT_DESIGNER_FILES)) {
+            final Element recentDes = getDoc().createElement(RECENT_DESIGNER_FILES);
             propertiesElement.appendChild(recentDes);
 
             hasAllElements = false;
         }
 
-        if (!elementsInTree.contains("recentpdffiles")) {
-            final Element recentPDF = getDoc().createElement("recentpdffiles");
+        if (!elementsInTree.contains(RECENT_PDF_FILES)) {
+            final Element recentPDF = getDoc().createElement(RECENT_PDF_FILES);
             propertiesElement.appendChild(recentPDF);
 
             hasAllElements = false;
         }
 
-        if (!elementsInTree.contains("customfonts")) {
-            final Element customFonts = getDoc().createElement("customfonts");
+        if (!elementsInTree.contains(CUSTOM_FONTS)) {
+            final Element customFonts = getDoc().createElement(CUSTOM_FONTS);
             propertiesElement.appendChild(customFonts);
 
             hasAllElements = false;

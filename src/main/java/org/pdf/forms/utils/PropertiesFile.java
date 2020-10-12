@@ -125,7 +125,7 @@ public abstract class PropertiesFile {
         }
     }
 
-    public int getNoRecentDocumentsToDisplay() {
+    public int getNumberRecentDocumentsToDisplay() {
         return noOfRecentDocs;
     }
 

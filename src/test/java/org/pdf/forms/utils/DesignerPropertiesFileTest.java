@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -33,9 +34,7 @@ class DesignerPropertiesFileTest {
     void getRecentDesDocuments_from_non_existing_properties_file_should_return_list_with_null_entries(@TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
-        final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments("recentdesfiles");
-
-        assertThat(recentDesFiles, is(notNullValue()));
+        final String[] recentDesFiles = designerPropertiesFile.getRecentDesignerDocuments();
 
         assertThat(recentDesFiles.length, is(6));
         assertThat(recentDesFiles[0], is(nullValue()));
@@ -54,9 +53,7 @@ class DesignerPropertiesFileTest {
         final File configDir = new File(url.toURI()).getParentFile();
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir);
 
-        final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments("recentdesfiles");
-
-        assertThat(recentDesFiles, is(notNullValue()));
+        final String[] recentDesFiles = designerPropertiesFile.getRecentDesignerDocuments();
 
         assertThat(recentDesFiles.length, is(6));
         assertThat(recentDesFiles[0], is("/example/foo/bar/test.des"));
@@ -71,7 +68,7 @@ class DesignerPropertiesFileTest {
     void getRecentPdfDocuments_from_non_existing_properties_file_should_return_list_with_null_entries(@TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
-        final String[] recentPdfFiles = designerPropertiesFile.getRecentDocuments("recentpdffiles");
+        final String[] recentPdfFiles = designerPropertiesFile.getRecentPDFDocuments();
 
         assertThat(recentPdfFiles, is(notNullValue()));
 
@@ -88,12 +85,10 @@ class DesignerPropertiesFileTest {
     void addRecentDocument_to_DES_list_should_be_added_on_top(@TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
-        designerPropertiesFile.addRecentDocument("/usr/local/example1.des", "recentdesfiles");
-        designerPropertiesFile.addRecentDocument("/usr/local/example2.des", "recentdesfiles");
+        designerPropertiesFile.addRecentDesignerDocument("/usr/local/example1.des");
+        designerPropertiesFile.addRecentDesignerDocument("/usr/local/example2.des");
 
-        final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments("recentdesfiles");
-
-        assertThat(recentDesFiles, is(notNullValue()));
+        final String[] recentDesFiles = designerPropertiesFile.getRecentDesignerDocuments();
 
         assertThat(recentDesFiles.length, is(6));
         assertThat(recentDesFiles[0], is("/usr/local/example2.des"));
@@ -108,10 +103,10 @@ class DesignerPropertiesFileTest {
     void addRecentDocument_to_PDF_list_should_be_added_on_top(@TempDir final Path configDir) {
         designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
 
-        designerPropertiesFile.addRecentDocument("/usr/local/example1.pdf", "recentpdffiles");
-        designerPropertiesFile.addRecentDocument("/usr/local/example2.pdf", "recentpdffiles");
+        designerPropertiesFile.addRecentPDFDocument("/usr/local/example1.pdf");
+        designerPropertiesFile.addRecentPDFDocument("/usr/local/example2.pdf");
 
-        final String[] recentDesFiles = designerPropertiesFile.getRecentDocuments("recentpdffiles");
+        final String[] recentDesFiles = designerPropertiesFile.getRecentPDFDocuments();
 
         assertThat(recentDesFiles, is(notNullValue()));
 

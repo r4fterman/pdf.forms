@@ -53,7 +53,7 @@ public class OpenDesignerFileCommand implements Command {
         this.widgetFactory = widgetFactory;
         this.configuration = configuration;
 
-        final int noOfRecentDocs = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory()).getNoRecentDocumentsToDisplay();
+        final int noOfRecentDocs = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory()).getNumberRecentDocumentsToDisplay();
         this.recentDesignerDocuments = new JMenuItem[noOfRecentDocs];
     }
 
@@ -88,8 +88,8 @@ public class OpenDesignerFileCommand implements Command {
         mainFrame.setTitle(mainFrame.getCurrentDesignerFileName() + " - PDF Forms Designer Version " + version);
 
         final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory());
-        properties.addRecentDocument(designerFileToOpen, "recentdesfiles");
-        updateRecentDocuments(properties.getRecentDocuments("recentdesfiles"));
+        properties.addRecentDesignerDocument(designerFileToOpen);
+        updateRecentDocuments(properties.getRecentDesignerDocuments());
     }
 
     private void readDesignerFile(final String designerFileToOpen) {
@@ -220,7 +220,7 @@ public class OpenDesignerFileCommand implements Command {
     }
 
     private void updateRecentDocuments(final String[] recentDocs) {
-        if (recentDocs == null) {
+        if (recentDocs.length == 0) {
             return;
         }
 
@@ -233,12 +233,7 @@ public class OpenDesignerFileCommand implements Command {
                     recentDocuments[i] = new JMenuItem();
                 }
                 recentDocuments[i].setText(i + 1 + ": " + shortenedFileName);
-                if (recentDocuments[i].getText().equals(i + 1 + ": ")) {
-                    recentDocuments[i].setVisible(false);
-                } else {
-                    recentDocuments[i].setVisible(true);
-                }
-
+                recentDocuments[i].setVisible(!recentDocuments[i].getText().equals(i + 1 + ": "));
                 recentDocuments[i].setName(recentDocs[i]);
             }
         }

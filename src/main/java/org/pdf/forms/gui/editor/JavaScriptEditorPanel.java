@@ -168,22 +168,15 @@ public class JavaScriptEditorPanel extends JPanel implements Dockable {
     }
 
     private void saveJavaScriptInWidgets() {
-        for (final IWidget widget : widgets) {
-            final Document document = widget.getProperties();
-
-            saveJavaScript(document);
-        }
+        widgets.stream().map(IWidget::getProperties).forEach(this::saveJavaScript);
     }
 
     private void saveJavaScript(final Document document) {
-        final Element javaScriptPropertiesElement = XMLUtils.getElementsFromNodeList(
-                document.getElementsByTagName("javascript")).get(0);
+        final Element javaScriptPropertiesElement = XMLUtils.getElementsFromNodeList(document.getElementsByTagName("javascript")).get(0);
 
-        final Element currentElement = XMLUtils.getElementsFromNodeList(
-                javaScriptPropertiesElement.getElementsByTagName((String) eventBox.getSelectedItem())).get(0);
+        final Element currentElement = XMLUtils.getElementsFromNodeList(javaScriptPropertiesElement.getElementsByTagName((String) eventBox.getSelectedItem())).get(0);
 
         Text currentTextNode = (Text) currentElement.getChildNodes().item(0);
-
         if (currentTextNode == null) {
             currentTextNode = document.createTextNode(scriptBox.getText());
             currentElement.appendChild(currentTextNode);

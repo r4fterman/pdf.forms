@@ -36,7 +36,6 @@ public class PropertiesCompound extends CompoundDockable {
         this.layoutPropertiesTab = layoutPropertiesTab;
         this.borderPropertiesTab = borderPropertiesTab;
         this.paragraphPropertiesTab = paragraphPropertiesTab;
-        //key.setName("name");
     }
 
     @Override
@@ -52,7 +51,7 @@ public class PropertiesCompound extends CompoundDockable {
         paragraphPropertiesTab.setProperties(widget);
     }
 
-    public void updateAvailiableFonts() {
+    public void updateAvailableFonts() {
         fontPropertiesTab.updateAvailiableFonts();
 
     }

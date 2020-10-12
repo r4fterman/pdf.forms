@@ -49,7 +49,7 @@ public class ImportPdfCommand implements Command {
         this.widgetFactory = widgetFactory;
         this.configuration = configuration;
 
-        final int numberOfRecentDocs = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory()).getNoRecentDocumentsToDisplay();
+        final int numberOfRecentDocs = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory()).getNumberRecentDocumentsToDisplay();
         this.recentDesignerDocuments = new JMenuItem[numberOfRecentDocs];
     }
 
@@ -180,8 +180,8 @@ public class ImportPdfCommand implements Command {
             worker.start();
 
             final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory());
-            properties.addRecentDocument(pdfPath, "recentpdffiles");
-            updateRecentDocuments(properties.getRecentDocuments("recentpdffiles"));
+            properties.addRecentPDFDocument(pdfPath);
+            updateRecentDocuments(properties.getRecentPDFDocuments());
         } catch (final PdfException e) {
             logger.error("Error importing PDF file {}", pdfPath, e);
         }
