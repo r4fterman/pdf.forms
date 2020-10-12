@@ -1,16 +1,12 @@
 package org.pdf.forms;
 
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Optional;
 import java.util.jar.Manifest;
-
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.VLFrame;
@@ -41,12 +37,13 @@ public final class Application {
     }
 
     private void splashScreen(final String version) {
-        SplashWindow splashWindow = new SplashWindow(version);
+        final SplashWindow splashWindow = new SplashWindow(version);
         splashWindow.setStatusMaximum(4);
 
         try {
+            configureMacOSXSupport();
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Error on application startup", e);
         }
 
@@ -58,10 +55,10 @@ public final class Application {
         final VLFrame frame = new VLFrame(splashWindow, version, fontHandler, widgetFactory, configuration);
 
         // get local graphics environment
-        GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 
         // get maximum window bounds
-        Rectangle maximumWindowBounds = graphicsEnvironment.getMaximumWindowBounds();
+        final Rectangle maximumWindowBounds = graphicsEnvironment.getMaximumWindowBounds();
         frame.setSize(maximumWindowBounds.width, maximumWindowBounds.height);
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 
@@ -71,13 +68,23 @@ public final class Application {
         splashWindow.setVisible(false);
     }
 
+    private void configureMacOSXSupport() {
+        final String lcOSName = System.getProperty("os.name").toLowerCase();
+        if (lcOSName.startsWith("mac os x")) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            // Does not work from java > 1.5
+            // System.setProperty("com.apple.mrj.application.apple.menu.about.name", "PDF Forms");
+            // use: -Xdock:name="PDF Forms" when starting this application
+        }
+    }
+
     private Optional<Manifest> readManifest() {
         try {
             final Enumeration<URL> resources = getClass().getClassLoader().getResources(MANIFEST_MF);
             if (resources.hasMoreElements()) {
                 return Optional.of(new Manifest(resources.nextElement().openStream()));
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Error reading {}", MANIFEST_MF, e);
         }
         return Optional.empty();
