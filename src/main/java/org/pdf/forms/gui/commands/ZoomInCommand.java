@@ -1,7 +1,7 @@
 package org.pdf.forms.gui.commands;
 
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.gui.designer.gui.DesignerCompound;
+import org.pdf.forms.gui.designer.gui.DesignerPanel;
 
 class ZoomInCommand implements Command {
 
@@ -17,11 +17,11 @@ class ZoomInCommand implements Command {
     }
 
     private void zoom(final double scaling) {
-        if (mainFrame.getDesignerCompoundContent() == DesignerCompound.PREVIEW) {
+        if (mainFrame.getDesignerCompoundContent() == DesignerPanel.PREVIEW) {
             mainFrame.setCurrentSelectedScaling(round(scaling * 100));
 
-            final DesignerCompound designerCompound = mainFrame.getDesignerCompound();
-            designerCompound.previewZoom(scaling);
+            final DesignerPanel designerPanel = mainFrame.getDesignerPanel();
+            designerPanel.previewZoom(scaling);
         }
         //mainFrame.setScaling(mainFrame.getScaling() * scaling); @scale
     }

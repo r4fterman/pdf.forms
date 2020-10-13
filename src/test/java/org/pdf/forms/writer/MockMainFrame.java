@@ -8,7 +8,7 @@ import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.gui.designer.gui.DesignerCompound;
+import org.pdf.forms.gui.designer.gui.DesignerPanel;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetArrays;
 
@@ -148,7 +148,7 @@ public class MockMainFrame implements IMainFrame {
     }
 
     @Override
-    public DesignerCompound getDesignerCompound() {
+    public DesignerPanel getDesignerPanel() {
         return null;
     }
 
@@ -168,7 +168,7 @@ public class MockMainFrame implements IMainFrame {
     }
 
     @Override
-    public void updateAvailiableFonts() {
+    public void updateAvailableFonts() {
 
     }
 

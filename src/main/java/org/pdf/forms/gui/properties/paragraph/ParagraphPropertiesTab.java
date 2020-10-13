@@ -1,27 +1,22 @@
 package org.pdf.forms.gui.properties.paragraph;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.JPanel;
-
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vlsolutions.swing.docking.DockKey;
-import com.vlsolutions.swing.docking.Dockable;
-
 public class ParagraphPropertiesTab extends JPanel implements Dockable {
 
     private final ParagraphPropertiesPanel paragraphPanel = new ParagraphPropertiesPanel();
-    private final DockKey key = new DockKey("Paragraph");
 
     public ParagraphPropertiesTab(final IDesigner designer) {
         paragraphPanel.setDesignerPanel(designer);
@@ -60,7 +55,7 @@ public class ParagraphPropertiesTab extends JPanel implements Dockable {
 
     @Override
     public DockKey getDockKey() {
-        return key;
+        return new DockKey("Paragraph");
     }
 
     @Override

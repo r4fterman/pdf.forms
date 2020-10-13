@@ -1,6 +1,7 @@
 package org.pdf.forms.gui.toolbars;
 
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.List;
@@ -8,10 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JComboBox;
-import javax.swing.JToggleButton;
-
+import com.vlsolutions.swing.toolbars.VLToolBar;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
@@ -21,13 +19,10 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vlsolutions.swing.toolbars.VLToolBar;
-
 public class WidgetPropertiesToolBar extends VLToolBar {
 
     private final Logger logger = LoggerFactory.getLogger(WidgetPropertiesToolBar.class);
 
-    private final FontHandler fontHandler;
     private final IDesigner designerPanel;
 
     private final ButtonGroup alignmentGroup;
@@ -43,7 +38,6 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     public WidgetPropertiesToolBar(
             final FontHandler fontHandler,
             final IDesigner designerPanel) {
-        this.fontHandler = fontHandler;
         this.designerPanel = designerPanel;
 
         fontBox = new JComboBox<>(fontHandler.getFontFamilies());

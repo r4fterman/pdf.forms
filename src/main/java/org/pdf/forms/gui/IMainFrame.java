@@ -5,7 +5,7 @@ import java.util.Set;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.gui.designer.gui.DesignerCompound;
+import org.pdf.forms.gui.designer.gui.DesignerPanel;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetArrays;
 
@@ -65,7 +65,7 @@ public interface IMainFrame {
 
     int getDesignerCompoundContent();
 
-    DesignerCompound getDesignerCompound();
+    DesignerPanel getDesignerPanel();
 
     double getCurrentSelectedScaling();
 
@@ -73,7 +73,7 @@ public interface IMainFrame {
 
     void setCurrentSelectedScaling(double scaling);
 
-    void updateAvailiableFonts();
+    void updateAvailableFonts();
 
     void addWidgetToPage(IWidget widget);
 

@@ -11,7 +11,7 @@ import org.w3c.dom.Element;
 
 public class WidgetArrays {
 
-    private Map<String, List<IWidget>> widgets = new HashMap<>();
+    private final Map<String, List<IWidget>> widgets = new HashMap<>();
 
     public boolean isWidgetArrayInList(final String name) {
         return widgets.containsKey(name);
@@ -37,14 +37,16 @@ public class WidgetArrays {
             widgets.remove(name);
         } else {
             for (int i = 0; i < array.size(); i++) {
-                final IWidget w = array.get(i);
-                final Element objectElement = (Element) w.getProperties().getElementsByTagName("object").item(0);
+                final IWidget remainingWidget = array.get(i);
+
+                final Element objectElement = (Element) remainingWidget.getProperties().getElementsByTagName("object").item(0);
                 final Element bindingElement = (Element) objectElement.getElementsByTagName("binding").item(0);
 
                 final String arrayIndex = String.valueOf(i);
                 XMLUtils.getPropertyElement(bindingElement, "Array Number")
                         .ifPresent(arrayNumberElement -> arrayNumberElement.getAttributeNode("value").setValue(arrayIndex));
-                w.setObjectProperties(objectElement);
+
+                remainingWidget.setObjectProperties(objectElement);
             }
         }
     }

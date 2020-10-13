@@ -32,7 +32,7 @@ class FontManagementCommand implements Command {
         dialog.setLocationRelativeTo((Frame) mainFrame);
         dialog.setVisible(true);
 
-        mainFrame.updateAvailiableFonts();
+        mainFrame.updateAvailableFonts();
     }
 
 }

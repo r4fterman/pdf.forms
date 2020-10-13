@@ -4,7 +4,9 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
-import java.awt.Component;
+import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,10 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import javax.swing.JFileChooser;
-import javax.swing.JMenuItem;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.Configuration;
 import org.pdf.forms.document.FormsDocument;
@@ -76,7 +74,7 @@ public class OpenDesignerFileCommand implements Command {
     public void openDesignerFile(final String designerFileToOpen) {
         closePDF();
 
-        setPanelsState(true);
+        mainFrame.setPanelsState(true);
 
         mainFrame.setCurrentDesignerFileName(designerFileToOpen);
 
@@ -161,7 +159,7 @@ public class OpenDesignerFileCommand implements Command {
         mainFrame.setPropertiesCompound(Set.of());
         mainFrame.setPropertiesToolBar(Set.of());
 
-        setPanelsState(false);
+        mainFrame.setPanelsState(false);
 
         mainFrame.setCurrentPage(0);
     }
@@ -272,10 +270,6 @@ public class OpenDesignerFileCommand implements Command {
             final Page newPage) {
         mainFrame.getFormsDocument().addPage(pdfPage, newPage);
         mainFrame.addPageToHierarchyPanel(pdfPage, newPage);
-    }
-
-    private void setPanelsState(final boolean state) {
-        mainFrame.setPanelsState(state);
     }
 
 }

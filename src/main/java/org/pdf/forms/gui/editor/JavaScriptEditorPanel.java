@@ -1,12 +1,13 @@
 package org.pdf.forms.gui.editor;
 
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JPanel;
-
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.utils.XMLUtils;
@@ -15,9 +16,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-
-import com.vlsolutions.swing.docking.DockKey;
-import com.vlsolutions.swing.docking.Dockable;
 
 public class JavaScriptEditorPanel extends JPanel implements Dockable {
 
@@ -138,7 +136,6 @@ public class JavaScriptEditorPanel extends JPanel implements Dockable {
         this.widgets = widgets;
 
         eventBox.removeAllItems();
-
         eventsAndValues = new LinkedHashMap<>();
 
         if (widgets.size() == 1) {
@@ -149,7 +146,7 @@ public class JavaScriptEditorPanel extends JPanel implements Dockable {
             }
 
             if (widget instanceof FormsDocument) {
-                //TODO: widget is typed
+                // todo: widget is typed
                 key.setName("Script Editor - Document");
                 final FormsDocument document = (FormsDocument) widget;
                 extractJavaScript(document.getDocument());

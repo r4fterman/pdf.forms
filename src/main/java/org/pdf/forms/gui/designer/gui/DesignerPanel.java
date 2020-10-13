@@ -1,20 +1,18 @@
 package org.pdf.forms.gui.designer.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.ScrollPaneConstants;
-
+import com.google.common.collect.ImmutableMap;
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
+import com.vlsolutions.swing.toolbars.ToolBarConstraints;
+import com.vlsolutions.swing.toolbars.ToolBarContainer;
+import com.vlsolutions.swing.toolbars.ToolBarPanel;
 import org.jpedal.PdfDecoder;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.fonts.FontHandler;
@@ -28,19 +26,12 @@ import org.pdf.forms.writer.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableMap;
-import com.vlsolutions.swing.docking.DockKey;
-import com.vlsolutions.swing.docking.Dockable;
-import com.vlsolutions.swing.toolbars.ToolBarConstraints;
-import com.vlsolutions.swing.toolbars.ToolBarContainer;
-import com.vlsolutions.swing.toolbars.ToolBarPanel;
-
-public class DesignerCompound extends JTabbedPane implements Dockable, DesignNavigatable, PreviewNavigatable {
+public class DesignerPanel extends JTabbedPane implements Dockable, DesignNavigatable, PreviewNavigatable {
 
     public static final int DESIGNER = 0;
     public static final int PREVIEW = 1;
 
-    private final Logger logger = LoggerFactory.getLogger(DesignerCompound.class);
+    private final Logger logger = LoggerFactory.getLogger(DesignerPanel.class);
 
     private final DockKey key = new DockKey("Designer");
 
@@ -55,7 +46,7 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
     private double previewScaling = 1;
     private String currentFile;
 
-    public DesignerCompound(
+    public DesignerPanel(
             final IDesigner designer,
             final Rule horizontalRuler,
             final Rule verticalRuler,
@@ -97,9 +88,9 @@ public class DesignerCompound extends JTabbedPane implements Dockable, DesignNav
 
         addChangeListener(event -> {
             if (getSelectedIndex() == 0) {
-                mainFrame.setDesignerCompoundContent(DesignerCompound.DESIGNER);
+                mainFrame.setDesignerCompoundContent(DesignerPanel.DESIGNER);
             } else if (getSelectedIndex() == 1) {
-                mainFrame.setDesignerCompoundContent(DesignerCompound.PREVIEW);
+                mainFrame.setDesignerCompoundContent(DesignerPanel.PREVIEW);
                 decodePDF.closePdfFile();
 
                 try {

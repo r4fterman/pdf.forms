@@ -38,8 +38,10 @@ public final class Application {
 
     private void splashScreen(final String version) {
         final SplashWindow splashWindow = new SplashWindow(version);
-        splashWindow.setStatusMaximum(4);
+        splashWindow.setStatusMaximum(7);
+        splashWindow.setVisible(true);
 
+        splashWindow.setProgress(1, "Initialize UI");
         try {
             configureMacOSXSupport();
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -47,8 +49,16 @@ public final class Application {
             logger.error("Error on application startup", e);
         }
 
-        splashWindow.setProgress(1, "Initializing window");
+        try {
+            initializeUI(version, splashWindow);
+        } finally {
+            splashWindow.setVisible(false);
+        }
+    }
 
+    private void initializeUI(
+            final String version,
+            final SplashWindow splashWindow) {
         final Configuration configuration = new Configuration();
         final FontHandler fontHandler = new FontHandler(configuration);
         final WidgetFactory widgetFactory = new WidgetFactory(fontHandler);
@@ -64,8 +74,6 @@ public final class Application {
 
         frame.validate();
         SwingUtilities.invokeLater(() -> frame.setVisible(true));
-
-        splashWindow.setVisible(false);
     }
 
     private void configureMacOSXSupport() {
