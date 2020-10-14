@@ -1,15 +1,10 @@
 package org.pdf.forms.widgets;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Rectangle;
+import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.PdfCaption;
@@ -28,9 +23,10 @@ public class GroupWidget implements IWidget {
 
     private static int nextWidgetNumber = 1;
 
+    private static final int TYPE = IWidget.GROUP;
+
     private final Logger logger = LoggerFactory.getLogger(GroupWidget.class);
 
-    private final int type = IWidget.GROUP;
     private final Icon icon;
     private final Element widgetsElement;
 
@@ -51,10 +47,8 @@ public class GroupWidget implements IWidget {
     public GroupWidget() {
         icon = new ImageIcon(getClass().getResource("/org/pdf/forms/res/Group.gif"));
 
-        final String widgetName = "Group" + nextWidgetNumber;
+        this.widgetName = "Group" + nextWidgetNumber;
         nextWidgetNumber++;
-
-        this.widgetName = widgetName;
 
         final Element rootElement = setupProperties();
 
@@ -73,19 +67,15 @@ public class GroupWidget implements IWidget {
     public void setWidgetsInGroup(final List<IWidget> widgetsInGroup) {
         this.widgetsInGroup = widgetsInGroup;
 
-        final List widgets = XMLUtils.getElementsFromNodeList(widgetsElement.getChildNodes());
-
-        for (final Object widget1 : widgets) {
-            final Element widget = (Element) widget1;
+        final List<Element> widgets = XMLUtils.getElementsFromNodeList(widgetsElement.getChildNodes());
+        for (final Element widget : widgets) {
             final Node parent = widget.getParentNode();
             parent.removeChild(widget);
         }
 
         for (final IWidget widget : widgetsInGroup) {
             final Document widgetProperties = widget.getProperties();
-
             final Element widgetRoot = widgetProperties.getDocumentElement();
-
             widgetsElement.appendChild(properties.importNode(widgetRoot, true));
         }
     }
@@ -97,7 +87,7 @@ public class GroupWidget implements IWidget {
 
     @Override
     public int getType() {
-        return type;
+        return TYPE;
     }
 
     @Override
@@ -119,37 +109,38 @@ public class GroupWidget implements IWidget {
         return properties;
     }
 
-    ////////////////////////////////////////////////////////////////////////
-
     @Override
     public void setAllProperties() {
-
+        // not supported by groups
     }
 
     @Override
     public int getArrayNumber() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
     @Override
     public void setParagraphProperties(
             final Element paragraphProperties,
             final int currentlyEditing) {
+        // not supported by groups
     }
 
     @Override
     public void setLayoutProperties(final Element paragraphProperties) {
+        // not supported by groups
     }
 
     @Override
     public void setFontProperties(
             final Element parentElement,
             final int currentlyEditing) {
+        // not supported by groups
     }
 
     @Override
     public void setCaptionProperties(final Element captionProperties) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // not supported by groups
     }
 
     @Override
@@ -161,14 +152,17 @@ public class GroupWidget implements IWidget {
     public void setPosition(
             final int x,
             final int y) {
+        // not supported by groups
     }
 
     @Override
     public void setX(final int x) {
+        // not supported by groups
     }
 
     @Override
     public void setY(final int y) {
+        // not supported by groups
     }
 
     @Override
@@ -195,6 +189,7 @@ public class GroupWidget implements IWidget {
     public void setSize(
             final int width,
             final int height) {
+        // not supported by groups
     }
 
     @Override
@@ -217,11 +212,6 @@ public class GroupWidget implements IWidget {
     @Override
     public Dimension getBoxSize() {
         return null;
-    }
-
-    @Override
-    public int getWidgetType() {
-        return type;
     }
 
     @Override

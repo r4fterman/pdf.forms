@@ -1,13 +1,9 @@
 package org.pdf.forms.widgets;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.Icon;
-import javax.swing.JComponent;
 
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.w3c.dom.Document;
@@ -91,8 +87,6 @@ public interface IWidget {
     boolean allowEditOfCaptionOnClick();
 
     Dimension getBoxSize();
-
-    int getWidgetType();
 
     Rectangle getBounds();
 

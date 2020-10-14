@@ -344,11 +344,9 @@ public class Writer {
         handleButtonGroups(writer, widgets, pageSize, currentPage, globalPdfWriter);
 
         for (final IWidget widget : widgets) {
-            final int type = widget.getWidgetType();
+            final int type = widget.getType();
 
             final Element rootElement = widget.getProperties().getDocumentElement();
-
-            //Font valueFontToUse = getFont(rootElement, "value");
 
             if (type == IWidget.GROUP) {
                 addWidgets(writer, widget.getWidgetsInGroup(), pageSize, currentPage, globalPdfWriter);

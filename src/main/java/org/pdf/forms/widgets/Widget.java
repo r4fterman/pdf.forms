@@ -1,23 +1,15 @@
 package org.pdf.forms.widgets;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Point;
-import java.awt.Rectangle;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
 import java.awt.font.TextAttribute;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JSplitPane;
-import javax.swing.SwingConstants;
-import javax.swing.border.Border;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.jpedal.objects.acroforms.creation.JPedalBorderFactory;
 import org.jpedal.utils.Strip;
@@ -75,10 +67,6 @@ public class Widget {
 
     public JComponent getWidget() {
         return component;
-    }
-
-    public int getWidgetType() {
-        return type;
     }
 
     public Rectangle getBounds() {
@@ -219,11 +207,7 @@ public class Widget {
                     location = new Point(getX(), getY() + getCaptionComponent().getBounds().height + SplitComponent.DIVIDER_SIZE);
                     break;
                 case SplitComponent.CAPTION_RIGHT:
-                    location = new Point(getX(), getY());
-                    break;
                 case SplitComponent.CAPTION_BOTTOM:
-                    location = new Point(getX(), getY());
-                    break;
                 case SplitComponent.CAPTION_NONE:
                     location = new Point(getX(), getY());
                     break;
@@ -243,8 +227,6 @@ public class Widget {
 
             switch (captionPosition) {
                 case SplitComponent.CAPTION_LEFT:
-                    location = new Point(getX(), getY());
-                    break;
                 case SplitComponent.CAPTION_TOP:
                     location = new Point(getX(), getY());
                     break;
@@ -303,10 +285,10 @@ public class Widget {
     }
 
     public List<IWidget> getWidgetsInGroup() {
-        return null;
+        return Collections.emptyList();
     }
 
-    public void setWidgetsInGroup(final List widgetsInGroup) {
+    public void setWidgetsInGroup(final List<IWidget> widgetsInGroup) {
     }
 
     public int getType() {
@@ -429,27 +411,35 @@ public class Widget {
 
         if (horizontalAlignment.isPresent()) {
             final String alignment = horizontalAlignment.get();
-            if (alignment.equals("justify")) {
-                component.setHorizontalAlignment(SwingConstants.LEFT);
-            } else if (alignment.equals("left")) {
-                component.setHorizontalAlignment(SwingConstants.LEFT);
-            } else if (alignment.equals("right")) {
-                component.setHorizontalAlignment(SwingConstants.RIGHT);
-            } else {
-                logger.warn("Unexpected horizontal alignment {}", alignment);
+            switch (alignment) {
+                case "justify":
+                case "left":
+                    component.setHorizontalAlignment(SwingConstants.LEFT);
+                    break;
+                case "right":
+                    component.setHorizontalAlignment(SwingConstants.RIGHT);
+                    break;
+                default:
+                    logger.warn("Unexpected horizontal alignment {}", alignment);
+                    break;
             }
         }
 
         if (verticallAlignment.isPresent()) {
             final String alignment = verticallAlignment.get();
-            if (alignment.equals("center")) {
-                component.setVerticalAlignment(SwingConstants.CENTER);
-            } else if (alignment.equals("top")) {
-                component.setVerticalAlignment(SwingConstants.TOP);
-            } else if (alignment.equals("bottom")) {
-                component.setVerticalAlignment(SwingConstants.BOTTOM);
-            } else {
-                logger.warn("Unexpected vertical alignment {}", alignment);
+            switch (alignment) {
+                case "center":
+                    component.setVerticalAlignment(SwingConstants.CENTER);
+                    break;
+                case "top":
+                    component.setVerticalAlignment(SwingConstants.TOP);
+                    break;
+                case "bottom":
+                    component.setVerticalAlignment(SwingConstants.BOTTOM);
+                    break;
+                default:
+                    logger.warn("Unexpected vertical alignment {}", alignment);
+                    break;
             }
         }
 
@@ -591,10 +581,6 @@ public class Widget {
 
     public void setArrayNumber(final int arrayNumber) {
         this.arrayNumber = arrayNumber;
-    }
-
-    public void setResizeWidthFromLeftRatio(final double resizeWidthFromLeftRatio) {
-        this.resizeWidthFromLeftRatio = resizeWidthFromLeftRatio;
     }
 
     public JComponent getComponent() {
