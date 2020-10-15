@@ -419,6 +419,9 @@ public class Widget {
                 case "right":
                     component.setHorizontalAlignment(SwingConstants.RIGHT);
                     break;
+                case "center":
+                    component.setHorizontalAlignment(SwingConstants.CENTER);
+                    break;
                 default:
                     logger.warn("Unexpected horizontal alignment {}", alignment);
                     break;
