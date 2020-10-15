@@ -395,12 +395,14 @@ public class VLFrame extends JFrame implements IMainFrame {
             toolbarContainer.getToolBarPanelAt(BorderLayout.NORTH).setVisible(visible);
             toolbarContainer.getToolBarPanelAt(BorderLayout.SOUTH).setVisible(visible);
         } else {
-            final Dockable dockable = dockableNames.get(dockableName);
-            if (visible) {
-                desk.addDockable(dockable, desk.getDockableState(dockable).getPosition());
-            } else {
-                desk.close(dockable);
-            }
+            Optional.ofNullable(dockableNames.get(dockableName))
+                    .ifPresentOrElse(dockable -> {
+                        if (visible) {
+                            desk.addDockable(dockable, desk.getDockableState(dockable).getPosition());
+                        } else {
+                            desk.close(dockable);
+                        }
+                    }, () -> propertiesPanel.setDockableVisible(desk, dockableName, visible));
         }
     }
 
@@ -486,7 +488,6 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     private void setupDockingPanes() {
-        // set the initial dockable
         desk.addDockable(designerPanel);
         dockableNames.put("Designer", designerPanel);
 
