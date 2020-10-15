@@ -18,7 +18,6 @@ import org.w3c.dom.Element;
 public class LayoutPropertiesTab extends JPanel implements Dockable {
 
     private final LayoutPropertiesPanel layoutPanel;
-    private final DockKey key = new DockKey("Layout");
 
     public LayoutPropertiesTab(final IDesigner designer) {
         layoutPanel = new LayoutPropertiesPanel(designer);
@@ -48,7 +47,7 @@ public class LayoutPropertiesTab extends JPanel implements Dockable {
 
     @Override
     public DockKey getDockKey() {
-        return key;
+        return new DockKey("layout", "Layout", "Set layout properties");
     }
 
     @Override

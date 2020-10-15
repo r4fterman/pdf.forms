@@ -31,7 +31,6 @@ public class ParagraphPropertiesTab extends JPanel implements Dockable {
             removeAll();
         } else {
             final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
-
             for (final IWidget widget : widgets) {
                 if (widget.getType() == IWidget.IMAGE) {
                     removeAll();
@@ -39,14 +38,11 @@ public class ParagraphPropertiesTab extends JPanel implements Dockable {
                 }
 
                 final Document properties = widget.getProperties();
-
                 final Element layoutProperties = (Element) properties.getElementsByTagName("paragraph").item(0);
-
                 widgetsAndProperties.put(widget, layoutProperties);
             }
 
             paragraphPanel.setProperties(widgetsAndProperties, 0);
-
             add(paragraphPanel);
         }
 
@@ -55,7 +51,7 @@ public class ParagraphPropertiesTab extends JPanel implements Dockable {
 
     @Override
     public DockKey getDockKey() {
-        return new DockKey("Paragraph");
+        return new DockKey("paragraph", "Paragraph", "Set paragraph properties");
     }
 
     @Override

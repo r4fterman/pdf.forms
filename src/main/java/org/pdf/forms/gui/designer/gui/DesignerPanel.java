@@ -33,8 +33,6 @@ public class DesignerPanel extends JTabbedPane implements Dockable, DesignNaviga
 
     private final Logger logger = LoggerFactory.getLogger(DesignerPanel.class);
 
-    private final DockKey key = new DockKey("Designer");
-
     private final NavigationToolbar designToolBar = new DesignNavigationToolbar(this);
     private final NavigationToolbar previewToolBar = new PreviewNavigationToolbar(this);
 
@@ -97,6 +95,7 @@ public class DesignerPanel extends JTabbedPane implements Dockable, DesignNaviga
                     final File previewPDF = writePreviewPDF(mainFrame);
 
                     currentFile = previewPDF.getAbsolutePath();
+                    logger.info("Current file: {}", currentFile);
                     decodePDF.openPdfFile(currentFile);
 
                     decodePDF.setPageParameters((float) previewScaling, 1);
@@ -131,11 +130,9 @@ public class DesignerPanel extends JTabbedPane implements Dockable, DesignNaviga
         final Set<String> fontSubstitutions = writer.getFontSubstitutions();
         if (!fontSubstitutions.isEmpty()) {
             final StringBuilder builder = new StringBuilder("<html>The following fonts cannot be embedded due to licensing<br/>restrictions, so they have been substituted with Helvetica.<br/<br/");
-
             for (final String font : fontSubstitutions) {
                 builder.append(font).append("<br/");
             }
-
             JOptionPane.showMessageDialog((Component) mainFrame, builder.toString());
         }
         return file;
@@ -162,13 +159,11 @@ public class DesignerPanel extends JTabbedPane implements Dockable, DesignNaviga
         mainFrame.displayPage(page);
     }
 
-    /// Methods to control designer navigation
     @Override
     public int getDesignerCurrentPage() {
         return mainFrame.getCurrentPage();
     }
 
-    /// Methods to control preview navigation
     @Override
     public void displayPreviewPage(final int page) {
         try {
@@ -199,8 +194,7 @@ public class DesignerPanel extends JTabbedPane implements Dockable, DesignNaviga
 
     @Override
     public DockKey getDockKey() {
-        key.setResizeWeight(1f);
-        return key;
+        return new DockKey("designer", "Designer", "PDF Form Designer");
     }
 
     @Override
@@ -210,11 +204,6 @@ public class DesignerPanel extends JTabbedPane implements Dockable, DesignNaviga
 
     public void previewZoom(final double scaling) {
         previewScaling = scaling;
-
-        //  decodePDF.setPageParameters((float) previewScaling, currentPdfPage);
-        //  decodePDF.invalidate();
-        //  decodePDF.updateUI();
-        //  repaint();
 
         try {
             decodePDF.closePdfFile();

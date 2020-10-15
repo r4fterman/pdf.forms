@@ -1,22 +1,20 @@
 package org.pdf.forms.gui.properties.paragraph;
 
+import static javax.swing.SwingConstants.VERTICAL;
+import static org.jdesktop.layout.GroupLayout.BASELINE;
+import static org.jdesktop.layout.GroupLayout.DEFAULT_SIZE;
+import static org.jdesktop.layout.GroupLayout.LEADING;
+import static org.jdesktop.layout.GroupLayout.PREFERRED_SIZE;
+import static org.jdesktop.layout.LayoutStyle.RELATED;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JToggleButton;
-
 import org.jdesktop.layout.GroupLayout;
-import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
@@ -36,7 +34,6 @@ public class ParagraphPropertiesPanel extends JPanel {
     private JComboBox<String> currentlyEditingBox;
     private JToggleButton horizontalAlignJustify;
 
-    // called via reflection
     private JToggleButton horizontalAlignLeft;
     private JToggleButton horizontalAlignCenter;
     private JToggleButton horizontalAlignRight;
@@ -54,130 +51,144 @@ public class ParagraphPropertiesPanel extends JPanel {
     }
 
     private void initComponents() {
-        final JLabel jLabel1;
-        final JSeparator jSeparator1;
+        final JLabel currentlyEditingLabel = new JLabel();
+        currentlyEditingLabel.setText("Currently Editing:");
+
+        currentlyEditingBox = createEditingBox();
+        horizontalAlignLeft = createAlignHorizontalLeftButton();
+        horizontalAlignCenter = createAlignHorizontalCenterButton();
+        horizontalAlignRight = createAlignHorizontalRightButton();
+        horizontalAlignJustify = createAlignHorizontalJustify();
 
         horizontalAlignmentButtonGroup = new ButtonGroup();
-        verticalAlignmentButtonGroup = new ButtonGroup();
-        jLabel1 = new JLabel();
-        currentlyEditingBox = new JComboBox<>();
-        horizontalAlignLeft = new JToggleButton();
-        horizontalAlignLeft.setToolTipText("Horizontal Align Left");
-        horizontalAlignCenter = new JToggleButton();
-        horizontalAlignCenter.setToolTipText("Horizontal Align Center");
-        horizontalAlignRight = new JToggleButton();
-        horizontalAlignRight.setToolTipText("Horizontal Align Right");
-        horizontalAlignJustify = new JToggleButton();
-        horizontalAlignJustify.setToolTipText("Horizontal Align Justify");
-        jSeparator1 = new JSeparator();
-        verticalAlignTop = new JToggleButton();
-        verticalAlignTop.setToolTipText("Vertical Align Top");
-        verticalAlignCenter = new JToggleButton();
-        verticalAlignCenter.setToolTipText("Vertical Align Center");
-        verticalAlignBottom = new JToggleButton();
-        verticalAlignBottom.setToolTipText("Vertical Align Bottom");
-
-        jLabel1.setText("Currently Editing:");
-
-        currentlyEditingBox.setModel(new DefaultComboBoxModel<>(new String[] {
-                "Caption and Value", "Caption properties", "Value properties" }));
-
-        currentlyEditingBox.addActionListener(this::updateCurrentlyEditingBox);
-
         horizontalAlignmentButtonGroup.add(horizontalAlignLeft);
-        horizontalAlignLeft.setIcon(new javax.swing.ImageIcon(getClass().getResource(
-                "/org/pdf/forms/res/Paragraph Align Left.gif")));
-        horizontalAlignLeft.setName("left");
-        horizontalAlignLeft.addActionListener(this::updateHorizontalAlignment);
-
         horizontalAlignmentButtonGroup.add(horizontalAlignCenter);
-        horizontalAlignCenter.setIcon(new javax.swing.ImageIcon(getClass().getResource(
-                "/org/pdf/forms/res/Paragraph Align Center.gif")));
-        horizontalAlignCenter.setName("center");
-        horizontalAlignCenter.addActionListener(this::updateHorizontalAlignment);
-
         horizontalAlignmentButtonGroup.add(horizontalAlignRight);
-        horizontalAlignRight.setIcon(new javax.swing.ImageIcon(getClass().getResource(
-                "/org/pdf/forms/res/Paragraph Align Right.gif")));
-        horizontalAlignRight.setName("right");
-        horizontalAlignRight.addActionListener(this::updateHorizontalAlignment);
-
         horizontalAlignmentButtonGroup.add(horizontalAlignJustify);
-        horizontalAlignJustify.setIcon(new javax.swing.ImageIcon(getClass().getResource(
-                "/org/pdf/forms/res/Paragraph Align Justify.gif")));
-        horizontalAlignJustify.setName("justify");
-        horizontalAlignJustify.addActionListener(this::updateHorizontalAlignment);
 
-        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        final JSeparator separator = new JSeparator(VERTICAL);
 
+        verticalAlignTop = createAlignVerticalTopButton();
+        verticalAlignCenter = createAlignVerticalCenterButton();
+        verticalAlignBottom = createAlignVerticalBottomButton();
+
+        verticalAlignmentButtonGroup = new ButtonGroup();
         verticalAlignmentButtonGroup.add(verticalAlignTop);
-        verticalAlignTop.setIcon(new javax.swing.ImageIcon(getClass().getResource(
-                "/org/pdf/forms/res/Paragraph Align Top.gif")));
-        verticalAlignTop.setName("top");
-        verticalAlignTop.addActionListener(this::updateVerticalAlignment);
-
         verticalAlignmentButtonGroup.add(verticalAlignCenter);
-        verticalAlignCenter.setIcon(new javax.swing.ImageIcon(getClass().getResource(
-                "/org/pdf/forms/res/Paragraph Align Middle.gif")));
-        verticalAlignCenter.setName("center");
-        verticalAlignCenter.addActionListener(this::updateVerticalAlignment);
-
         verticalAlignmentButtonGroup.add(verticalAlignBottom);
-        verticalAlignBottom.setIcon(new javax.swing.ImageIcon(getClass().getResource(
-                "/org/pdf/forms/res/Paragraph Align Bottom.gif")));
-        verticalAlignBottom.setName("bottom");
-        verticalAlignBottom.addActionListener(this::updateVerticalAlignment);
 
         final GroupLayout layout = new GroupLayout(this);
-        this.setLayout(layout);
+        setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.LEADING)
+                layout.createParallelGroup(LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(GroupLayout.LEADING)
+                                .add(layout.createParallelGroup(LEADING)
                                         .add(layout.createSequentialGroup()
-                                                .add(jLabel1)
-                                                .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(currentlyEditingBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
+                                                .add(currentlyEditingLabel)
+                                                .addPreferredGap(RELATED)
+                                                .add(currentlyEditingBox, PREFERRED_SIZE, 162, PREFERRED_SIZE))
                                         .add(layout.createSequentialGroup()
-                                                .add(horizontalAlignLeft, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(horizontalAlignCenter, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(horizontalAlignRight, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(horizontalAlignJustify, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(jSeparator1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(verticalAlignTop, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(verticalAlignCenter, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(verticalAlignBottom, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)))
+                                                .add(horizontalAlignLeft, PREFERRED_SIZE, 25, PREFERRED_SIZE)
+                                                .addPreferredGap(RELATED)
+                                                .add(horizontalAlignCenter, PREFERRED_SIZE, 25, PREFERRED_SIZE)
+                                                .addPreferredGap(RELATED)
+                                                .add(horizontalAlignRight, PREFERRED_SIZE, 25, PREFERRED_SIZE)
+                                                .addPreferredGap(RELATED)
+                                                .add(horizontalAlignJustify, PREFERRED_SIZE, 25, PREFERRED_SIZE)
+                                                .addPreferredGap(RELATED)
+                                                .add(separator, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE)
+                                                .addPreferredGap(RELATED)
+                                                .add(verticalAlignTop, PREFERRED_SIZE, 25, PREFERRED_SIZE)
+                                                .addPreferredGap(RELATED)
+                                                .add(verticalAlignCenter, PREFERRED_SIZE, 25, PREFERRED_SIZE)
+                                                .addPreferredGap(RELATED)
+                                                .add(verticalAlignBottom, PREFERRED_SIZE, 25, PREFERRED_SIZE)))
                                 .addContainerGap(140, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.LEADING)
+                layout.createParallelGroup(LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(jLabel1)
-                                        .add(currentlyEditingBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.LEADING)
-                                        .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                                .add(horizontalAlignLeft, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                                                .add(horizontalAlignCenter, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                                                .add(horizontalAlignRight, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                                                .add(horizontalAlignJustify, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
-                                        .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                                .add(verticalAlignTop, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                                                .add(verticalAlignCenter, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                                                .add(verticalAlignBottom, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
-                                        .add(jSeparator1, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE))
+                                .add(layout.createParallelGroup(BASELINE)
+                                        .add(currentlyEditingLabel)
+                                        .add(currentlyEditingBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE))
+                                .addPreferredGap(RELATED)
+                                .add(layout.createParallelGroup(LEADING)
+                                        .add(layout.createParallelGroup(BASELINE)
+                                                .add(horizontalAlignLeft, PREFERRED_SIZE, 25, PREFERRED_SIZE)
+                                                .add(horizontalAlignCenter, PREFERRED_SIZE, 25, PREFERRED_SIZE)
+                                                .add(horizontalAlignRight, PREFERRED_SIZE, 25, PREFERRED_SIZE)
+                                                .add(horizontalAlignJustify, PREFERRED_SIZE, 25, PREFERRED_SIZE))
+                                        .add(layout.createParallelGroup(BASELINE)
+                                                .add(verticalAlignTop, PREFERRED_SIZE, 25, PREFERRED_SIZE)
+                                                .add(verticalAlignCenter, PREFERRED_SIZE, 25, PREFERRED_SIZE)
+                                                .add(verticalAlignBottom, PREFERRED_SIZE, 25, PREFERRED_SIZE))
+                                        .add(separator, PREFERRED_SIZE, 24, PREFERRED_SIZE))
                                 .addContainerGap(236, Short.MAX_VALUE))
         );
+    }
+
+    private JToggleButton createAlignVerticalTopButton() {
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Top.gif")));
+        button.setToolTipText("Vertical Align Top");
+        button.setName("top");
+        button.addActionListener(this::updateVerticalAlignment);
+        return button;
+    }
+
+    private JToggleButton createAlignVerticalCenterButton() {
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Middle.gif")));
+        button.setToolTipText("Vertical Align Center");
+        button.setName("center");
+        button.addActionListener(this::updateVerticalAlignment);
+        return button;
+    }
+
+    private JToggleButton createAlignVerticalBottomButton() {
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Bottom.gif")));
+        button.setToolTipText("Vertical Align Bottom");
+        button.setName("bottom");
+        button.addActionListener(this::updateVerticalAlignment);
+        return button;
+    }
+
+    private JToggleButton createAlignHorizontalLeftButton() {
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Left.gif")));
+        button.setToolTipText("Horizontal Align Left");
+        button.setName("left");
+        button.addActionListener(this::updateHorizontalAlignment);
+        return button;
+    }
+
+    private JToggleButton createAlignHorizontalCenterButton() {
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Center.gif")));
+        button.setToolTipText("Horizontal Align Center");
+        button.setName("center");
+        button.addActionListener(this::updateHorizontalAlignment);
+        return button;
+    }
+
+    private JToggleButton createAlignHorizontalRightButton() {
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Right.gif")));
+        button.setToolTipText("Horizontal Align Right");
+        button.setName("right");
+        button.addActionListener(this::updateHorizontalAlignment);
+        return button;
+    }
+
+    private JToggleButton createAlignHorizontalJustify() {
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Justify.gif")));
+        button.setToolTipText("Horizontal Align Justify");
+        button.setName("justify");
+        button.addActionListener(this::updateHorizontalAlignment);
+        return button;
+    }
+
+    private JComboBox<String> createEditingBox() {
+        final JComboBox<String> comboBox = new JComboBox<>(new String[]{"Caption and Value", "Caption properties", "Value properties"});
+        comboBox.addActionListener(this::updateCurrentlyEditingBox);
+        return comboBox;
     }
 
     private void updateCurrentlyEditingBox(final ActionEvent evt) {
@@ -195,18 +206,19 @@ public class ParagraphPropertiesPanel extends JPanel {
     private void updateAlignment(
             final String propertyName,
             final ActionEvent evt) {
-
-        final Set<IWidget> widgets = widgetsAndProperties.keySet();
-
-        for (final IWidget widget : widgets) {
-            final Element paragraphElement = widgetsAndProperties.get(widget);
+        final Set<Map.Entry<IWidget, Element>> entries = widgetsAndProperties.entrySet();
+        for (final Map.Entry<IWidget, Element> entry : entries) {
+            final IWidget widget = entry.getKey();
+            final Element paragraphElement = entry.getValue();
 
             final List<Element> paragraphList = XMLUtils.getElementsFromNodeList(paragraphElement.getChildNodes());
 
             final Element captionElement = paragraphList.get(0);
-            Element valueElement = null;
+            final Element valueElement;
             if (widget.allowEditCaptionAndValue()) {
                 valueElement = paragraphList.get(1);
+            } else {
+                valueElement = null;
             }
 
             final Element captionAlignment = XMLUtils.getPropertyElement(captionElement, propertyName).get();
@@ -232,7 +244,7 @@ public class ParagraphPropertiesPanel extends JPanel {
             widget.setParagraphProperties(widgetsAndProperties.get(widget), currentlyEditingBox.getSelectedIndex());
         }
 
-        designerPanel.getMainFrame().setPropertiesToolBar(widgets);
+        designerPanel.getMainFrame().setPropertiesToolBar(widgetsAndProperties.keySet());
         designerPanel.repaint();
     }
 
@@ -242,9 +254,6 @@ public class ParagraphPropertiesPanel extends JPanel {
 
         this.widgetsAndProperties = widgetsAndProperties;
 
-        String horizontalAlignmentToUse = null;
-        String verticalAlignmentToUse = null;
-
         boolean allowEditCaptionAndValue = false;
         for (final IWidget widget : widgetsAndProperties.keySet()) {
             if (widget.allowEditCaptionAndValue()) {
@@ -253,25 +262,24 @@ public class ParagraphPropertiesPanel extends JPanel {
             }
         }
 
-        // hard code to remove complications with text fields
-        allowEditCaptionAndValue = false;
-
-        int editing = currentlyEditing;
-        if (!allowEditCaptionAndValue) {
+        final int editing;
+        if (allowEditCaptionAndValue) {
+            editing = currentlyEditing;
+        } else {
             editing = 1;
         }
 
-        /* set the currently editing box */
         currentlyEditingBox.setSelectedIndex(editing);
         currentlyEditingBox.setEnabled(allowEditCaptionAndValue);
 
-        /* iterate through the widgets */
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
-            final Element paragraphPropertiesElement = widgetsAndProperties.get(widget);
+        String horizontalAlignmentToUse = null;
+        String verticalAlignmentToUse = null;
+        for (final Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
+            final IWidget widget = entry.getKey();
+            final Element paragraphPropertiesElement = entry.getValue();
 
             /* get caption properties */
-            final Element captionElement =
-                    (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
+            final Element captionElement = (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
 
             final String captionHorizontalAlignment = XMLUtils.getAttributeFromChildElement(captionElement, "Horizontal Alignment").orElse("left");
             final String captionVerticalAlignment = XMLUtils.getAttributeFromChildElement(captionElement, "Vertical Alignment").orElse("top");
@@ -279,10 +287,8 @@ public class ParagraphPropertiesPanel extends JPanel {
             final String valueHorizontalAlignment;
             final String valueVerticalAlignment;
 
-            /* get value properties */
             if (widget.allowEditCaptionAndValue()) {
-                final Element valueElement =
-                        (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_value").item(0);
+                final Element valueElement = (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_value").item(0);
 
                 valueHorizontalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Horizontal Alignment").orElse("left");
                 valueVerticalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Vertical Alignment").orElse("top");
@@ -291,29 +297,29 @@ public class ParagraphPropertiesPanel extends JPanel {
                 valueVerticalAlignment = captionVerticalAlignment;
             }
 
-            final String[] alignments = getAlignments(currentlyEditing, captionHorizontalAlignment, valueHorizontalAlignment,
-                    captionVerticalAlignment, valueVerticalAlignment);
+            final String[] alignments = getAlignments(currentlyEditing, captionHorizontalAlignment, valueHorizontalAlignment, captionVerticalAlignment, valueVerticalAlignment);
 
             final String horizontalAlignment = alignments[0];
             final String verticalAlignment = alignments[1];
-
             if (horizontalAlignmentToUse == null) {
                 horizontalAlignmentToUse = horizontalAlignment;
                 verticalAlignmentToUse = verticalAlignment;
             } else {
-
                 if (!horizontalAlignmentToUse.equals(horizontalAlignment)) {
                     horizontalAlignmentToUse = "mixed";
                 }
-
                 if (!verticalAlignmentToUse.equals(verticalAlignment)) {
                     verticalAlignmentToUse = "mixed";
                 }
             }
         }
+        selectHorizontalAlignment(horizontalAlignmentToUse);
+        selectVerticalAlignment(verticalAlignmentToUse);
+    }
 
+    private void selectHorizontalAlignment(final String horizontalAlignmentToUse) {
         if ("mixed".equals(horizontalAlignmentToUse)) {
-            horizontalAlignmentButtonGroup.setSelected(new JToggleButton("").getModel(), true);
+            removeButtonGroupSelection(horizontalAlignmentButtonGroup);
         } else if ("left".equals(horizontalAlignmentToUse)) {
             horizontalAlignLeft.setSelected(true);
         } else if ("right".equals(horizontalAlignmentToUse)) {
@@ -325,9 +331,11 @@ public class ParagraphPropertiesPanel extends JPanel {
         } else {
             logger.warn("Unexpected horizontal alignment {}", horizontalAlignmentToUse);
         }
+    }
 
+    private void selectVerticalAlignment(final String verticalAlignmentToUse) {
         if ("mixed".equals(verticalAlignmentToUse)) {
-            verticalAlignmentButtonGroup.setSelected(new JToggleButton("").getModel(), true);
+            removeButtonGroupSelection(verticalAlignmentButtonGroup);
         } else if ("top".equals(verticalAlignmentToUse)) {
             verticalAlignTop.setSelected(true);
         } else if ("bottom".equals(verticalAlignmentToUse)) {
@@ -337,6 +345,10 @@ public class ParagraphPropertiesPanel extends JPanel {
         } else {
             logger.warn("Unexpected vertical alignment {}", verticalAlignmentToUse);
         }
+    }
+
+    private void removeButtonGroupSelection(final ButtonGroup buttonGroup) {
+        buttonGroup.setSelected(new JToggleButton("").getModel(), true);
     }
 
     private String[] getAlignments(
@@ -385,8 +397,8 @@ public class ParagraphPropertiesPanel extends JPanel {
                 break;
         }
 
-        return new String[] {
-                horizontalAlignmentToUse, verticalAlignmentToUse };
+        return new String[]{
+                horizontalAlignmentToUse, verticalAlignmentToUse};
     }
 
 }

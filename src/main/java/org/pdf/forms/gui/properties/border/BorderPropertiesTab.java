@@ -1,27 +1,22 @@
 package org.pdf.forms.gui.properties.border;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.JPanel;
-
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vlsolutions.swing.docking.DockKey;
-import com.vlsolutions.swing.docking.Dockable;
-
 public class BorderPropertiesTab extends JPanel implements Dockable {
 
     private final BorderPropertiesPanel borderPanel = new BorderPropertiesPanel();
-    private final DockKey key = new DockKey("Border");
 
     public BorderPropertiesTab(final IDesigner designer) {
         borderPanel.setDesignerPanel(designer);
@@ -54,7 +49,7 @@ public class BorderPropertiesTab extends JPanel implements Dockable {
 
     @Override
     public DockKey getDockKey() {
-        return key;
+        return new DockKey("border", "Border", "Set border properties");
     }
 
     @Override

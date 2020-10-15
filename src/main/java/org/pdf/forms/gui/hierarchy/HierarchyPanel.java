@@ -1,18 +1,17 @@
 package org.pdf.forms.gui.hierarchy;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.designer.IDesigner;
@@ -21,16 +20,12 @@ import org.pdf.forms.gui.hierarchy.tree.HierarchyTreeCellEditor;
 import org.pdf.forms.gui.hierarchy.tree.HierarchyTreeCellRenderer;
 import org.pdf.forms.widgets.IWidget;
 
-import com.vlsolutions.swing.docking.DockKey;
-import com.vlsolutions.swing.docking.Dockable;
-
 public class HierarchyPanel extends JPanel implements Dockable {
-    private final DockKey key = new DockKey("Hierarchy");
-    private final CTree tree;
-
-    private final DefaultMutableTreeNode top;
 
     private final List<DefaultMutableTreeNode> pageNodes = new ArrayList<>();
+
+    private final CTree tree;
+    private final DefaultMutableTreeNode top;
 
     public HierarchyPanel(final IDesigner designer) {
         setLayout(new BorderLayout());
@@ -138,7 +133,7 @@ public class HierarchyPanel extends JPanel implements Dockable {
 
     @Override
     public DockKey getDockKey() {
-        return key;
+        return new DockKey("hierarchy", "Hierarchy", "Show page structure hierarchy");
     }
 
     @Override

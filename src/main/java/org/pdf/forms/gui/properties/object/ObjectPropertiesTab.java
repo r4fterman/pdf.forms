@@ -1,24 +1,18 @@
 package org.pdf.forms.gui.properties.object;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.widgets.IWidget;
-
 import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
+import org.pdf.forms.gui.designer.IDesigner;
+import org.pdf.forms.widgets.IWidget;
 
 public class ObjectPropertiesTab extends JPanel implements Dockable {
 
     private final ObjectPropertiesPanel objectPanel = new ObjectPropertiesPanel();
-    private final DockKey key = new DockKey("Object");
 
     public ObjectPropertiesTab(final IDesigner designer) {
         objectPanel.setDesignerPanel(designer);
@@ -52,7 +46,7 @@ public class ObjectPropertiesTab extends JPanel implements Dockable {
 
     @Override
     public DockKey getDockKey() {
-        return key;
+        return new DockKey("object", "Object", "Set object properties");
     }
 
     @Override

@@ -1,30 +1,19 @@
 package org.pdf.forms.gui.library;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
+import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
 import java.net.URL;
 
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionListener;
-
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 
-import com.vlsolutions.swing.docking.DockKey;
-import com.vlsolutions.swing.docking.Dockable;
-
 public class LibraryPanel extends JPanel implements Dockable {
 
-    private final DockKey key = new DockKey("Library");
     private final JList<String> list;
     private final ListSelectionListener listener;
 
@@ -33,7 +22,7 @@ public class LibraryPanel extends JPanel implements Dockable {
             final WidgetFactory widgetFactory) {
         setLayout(new BorderLayout());
 
-        list = new JList<>(new String[] {
+        list = new JList<>(new String[]{
                 "Text Field",
                 "Text",
                 "Button",
@@ -41,7 +30,7 @@ public class LibraryPanel extends JPanel implements Dockable {
                 "Check Box",
                 "Drop-down List",
                 "List Box",
-                "Image" });
+                "Image"});
 
         final LibraryPanelCellRenderer libraryPanelCellRenderer = new LibraryPanelCellRenderer();
         list.setCellRenderer(libraryPanelCellRenderer);
@@ -105,7 +94,7 @@ public class LibraryPanel extends JPanel implements Dockable {
 
     @Override
     public DockKey getDockKey() {
-        return key;
+        return new DockKey("library", "Library", "Shows library tools");
     }
 
     @Override

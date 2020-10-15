@@ -32,7 +32,7 @@ public class PropertiesPanel extends CompoundDockable {
     public PropertiesPanel(
             final IDesigner designer,
             final FontHandler fontHandler) {
-        super(new DockKey("properties", "Properties", "Element properties"));
+        super(new DockKey("properties", "Properties", "Set element properties"));
 
         this.paragraphPropertiesTab = new ParagraphPropertiesTab(designer);
         this.borderPropertiesTab = new BorderPropertiesTab(designer);
