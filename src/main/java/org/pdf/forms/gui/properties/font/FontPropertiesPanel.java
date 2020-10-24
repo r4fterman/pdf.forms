@@ -1,16 +1,17 @@
 package org.pdf.forms.gui.properties.font;
 
-import java.awt.Color;
+import static org.jdesktop.layout.GroupLayout.DEFAULT_SIZE;
+import static org.jdesktop.layout.GroupLayout.LEADING;
+import static org.jdesktop.layout.GroupLayout.PREFERRED_SIZE;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JColorChooser;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
@@ -43,17 +44,33 @@ public class FontPropertiesPanel extends JPanel {
             "Plain",
             "Bold",
             "Italic",
-            "Bold Italic" };
+            "Bold Italic"};
     private static final String[] UNDERLINE_TYPES = {
             "No Underline",
             "Underline",
             "Double Underline",
             "Word Underline",
-            "Word Double Underline" };
+            "Word Double Underline"};
+
     private static final String[] STRIKETHROUGH_VALUES = {
             "Off",
-            "On" };
+            "On"};
+
     private static final String CUSTOM_COLOR = "Custom";
+    private static final Object[] COLORS = {
+            Color.black,
+            Color.blue,
+            Color.cyan,
+            Color.green,
+            Color.red,
+            Color.white,
+            Color.yellow,
+            CUSTOM_COLOR};
+
+    private static final String[] EDITING_VALUES = {
+            "Caption and Value",
+            "Caption properties",
+            "Value properties"};
 
     private final FontHandler fontHandler;
 
@@ -86,10 +103,7 @@ public class FontPropertiesPanel extends JPanel {
         currentlyEditingLabel.setText("Currently Editing:");
 
         currentlyEditingBox = new JComboBox<>();
-        currentlyEditingBox.setModel(new DefaultComboBoxModel<>(new String[] {
-                "Caption and Value",
-                "Caption properties",
-                "Value properties" }));
+        currentlyEditingBox.setModel(new DefaultComboBoxModel<>(EDITING_VALUES));
         currentlyEditingBox.addActionListener(this::updateCurrentlyEditingBox);
 
         final JLabel fontLabel = new JLabel();
@@ -132,15 +146,7 @@ public class FontPropertiesPanel extends JPanel {
         colorBox = new JComboBox<>();
         colorBox.setEditable(true);
         colorBox.setMaximumRowCount(5);
-        colorBox.setModel(new DefaultComboBoxModel<>(new Object[] {
-                Color.black,
-                Color.blue,
-                Color.cyan,
-                Color.green,
-                Color.red,
-                Color.white,
-                Color.yellow,
-                CUSTOM_COLOR }));
+        colorBox.setModel(new DefaultComboBoxModel<>(COLORS));
 
         final Color color = (Color) colorBox.getSelectedItem();
         editor = new ColorComboBoxEditor(color, colorBox);
@@ -156,153 +162,268 @@ public class FontPropertiesPanel extends JPanel {
 
         final GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .add(layout.createParallelGroup(GroupLayout.LEADING)
-                                        .add(layout.createSequentialGroup()
-                                                .add(fontStyleLabel)
-                                                .addPreferredGap(LayoutStyle.RELATED, 35, Short.MAX_VALUE)
-                                                .add(fontStyleBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
-                                        .add(layout.createSequentialGroup()
-                                                .add(currentlyEditingLabel)
-                                                .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(currentlyEditingBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
-                                        .add(layout.createSequentialGroup()
-                                                .add(colorLabel)
-                                                .addPreferredGap(LayoutStyle.RELATED, 59, Short.MAX_VALUE)
-                                                .add(colorBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
-                                        .add(layout.createSequentialGroup()
-                                                .add(underlineLabel)
-                                                .addPreferredGap(LayoutStyle.RELATED, 39, Short.MAX_VALUE)
-                                                .add(underlineBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
-                                        .add(layout.createSequentialGroup()
-                                                .add(strikethroughLabel)
-                                                .addPreferredGap(LayoutStyle.RELATED, 19, Short.MAX_VALUE)
-                                                .add(strikethroughBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
-                                        .add(GroupLayout.TRAILING, layout.createSequentialGroup()
-                                                .add(layout.createParallelGroup(GroupLayout.LEADING)
-                                                        .add(fontLabel)
-                                                        .add(fontSizeLabel))
-                                                .addPreferredGap(LayoutStyle.RELATED, 40, Short.MAX_VALUE)
-                                                .add(layout.createParallelGroup(GroupLayout.TRAILING)
-                                                        .add(fontNameBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE)
-                                                        .add(fontSizeBox, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))))
-                                .addContainerGap(140, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(currentlyEditingLabel)
-                                        .add(currentlyEditingBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(fontLabel)
-                                        .add(fontNameBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(fontSizeLabel)
-                                        .add(fontSizeBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(fontStyleLabel)
-                                        .add(fontStyleBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(underlineLabel)
-                                        .add(underlineBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(strikethroughLabel)
-                                        .add(strikethroughBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(colorLabel)
-                                        .add(colorBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addContainerGap(113, Short.MAX_VALUE))
-        );
+
+        final GroupLayout.SequentialGroup sequentialGroup = layout.createSequentialGroup()
+                .add(fontStyleLabel)
+                .addPreferredGap(LayoutStyle.RELATED, 35, Short.MAX_VALUE)
+                .add(fontStyleBox, PREFERRED_SIZE, 162, PREFERRED_SIZE);
+
+        final GroupLayout.SequentialGroup sequentialGroup1 = layout.createSequentialGroup()
+                .add(currentlyEditingLabel)
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(currentlyEditingBox, PREFERRED_SIZE, 162, PREFERRED_SIZE);
+        final GroupLayout.SequentialGroup sequentialGroup2 = layout.createSequentialGroup()
+                .add(colorLabel)
+                .addPreferredGap(LayoutStyle.RELATED, 59, Short.MAX_VALUE)
+                .add(colorBox, PREFERRED_SIZE, 162, PREFERRED_SIZE);
+        final GroupLayout.SequentialGroup sequentialGroup3 = layout.createSequentialGroup()
+                .add(underlineLabel)
+                .addPreferredGap(LayoutStyle.RELATED, 39, Short.MAX_VALUE)
+                .add(underlineBox, PREFERRED_SIZE, 162, PREFERRED_SIZE);
+        final GroupLayout.SequentialGroup sequentialGroup4 = layout.createSequentialGroup()
+                .add(strikethroughLabel)
+                .addPreferredGap(LayoutStyle.RELATED, 19, Short.MAX_VALUE)
+                .add(strikethroughBox, PREFERRED_SIZE, 162, PREFERRED_SIZE);
+
+        final GroupLayout.ParallelGroup parallelGroup1 = layout.createParallelGroup(GroupLayout.TRAILING)
+                .add(fontNameBox, PREFERRED_SIZE, 162, PREFERRED_SIZE)
+                .add(fontSizeBox, PREFERRED_SIZE, 162, PREFERRED_SIZE);
+
+        final GroupLayout.SequentialGroup sequentialGroup5 = layout.createSequentialGroup()
+                .add(layout.createParallelGroup(LEADING).add(fontLabel).add(fontSizeLabel))
+                .addPreferredGap(LayoutStyle.RELATED, 40, Short.MAX_VALUE)
+                .add(parallelGroup1);
+
+        final GroupLayout.ParallelGroup parallelGroup = layout.createParallelGroup(LEADING)
+                .add(sequentialGroup)
+                .add(sequentialGroup1)
+                .add(sequentialGroup2)
+                .add(sequentialGroup3)
+                .add(sequentialGroup4)
+                .add(GroupLayout.TRAILING, sequentialGroup5);
+
+        final GroupLayout.SequentialGroup sequentialGroup6 = layout.createSequentialGroup()
+                .addContainerGap()
+                .add(parallelGroup)
+                .addContainerGap(140, Short.MAX_VALUE);
+
+        layout.setHorizontalGroup(layout.createParallelGroup(LEADING).add(sequentialGroup6));
+
+        final GroupLayout.SequentialGroup sequentialGroup7 = layout.createSequentialGroup()
+                .addContainerGap()
+                .add(layout.createParallelGroup(GroupLayout.BASELINE)
+                             .add(currentlyEditingLabel)
+                             .add(currentlyEditingBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE))
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(GroupLayout.BASELINE)
+                             .add(fontLabel)
+                             .add(fontNameBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE))
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(GroupLayout.BASELINE)
+                             .add(fontSizeLabel)
+                             .add(fontSizeBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE))
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(GroupLayout.BASELINE)
+                             .add(fontStyleLabel)
+                             .add(fontStyleBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE))
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(GroupLayout.BASELINE)
+                             .add(underlineLabel)
+                             .add(underlineBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE))
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(GroupLayout.BASELINE)
+                             .add(strikethroughLabel)
+                             .add(strikethroughBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE))
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(GroupLayout.BASELINE)
+                             .add(colorLabel)
+                             .add(colorBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE))
+                .addContainerGap(113, Short.MAX_VALUE);
+        layout.setVerticalGroup(layout.createParallelGroup(LEADING).add(sequentialGroup7));
     }
 
     private void updateFont(final ActionEvent event) {
-        for (final Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
+        for (final Map.Entry<IWidget, Element> entry: widgetsAndProperties.entrySet()) {
             final IWidget widget = entry.getKey();
             final Element fontElement = entry.getValue();
 
             final List<Element> fontList = XMLUtils.getElementsFromNodeList(fontElement.getChildNodes());
-            final Element captionElement = fontList.get(0);
-            Element valueElement = null;
-            if (widget.allowEditCaptionAndValue()) {
-                valueElement = fontList.get(1);
+            if (!fontList.isEmpty()) {
+                final Element captionElement = fontList.get(0);
+
+                final Element valueElement;
+                if (widget.allowEditCaptionAndValue()) {
+                    valueElement = fontList.get(1);
+                } else {
+                    valueElement = null;
+                }
+
+                updateFontNameProperty(widget, captionElement, valueElement);
+                updateFontSizeProperty(widget, captionElement, valueElement);
+                updateFontStyleProperty(widget, captionElement, valueElement);
+                updateUnderlineProperty(widget, captionElement, valueElement);
+                updateStrikethroughProperty(widget, captionElement, valueElement);
+                updateColorProperty(widget, captionElement, valueElement);
             }
-
-            final Element captionFontName = XMLUtils.getPropertyElement(captionElement, "Font Name").get();
-            final Element captionFontSize = XMLUtils.getPropertyElement(captionElement, "Font Size").get();
-            final Element captionFontStyle = XMLUtils.getPropertyElement(captionElement, "Font Style").get();
-            final Element captionUnderline = XMLUtils.getPropertyElement(captionElement, "Underline").get();
-            final Element captionStrikethrough = XMLUtils.getPropertyElement(captionElement, "Strikethrough").get();
-            final Element captionColor = XMLUtils.getPropertyElement(captionElement, "Color").get();
-
-            Element valueFontName = null;
-            Element valueFontSize = null;
-            Element valueFontStyle = null;
-            Element valueUnderline = null;
-            Element valueStrikethrough = null;
-            Element valueColor = null;
-
-            if (widget.allowEditCaptionAndValue()) {
-                valueFontName = XMLUtils.getPropertyElement(valueElement, "Font Name").get();
-                valueFontSize = XMLUtils.getPropertyElement(valueElement, "Font Size").get();
-                valueFontStyle = XMLUtils.getPropertyElement(valueElement, "Font Style").get();
-                valueUnderline = XMLUtils.getPropertyElement(valueElement, "Underline").get();
-                valueStrikethrough = XMLUtils.getPropertyElement(valueElement, "Strikethrough").get();
-                valueColor = XMLUtils.getPropertyElement(valueElement, "Color").get();
-            }
-
-            setProperty(fontNameBox.getSelectedItem(), captionFontName, valueFontName);
-            setProperty(fontSizeBox.getSelectedItem(), captionFontSize, valueFontSize);
-
-            int index = fontStyleBox.getSelectedIndex();
-            String selectedIndex;
-            if (index == -1) {
-                selectedIndex = null;
-            } else {
-                selectedIndex = index + "";
-            }
-            setProperty(selectedIndex, captionFontStyle, valueFontStyle);
-
-            index = underlineBox.getSelectedIndex();
-            if (index == -1) {
-                selectedIndex = null;
-            } else {
-                selectedIndex = index + "";
-            }
-            setProperty(selectedIndex, captionUnderline, valueUnderline);
-
-            index = strikethroughBox.getSelectedIndex();
-            if (index == -1) {
-                selectedIndex = null;
-            } else {
-                selectedIndex = index + "";
-            }
-            setProperty(selectedIndex, captionStrikethrough, valueStrikethrough);
-
-            final Color color = ((Color) colorBox.getSelectedItem());
-            final String selectedColor;
-            if (color == null) {
-                selectedColor = null;
-            } else {
-                selectedColor = color.getRGB() + "";
-            }
-            setProperty(selectedColor, captionColor, valueColor);
 
             widget.setFontProperties(widgetsAndProperties.get(widget), currentlyEditingBox.getSelectedIndex());
         }
 
         designerPanel.getMainFrame().setPropertiesToolBar(widgetsAndProperties.keySet());
         designerPanel.repaint();
+    }
+
+    private void updateFontNameProperty(
+            final IWidget widget,
+            final Element captionElement,
+            final Element valueElement) {
+        final Optional<Element> fontName = XMLUtils.getPropertyElement(captionElement, "Font Name");
+        if (fontName.isEmpty()) {
+            return;
+        }
+
+        Element valueFontName = null;
+        if (widget.allowEditCaptionAndValue()) {
+            final Optional<Element> fontValue = XMLUtils.getPropertyElement(valueElement, "Font Name");
+            if (fontValue.isPresent()) {
+                valueFontName = fontValue.get();
+            }
+        }
+        final Element captionFontName = fontName.get();
+        setProperty(fontNameBox.getSelectedItem(), captionFontName, valueFontName);
+    }
+
+    private void updateFontSizeProperty(
+            final IWidget widget,
+            final Element captionElement,
+            final Element valueElement) {
+        final Optional<Element> fontSize = XMLUtils.getPropertyElement(captionElement, "Font Size");
+        if (fontSize.isEmpty()) {
+            return;
+        }
+
+        Element valueFontSize = null;
+        if (widget.allowEditCaptionAndValue()) {
+            valueFontSize = XMLUtils.getPropertyElement(valueElement, "Font Size").get();
+        }
+        final Element captionFontSize = fontSize.get();
+        setProperty(fontSizeBox.getSelectedItem(), captionFontSize, valueFontSize);
+    }
+
+    private void updateFontStyleProperty(
+            final IWidget widget,
+            final Element captionElement,
+            final Element valueElement) {
+        final Optional<Element> fontStyle = XMLUtils.getPropertyElement(captionElement, "Font Style");
+        if (fontStyle.isEmpty()) {
+            return;
+        }
+
+        Element valueFontStyle = null;
+        if (widget.allowEditCaptionAndValue()) {
+            final Optional<Element> fontStyleValue = XMLUtils.getPropertyElement(valueElement, "Font Style");
+            if (fontStyleValue.isPresent()) {
+                valueFontStyle = fontStyleValue.get();
+            }
+        }
+
+        final String selectedIndex;
+        final int index = fontStyleBox.getSelectedIndex();
+        if (index == -1) {
+            selectedIndex = null;
+        } else {
+            selectedIndex = String.valueOf(index);
+        }
+
+        final Element captionFontStyle = fontStyle.get();
+        setProperty(selectedIndex, captionFontStyle, valueFontStyle);
+    }
+
+    private void updateUnderlineProperty(
+            final IWidget widget,
+            final Element captionElement,
+            final Element valueElement) {
+        final Optional<Element> underline = XMLUtils.getPropertyElement(captionElement, "Underline");
+        if (underline.isEmpty()) {
+            return;
+        }
+
+        Element valueUnderline = null;
+        if (widget.allowEditCaptionAndValue()) {
+            final Optional<Element> underlineValue = XMLUtils.getPropertyElement(valueElement, "Underline");
+            if (underlineValue.isPresent()) {
+                valueUnderline = underlineValue.get();
+            }
+        }
+
+        final String selectedIndex;
+        final int index = underlineBox.getSelectedIndex();
+        if (index == -1) {
+            selectedIndex = null;
+        } else {
+            selectedIndex = String.valueOf(index);
+        }
+
+        final Element captionUnderline = underline.get();
+        setProperty(selectedIndex, captionUnderline, valueUnderline);
+    }
+
+    private void updateStrikethroughProperty(
+            final IWidget widget,
+            final Element captionElement,
+            final Element valueElement) {
+        final Optional<Element> strikethrough = XMLUtils.getPropertyElement(captionElement, "Strikethrough");
+        if (strikethrough.isEmpty()) {
+            return;
+        }
+
+        Element valueStrikethrough = null;
+        if (widget.allowEditCaptionAndValue()) {
+            final Optional<Element> strikethroughValue = XMLUtils.getPropertyElement(valueElement, "Strikethrough");
+            if (strikethroughValue.isPresent()) {
+                valueStrikethrough = strikethroughValue.get();
+            }
+        }
+
+        final String selectedIndex;
+        final int index = strikethroughBox.getSelectedIndex();
+        if (index == -1) {
+            selectedIndex = null;
+        } else {
+            selectedIndex = index + "";
+        }
+
+        final Element captionStrikethrough = strikethrough.get();
+        setProperty(selectedIndex, captionStrikethrough, valueStrikethrough);
+    }
+
+    private void updateColorProperty(
+            final IWidget widget,
+            final Element captionElement,
+            final Element valueElement) {
+        final Optional<Element> colorElement = XMLUtils.getPropertyElement(captionElement, "Color");
+        if (colorElement.isEmpty()) {
+            return;
+        }
+
+        Element valueColor = null;
+        if (widget.allowEditCaptionAndValue()) {
+            final Optional<Element> colorValue = XMLUtils.getPropertyElement(valueElement, "Color");
+            if (colorValue.isPresent()) {
+                valueColor = colorValue.get();
+            }
+        }
+
+        final String selectedColor;
+        final Color color = ((Color) colorBox.getSelectedItem());
+        if (color == null) {
+            selectedColor = null;
+        } else {
+            selectedColor = String.valueOf(color.getRGB());
+        }
+
+        final Element captionColor = colorElement.get();
+        setProperty(selectedColor, captionColor, valueColor);
     }
 
     private void updateColor(final ActionEvent event) {
@@ -321,19 +442,19 @@ public class FontPropertiesPanel extends JPanel {
             final Object value,
             final Element captionElement,
             final Element valueElement) {
-        if (value != null) {
-            if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
-                captionElement.getAttributeNode("value").setValue(value.toString());
-                if (valueElement != null) {
-                    valueElement.getAttributeNode("value").setValue(value.toString());
-                }
-            } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
-                captionElement.getAttributeNode("value").setValue(value.toString());
-            } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
-                if (valueElement != null) {
-                    valueElement.getAttributeNode("value").setValue(value.toString());
-                }
+        if (value == null) {
+            return;
+        }
+
+        if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
+            captionElement.getAttributeNode("value").setValue(value.toString());
+            if (valueElement != null) {
+                valueElement.getAttributeNode("value").setValue(value.toString());
             }
+        } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
+            captionElement.getAttributeNode("value").setValue(value.toString());
+        } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem()) && valueElement != null) {
+            valueElement.getAttributeNode("value").setValue(value.toString());
         }
     }
 
@@ -352,10 +473,23 @@ public class FontPropertiesPanel extends JPanel {
             final int currentlyEditing) {
         this.widgetsAndProperties = widgetsAndProperties;
 
-        //        /** update the list of fonts just in case a new one has been added */
-        //        String[] fonts = getFonts();
-        //        DefaultComboBoxModel model = new DefaultComboBoxModel(fonts);
-        //        fontNameBox.setModel(model);
+        boolean allowEditCaptionAndValue = false;
+        for (final IWidget widget: widgetsAndProperties.keySet()) {
+            if (widget.allowEditCaptionAndValue()) {
+                allowEditCaptionAndValue = true;
+                break;
+            }
+        }
+
+        final int currentlyEditingIdx;
+        if (!allowEditCaptionAndValue) {
+            currentlyEditingIdx = 1;
+        } else {
+            currentlyEditingIdx = currentlyEditing;
+        }
+
+        currentlyEditingBox.setSelectedIndex(currentlyEditingIdx);
+        currentlyEditingBox.setEnabled(allowEditCaptionAndValue);
 
         String fontNameToUse = null;
         String fontSizeToUse = null;
@@ -364,24 +498,7 @@ public class FontPropertiesPanel extends JPanel {
         String strikethroughToUse = null;
         String colorToUse = null;
 
-        boolean allowEditCaptionAndValue = false;
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
-            if (widget.allowEditCaptionAndValue()) {
-                allowEditCaptionAndValue = true;
-                break;
-            }
-        }
-
-        int currentlyEditingIdx = currentlyEditing;
-        if (!allowEditCaptionAndValue) {
-            currentlyEditingIdx = 1;
-        }
-
-        /* set the currently editing box */
-        currentlyEditingBox.setSelectedIndex(currentlyEditingIdx);
-        currentlyEditingBox.setEnabled(allowEditCaptionAndValue);
-
-        for (Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
+        for (final Map.Entry<IWidget, Element> entry: widgetsAndProperties.entrySet()) {
             final IWidget widget = entry.getKey();
             final Element fontProperties = entry.getValue();
 
@@ -391,8 +508,10 @@ public class FontPropertiesPanel extends JPanel {
             final String captionFontSize = XMLUtils.getAttributeFromChildElement(caption, "Font Size").orElse("10");
             final String captionFontStyle = XMLUtils.getAttributeFromChildElement(caption, "Font Style").orElse("1");
             final String captionUnderline = XMLUtils.getAttributeFromChildElement(caption, "Underline").orElse("1");
-            final String captionStrikethrough = XMLUtils.getAttributeFromChildElement(caption, "Strikethrough").orElse("1");
-            final String captionColor = XMLUtils.getAttributeFromChildElement(caption, "Color").orElse(String.valueOf(Color.BLACK.getRGB()));
+            final String captionStrikethrough = XMLUtils.getAttributeFromChildElement(caption, "Strikethrough").orElse(
+                    "1");
+            final String captionColor = XMLUtils.getAttributeFromChildElement(caption, "Color").orElse(String.valueOf(
+                    Color.BLACK.getRGB()));
 
             final String valueFontName;
             final String valueFontSize;
@@ -436,7 +555,6 @@ public class FontPropertiesPanel extends JPanel {
                 underlineToUse = underline;
                 strikethroughToUse = strikethrough;
                 colorToUse = color;
-
             } else {
                 // check for subsequent widgets
                 if (!fontNameToUse.equals(fontName)) {
