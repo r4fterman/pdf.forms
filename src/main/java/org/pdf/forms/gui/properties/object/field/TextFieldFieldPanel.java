@@ -1,20 +1,21 @@
 package org.pdf.forms.gui.properties.object.field;
 
+import static org.jdesktop.layout.GroupLayout.BASELINE;
+import static org.jdesktop.layout.GroupLayout.DEFAULT_SIZE;
+import static org.jdesktop.layout.GroupLayout.LEADING;
+import static org.jdesktop.layout.GroupLayout.PREFERRED_SIZE;
+import static org.jdesktop.layout.GroupLayout.TRAILING;
+import static org.jdesktop.layout.LayoutStyle.RELATED;
+
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
-import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBox;
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBoxParent;
 import org.pdf.forms.utils.XMLUtils;
@@ -59,12 +60,12 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
         presenceLabel.setText("Presence");
 
         final JComboBox<String> presenceBox = new JComboBox<>();
-        presenceBox.setModel(new DefaultComboBoxModel<>(new String[] {
-                "Visible" }));
+        presenceBox.setModel(new DefaultComboBoxModel<>(new String[]{
+                "Visible"}));
 
         final JComboBox<String> appearanceBox = new JComboBox<>();
-        appearanceBox.setModel(new DefaultComboBoxModel<>(new String[] {
-                "None", "Underline", "Solid", "Sunken Box", "Custom..." }));
+        appearanceBox.setModel(new DefaultComboBoxModel<>(new String[]{
+                "None", "Underline", "Solid", "Sunken Box", "Custom..."}));
         appearanceBox.setSelectedIndex(3);
         appearanceBox.setEnabled(false);
 
@@ -72,66 +73,78 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
         appearanceLabel.setText("Appearance:");
         appearanceLabel.setEnabled(false);
 
-        final JSeparator jSeparator1 = new JSeparator();
+        final JSeparator separator = new JSeparator();
 
         final GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .add(layout.createParallelGroup(GroupLayout.TRAILING)
-                                        .add(jSeparator1, GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
-                                        .add(GroupLayout.LEADING, layout.createSequentialGroup()
-                                                .add(appearanceLabel)
-                                                .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(appearanceBox, 0, 190, Short.MAX_VALUE))
-                                        .add(GroupLayout.LEADING, layout.createSequentialGroup()
-                                                .add(10, 10, 10)
-                                                .add(layout.createParallelGroup(GroupLayout.LEADING, false)
-                                                        .add(layout.createSequentialGroup()
-                                                                .add(limitLengthBox)
-                                                                .addPreferredGap(LayoutStyle.RELATED, 42, Short.MAX_VALUE)
-                                                                .add(maxCharsLabel)
-                                                                .addPreferredGap(LayoutStyle.RELATED)
-                                                                .add(maxCharsBox, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
-                                                        .add(allowMultipleLinesBox)))
-                                        .add(GroupLayout.LEADING, layout.createSequentialGroup()
-                                                .add(presenceLabel)
-                                                .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(presenceBox, 0, 202, Short.MAX_VALUE)))
-                                .add(16, 16, 16))
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(appearanceLabel)
-                                        .add(appearanceBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(allowMultipleLinesBox)
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(limitLengthBox)
-                                        .add(maxCharsLabel)
-                                        .add(maxCharsBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(jSeparator1, GroupLayout.PREFERRED_SIZE, 10, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(LayoutStyle.RELATED)
-                                .add(layout.createParallelGroup(GroupLayout.BASELINE)
-                                        .add(presenceLabel)
-                                        .add(presenceBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+
+        final GroupLayout.SequentialGroup sequentialGroup1 = layout.createSequentialGroup()
+                .add(appearanceLabel)
+                .addPreferredGap(RELATED)
+                .add(appearanceBox, 0, 190, Short.MAX_VALUE);
+
+        final GroupLayout.SequentialGroup sequentialGroup4 = layout.createSequentialGroup()
+                .add(limitLengthBox)
+                .addPreferredGap(RELATED, 42, Short.MAX_VALUE)
+                .add(maxCharsLabel)
+                .addPreferredGap(RELATED)
+                .add(maxCharsBox, PREFERRED_SIZE, 42, PREFERRED_SIZE);
+        final GroupLayout.ParallelGroup parallelGroup4 = layout.createParallelGroup(LEADING, false)
+                .add(sequentialGroup4)
+                .add(allowMultipleLinesBox);
+        final GroupLayout.SequentialGroup sequentialGroup2 = layout.createSequentialGroup()
+                .add(10, 10, 10)
+                .add(parallelGroup4);
+        final GroupLayout.SequentialGroup sequentialGroup3 = layout.createSequentialGroup()
+                .add(presenceLabel)
+                .addPreferredGap(RELATED)
+                .add(presenceBox, 0, 202, Short.MAX_VALUE);
+        final GroupLayout.ParallelGroup parallelGroup = layout.createParallelGroup(TRAILING)
+                .add(separator, DEFAULT_SIZE, 250, Short.MAX_VALUE)
+                .add(LEADING, sequentialGroup1)
+                .add(LEADING, sequentialGroup2)
+                .add(LEADING, sequentialGroup3);
+        final GroupLayout.SequentialGroup sequentialGroup = layout.createSequentialGroup()
+                .addContainerGap()
+                .add(parallelGroup)
+                .add(16, 16, 16);
+
+        layout.setHorizontalGroup(layout.createParallelGroup(LEADING).add(sequentialGroup));
+
+        final GroupLayout.ParallelGroup parallelGroup1 = layout.createParallelGroup(BASELINE)
+                .add(appearanceLabel)
+                .add(appearanceBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE);
+        final GroupLayout.ParallelGroup parallelGroup2 = layout.createParallelGroup(BASELINE)
+                .add(limitLengthBox)
+                .add(maxCharsLabel)
+                .add(maxCharsBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE);
+        final GroupLayout.ParallelGroup parallelGroup3 = layout.createParallelGroup(BASELINE)
+                .add(presenceLabel)
+                .add(presenceBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE);
+        final GroupLayout.SequentialGroup sequentialGroup5 = layout.createSequentialGroup()
+                .addContainerGap()
+                .add(parallelGroup1)
+                .addPreferredGap(RELATED)
+                .add(allowMultipleLinesBox)
+                .addPreferredGap(RELATED)
+                .add(parallelGroup2)
+                .addPreferredGap(RELATED)
+                .add(separator, PREFERRED_SIZE, 10, PREFERRED_SIZE)
+                .addPreferredGap(RELATED)
+                .add(parallelGroup3)
+                .addContainerGap(DEFAULT_SIZE, Short.MAX_VALUE);
+        layout.setVerticalGroup(layout.createParallelGroup(LEADING).add(sequentialGroup5));
     }
 
     private void updateMaxChars() {
-        final String maxChars = maxCharsBox.getText();
-        if (maxChars != null && !maxChars.equals("mixed")) {
-            for (Element widgetProperties : widgetsAndProperties.values()) {
-                final Element maxCharsElement = XMLUtils.getPropertyElement(widgetProperties, "Max Chars").get();
-                maxCharsElement.getAttributeNode("value").setValue(maxChars);
+        final String maxCharsValue = maxCharsBox.getText();
+        if (maxCharsValue != null && !maxCharsValue.equals("mixed")) {
+            for (final Element widgetProperties: widgetsAndProperties.values()) {
+                final Optional<Element> maxChars = XMLUtils.getPropertyElement(widgetProperties, "Max Chars");
+                if (maxChars.isPresent()) {
+                    final Element maxCharsElement = maxChars.get();
+                    maxCharsElement.getAttributeNode("value").setValue(maxCharsValue);
+                }
             }
         }
     }
@@ -142,15 +155,19 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
         TristateCheckBox.State allowMultipleLinesToUse = null;
         TristateCheckBox.State limitLengthToUse = null;
 
-        //Boolean allowMultipleLinesToUse = null, limitLengthToUse = null;
         String maxCharsToUse = null;
-
-        for (Element objectPropertiesElement : widgetsAndProperties.values()) {
+        for (final Element objectPropertiesElement: widgetsAndProperties.values()) {
             final Element fieldProperties = (Element) objectPropertiesElement.getElementsByTagName("field").item(0);
 
-            final boolean allowMultipleLines = Boolean.parseBoolean(XMLUtils.getAttributeFromChildElement(fieldProperties, "Allow Multiple Lines").orElse("false"));
-            final boolean limitLength = Boolean.parseBoolean(XMLUtils.getAttributeFromChildElement(fieldProperties, "Limit Length").orElse("false"));
-            final String maxChars = XMLUtils.getAttributeFromChildElement(fieldProperties, "Max Chars").orElse("10");
+            final boolean allowMultipleLines = XMLUtils.getAttributeFromChildElement(fieldProperties,
+                    "Allow Multiple Lines")
+                    .map(Boolean::valueOf)
+                    .orElse(false);
+            final boolean limitLength = XMLUtils.getAttributeFromChildElement(fieldProperties, "Limit Length")
+                    .map(Boolean::valueOf)
+                    .orElse(false);
+            final String maxChars = XMLUtils.getAttributeFromChildElement(fieldProperties, "Max Chars")
+                    .orElse("10");
 
             if (maxCharsToUse == null) {
                 if (allowMultipleLines) {
@@ -205,10 +222,11 @@ public class TextFieldFieldPanel extends JPanel implements TristateCheckBoxParen
         final TristateCheckBox.State allowMultipleLinesState = (((TristateCheckBox) allowMultipleLinesBox).getState());
         final TristateCheckBox.State limitLengthState = (((TristateCheckBox) limitLengthBox).getState());
 
-        for (Element propertiesElement : widgetsAndProperties.values()) {
+        for (final Element propertiesElement: widgetsAndProperties.values()) {
             final List<Element> objectProperties = XMLUtils.getElementsFromNodeList(propertiesElement.getChildNodes());
 
-            final List<Element> fieldProperties = XMLUtils.getElementsFromNodeList(objectProperties.get(0).getChildNodes());
+            final List<Element> fieldProperties = XMLUtils.getElementsFromNodeList(objectProperties.get(0)
+                    .getChildNodes());
             if (allowMultipleLinesState != TristateCheckBox.DONT_CARE) {
                 final Element allowMultipleLines = fieldProperties.get(1);
                 final String value;

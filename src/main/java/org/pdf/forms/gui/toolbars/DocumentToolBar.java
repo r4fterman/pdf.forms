@@ -1,11 +1,10 @@
 package org.pdf.forms.gui.toolbars;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
+import javax.swing.*;
 
 import org.jpedal.examples.simpleviewer.gui.swing.SwingButton;
 import org.jpedal.examples.simpleviewer.gui.swing.SwingCombo;
@@ -39,7 +38,7 @@ public class DocumentToolBar extends VLToolBar {
         zoomIn.setEnabled(false);
         zoomComponents.add(zoomIn);
 
-        zoomBox = new SwingCombo(new String[] {
+        zoomBox = new SwingCombo(new String[]{
                 "100%",
                 "75%",
                 "50%",
@@ -75,7 +74,7 @@ public class DocumentToolBar extends VLToolBar {
     }
 
     public void setZoomState(final boolean state) {
-        for (final JComponent component : zoomComponents) {
+        for (final JComponent component: zoomComponents) {
             component.setEnabled(state);
         }
     }
@@ -83,13 +82,13 @@ public class DocumentToolBar extends VLToolBar {
     public void setState(final boolean state) {
         setSaveState(state);
 
-        for (final JComponent component : documentComponents) {
+        for (final JComponent component: documentComponents) {
             component.setEnabled(state);
         }
     }
 
     public double getCurrentSelectedScaling() {
-        final String zoomValue = getZoomValue().replaceAll("%", "");
+        final String zoomValue = getZoomValue().replace("%", "");
         return Double.parseDouble(zoomValue);
     }
 

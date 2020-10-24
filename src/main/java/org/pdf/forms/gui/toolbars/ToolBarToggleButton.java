@@ -1,12 +1,10 @@
 package org.pdf.forms.gui.toolbars;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 
-import javax.swing.AbstractButton;
-import javax.swing.ImageIcon;
-import javax.swing.JToggleButton;
+import javax.swing.*;
 
 public class ToolBarToggleButton extends JToggleButton {
 
@@ -28,7 +26,6 @@ public class ToolBarToggleButton extends JToggleButton {
             setIcon(fontIcon);
             createPressedLook(this, fontIcon);
         }
-
     }
 
     /**
@@ -45,7 +42,4 @@ public class ToolBarToggleButton extends JToggleButton {
         button.setPressedIcon(iconPressed);
     }
 
-    public void setIcon(final ImageIcon icon) {
-        super.setIcon(icon);
-    }
 }

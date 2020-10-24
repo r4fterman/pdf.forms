@@ -1,6 +1,5 @@
 package org.pdf.forms.gui.toolbars;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -9,7 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.vlsolutions.swing.toolbars.VLToolBar;
+import javax.swing.*;
+
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public class WidgetPropertiesToolBar extends VLToolBar {
 
@@ -34,7 +36,6 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     private final ToolBarToggleButton alignCenter;
     private final ToolBarToggleButton alignRight;
 
-
     public WidgetPropertiesToolBar(
             final FontHandler fontHandler,
             final IDesigner designerPanel) {
@@ -45,7 +46,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         fontBox.addActionListener(actionEvent -> updateFont());
         add(fontBox);
 
-        fontSize = new JComboBox<>(new String[] {
+        fontSize = new JComboBox<>(new String[]{
                 "6", "8", "10", "12", "14", "16", "18", "20", "24", "28", "36", "48", "72"
         });
         fontSize.setEditable(true);
@@ -96,16 +97,16 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     private void updateAlignment(final String alignment) {
         final Set<IWidget> widgets = designerPanel.getSelectedWidgets();
 
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             final Document properties = widget.getProperties();
             final Element paragraphElement = (Element) properties.getElementsByTagName("paragraph").item(0);
 
-            final List paragraphList = XMLUtils.getElementsFromNodeList(paragraphElement.getChildNodes());
+            final List<Element> paragraphList = XMLUtils.getElementsFromNodeList(paragraphElement.getChildNodes());
 
-            final Element captionElement = (Element) paragraphList.get(0);
+            final Element captionElement = paragraphList.get(0);
             Element valueElement = null;
             if (widget.allowEditCaptionAndValue()) {
-                valueElement = (Element) paragraphList.get(1);
+                valueElement = paragraphList.get(1);
             }
 
             final Element captionAlignment = XMLUtils.getPropertyElement(captionElement, "Horizontal Alignment").get();
@@ -138,15 +139,15 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         }
 
         final Set<IWidget> widgets = designerPanel.getSelectedWidgets();
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             final Document properties = widget.getProperties();
             final Element fontElement = (Element) properties.getElementsByTagName("font").item(0);
 
-            final List fontList = XMLUtils.getElementsFromNodeList(fontElement.getChildNodes());
-            final Element captionElement = (Element) fontList.get(0);
+            final List<Element> fontList = XMLUtils.getElementsFromNodeList(fontElement.getChildNodes());
+            final Element captionElement = fontList.get(0);
             Element valueElement = null;
             if (widget.allowEditCaptionAndValue()) {
-                valueElement = (Element) fontList.get(1);
+                valueElement = fontList.get(1);
             }
 
             final Element captionFontName = XMLUtils.getPropertyElement(captionElement, "Font Name").get();
@@ -178,7 +179,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     private void setFontProperties(final Set<IWidget> widgets) {
         final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
 
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             final Document properties = widget.getProperties();
 
             final Element layoutProperties = (Element) properties.getElementsByTagName("font").item(0);
@@ -191,8 +192,10 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         String fontStyleToUse = null;
 
         /* iterate through the widgets */
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
-            final Element fontProperties = widgetsAndProperties.get(widget);
+        final Set<Map.Entry<IWidget, Element>> entries = widgetsAndProperties.entrySet();
+        for (final Map.Entry<IWidget, Element> entry: entries) {
+            final IWidget widget = entry.getKey();
+            final Element fontProperties = entry.getValue();
 
             /* get caption properties */
             final Element caption = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
@@ -259,8 +262,6 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         setComboValue(fontBox, fontName);
         setComboValue(this.fontSize, fontSize);
 
-        //setComboValue(fontStyleBox, fontStyleToUse.equals("mixed") ? null : new Integer(fontStyleToUse));
-
         if ("mixed".equals(fontStyleToUse) || "0".equals(fontStyleToUse)) {
             fontBold.setSelected(false);
             fontItalic.setSelected(false);
@@ -280,7 +281,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     private void setParagraphProperties(final Set<IWidget> widgets) {
         final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
 
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             final Document properties = widget.getProperties();
 
             final Element layoutProperties = (Element) properties.getElementsByTagName("paragraph").item(0);
@@ -291,32 +292,36 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         String horizontalAlignmentToUse = null;
 
         /* iterate through the widgets */
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
-            final Element paragraphPropertiesElement = widgetsAndProperties.get(widget);
+        final Set<Map.Entry<IWidget, Element>> entries = widgetsAndProperties.entrySet();
+        for (final Map.Entry<IWidget, Element> entry: entries) {
+            final IWidget widget = entry.getKey();
+            final Element paragraphPropertiesElement = entry.getValue();
 
             /* get caption properties */
             final Element captionElement =
                     (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
 
-            final String captionHorizontalAlignment = XMLUtils.getAttributeFromChildElement(captionElement, "Horizontal Alignment").orElse("left");
+            final String captionHorizontalAlignment = XMLUtils.getAttributeFromChildElement(captionElement,
+                    "Horizontal Alignment").orElse("left");
             final String valueHorizontalAlignment;
 
             /* get value properties */
             if (widget.allowEditCaptionAndValue()) {
-                final Element valueElement =
-                        (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_value").item(0);
+                final Element valueElement = (Element) paragraphPropertiesElement
+                        .getElementsByTagName("paragraph_value").item(0);
 
-                valueHorizontalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Horizontal Alignment").orElse("left");
+                valueHorizontalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Horizontal Alignment")
+                        .orElse("left");
             } else {
                 valueHorizontalAlignment = captionHorizontalAlignment;
             }
 
-            final String horizontalAlignment = getHorizontalAlignment(captionHorizontalAlignment, valueHorizontalAlignment);
+            final String horizontalAlignment = getHorizontalAlignment(captionHorizontalAlignment,
+                    valueHorizontalAlignment);
 
             if (horizontalAlignmentToUse == null) {
                 horizontalAlignmentToUse = horizontalAlignment;
             } else {
-
                 if (!horizontalAlignmentToUse.equals(horizontalAlignment)) {
                     horizontalAlignmentToUse = "mixed";
                 }
@@ -354,7 +359,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             return;
         }
 
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             if (widget.getType() == IWidget.IMAGE) {
                 setState(false);
                 return;
@@ -368,7 +373,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     }
 
     private void setComboValue(
-            final JComboBox comboBox,
+            final JComboBox<String> comboBox,
             final Object value) {
         final ActionListener listener = comboBox.getActionListeners()[0];
         comboBox.removeActionListener(listener);
@@ -379,16 +384,13 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     private String getProperty(
             final String captionProperty,
             final String valueProperty) {
-        final String propertyToUse;
         if (captionProperty.equals(valueProperty)) {
             // both are the same
-            propertyToUse = captionProperty;
-        } else {
-            // properties are different
-            propertyToUse = "mixed";
+            return captionProperty;
         }
 
-        return propertyToUse;
+        // properties are different
+        return "mixed";
     }
 
     private String getHorizontalAlignment(
@@ -397,9 +399,8 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         if (captionHorizontalAlignment.equals(valueHorizontalAlignment)) {
             // both value and caption are the same
             return captionHorizontalAlignment;
-        } else {
-            return "mixed";
         }
+        return "mixed";
     }
 
     private void setState(final boolean enabled) {
@@ -424,7 +425,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         alignRight.setEnabled(enabled);
     }
 
-    private void setItemQuietly(final JComboBox comboBox) {
+    private void setItemQuietly(final JComboBox<String> comboBox) {
         final ActionListener listener = comboBox.getActionListeners()[0];
         comboBox.removeActionListener(listener);
         comboBox.setSelectedItem(null);
