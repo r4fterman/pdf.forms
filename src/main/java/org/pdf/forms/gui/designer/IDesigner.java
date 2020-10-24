@@ -69,7 +69,7 @@ public interface IDesigner {
 
     void setDragBoxLocation(Point dragBoxLocation);
 
-    void setCurrentlyDraging(boolean currentlyDraging);
+    void setCurrentlyDragging(boolean currentlyDraging);
 
     List<IWidget> getWidgets();
 

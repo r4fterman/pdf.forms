@@ -29,10 +29,12 @@ public class DesignerKeyListener implements KeyListener {
     }
 
     @Override
-    public void keyReleased(final KeyEvent e) {
+    public void keyReleased(final KeyEvent event) {
+        // do nothing
     }
 
     @Override
-    public void keyTyped(final KeyEvent e) {
+    public void keyTyped(final KeyEvent event) {
+        // do nothing
     }
 }

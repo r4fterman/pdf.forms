@@ -117,7 +117,7 @@ public class TestDesginer implements IDesigner {
     }
 
     @Override
-    public void setCurrentlyDraging(final boolean currentlyDraging) {
+    public void setCurrentlyDragging(final boolean currentlyDraging) {
 
     }
 

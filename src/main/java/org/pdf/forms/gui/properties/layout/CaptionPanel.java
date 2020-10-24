@@ -5,10 +5,13 @@ import static org.jdesktop.layout.GroupLayout.LEADING;
 import static org.jdesktop.layout.GroupLayout.PREFERRED_SIZE;
 import static org.jdesktop.layout.LayoutStyle.RELATED;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.Map;
+import java.util.Optional;
 
+import javax.swing.*;
+
+import org.jdesktop.layout.GroupLayout;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
@@ -32,84 +35,77 @@ public class CaptionPanel extends JPanel {
     private void initializePanel() {
         setBorder(BorderFactory.createTitledBorder("Caption"));
 
-        final JLabel positionLabel = new JLabel();
-        positionLabel.setText("Position:");
+        final JLabel positionLabel = new JLabel("Position:");
 
-        captionLocationBox = new JComboBox<>();
-        captionLocationBox.setModel(new DefaultComboBoxModel<>(CAPTIONS));
+        captionLocationBox = new JComboBox<>(CAPTIONS);
         captionLocationBox.addActionListener(this::updateCaptionPosition);
 
-        final JLabel reserveLabel = new JLabel();
-        reserveLabel.setText("Reserve:");
+        final JLabel reserveLabel = new JLabel("Reserve:");
         reserveLabel.setEnabled(false);
 
         final JTextField reserveBox = new JTextField();
         reserveBox.setEnabled(false);
 
-        final org.jdesktop.layout.GroupLayout groupLayout = new org.jdesktop.layout.GroupLayout(this);
+        final GroupLayout groupLayout = new GroupLayout(this);
         setLayout(groupLayout);
-        groupLayout.setHorizontalGroup(
-                groupLayout.createParallelGroup(LEADING)
-                        .add(groupLayout.createSequentialGroup()
-                                .add(positionLabel)
-                                .addPreferredGap(RELATED)
-                                .add(captionLocationBox, PREFERRED_SIZE, 68, PREFERRED_SIZE)
-                                .add(22, 22, 22)
-                                .add(reserveLabel)
-                                .addPreferredGap(RELATED)
-                                .add(reserveBox, PREFERRED_SIZE, 66, PREFERRED_SIZE))
-        );
-        groupLayout.setVerticalGroup(
-                groupLayout.createParallelGroup(LEADING)
-                        .add(groupLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                                .add(positionLabel)
-                                .add(reserveLabel)
-                                .add(captionLocationBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE)
-                                .add(reserveBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE))
-        );
+
+        final GroupLayout.ParallelGroup horizontalGroup = groupLayout
+                .createParallelGroup(LEADING)
+                .add(groupLayout.createSequentialGroup()
+                             .add(positionLabel)
+                             .addPreferredGap(RELATED)
+                             .add(captionLocationBox, PREFERRED_SIZE, 68, PREFERRED_SIZE)
+                             .add(22, 22, 22)
+                             .add(reserveLabel).addPreferredGap(RELATED)
+                             .add(reserveBox, PREFERRED_SIZE, 66, PREFERRED_SIZE));
+        groupLayout.setHorizontalGroup(horizontalGroup);
+
+        final GroupLayout.ParallelGroup verticalGroup = groupLayout
+                .createParallelGroup(LEADING)
+                .add(groupLayout.createParallelGroup(GroupLayout.BASELINE)
+                             .add(positionLabel)
+                             .add(reserveLabel)
+                             .add(captionLocationBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE)
+                             .add(reserveBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE));
+        groupLayout.setVerticalGroup(verticalGroup);
     }
 
-    private void updateCaptionPosition(final ActionEvent evt) {
-        final String captionPosition = (String) ((JComboBox<String>) evt.getSource()).getSelectedItem();
-        if (captionPosition != null) {
-            widgetsAndProperties.entrySet().stream()
-                    .filter(entry -> entry.getKey().isComponentSplit())
-                    .forEach(entry -> {
-                        final Element widgetProperties = entry.getValue();
-                        final Element captionPositionElement = XMLUtils.getPropertyElement(widgetProperties, "Position").get();
-                        captionPositionElement.getAttributeNode("value").setValue(captionPosition);
-                        entry.getKey().setLayoutProperties(widgetProperties);
-                    });
-            designerPanel.repaint();
+    @SuppressWarnings("unchecked")
+    private void updateCaptionPosition(final ActionEvent event) {
+        final String captionPosition = (String) ((JComboBox<String>) event.getSource()).getSelectedItem();
+        if (captionPosition == null) {
+            return;
         }
+
+        widgetsAndProperties.entrySet().stream()
+                .filter(entry -> entry.getKey().isComponentSplit())
+                .forEach(entry -> {
+                    final Element widgetProperties = entry.getValue();
+                    final Optional<Element> position = XMLUtils.getPropertyElement(widgetProperties, "Position");
+                    if (position.isPresent()) {
+                        final Element captionPositionElement = position.get();
+                        captionPositionElement.getAttributeNode("value").setValue(captionPosition);
+
+                        entry.getKey().setLayoutProperties(widgetProperties);
+                    }
+                });
+
+        designerPanel.repaint();
     }
 
     public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
         this.widgetsAndProperties = widgetsAndProperties;
 
-        boolean isComponentSplit = false;
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
-            if (widget.isComponentSplit()) {
-                isComponentSplit = true;
-                break;
-            }
-        }
-        /* set the caption alignment box */
+        final boolean isComponentSplit = isComponentSplit(widgetsAndProperties);
         captionLocationBox.setEnabled(isComponentSplit);
 
         String captionPositionToUse = null;
-        for (final Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
+        for (final Map.Entry<IWidget, Element> entry: widgetsAndProperties.entrySet()) {
             final IWidget widget = entry.getKey();
             final Element props = entry.getValue();
             final boolean componentSplit = widget.isComponentSplit();
 
-            /* add caption properties */
-            String captionPosition = null;
-            if (componentSplit) {
-                final Element caption = (Element) props.getElementsByTagName("caption").item(0);
-                captionPosition = XMLUtils.getAttributeFromChildElement(caption, "Position").get();
-            }
-
+            final String captionPosition = getCaptionPosition(props, componentSplit);
             if (captionPositionToUse == null) {
                 captionPositionToUse = captionPosition;
             } else {
@@ -130,5 +126,23 @@ public class CaptionPanel extends JPanel {
         } else {
             captionLocationBox.setSelectedItem(null);
         }
+    }
+
+    private String getCaptionPosition(
+            final Element props,
+            final boolean componentSplit) {
+        if (componentSplit) {
+            final Element caption = (Element) props.getElementsByTagName("caption").item(0);
+            final Optional<String> position = XMLUtils.getAttributeFromChildElement(caption, "Position");
+            if (position.isPresent()) {
+                return position.get();
+            }
+        }
+        return null;
+    }
+
+    private boolean isComponentSplit(final Map<IWidget, Element> widgetsAndProperties) {
+        return widgetsAndProperties.entrySet().stream()
+                .anyMatch(entry -> entry.getKey().isComponentSplit());
     }
 }

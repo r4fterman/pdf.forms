@@ -49,7 +49,7 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
                 moveAndResizeSelectedWidget(e);
 
                 if (!designerPanel.isResizing() && !designerPanel.isResizingSplitComponent()) {
-                    designerPanel.setCurrentlyDraging(true);
+                    designerPanel.setCurrentlyDragging(true);
                 }
             }
         } else {
