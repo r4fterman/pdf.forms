@@ -55,7 +55,7 @@ public class ImportPdfCommand implements Command {
 
     @Override
     public void execute() {
-        // TODO: do not allow import of a pdf into a closed document
+        //todo: do not allow import of a pdf into a closed document
         final int importType = acquirePDFImportType();
         selectPdfImportFile()
                 .ifPresent(file -> importPDF(importType, file.getAbsolutePath()));

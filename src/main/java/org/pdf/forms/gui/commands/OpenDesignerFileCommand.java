@@ -4,8 +4,6 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
-import javax.swing.*;
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.Configuration;
 import org.pdf.forms.document.FormsDocument;
@@ -255,7 +256,7 @@ public class OpenDesignerFileCommand implements Command {
     private IWidget createWidgetByType(
             final Element widgetElement,
             final Integer widgetType) {
-        // TODO: move to WidgetFactory
+        //todo: move to WidgetFactory
         if (widgetType == IWidget.GROUP) {
             final GroupWidget widget = new GroupWidget();
             final List<IWidget> widgetsInGroup = getWidgetsFromXMLElement(XMLUtils.getElementsFromNodeList(widgetElement.getElementsByTagName("widgets")).get(0));

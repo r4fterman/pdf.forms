@@ -159,7 +159,7 @@ public class BugReportPanel extends JPanel implements TableModelListener {
     }
 
     private void sendClicked(final ActionEvent event) {
-        // TODO: implement bug report sending, e.g. via email
+        //todo: implement bug report sending, e.g. via email
     }
 
     private void cancelClicked(final ActionEvent event) {
