@@ -246,11 +246,7 @@ public class ListFieldPanel extends JPanel implements TristateCheckBoxParent {
         this.widgetsAndProperties = widgetsAndProperties;
 
         final TristateCheckBox.State allowCustomTextEntryToUse = null;
-        if (widgetsAndProperties.size() == 1) {
-            setItemsEnabled(true);
-        } else {
-            setItemsEnabled(false);
-        }
+        setItemsEnabled(widgetsAndProperties.size() == 1);
 
         for (Element objectProperties : widgetsAndProperties.values()) {
             if (widgetsAndProperties.size() == 1) {

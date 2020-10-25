@@ -39,7 +39,7 @@ public class BindingPanel extends JPanel {
         nameField.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent evt) {
-                updateName(evt);
+                updateName();
             }
         });
 
@@ -71,7 +71,7 @@ public class BindingPanel extends JPanel {
         );
     }
 
-    private void updateName(final FocusEvent evt) {
+    private void updateName() {
         if (widgetsAndProperties == null) {
             return;
         }

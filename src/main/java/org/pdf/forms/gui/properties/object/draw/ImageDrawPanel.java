@@ -6,15 +6,10 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
@@ -44,7 +39,7 @@ public class ImageDrawPanel extends JPanel {
         imageLocationBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent evt) {
-                updateImageLocation(evt);
+                updateImageLocation();
             }
         });
 
@@ -101,14 +96,15 @@ public class ImageDrawPanel extends JPanel {
         }
 
         final String sizing = (String) sizingBox.getSelectedItem();
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
+        final Set<Map.Entry<IWidget, Element>> entries = widgetsAndProperties.entrySet();
+        for (final Map.Entry<IWidget, Element> entry: entries) {
+            final IWidget widget = entry.getKey();
+            final Element widgetProperties = entry.getValue();
             if (sizing != null) {
-                final Element widgetProperties = widgetsAndProperties.get(widget);
-                final Element sizingElement = XMLUtils.getPropertyElement(widgetProperties, "Sizing").get();
-                sizingElement.getAttributeNode("value").setValue(sizing);
+                Optional<Element> sizingElement = XMLUtils.getPropertyElement(widgetProperties, "Sizing");
+                sizingElement.ifPresent(element -> element.getAttributeNode("value").setValue(sizing));
             }
-
-            widget.setObjectProperties(widgetsAndProperties.get(widget));
+            widget.setObjectProperties(widgetProperties);
         }
 
         designerPanel.repaint();
@@ -124,17 +120,17 @@ public class ImageDrawPanel extends JPanel {
         final File fileToOpen = chooser.getSelectedFile();
         if (fileToOpen != null && state == JFileChooser.APPROVE_OPTION) {
             imageLocationBox.setText(fileToOpen.getAbsolutePath());
-            updateImageLocation(null);
+            updateImageLocation();
         }
     }
 
-    private void updateImageLocation(final FocusEvent event) {
+    private void updateImageLocation() {
         if (widgetsAndProperties == null) {
             return;
         }
 
         final String location = imageLocationBox.getText();
-        for (Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
+        for (final Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
             final IWidget widget = entry.getKey();
             final Element widgetProperties = entry.getValue();
             if (location != null && !location.equals("mixed")) {
@@ -154,7 +150,7 @@ public class ImageDrawPanel extends JPanel {
         String sizingToUse = null;
 
         /* iterate through the widgets */
-        for (Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
+        for (final Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
             final Element objectProperties = entry.getValue();
 
             /* get draw properties */
