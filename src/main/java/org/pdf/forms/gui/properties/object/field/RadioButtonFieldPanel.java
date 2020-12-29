@@ -1,17 +1,15 @@
 package org.pdf.forms.gui.properties.object.field;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
@@ -60,18 +58,15 @@ public class RadioButtonFieldPanel extends JPanel {
         appearanceBox.setModel(new DefaultComboBoxModel<>(APPEARANCES));
         appearanceBox.setEnabled(false);
 
-        final JLabel appearanceLabel = new JLabel();
-        appearanceLabel.setText("Appearance:");
+        final JLabel appearanceLabel = new JLabel("Appearance:");
         appearanceLabel.setEnabled(false);
 
-        final JLabel radioButtonGroupLabel = new JLabel();
-        radioButtonGroupLabel.setText("Radio Button Group:");
+        final JLabel radioButtonGroupLabel = new JLabel("Radio Button Group:");
 
-        buttonGroupBox = new javax.swing.JComboBox<>();
+        buttonGroupBox = new JComboBox<>();
         buttonGroupBox.addActionListener(this::updateButtonGroup);
 
-        final JButton organiseButton = new JButton();
-        organiseButton.setText("Organise");
+        final JButton organiseButton = new JButton("Organise");
         organiseButton.addActionListener(this::organiseClicked);
 
         final GroupLayout layout = new GroupLayout(this);
@@ -84,13 +79,19 @@ public class RadioButtonFieldPanel extends JPanel {
                                         .add(layout.createSequentialGroup()
                                                 .add(appearanceLabel)
                                                 .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(appearanceBox, GroupLayout.PREFERRED_SIZE, 190, GroupLayout.PREFERRED_SIZE))
+                                                .add(appearanceBox,
+                                                        GroupLayout.PREFERRED_SIZE,
+                                                        190,
+                                                        GroupLayout.PREFERRED_SIZE))
                                         .add(layout.createSequentialGroup()
                                                 .add(radioButtonGroupLabel)
                                                 .addPreferredGap(LayoutStyle.RELATED)
                                                 .add(layout.createParallelGroup(GroupLayout.LEADING)
                                                         .add(organiseButton)
-                                                        .add(buttonGroupBox, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                                        .add(buttonGroupBox,
+                                                                0,
+                                                                GroupLayout.DEFAULT_SIZE,
+                                                                Short.MAX_VALUE))))
                                 .addContainerGap(140, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -99,11 +100,17 @@ public class RadioButtonFieldPanel extends JPanel {
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(appearanceLabel)
-                                        .add(appearanceBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .add(appearanceBox,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(radioButtonGroupLabel)
-                                        .add(buttonGroupBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .add(buttonGroupBox,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(organiseButton)
                                 .addContainerGap(214, Short.MAX_VALUE))
@@ -115,9 +122,12 @@ public class RadioButtonFieldPanel extends JPanel {
         final List<IWidget> widgets = mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage()).getWidgets();
 
         final JDialog dialog = new JDialog();
-        final RadioButtonGroupOrganiser radioButtonGroupOrgansier = new RadioButtonGroupOrganiser(dialog, buttonGroups, widgets, type);
+        final RadioButtonGroupOrganiser radioButtonGroupOrganiser = new RadioButtonGroupOrganiser(dialog,
+                buttonGroups,
+                widgets,
+                type);
 
-        dialog.getContentPane().add(radioButtonGroupOrgansier);
+        dialog.getContentPane().add(radioButtonGroupOrganiser);
         dialog.setModal(true);
         dialog.pack();
         dialog.setLocationRelativeTo((JFrame) mainFrame);
@@ -129,7 +139,7 @@ public class RadioButtonFieldPanel extends JPanel {
     }
 
     private void updateButtonGroup(final ActionEvent event) {
-        for (IWidget widget : widgetsAndProperties.keySet()) {
+        for (final IWidget widget: widgetsAndProperties.keySet()) {
             if (type == IWidget.RADIO_BUTTON) {
                 final RadioButtonWidget radioButtonWidget = (RadioButtonWidget) widget;
                 radioButtonWidget.setRadioButtonGroupName((String) buttonGroupBox.getSelectedItem());
@@ -139,9 +149,11 @@ public class RadioButtonFieldPanel extends JPanel {
             }
 
             final Element objectProperties = widget.getProperties().getDocumentElement();
-            final Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
-            defaultElement.getAttributeNode("value").setValue("Off");
-            widget.setObjectProperties(objectProperties);
+            XMLUtils.getPropertyElement(objectProperties, "Default")
+                    .ifPresent(element -> {
+                        element.getAttributeNode("value").setValue("Off");
+                        widget.setObjectProperties(objectProperties);
+                    });
         }
 
         designerPanel.repaint();
@@ -152,7 +164,7 @@ public class RadioButtonFieldPanel extends JPanel {
 
         final IMainFrame mainFrame = designerPanel.getMainFrame();
         final Page page = mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage());
-        switch (this.type) {
+        switch (type) {
             case IWidget.RADIO_BUTTON:
                 this.buttonGroups = page.getRadioButtonGroups();
                 break;
@@ -165,28 +177,28 @@ public class RadioButtonFieldPanel extends JPanel {
 
         populateButtonGroups();
 
-        String buttonGroupToUse = null;
-        for (Element objectPropertiesElement : widgetsAndProperties.values()) {
-            final Element fieldProperties = (Element) objectPropertiesElement.getElementsByTagName("field").item(0);
-            final String buttonGroup = XMLUtils.getAttributeFromChildElement(fieldProperties, "Group Name").orElse("");
-            if (buttonGroupToUse == null) {
-                // this must be the first time round
-                buttonGroupToUse = buttonGroup;
-            } else {
-                // check for subsequent widgets
-                if (!buttonGroupToUse.equals(buttonGroup)) {
-                    buttonGroupToUse = "mixed";
-                }
-            }
-
-            final Object value;
-            if (buttonGroupToUse.equals("mixed")) {
-                value = null;
-            } else {
-                value = buttonGroupToUse;
-            }
-            setComboValue(buttonGroupBox, value);
+        final String buttonGroupToUse = getButtonGroupToUse(widgetsAndProperties.values());
+        if (buttonGroupToUse.equals("mixed")) {
+            setComboValue(buttonGroupBox, null);
+        } else {
+            setComboValue(buttonGroupBox, buttonGroupToUse);
         }
+    }
+
+    private String getButtonGroupToUse(final Collection<Element> elementValues) {
+        final List<String> buttonGroupValues = elementValues.stream()
+                .map(element -> {
+                    final Element fieldProperties = (Element) element.getElementsByTagName("field").item(0);
+                    return XMLUtils.getAttributeFromChildElement(fieldProperties, "Group Name").orElse("");
+                })
+                .collect(toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(buttonGroupValues, buttonGroupValues.get(0)) == buttonGroupValues.size();
+        if (listContainsOnlyEqualValues) {
+            return buttonGroupValues.get(0);
+        }
+        return "mixed";
     }
 
     private void populateButtonGroups() {
@@ -194,7 +206,7 @@ public class RadioButtonFieldPanel extends JPanel {
         buttonGroupBox.removeActionListener(listener);
 
         buttonGroupBox.removeAllItems();
-        for (final ButtonGroup buttonGroup : buttonGroups) {
+        for (final ButtonGroup buttonGroup: buttonGroups) {
             buttonGroupBox.addItem(buttonGroup.getName());
         }
 
