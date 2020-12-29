@@ -2,15 +2,16 @@ package org.pdf.forms.utils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -32,14 +33,14 @@ public final class XMLUtils {
 
     public static Optional<Element> getPropertyElement(
             final Element parentElement,
-            final String property) {
+            final String propertyName) {
         final NodeList properties = parentElement.getElementsByTagName(ELEMENT_PROPERTY);
         for (int i = 0; i < properties.getLength(); i++) {
             final Node node = properties.item(i);
             if (node instanceof Element) {
                 final Element element = (Element) node;
                 final String name = element.getAttribute(ATTRIBUTE_NAME);
-                if (name.equals(property)) {
+                if (name.equals(propertyName)) {
                     return Optional.of(element);
                 }
             }

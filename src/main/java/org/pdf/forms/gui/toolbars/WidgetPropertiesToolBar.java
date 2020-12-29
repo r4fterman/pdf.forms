@@ -1,7 +1,12 @@
 package org.pdf.forms.gui.toolbars;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+import static java.util.stream.Collectors.toUnmodifiableMap;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +28,10 @@ import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public class WidgetPropertiesToolBar extends VLToolBar {
 
+    private static final String[] FONT_SIZES = {
+            "6", "8", "10", "12", "14", "16", "18", "20", "24", "28", "36", "48", "72"
+    };
+
     private final Logger logger = LoggerFactory.getLogger(WidgetPropertiesToolBar.class);
 
     private final IDesigner designerPanel;
@@ -40,52 +49,23 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             final FontHandler fontHandler,
             final IDesigner designerPanel) {
         this.designerPanel = designerPanel;
+        this.fontBox = createFontComboBox(fontHandler);
+        this.fontSize = createFontSizeComboBox();
+        this.fontBold = createFontBoldButton();
+        this.fontItalic = createFontItalicButton();
+        this.alignLeft = createAlignLeftButton();
+        this.alignCenter = createAlignCenterButton();
+        this.alignRight = createAlignRightButton();
 
-        fontBox = new JComboBox<>(fontHandler.getFontFamilies());
-        fontBox.setPreferredSize(new Dimension(160, 24));
-        fontBox.addActionListener(actionEvent -> updateFont());
         add(fontBox);
-
-        fontSize = new JComboBox<>(new String[]{
-                "6", "8", "10", "12", "14", "16", "18", "20", "24", "28", "36", "48", "72"
-        });
-        fontSize.setEditable(true);
-        fontSize.setPreferredSize(new Dimension(60, 24));
-        fontSize.addActionListener(actionEvent -> updateFont());
         add(fontSize);
-
         addSeparator();
-
-        fontBold = new ToolBarToggleButton();
-        fontBold.init("/org/pdf/forms/res/Bold.gif", "Bold");
-        fontBold.addActionListener(actionEvent -> updateFont());
         add(fontBold);
-
-        fontItalic = new ToolBarToggleButton();
-        fontItalic.init("/org/pdf/forms/res/Italic.gif", "Italic");
-        fontItalic.addActionListener(actionEvent -> updateFont());
         add(fontItalic);
-
-        final ToolBarToggleButton fontUnderline = new ToolBarToggleButton();
-        fontUnderline.init("/org/pdf/forms/res/Underline.gif", "Underline");
-        fontUnderline.setEnabled(false);
-        //fontItalic.addActionListener(commandListener);
-        add(fontUnderline);
+        add(createFontUnderlineButton());
         addSeparator();
-
-        alignLeft = new ToolBarToggleButton();
-        alignLeft.init("/org/pdf/forms/res/Paragraph Align Left.gif", "Align Left");
-        alignLeft.addActionListener(actionEvent -> updateAlignment("left"));
         add(alignLeft);
-
-        alignCenter = new ToolBarToggleButton();
-        alignCenter.init("/org/pdf/forms/res/Paragraph Align Center.gif", "Align Center");
-        alignCenter.addActionListener(actionEvent -> updateAlignment("center"));
         add(alignCenter);
-
-        alignRight = new ToolBarToggleButton();
-        alignRight.init("/org/pdf/forms/res/Paragraph Align Right.gif", "Align Right");
-        alignRight.addActionListener(actionEvent -> updateAlignment("right"));
         add(alignRight);
 
         alignmentGroup = new ButtonGroup();
@@ -94,31 +74,87 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         alignmentGroup.add(alignRight);
     }
 
+    private ToolBarToggleButton createAlignRightButton() {
+        final ToolBarToggleButton button = new ToolBarToggleButton();
+        button.init("/org/pdf/forms/res/Paragraph Align Right.gif", "Align Right");
+        button.addActionListener(actionEvent -> updateAlignment("right"));
+        return button;
+    }
+
+    private ToolBarToggleButton createAlignCenterButton() {
+        final ToolBarToggleButton button = new ToolBarToggleButton();
+        button.init("/org/pdf/forms/res/Paragraph Align Center.gif", "Align Center");
+        button.addActionListener(actionEvent -> updateAlignment("center"));
+        return button;
+    }
+
+    private ToolBarToggleButton createAlignLeftButton() {
+        final ToolBarToggleButton button = new ToolBarToggleButton();
+        button.init("/org/pdf/forms/res/Paragraph Align Left.gif", "Align Left");
+        button.addActionListener(actionEvent -> updateAlignment("left"));
+        return button;
+    }
+
+    private ToolBarToggleButton createFontUnderlineButton() {
+        final ToolBarToggleButton button = new ToolBarToggleButton();
+        button.init("/org/pdf/forms/res/Underline.gif", "Underline");
+        button.setEnabled(false);
+        return button;
+    }
+
+    private ToolBarToggleButton createFontItalicButton() {
+        final ToolBarToggleButton button = new ToolBarToggleButton();
+        button.init("/org/pdf/forms/res/Italic.gif", "Italic");
+        button.addActionListener(actionEvent -> updateFont());
+        return button;
+    }
+
+    private ToolBarToggleButton createFontBoldButton() {
+        final ToolBarToggleButton button = new ToolBarToggleButton();
+        button.init("/org/pdf/forms/res/Bold.gif", "Bold");
+        button.addActionListener(actionEvent -> updateFont());
+        return button;
+    }
+
+    private JComboBox<String> createFontSizeComboBox() {
+        final JComboBox<String> comboBox = new JComboBox<>(FONT_SIZES);
+        comboBox.setEditable(true);
+        comboBox.setPreferredSize(new Dimension(60, 24));
+        comboBox.addActionListener(actionEvent -> updateFont());
+        return comboBox;
+    }
+
+    private JComboBox<String> createFontComboBox(final FontHandler fontHandler) {
+        final JComboBox<String> comboBox = new JComboBox<>(fontHandler.getFontFamilies());
+        comboBox.setPreferredSize(new Dimension(160, 24));
+        comboBox.addActionListener(actionEvent -> updateFont());
+        return comboBox;
+    }
+
     private void updateAlignment(final String alignment) {
         final Set<IWidget> widgets = designerPanel.getSelectedWidgets();
-
         for (final IWidget widget: widgets) {
             final Document properties = widget.getProperties();
             final Element paragraphElement = (Element) properties.getElementsByTagName("paragraph").item(0);
 
             final List<Element> paragraphList = XMLUtils.getElementsFromNodeList(paragraphElement.getChildNodes());
-
             final Element captionElement = paragraphList.get(0);
-            Element valueElement = null;
-            if (widget.allowEditCaptionAndValue()) {
-                valueElement = paragraphList.get(1);
+
+            final Optional<Element> horizontalAlignment = XMLUtils.getPropertyElement(captionElement,
+                    "Horizontal Alignment");
+            if (horizontalAlignment.isPresent()) {
+                final Element captionAlignment = horizontalAlignment.get();
+                captionAlignment.getAttributeNode("value").setValue(alignment);
+
+                if (widget.allowEditCaptionAndValue()) {
+                    Optional.of(paragraphList.get(1))
+                            .map(valueElement -> XMLUtils.getPropertyElement(valueElement, "Horizontal Alignment"))
+                            .flatMap(value -> value)
+                            .ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
+                }
+
+                widget.setParagraphProperties(paragraphElement, IWidget.COMPONENT_BOTH);
             }
-
-            final Element captionAlignment = XMLUtils.getPropertyElement(captionElement, "Horizontal Alignment").get();
-            Optional<Element> valueAlignment = Optional.empty();
-            if (widget.allowEditCaptionAndValue()) {
-                valueAlignment = XMLUtils.getPropertyElement(valueElement, "Horizontal Alignment");
-            }
-
-            captionAlignment.getAttributeNode("value").setValue(alignment);
-            valueAlignment.ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
-
-            widget.setParagraphProperties(paragraphElement, IWidget.COMPONENT_BOTH);
         }
 
         designerPanel.getMainFrame().setPropertiesCompound(widgets);
@@ -126,156 +162,167 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     }
 
     private void updateFont() {
-        int fontStyle = 0;
-
-        if (fontBold.isSelected()) {
-            if (fontItalic.isSelected()) {
-                fontStyle = IWidget.STYLE_BOLDITALIC;
-            } else {
-                fontStyle = IWidget.STYLE_BOLD;
-            }
-        } else if (fontItalic.isSelected()) {
-            fontStyle = IWidget.STYLE_ITALIC;
-        }
-
         final Set<IWidget> widgets = designerPanel.getSelectedWidgets();
+
+        updateFontName(widgets);
+        updateFontSize(widgets);
+        updateFontStyle(widgets);
+
+        designerPanel.getMainFrame().setPropertiesCompound(widgets);
+        designerPanel.repaint();
+    }
+
+    private void updateFontName(final Set<IWidget> widgets) {
+        final String value = (String) fontBox.getSelectedItem();
+
+        updateFontProperty(widgets, value, "Font Name");
+    }
+
+    private void updateFontSize(final Set<IWidget> widgets) {
+        final String value = (String) fontSize.getSelectedItem();
+
+        updateFontProperty(widgets, value, "Font Size");
+    }
+
+    private void updateFontStyle(final Set<IWidget> widgets) {
+        final int fontStyle = getSelectedFontStyle();
+        final String value = String.valueOf(fontStyle);
+
+        updateFontProperty(widgets, value, "Font Style");
+    }
+
+    private void updateFontProperty(
+            final Set<IWidget> widgets,
+            final String fontValue,
+            final String fontPropertyName) {
         for (final IWidget widget: widgets) {
             final Document properties = widget.getProperties();
             final Element fontElement = (Element) properties.getElementsByTagName("font").item(0);
 
             final List<Element> fontList = XMLUtils.getElementsFromNodeList(fontElement.getChildNodes());
             final Element captionElement = fontList.get(0);
-            Element valueElement = null;
-            if (widget.allowEditCaptionAndValue()) {
-                valueElement = fontList.get(1);
+
+            final Optional<Element> fontCaption = XMLUtils.getPropertyElement(captionElement, fontPropertyName);
+            if (fontCaption.isPresent()) {
+                final Element fontCaptionElement = fontCaption.get();
+
+                Element fontPropertyElement = null;
+                if (widget.allowEditCaptionAndValue()) {
+                    final Element valueElement = fontList.get(1);
+                    final Optional<Element> propertyElement = XMLUtils.getPropertyElement(valueElement,
+                            fontPropertyName);
+                    if (propertyElement.isPresent()) {
+                        fontPropertyElement = propertyElement.get();
+                    }
+                }
+
+                setProperty(fontValue, fontCaptionElement, fontPropertyElement);
+
+                widget.setFontProperties(fontElement, IWidget.COMPONENT_BOTH);
             }
+        }
+    }
 
-            final Element captionFontName = XMLUtils.getPropertyElement(captionElement, "Font Name").get();
-            final Element captionFontSize = XMLUtils.getPropertyElement(captionElement, "Font Size").get();
-            final Element captionFontStyle = XMLUtils.getPropertyElement(captionElement, "Font Style").get();
-
-            Element valueFontName = null;
-            Element valueFontSize = null;
-            Element valueFontStyle = null;
-
-            if (widget.allowEditCaptionAndValue()) {
-                valueFontName = XMLUtils.getPropertyElement(valueElement, "Font Name").get();
-                valueFontSize = XMLUtils.getPropertyElement(valueElement, "Font Size").get();
-                valueFontStyle = XMLUtils.getPropertyElement(valueElement, "Font Style").get();
+    private int getSelectedFontStyle() {
+        if (fontBold.isSelected()) {
+            if (fontItalic.isSelected()) {
+                return IWidget.STYLE_BOLDITALIC;
             }
-
-            setProperty((String) fontBox.getSelectedItem(), captionFontName, valueFontName);
-            setProperty((String) fontSize.getSelectedItem(), captionFontSize, valueFontSize);
-
-            setProperty(fontStyle + "", captionFontStyle, valueFontStyle);
-
-            widget.setFontProperties(fontElement, IWidget.COMPONENT_BOTH);
+            return IWidget.STYLE_BOLD;
         }
 
-        designerPanel.getMainFrame().setPropertiesCompound(widgets);
-        designerPanel.repaint();
+        if (fontItalic.isSelected()) {
+            return IWidget.STYLE_ITALIC;
+        }
+        return 0;
     }
 
     private void setFontProperties(final Set<IWidget> widgets) {
-        final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
+        final Map<IWidget, Element> widgetsAndProperties = widgets.stream()
+                .collect(toUnmodifiableMap(
+                        widget -> widget,
+                        widget -> {
+                            final Document properties = widget.getProperties();
+                            return (Element) properties.getElementsByTagName("font").item(0);
+                        })
+                );
 
-        for (final IWidget widget: widgets) {
-            final Document properties = widget.getProperties();
+        selectFontNameInComboBox(widgetsAndProperties);
+        selectFontSizeInComboBox(widgetsAndProperties);
+        selectFontStyle(widgetsAndProperties);
+    }
 
-            final Element layoutProperties = (Element) properties.getElementsByTagName("font").item(0);
-
-            widgetsAndProperties.put(widget, layoutProperties);
-        }
-
-        String fontNameToUse = null;
-        String fontSizeToUse = null;
-        String fontStyleToUse = null;
-
-        /* iterate through the widgets */
-        final Set<Map.Entry<IWidget, Element>> entries = widgetsAndProperties.entrySet();
-        for (final Map.Entry<IWidget, Element> entry: entries) {
-            final IWidget widget = entry.getKey();
-            final Element fontProperties = entry.getValue();
-
-            /* get caption properties */
-            final Element caption = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
-
-            final String captionFontName = XMLUtils.getAttributeFromChildElement(caption, "Font Name").get();
-            final String captionFontSize = XMLUtils.getAttributeFromChildElement(caption, "Font Size").get();
-            final String captionFontStyle = XMLUtils.getAttributeFromChildElement(caption, "Font Style").get();
-
-            final String valueFontName;
-            final String valueFontSize;
-            final String valueFontStyle;
-
-            if (widget.allowEditCaptionAndValue()) {
-                /* get value properties */
-                final Element value = (Element) fontProperties.getElementsByTagName("font_value").item(0);
-
-                valueFontName = XMLUtils.getAttributeFromChildElement(value, "Font Name").get();
-                valueFontSize = XMLUtils.getAttributeFromChildElement(value, "Font Size").get();
-                valueFontStyle = XMLUtils.getAttributeFromChildElement(value, "Font Style").get();
-            } else {
-                valueFontName = captionFontName;
-                valueFontSize = captionFontSize;
-                valueFontStyle = captionFontStyle;
-            }
-
-            /* get properties to use */
-            final String fontName = getProperty(captionFontName, valueFontName);
-            final String fontSize = getProperty(captionFontSize, valueFontSize);
-            final String fontStyle = getProperty(captionFontStyle, valueFontStyle);
-
-            if (fontNameToUse == null) {
-                // this must be the first time round
-                fontNameToUse = fontName;
-                fontSizeToUse = fontSize;
-                fontStyleToUse = fontStyle;
-            } else {
-                // check for subsequent widgets
-                if (!fontNameToUse.equals(fontName)) {
-                    fontNameToUse = "mixed";
-                }
-                if (!fontSizeToUse.equals(fontSize)) {
-                    fontSizeToUse = "mixed";
-                }
-                if (!fontStyleToUse.equals(fontStyle)) {
-                    fontStyleToUse = "mixed";
-                }
-            }
-        }
-
-        final String fontName;
-        if ("mixed".equals(fontNameToUse)) {
-            fontName = null;
-        } else {
-            fontName = fontNameToUse;
-        }
-
-        final String fontSize;
-        if ("mixed".equals(fontSizeToUse)) {
-            fontSize = null;
-        } else {
-            fontSize = fontSizeToUse;
-        }
-
-        setComboValue(fontBox, fontName);
-        setComboValue(this.fontSize, fontSize);
-
-        if ("mixed".equals(fontStyleToUse) || "0".equals(fontStyleToUse)) {
+    private void selectFontStyle(final Map<IWidget, Element> widgetsAndProperties) {
+        final String fontStyleToUse = getFontPropertyValueFromList(widgetsAndProperties, "Font Style");
+        if (fontStyleToUse.equals("mixed") || fontStyleToUse.equals("0")) {
             fontBold.setSelected(false);
             fontItalic.setSelected(false);
-        } else {
-            final int style = Integer.parseInt(fontStyleToUse);
-            if (style == IWidget.STYLE_BOLD) {
-                fontBold.setSelected(true);
-            } else if (style == IWidget.STYLE_ITALIC) {
-                fontItalic.setSelected(true);
-            } else if (style == IWidget.STYLE_BOLDITALIC) {
-                fontBold.setSelected(true);
-                fontItalic.setSelected(true);
-            }
+            return;
         }
+
+        final int style = Integer.parseInt(fontStyleToUse);
+        if (style == IWidget.STYLE_BOLD) {
+            fontBold.setSelected(true);
+        } else if (style == IWidget.STYLE_ITALIC) {
+            fontItalic.setSelected(true);
+        } else if (style == IWidget.STYLE_BOLDITALIC) {
+            fontBold.setSelected(true);
+            fontItalic.setSelected(true);
+        }
+    }
+
+    private void selectFontSizeInComboBox(final Map<IWidget, Element> widgetsAndProperties) {
+        final String fontSizeToUse = getFontPropertyValueFromList(widgetsAndProperties, "Font Size");
+        if (fontSizeToUse.equals("mixed")) {
+            setComboValue(this.fontSize, null);
+        } else {
+            setComboValue(this.fontSize, fontSizeToUse);
+        }
+    }
+
+    private void selectFontNameInComboBox(final Map<IWidget, Element> widgetsAndProperties) {
+        final String fontNameToUse = getFontPropertyValueFromList(widgetsAndProperties, "Font Name");
+        if (fontNameToUse.equals("mixed")) {
+            setComboValue(this.fontBox, null);
+        } else {
+            setComboValue(this.fontBox, fontNameToUse);
+        }
+    }
+
+    private String getFontPropertyValueFromList(
+            final Map<IWidget, Element> widgetsAndProperties,
+            final String fontPropertyName) {
+        final List<String> fontSizeValues = widgetsAndProperties.entrySet().stream()
+                .map(entry -> getFontPropertyValue(entry, fontPropertyName))
+                .collect(toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(fontSizeValues, fontSizeValues.get(0)) == fontSizeValues.size();
+        if (listContainsOnlyEqualValues) {
+            return fontSizeValues.get(0);
+        }
+        return "mixed";
+    }
+
+    private String getFontPropertyValue(
+            final Map.Entry<IWidget, Element> entry,
+            final String fontPropertyName) {
+        final IWidget widget = entry.getKey();
+        final Element fontProperties = entry.getValue();
+
+        final Element caption = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
+        final String captionFontStyle = XMLUtils.getAttributeFromChildElement(caption, fontPropertyName)
+                .orElse("");
+
+        final String valueFontStyle;
+        if (widget.allowEditCaptionAndValue()) {
+            final Element value = (Element) fontProperties.getElementsByTagName("font_value").item(0);
+            valueFontStyle = XMLUtils.getAttributeFromChildElement(value, fontPropertyName).orElse("");
+        } else {
+            valueFontStyle = captionFontStyle;
+        }
+
+        return getComparedPropertyValue(captionFontStyle, valueFontStyle);
     }
 
     private void setParagraphProperties(final Set<IWidget> widgets) {
@@ -316,7 +363,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
                 valueHorizontalAlignment = captionHorizontalAlignment;
             }
 
-            final String horizontalAlignment = getHorizontalAlignment(captionHorizontalAlignment,
+            final String horizontalAlignment = getComparedPropertyValue(captionHorizontalAlignment,
                     valueHorizontalAlignment);
 
             if (horizontalAlignmentToUse == null) {
@@ -329,7 +376,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         }
 
         if ("mixed".equals(horizontalAlignmentToUse)) {
-            alignmentGroup.setSelected(new JToggleButton("").getModel(), true);
+            alignmentGroup.clearSelection();
         } else if ("left".equals(horizontalAlignmentToUse)) {
             alignLeft.setSelected(true);
         } else if ("center".equals(horizontalAlignmentToUse)) {
@@ -372,34 +419,14 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         setParagraphProperties(widgets);
     }
 
-    private void setComboValue(
-            final JComboBox<String> comboBox,
-            final Object value) {
-        final ActionListener listener = comboBox.getActionListeners()[0];
-        comboBox.removeActionListener(listener);
-        comboBox.setSelectedItem(value);
-        comboBox.addActionListener(listener);
-    }
-
-    private String getProperty(
+    private String getComparedPropertyValue(
             final String captionProperty,
             final String valueProperty) {
+        // both are the same
         if (captionProperty.equals(valueProperty)) {
-            // both are the same
             return captionProperty;
         }
-
         // properties are different
-        return "mixed";
-    }
-
-    private String getHorizontalAlignment(
-            final String captionHorizontalAlignment,
-            final String valueHorizontalAlignment) {
-        if (captionHorizontalAlignment.equals(valueHorizontalAlignment)) {
-            // both value and caption are the same
-            return captionHorizontalAlignment;
-        }
         return "mixed";
     }
 
@@ -411,7 +438,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             setSelectedQuietly(fontBold);
             setSelectedQuietly(fontItalic);
 
-            alignmentGroup.setSelected(new JToggleButton("").getModel(), true);
+            alignmentGroup.clearSelection();
         }
 
         fontBox.setEnabled(enabled);
@@ -423,6 +450,15 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         alignLeft.setEnabled(enabled);
         alignCenter.setEnabled(enabled);
         alignRight.setEnabled(enabled);
+    }
+
+    private void setComboValue(
+            final JComboBox<String> comboBox,
+            final Object value) {
+        final ActionListener[] listeners = comboBox.getActionListeners();
+        Arrays.stream(listeners).forEach(comboBox::removeActionListener);
+        comboBox.setSelectedItem(value);
+        Arrays.stream(listeners).forEach(comboBox::addActionListener);
     }
 
     private void setItemQuietly(final JComboBox<String> comboBox) {
