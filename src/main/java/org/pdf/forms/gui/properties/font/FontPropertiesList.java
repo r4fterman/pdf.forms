@@ -9,6 +9,8 @@ import java.util.function.Function;
 
 public class FontPropertiesList {
 
+    private static final String MIXED = "mixed";
+
     private final String fontName;
     private final String fontSize;
     private final String fontStyle;
@@ -35,46 +37,46 @@ public class FontPropertiesList {
         if (set.size() == 1) {
             return set.iterator().next();
         }
-        return "mixed";
+        return MIXED;
     }
 
     public String getFontName() {
-        if ("mixed".equals(fontName)) {
+        if (MIXED.equals(fontName)) {
             return null;
         }
         return fontName;
     }
 
     public String getFontSize() {
-        if ("mixed".equals(fontSize)) {
+        if (MIXED.equals(fontSize)) {
             return null;
         }
         return fontSize;
     }
 
     public Integer getFontStyle() {
-        if ("mixed".equals(fontStyle)) {
+        if (MIXED.equals(fontStyle)) {
             return null;
         }
         return Integer.valueOf(fontStyle);
     }
 
     public Integer getUnderline() {
-        if ("mixed".equals(underline)) {
+        if (MIXED.equals(underline)) {
             return null;
         }
         return Integer.valueOf(underline);
     }
 
     public Integer getStrikethrough() {
-        if ("mixed".equals(strikethrough)) {
+        if (MIXED.equals(strikethrough)) {
             return null;
         }
         return Integer.valueOf(strikethrough);
     }
 
     public Color getColor() {
-        if ("mixed".equals(color)) {
+        if (MIXED.equals(color)) {
             return null;
         }
         return new Color(Integer.parseInt(color));

@@ -58,7 +58,7 @@ public class PropertiesPanel extends CompoundDockable {
     }
 
     public void updateAvailableFonts() {
-        fontPropertiesTab.updateAvailiableFonts();
+        fontPropertiesTab.updateAvailableFonts();
     }
 
     public void addDockables(final DockingDesktop dockingDesktop) {

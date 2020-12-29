@@ -1,19 +1,21 @@
 package org.pdf.forms.gui.properties.font;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.vlsolutions.swing.docking.DockKey;
-import com.vlsolutions.swing.docking.Dockable;
+import javax.swing.*;
+
 import org.pdf.forms.document.Page;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
 
 public class FontPropertiesTab extends JPanel implements Dockable {
 
@@ -60,7 +62,7 @@ public class FontPropertiesTab extends JPanel implements Dockable {
         return this;
     }
 
-    public void updateAvailiableFonts() {
+    public void updateAvailableFonts() {
         fontPanel.updateAvailableFonts();
     }
 }

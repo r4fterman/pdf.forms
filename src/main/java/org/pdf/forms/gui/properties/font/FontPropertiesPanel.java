@@ -48,7 +48,7 @@ public class FontPropertiesPanel extends JPanel {
             "Bold",
             "Italic",
             "Bold Italic"};
-    public static final String PROPERTY_UNDERLINE = "Underline";
+    private static final String PROPERTY_UNDERLINE = "Underline";
     private static final String[] UNDERLINE_TYPES = {
             "No Underline",
             PROPERTY_UNDERLINE,
@@ -109,67 +109,48 @@ public class FontPropertiesPanel extends JPanel {
     }
 
     private void initComponents() {
-        final String[] fontFamilies = fontHandler.getFontFamilies();
+        final JLabel currentlyEditingLabel = new JLabel("Currently Editing:");
 
-        final JLabel currentlyEditingLabel = new JLabel();
-        currentlyEditingLabel.setText("Currently Editing:");
-
-        currentlyEditingBox = new JComboBox<>();
-        currentlyEditingBox.setModel(new DefaultComboBoxModel<>(EDITING_VALUES));
+        currentlyEditingBox = new JComboBox<>(EDITING_VALUES);
         currentlyEditingBox.addActionListener(this::updateCurrentlyEditingBox);
 
-        final JLabel fontLabel = new JLabel();
-        fontLabel.setText("Font:");
-
-        final JLabel fontSizeLabel = new JLabel();
-        fontSizeLabel.setText("Font Size:");
-
-        final JLabel fontStyleLabel = new JLabel();
-        fontStyleLabel.setText("Font Style:");
-
-        final JLabel underlineLabel = new JLabel();
-        underlineLabel.setText("Underline:");
+        final JLabel fontLabel = new JLabel("Font:");
+        final JLabel fontSizeLabel = new JLabel("Font Size:");
+        final JLabel fontStyleLabel = new JLabel("Font Style:");
+        final JLabel underlineLabel = new JLabel("Underline:");
         underlineLabel.setEnabled(false);
 
-        final JLabel strikethroughLabel = new JLabel();
-        strikethroughLabel.setText("Strikethrough:");
+        final JLabel strikethroughLabel = new JLabel("Strikethrough:");
         strikethroughLabel.setEnabled(false);
 
-        final JLabel colorLabel = new JLabel();
-        colorLabel.setText("Color:");
+        final JLabel colorLabel = new JLabel("Color:");
 
-        fontNameBox = new JComboBox<>(fontFamilies);
+        fontNameBox = new JComboBox<>(fontHandler.getFontFamilies());
         fontNameBox.addActionListener(this::updateFont);
 
-        fontStyleBox = new JComboBox<>();
-        fontStyleBox.setModel(new DefaultComboBoxModel<>(FONT_STYLES));
+        fontStyleBox = new JComboBox<>(FONT_STYLES);
         fontStyleBox.addActionListener(this::updateFont);
 
-        underlineBox = new JComboBox<>();
-        underlineBox.setModel(new DefaultComboBoxModel<>(UNDERLINE_TYPES));
+        underlineBox = new JComboBox<>(UNDERLINE_TYPES);
         underlineBox.setEnabled(false);
         underlineBox.addActionListener(this::updateFont);
 
-        strikethroughBox = new JComboBox<>();
-        strikethroughBox.setModel(new DefaultComboBoxModel<>(STRIKETHROUGH_VALUES));
+        strikethroughBox = new JComboBox<>(STRIKETHROUGH_VALUES);
         strikethroughBox.setEnabled(false);
         strikethroughBox.addActionListener(this::updateFont);
 
-        colorBox = new JComboBox<>();
+        colorBox = new JComboBox<>(COLORS);
         colorBox.setEditable(true);
         colorBox.setMaximumRowCount(5);
-        colorBox.setModel(new DefaultComboBoxModel<>(COLORS));
 
-        final Color color = (Color) colorBox.getSelectedItem();
-        editor = new ColorComboBoxEditor(color, colorBox);
+        editor = new ColorComboBoxEditor((Color) colorBox.getSelectedItem(), colorBox);
 
         colorBox.setEditor(editor);
         colorBox.setRenderer(new ColorCellRenderer());
         colorBox.addActionListener(this::updateColor);
 
-        fontSizeBox = new JComboBox<>();
+        fontSizeBox = new JComboBox<>(FONT_SIZES);
         fontSizeBox.setEditable(true);
-        fontSizeBox.setModel(new DefaultComboBoxModel<>(FONT_SIZES));
         fontSizeBox.addActionListener(this::updateFont);
 
         final GroupLayout layout = new GroupLayout(this);
@@ -289,154 +270,54 @@ public class FontPropertiesPanel extends JPanel {
             final IWidget widget,
             final Element captionElement,
             final Element valueElement) {
-        final Optional<Element> fontName = XMLUtils.getPropertyElement(captionElement, PROPERTY_FONT_NAME);
-        if (fontName.isEmpty()) {
-            return;
-        }
+        final Object value = fontNameBox.getSelectedItem();
 
-        Element valueFontName = null;
-        if (widget.allowEditCaptionAndValue()) {
-            final Optional<Element> fontValue = XMLUtils.getPropertyElement(valueElement, PROPERTY_FONT_NAME);
-            if (fontValue.isPresent()) {
-                valueFontName = fontValue.get();
-            }
-        }
-        final Element captionFontName = fontName.get();
-        setProperty(fontNameBox.getSelectedItem(), captionFontName, valueFontName);
+        updatePropertyElementValue(widget, captionElement, valueElement, PROPERTY_FONT_NAME, value);
     }
 
     private void updateFontSizeProperty(
             final IWidget widget,
             final Element captionElement,
             final Element valueElement) {
-        final Optional<Element> fontSize = XMLUtils.getPropertyElement(captionElement, PROPERTY_FONT_SIZE);
-        if (fontSize.isEmpty()) {
-            return;
-        }
+        final Object value = fontSizeBox.getSelectedItem();
 
-        Element valueFontSize = null;
-        if (widget.allowEditCaptionAndValue()) {
-            valueFontSize = XMLUtils.getPropertyElement(valueElement, PROPERTY_FONT_SIZE).get();
-        }
-        final Element captionFontSize = fontSize.get();
-        setProperty(fontSizeBox.getSelectedItem(), captionFontSize, valueFontSize);
+        updatePropertyElementValue(widget, captionElement, valueElement, PROPERTY_FONT_SIZE, value);
     }
 
     private void updateFontStyleProperty(
             final IWidget widget,
             final Element captionElement,
             final Element valueElement) {
-        final Optional<Element> fontStyle = XMLUtils.getPropertyElement(captionElement, PROPERTY_FONT_STYLE);
-        if (fontStyle.isEmpty()) {
-            return;
-        }
+        final String value = getComboBoxSelectedValueAsString(fontStyleBox);
 
-        Element valueFontStyle = null;
-        if (widget.allowEditCaptionAndValue()) {
-            final Optional<Element> fontStyleValue = XMLUtils.getPropertyElement(valueElement, PROPERTY_FONT_STYLE);
-            if (fontStyleValue.isPresent()) {
-                valueFontStyle = fontStyleValue.get();
-            }
-        }
-
-        final String selectedIndex;
-        final int index = fontStyleBox.getSelectedIndex();
-        if (index == -1) {
-            selectedIndex = null;
-        } else {
-            selectedIndex = String.valueOf(index);
-        }
-
-        final Element captionFontStyle = fontStyle.get();
-        setProperty(selectedIndex, captionFontStyle, valueFontStyle);
+        updatePropertyElementValue(widget, captionElement, valueElement, PROPERTY_FONT_STYLE, value);
     }
 
     private void updateUnderlineProperty(
             final IWidget widget,
             final Element captionElement,
             final Element valueElement) {
-        final Optional<Element> underline = XMLUtils.getPropertyElement(captionElement, PROPERTY_UNDERLINE);
-        if (underline.isEmpty()) {
-            return;
-        }
+        final String value = getComboBoxSelectedValueAsString(underlineBox);
 
-        Element valueUnderline = null;
-        if (widget.allowEditCaptionAndValue()) {
-            final Optional<Element> underlineValue = XMLUtils.getPropertyElement(valueElement, PROPERTY_UNDERLINE);
-            if (underlineValue.isPresent()) {
-                valueUnderline = underlineValue.get();
-            }
-        }
-
-        final String selectedIndex;
-        final int index = underlineBox.getSelectedIndex();
-        if (index == -1) {
-            selectedIndex = null;
-        } else {
-            selectedIndex = String.valueOf(index);
-        }
-
-        final Element captionUnderline = underline.get();
-        setProperty(selectedIndex, captionUnderline, valueUnderline);
+        updatePropertyElementValue(widget, captionElement, valueElement, PROPERTY_UNDERLINE, value);
     }
 
     private void updateStrikethroughProperty(
             final IWidget widget,
             final Element captionElement,
             final Element valueElement) {
-        final Optional<Element> strikethrough = XMLUtils.getPropertyElement(captionElement, PROPERTY_STRIKETHROUGH);
-        if (strikethrough.isEmpty()) {
-            return;
-        }
+        final String value = getComboBoxSelectedValueAsString(strikethroughBox);
 
-        Element valueStrikethrough = null;
-        if (widget.allowEditCaptionAndValue()) {
-            final Optional<Element> strikethroughValue = XMLUtils.getPropertyElement(valueElement,
-                    PROPERTY_STRIKETHROUGH);
-            if (strikethroughValue.isPresent()) {
-                valueStrikethrough = strikethroughValue.get();
-            }
-        }
-
-        final String selectedIndex;
-        final int index = strikethroughBox.getSelectedIndex();
-        if (index == -1) {
-            selectedIndex = null;
-        } else {
-            selectedIndex = index + "";
-        }
-
-        final Element captionStrikethrough = strikethrough.get();
-        setProperty(selectedIndex, captionStrikethrough, valueStrikethrough);
+        updatePropertyElementValue(widget, captionElement, valueElement, PROPERTY_STRIKETHROUGH, value);
     }
 
     private void updateColorProperty(
             final IWidget widget,
             final Element captionElement,
             final Element valueElement) {
-        final Optional<Element> colorElement = XMLUtils.getPropertyElement(captionElement, PROPERTY_COLOR);
-        if (colorElement.isEmpty()) {
-            return;
-        }
+        final String value = getSelectedColorValueAsString();
 
-        Element valueColor = null;
-        if (widget.allowEditCaptionAndValue()) {
-            final Optional<Element> colorValue = XMLUtils.getPropertyElement(valueElement, PROPERTY_COLOR);
-            if (colorValue.isPresent()) {
-                valueColor = colorValue.get();
-            }
-        }
-
-        final String selectedColor;
-        final Color color = ((Color) colorBox.getSelectedItem());
-        if (color == null) {
-            selectedColor = null;
-        } else {
-            selectedColor = String.valueOf(color.getRGB());
-        }
-
-        final Element captionColor = colorElement.get();
-        setProperty(selectedColor, captionColor, valueColor);
+        updatePropertyElementValue(widget, captionElement, valueElement, PROPERTY_COLOR, value);
     }
 
     private void updateColor(final ActionEvent event) {
@@ -449,6 +330,28 @@ public class FontPropertiesPanel extends JPanel {
         }
 
         updateFont(null);
+    }
+
+    private void updatePropertyElementValue(
+            final IWidget widget,
+            final Element captionElement,
+            final Element valueElement,
+            final String propertyName,
+            final Object value) {
+        final Optional<Element> captionPropertyElement = XMLUtils.getPropertyElement(captionElement, propertyName);
+        if (captionPropertyElement.isEmpty()) {
+            return;
+        }
+        final Element propertyElement = captionPropertyElement.get();
+
+        Element propertyValueElement = null;
+        if (widget.allowEditCaptionAndValue()) {
+            final Optional<Element> element = XMLUtils.getPropertyElement(valueElement, propertyName);
+            if (element.isPresent()) {
+                propertyValueElement = element.get();
+            }
+        }
+        setProperty(value, propertyElement, propertyValueElement);
     }
 
     private void setProperty(
@@ -477,8 +380,7 @@ public class FontPropertiesPanel extends JPanel {
 
     public void updateAvailableFonts() {
         final String[] fonts = fontHandler.getFontFamilies();
-        final DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(fonts);
-        fontNameBox.setModel(model);
+        fontNameBox.setModel(new DefaultComboBoxModel<>(fonts));
     }
 
     public void setProperties(
@@ -612,5 +514,20 @@ public class FontPropertiesPanel extends JPanel {
         return null;
     }
 
+    private String getComboBoxSelectedValueAsString(final JComboBox<?> comboBox) {
+        final int index = comboBox.getSelectedIndex();
+        if (index == -1) {
+            return null;
+        }
+        return String.valueOf(index);
+    }
+
+    private String getSelectedColorValueAsString() {
+        final Color color = ((Color) colorBox.getSelectedItem());
+        if (color == null) {
+            return null;
+        }
+        return String.valueOf(color.getRGB());
+    }
 }
 
