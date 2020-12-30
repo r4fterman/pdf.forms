@@ -1,21 +1,23 @@
 package org.pdf.forms.gui.properties.object;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.Set;
 
-import com.vlsolutions.swing.docking.DockKey;
-import com.vlsolutions.swing.docking.Dockable;
+import javax.swing.*;
+
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.IWidget;
 
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
+
 public class ObjectPropertiesTab extends JPanel implements Dockable {
 
-    private final ObjectPropertiesPanel objectPanel = new ObjectPropertiesPanel();
+    private final ObjectPropertiesPanel objectPanel;
 
     public ObjectPropertiesTab(final IDesigner designer) {
-        objectPanel.setDesignerPanel(designer);
+        this.objectPanel = new ObjectPropertiesPanel(designer);
         setLayout(new BorderLayout());
         setMinimumSize(new Dimension(0, 0));
     }

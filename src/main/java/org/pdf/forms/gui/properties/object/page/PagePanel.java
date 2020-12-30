@@ -1,21 +1,15 @@
 package org.pdf.forms.gui.properties.object.page;
 
-import java.awt.Dimension;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
@@ -35,13 +29,23 @@ public class PagePanel extends JPanel {
             "Custom"
     };
 
-    private final Dimension A4 = new Dimension((int) PageSize.A4.getWidth(), (int) PageSize.A4.getHeight());
-    private final Dimension A5 = new Dimension((int) PageSize.A5.getWidth(), (int) PageSize.A5.getHeight());
-    private final Dimension LETTER = new Dimension((int) PageSize.LETTER.getWidth(), (int) PageSize.LETTER.getHeight());
+    private static final Dimension A4 = new Dimension((int) PageSize.A4.getWidth(), (int) PageSize.A4.getHeight());
+    private static final Dimension A5 = new Dimension((int) PageSize.A5.getWidth(), (int) PageSize.A5.getHeight());
+    private static final Dimension LETTER = new Dimension((int) PageSize.LETTER.getWidth(),
+            (int) PageSize.LETTER.getHeight());
+
+    private static final Map<String, Dimension> PAPER_TYPES_TO_DIMENSION = Map.of(
+            "A4", A4,
+            "A5", A5,
+            "Letter", LETTER
+    );
+    private static final Map<Dimension, String> DIMENSION_TO_PAPER_TYPES = Map.of(
+            A4, "A4",
+            A5, "A5",
+            LETTER, "Letter"
+    );
 
     private final IDesigner designerPanel;
-
-    // private final int units = (int) (Rule.DPI * 2.54);
 
     private Page page;
 
@@ -61,15 +65,13 @@ public class PagePanel extends JPanel {
     }
 
     private void initComponents() {
-        final JLabel paperTypeLabel = new JLabel();
-        paperTypeLabel.setText("Paper Type:");
+        final JLabel paperTypeLabel = new JLabel("Paper Type:");
 
         paperTypeBox = new JComboBox<>();
         paperTypeBox.setModel(new DefaultComboBoxModel<>(PAPER_TYPES));
         paperTypeBox.addActionListener(this::updatePaperType);
 
-        final JLabel heightLabel = new JLabel();
-        heightLabel.setText("Height:");
+        final JLabel heightLabel = new JLabel("Height:");
 
         heightBox = new JTextField();
         heightBox.addFocusListener(new FocusAdapter() {
@@ -79,8 +81,7 @@ public class PagePanel extends JPanel {
             }
         });
 
-        final JLabel widthLabel = new JLabel();
-        widthLabel.setText("Width:");
+        final JLabel widthLabel = new JLabel("Width:");
 
         widthBox = new JTextField();
         widthBox.addFocusListener(new FocusAdapter() {
@@ -90,17 +91,14 @@ public class PagePanel extends JPanel {
             }
         });
 
-        final JLabel orientationLabel = new JLabel();
-        orientationLabel.setText("Orientation:");
+        final JLabel orientationLabel = new JLabel("Orientation:");
 
-        portraitButton = new JRadioButton();
-        portraitButton.setText("Portrait");
+        portraitButton = new JRadioButton("Portrait");
         portraitButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         portraitButton.setMargin(new Insets(0, 0, 0, 0));
         portraitButton.addActionListener(this::orientationClicked);
 
-        landscapeButton = new JRadioButton();
-        landscapeButton.setText("Landscape");
+        landscapeButton = new JRadioButton("Landscape");
         landscapeButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         landscapeButton.setMargin(new Insets(0, 0, 0, 0));
         landscapeButton.addActionListener(this::orientationClicked);
@@ -119,18 +117,27 @@ public class PagePanel extends JPanel {
                                         .add(layout.createSequentialGroup()
                                                 .add(paperTypeLabel)
                                                 .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(paperTypeBox, GroupLayout.PREFERRED_SIZE, 184, GroupLayout.PREFERRED_SIZE))
+                                                .add(paperTypeBox,
+                                                        GroupLayout.PREFERRED_SIZE,
+                                                        184,
+                                                        GroupLayout.PREFERRED_SIZE))
                                         .add(layout.createSequentialGroup()
                                                 .add(10, 10, 10)
                                                 .add(layout.createParallelGroup(GroupLayout.LEADING)
                                                         .add(layout.createSequentialGroup()
                                                                 .add(heightLabel)
                                                                 .addPreferredGap(LayoutStyle.RELATED)
-                                                                .add(heightBox, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE)
+                                                                .add(heightBox,
+                                                                        GroupLayout.PREFERRED_SIZE,
+                                                                        62,
+                                                                        GroupLayout.PREFERRED_SIZE)
                                                                 .add(18, 18, 18)
                                                                 .add(widthLabel)
                                                                 .addPreferredGap(LayoutStyle.RELATED)
-                                                                .add(widthBox, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE))
+                                                                .add(widthBox,
+                                                                        GroupLayout.PREFERRED_SIZE,
+                                                                        62,
+                                                                        GroupLayout.PREFERRED_SIZE))
                                                         .add(layout.createSequentialGroup()
                                                                 .add(orientationLabel)
                                                                 .addPreferredGap(LayoutStyle.UNRELATED)
@@ -145,13 +152,22 @@ public class PagePanel extends JPanel {
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(paperTypeLabel)
-                                        .add(paperTypeBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .add(paperTypeBox,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(LayoutStyle.UNRELATED)
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(heightLabel)
-                                        .add(heightBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                        .add(heightBox,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE)
                                         .add(widthLabel)
-                                        .add(widthBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .add(widthBox,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE))
                                 .add(11, 11, 11)
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(orientationLabel)
@@ -168,96 +184,84 @@ public class PagePanel extends JPanel {
     }
 
     private void updatePaperType(final ActionEvent event) {
-        final Object size = paperTypeBox.getSelectedItem();
-        if ("A4".equals(size)) {
-            paperTypeBox.setSelectedItem("A4");
-            setSize(A4, false);
-            page.setSize(A4);
-        } else if ("A5".equals(size)) {
-            paperTypeBox.setSelectedItem("A5");
-            setSize(A5, false);
-            page.setSize(A5);
-        } else if ("Letter".equals(size)) {
-            paperTypeBox.setSelectedItem("Letter");
-            setSize(LETTER, false);
-            page.setSize(LETTER);
-        } else {
+        final String size = String.valueOf(paperTypeBox.getSelectedItem());
+        final Dimension dimension = PAPER_TYPES_TO_DIMENSION.get(size);
+        if (dimension == null) {
             // custom
             paperTypeBox.setSelectedItem("Custom");
             heightBox.setEnabled(true);
             widthBox.setEnabled(true);
 
             handleCustomPaper();
+        } else {
+            paperTypeBox.setSelectedItem(size);
+            setSize(dimension, false);
+            page.setSize(dimension);
         }
 
         designerPanel.repaint();
     }
 
+    public void setProperties(final Set<IWidget> widgets) {
+        this.page = (Page) widgets.iterator().next();
+
+        final Dimension size = page.getSize();
+        final String paperType = DIMENSION_TO_PAPER_TYPES.get(size);
+        if (paperType == null) {
+            setItemQuietly(paperTypeBox, "Custom");
+            setSize(size, true);
+        } else {
+            setItemQuietly(paperTypeBox, paperType);
+            setSize(size, false);
+        }
+    }
+
     private void handleCustomPaper() {
-        final String heightText = heightBox.getText().replaceAll("cm", "");
+        final double customHeight = getCustomHeight();
+        heightBox.setText(customHeight + " cm");
 
-        double height = page.getHeight();
+        final double customWidth = getCustomWidth();
+        widthBox.setText(customWidth + " cm");
+
+        final double pageHeight = (customHeight / 2.54) * Rule.DPI;
+        final double pageWidth = (customWidth / 2.54) * Rule.DPI;
+
+        page.setSize(new Dimension((int) Math.round(pageWidth), (int) Math.round(pageHeight)));
+    }
+
+    private double getCustomWidth() {
         try {
-            height = Double.parseDouble(heightText);
+            final String widthText = widthBox.getText().replace("cm", "");
+            return Double.parseDouble(widthText);
         } catch (final NumberFormatException e) {
             // do nothing
         }
-        heightBox.setText(height + " cm");
+        return page.getWidth();
+    }
 
-        height = (height / 2.54) * Rule.DPI;
-
-        /* get width */
-        final String widthText = widthBox.getText().replaceAll("cm", "");
-
-        double width = page.getWidth();
+    private double getCustomHeight() {
         try {
-            width = Double.parseDouble(widthText);
+            final String heightText = heightBox.getText().replace("cm", "");
+            return Double.parseDouble(heightText);
         } catch (final NumberFormatException e) {
             // do nothing
         }
-        widthBox.setText(width + " cm");
-
-        width = (width / 2.54) * Rule.DPI;
-
-        page.setSize(new Dimension((int) Math.round(width), (int) Math.round(height)));
+        return page.getHeight();
     }
 
     private void orientationClicked(final ActionEvent event) {
         // do nothing
     }
 
-    public void setProperties(final Set<IWidget> widgets) {
-        page = (Page) widgets.iterator().next();
-
-        final Dimension size = page.getSize();
-        if (size.equals(A4)) {
-            setItemQuietly(paperTypeBox, "A4");
-            setSize(size, false);
-        } else if (size.equals(A5)) {
-            setItemQuietly(paperTypeBox, "A5");
-            setSize(size, false);
-        } else if (size.equals(LETTER)) {
-            setItemQuietly(paperTypeBox, "Letter");
-            setSize(size, false);
-        } else { // custom
-            setItemQuietly(paperTypeBox, "Custom");
-            setSize(size, true);
-        }
-
-        //     int rotation = page.getRotation();
-        //     if(rotation == 0)
-        //      portraitButton.setSelected(true);
-        //     else
-        //      landscapeButton.setSelected(true);
-    }
-
     private void setItemQuietly(
             final JComboBox<String> comboBox,
             final Object item) {
-        final ActionListener listener = comboBox.getActionListeners()[0];
-        comboBox.removeActionListener(listener);
+        final ActionListener[] listeners = comboBox.getActionListeners();
+        Arrays.stream(listeners).forEach(comboBox::removeActionListener);
+
         comboBox.setSelectedItem(item);
-        comboBox.addActionListener(listener);
+
+        Arrays.stream(listeners).forEach(comboBox::addActionListener);
     }
 
     private void setSize(
@@ -266,12 +270,10 @@ public class PagePanel extends JPanel {
         heightBox.setEnabled(enabled);
         widthBox.setEnabled(enabled);
 
-        double height = size.height;
-        height = round((height / Rule.DPI) * 2.54);
+        final double height = round((size.height / Rule.DPI) * 2.54);
         heightBox.setText(height + " cm");
 
-        double width = size.width;
-        width = round((width / Rule.DPI) * 2.54);
+        final double width = round((size.width / Rule.DPI) * 2.54);
         widthBox.setText(width + " cm");
     }
 

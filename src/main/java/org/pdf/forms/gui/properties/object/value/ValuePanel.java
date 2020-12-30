@@ -6,12 +6,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
@@ -23,38 +19,39 @@ import org.w3c.dom.Element;
 
 public class ValuePanel extends JPanel {
 
-    private Map<IWidget, Element> widgetsAndProperties;
+    private static final String[] TYPES = {
+            "User Entered - Optional",
+            "User Entered - Recommended",
+            "User Entered - Required",
+            "Read Only"
+    };
 
-    private IDesigner designerPanel;
+    private final IDesigner designerPanel;
+
+    private Map<IWidget, Element> widgetsAndProperties;
     private JComboBox<String> defaultBox;
 
-    public ValuePanel() {
-        initComponents();
-    }
-
-    public void setDesignerPanel(final IDesigner designerPanel) {
+    public ValuePanel(final IDesigner designerPanel) {
         this.designerPanel = designerPanel;
+
+        initComponents();
     }
 
     private void initComponents() {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(final ComponentEvent evt) {
-                shown(evt);
+                shown();
             }
         });
 
-        final JLabel typeLabel = new JLabel();
-        typeLabel.setText("Type:");
+        final JLabel typeLabel = new JLabel("Type:");
         typeLabel.setEnabled(false);
 
-        final JComboBox<String> typeBox = new JComboBox<>();
-        typeBox.setModel(new DefaultComboBoxModel<>(new String[] {
-                "User Entered - Optional", "User Entered - Recommended", "User Entered - Required", "Read Only" }));
+        final JComboBox<String> typeBox = new JComboBox<>(TYPES);
         typeBox.setEnabled(false);
 
-        final JLabel defaultLabel = new JLabel();
-        defaultLabel.setText("Default:");
+        final JLabel defaultLabel = new JLabel("Default:");
 
         defaultBox = new JComboBox<>();
         defaultBox.addActionListener(this::updateDefaultText);
@@ -74,7 +71,10 @@ public class ValuePanel extends JPanel {
                                                 .add(10, 10, 10)
                                                 .add(defaultLabel)
                                                 .addPreferredGap(LayoutStyle.RELATED)
-                                                .add(defaultBox, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)))
+                                                .add(defaultBox,
+                                                        GroupLayout.PREFERRED_SIZE,
+                                                        175,
+                                                        GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -83,59 +83,57 @@ public class ValuePanel extends JPanel {
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(typeLabel)
-                                        .add(typeBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .add(typeBox,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(defaultLabel)
-                                        .add(defaultBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .add(defaultBox,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }
 
-    private void shown(final ComponentEvent evt) {
+    private void shown() {
         setProperties(widgetsAndProperties);
     }
 
     private void updateDefaultText(final ActionEvent evt) {
-        final Set<IWidget> widgets = widgetsAndProperties.keySet();
-
-        final IWidget testWidget = widgets.iterator().next();
-
         final String selectedItem = String.valueOf(defaultBox.getSelectedItem());
 
-        switch (testWidget.getType()) {
+        final IWidget firstWidget = widgetsAndProperties.keySet().iterator().next();
+        switch (firstWidget.getType()) {
             case IWidget.CHECK_BOX:
                 if (selectedItem.equals("null")) {
                     break;
                 }
 
-                for (final IWidget widget : widgetsAndProperties.keySet()) {
+                for (final IWidget widget: widgetsAndProperties.keySet()) {
                     final Element objectProperties = widgetsAndProperties.get(widget);
-
                     final Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
-
                     defaultElement.getAttributeNode("value").setValue(selectedItem);
-
                     widget.setObjectProperties(objectProperties);
                 }
 
                 break;
             case IWidget.RADIO_BUTTON:
-                Element objectProperties = widgetsAndProperties.get(testWidget);
-
+                Element objectProperties = widgetsAndProperties.get(firstWidget);
                 Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
-
                 defaultElement.getAttributeNode("value").setValue(selectedItem);
-
-                testWidget.setObjectProperties(objectProperties);
+                firstWidget.setObjectProperties(objectProperties);
 
                 if (selectedItem.equals("On")) {
                     final List<IWidget> allwidgets = designerPanel.getWidgets();
                     // todo flattern to account for groups
-                    for (final IWidget widget : allwidgets) {
-                        if (widget.getType() == IWidget.RADIO_BUTTON && widget != testWidget) {
+                    for (final IWidget widget: allwidgets) {
+                        if (widget.getType() == IWidget.RADIO_BUTTON && widget != firstWidget) {
                             final RadioButtonWidget rbw = (RadioButtonWidget) widget;
-                            if (rbw.getRadioButtonGroupName().equals(((RadioButtonWidget) testWidget).getRadioButtonGroupName())) {
+                            if (rbw.getRadioButtonGroupName().equals(((RadioButtonWidget) firstWidget)
+                                    .getRadioButtonGroupName())) {
                                 objectProperties = rbw.getProperties().getDocumentElement();
                                 defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
                                 defaultElement.getAttributeNode("value").setValue("Off");
@@ -147,13 +145,10 @@ public class ValuePanel extends JPanel {
 
                 break;
             default:
-                objectProperties = widgetsAndProperties.get(testWidget);
-
+                objectProperties = widgetsAndProperties.get(firstWidget);
                 defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
-
                 defaultElement.getAttributeNode("value").setValue(selectedItem);
-
-                testWidget.setObjectProperties(objectProperties);
+                firstWidget.setObjectProperties(objectProperties);
 
                 break;
         }
@@ -175,7 +170,6 @@ public class ValuePanel extends JPanel {
         switch (type) {
             case IWidget.CHECK_BOX:
                 setupToggleWidget();
-
                 break;
             case IWidget.RADIO_BUTTON:
                 if (widgetsAndProperties.size() == 1) {
@@ -192,24 +186,18 @@ public class ValuePanel extends JPanel {
                     setItemsEnabled(true);
 
                     final Element objectProperties = widgetsAndProperties.get(testWidget);
-
-                    /* add field properties */
-
-                    //                    if (widgetsAndProperties.size() == 1) { // only 1 widget is currently selected
-
-                    //                    List objectProperties = XMLUtils.getElementsFromNodeList(
-                    //                            ((Element) widgetsAndProperties.get(testWidget)).getChildNodes());
-
                     if (widgetsAndProperties.size() == 1) {
-                        final Element itemElement = (Element) objectProperties.getElementsByTagName("items").item(0);
-                        final List<Element> items = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
                         if (type == IWidget.COMBO_BOX) {
                             defaultBox.addItem("< None >");
                         }
 
-                        for (final Element item : items) {
-                            final String value = XMLUtils.getAttributeFromElement(item, "item").orElse("");
-                            defaultBox.addItem(value);
+                        final Element itemElement = (Element) objectProperties.getElementsByTagName("items").item(0);
+                        if (itemElement != null) {
+                            final List<Element> items = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
+                            for (final Element item: items) {
+                                final String value = XMLUtils.getAttributeFromElement(item, "item").orElse("");
+                                defaultBox.addItem(value);
+                            }
                         }
                     }
 
@@ -230,22 +218,17 @@ public class ValuePanel extends JPanel {
         defaultBox.addItem("On");
         defaultBox.addItem("Off");
 
-        /* iterate through the widgets */
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
-            final Element objectProperties = widgetsAndProperties.get(widget);
-
+        for (final Element objectProperties: widgetsAndProperties.values()) {
             final String defaultState = getDefault(objectProperties);
-
-            if (defaultStateToUse == null) { // this must be the first time round
+            if (defaultStateToUse == null) {
+                // this must be the first time round
                 defaultStateToUse = defaultState;
-
-            } else { // check for subsequent widgets
-
+            } else {
+                // check for subsequent widgets
                 if (!defaultStateToUse.equals(defaultState)) {
                     defaultStateToUse = "mixed";
                 }
             }
-
         }
 
         final Object selectedItem;
@@ -262,8 +245,8 @@ public class ValuePanel extends JPanel {
         return XMLUtils.getAttributeFromChildElement(valueProperties, "Default").orElse("");
     }
 
-    private void setItemsEnabled(final boolean b) {
-        defaultBox.setEnabled(b);
+    private void setItemsEnabled(final boolean enabled) {
+        defaultBox.setEnabled(enabled);
     }
 
 }

@@ -18,20 +18,20 @@ import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.RadioButtonWidget;
 import org.w3c.dom.Element;
 
-public class RadioButtonGroupOrganiser extends JPanel {
+public class CheckBoxButtonGroupOrganiser extends JPanel {
 
-    private final List<ButtonGroup> radioButtonGroups;
+    private final List<ButtonGroup> checkBoxButtonGroups;
     private final JDialog parentDialog;
     private final List<IWidget> widgetsOnPage;
 
     private JList<String> buttonGroupsList;
 
-    public RadioButtonGroupOrganiser(
+    public CheckBoxButtonGroupOrganiser(
             final JDialog parentDialog,
-            final List<ButtonGroup> radioButtonGroups,
+            final List<ButtonGroup> checkBoxButtonGroups,
             final List<IWidget> widgetsOnPage) {
         this.parentDialog = parentDialog;
-        this.radioButtonGroups = radioButtonGroups;
+        this.checkBoxButtonGroups = checkBoxButtonGroups;
         this.widgetsOnPage = widgetsOnPage;
 
         initComponents();
@@ -40,10 +40,9 @@ public class RadioButtonGroupOrganiser extends JPanel {
     }
 
     private void initComponents() {
-        final JLabel label = new JLabel("Radio Button Groups");
+        final JLabel label = new JLabel("CheckBox Button Groups");
 
-        buttonGroupsList = new JList<>();
-        buttonGroupsList.setModel(new DefaultListModel<>());
+        buttonGroupsList = new JList<>(new DefaultListModel<>());
 
         final JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(buttonGroupsList);
@@ -117,7 +116,7 @@ public class RadioButtonGroupOrganiser extends JPanel {
             return;
         }
 
-        for (final ButtonGroup buttonGroup: radioButtonGroups) {
+        for (final ButtonGroup buttonGroup: checkBoxButtonGroups) {
             if (buttonGroup.getName().equals(newName)) {
                 // name already exists
                 JOptionPane.showMessageDialog(parentDialog, "A button group with name already exists");
@@ -125,27 +124,14 @@ public class RadioButtonGroupOrganiser extends JPanel {
             }
         }
 
-        for (final ButtonGroup buttonGroup: radioButtonGroups) {
+        for (final ButtonGroup buttonGroup: checkBoxButtonGroups) {
             if (buttonGroup.getName().equals(selectedItem)) {
                 buttonGroup.setName(newName);
-                setButtonGroupName(selectedItem, newName);
-
                 break;
             }
         }
 
         populateButtonGroupsList();
-    }
-
-    private void setButtonGroupName(
-            final String oldButtonGroupName,
-            final String newButtonGroupName) {
-        for (final IWidget widget: widgetsOnPage) {
-            final RadioButtonWidget radioButtonWidget = (RadioButtonWidget) widget;
-            if (radioButtonWidget.getRadioButtonGroupName().equals(oldButtonGroupName)) {
-                radioButtonWidget.setRadioButtonGroupName(newButtonGroupName);
-            }
-        }
     }
 
     private void removeClicked(final ActionEvent event) {
@@ -159,11 +145,11 @@ public class RadioButtonGroupOrganiser extends JPanel {
             return;
         }
 
-        for (final ButtonGroup buttonGroup: radioButtonGroups) {
+        for (final ButtonGroup buttonGroup: checkBoxButtonGroups) {
             if (buttonGroup.getName().equals(selectedItem)) {
-                radioButtonGroups.remove(buttonGroup);
+                checkBoxButtonGroups.remove(buttonGroup);
 
-                final ButtonGroup lastGroup = radioButtonGroups.get(radioButtonGroups.size() - 1);
+                final ButtonGroup lastGroup = checkBoxButtonGroups.get(checkBoxButtonGroups.size() - 1);
                 switchButtonOff(selectedItem, lastGroup);
 
                 break;
@@ -194,9 +180,10 @@ public class RadioButtonGroupOrganiser extends JPanel {
     }
 
     private void addClicked(final ActionEvent evt) {
-        final ButtonGroup newButtonGroup = new ButtonGroup(IWidget.RADIO_BUTTON);
+        final ButtonGroup newButtonGroup = new ButtonGroup(IWidget.CHECK_BOX);
         String newGroupName = newButtonGroup.getName();
-        for (final ButtonGroup buttonGroup: radioButtonGroups) {
+
+        for (final ButtonGroup buttonGroup: checkBoxButtonGroups) {
             if (buttonGroup.getName().equals(newGroupName)) {
                 final char c = newGroupName.charAt(newGroupName.length() - 1);
                 final int number = Integer.parseInt(String.valueOf(c));
@@ -208,7 +195,7 @@ public class RadioButtonGroupOrganiser extends JPanel {
             }
         }
 
-        radioButtonGroups.add(newButtonGroup);
+        checkBoxButtonGroups.add(newButtonGroup);
 
         populateButtonGroupsList();
     }
@@ -217,7 +204,7 @@ public class RadioButtonGroupOrganiser extends JPanel {
         final DefaultListModel<String> model = (DefaultListModel<String>) buttonGroupsList.getModel();
         model.removeAllElements();
 
-        for (final ButtonGroup buttonGroup: radioButtonGroups) {
+        for (final ButtonGroup buttonGroup: checkBoxButtonGroups) {
             model.addElement(buttonGroup.getName());
         }
     }

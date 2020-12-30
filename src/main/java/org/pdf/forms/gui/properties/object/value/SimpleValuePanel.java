@@ -4,13 +4,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.Map;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
@@ -19,6 +13,13 @@ import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Element;
 
 public class SimpleValuePanel extends JPanel {
+
+    private static final String[] TYPES = {
+            "User Entered - Optional",
+            "User Entered - Recommended",
+            "User Entered - Required",
+            "Read Only"
+    };
 
     private Map<IWidget, Element> widgetsAndProperties;
 
@@ -44,26 +45,21 @@ public class SimpleValuePanel extends JPanel {
     }
 
     private void initComponents() {
-        typeLabel = new JLabel();
-        typeLabel.setText("Type:");
+        typeLabel = new JLabel("Type:");
         typeLabel.setEnabled(false);
 
-        typeBox = new JComboBox<>();
-        typeBox.setModel(new DefaultComboBoxModel<>(new String[] {
-                "User Entered - Optional", "User Entered - Recommended", "User Entered - Required", "Read Only" }));
+        typeBox = new JComboBox<>(TYPES);
         typeBox.setEnabled(false);
 
-        final JLabel defaultLabel = new JLabel();
-        defaultLabel.setText("Default:");
+        final JLabel defaultLabel = new JLabel("Default:");
 
-        emptyMessageLabel = new JLabel();
-        emptyMessageLabel.setText("Empty Message:");
+        emptyMessageLabel = new JLabel("Empty Message:");
 
         defaultTextBox = new JTextField();
         defaultTextBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent evt) {
-                updateDefaultText(evt);
+                updateDefaultText();
             }
         });
 
@@ -93,8 +89,14 @@ public class SimpleValuePanel extends JPanel {
                                                         .add(layout.createSequentialGroup()
                                                                 .add(defaultLabel)
                                                                 .addPreferredGap(LayoutStyle.RELATED)
-                                                                .add(defaultTextBox, GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
-                                                        .add(scrollPane, GroupLayout.PREFERRED_SIZE, 218, GroupLayout.PREFERRED_SIZE))))
+                                                                .add(defaultTextBox,
+                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                        167,
+                                                                        Short.MAX_VALUE))
+                                                        .add(scrollPane,
+                                                                GroupLayout.PREFERRED_SIZE,
+                                                                218,
+                                                                GroupLayout.PREFERRED_SIZE))))
                                 .add(172, 172, 172))
         );
         layout.setVerticalGroup(
@@ -103,11 +105,17 @@ public class SimpleValuePanel extends JPanel {
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(typeLabel)
-                                        .add(typeBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .add(typeBox,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(defaultLabel)
-                                        .add(defaultTextBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .add(defaultTextBox,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(emptyMessageLabel)
                                 .addPreferredGap(LayoutStyle.RELATED)
@@ -116,11 +124,11 @@ public class SimpleValuePanel extends JPanel {
         );
     }
 
-    private void updateDefaultText(final FocusEvent event) {
+    private void updateDefaultText() {
         final String defaultText = defaultTextBox.getText();
 
         if (widgetsAndProperties != null) {
-            for (final Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
+            for (final Map.Entry<IWidget, Element> entry: widgetsAndProperties.entrySet()) {
                 final IWidget widget = entry.getKey();
                 final Element widgetProperties = entry.getValue();
 
@@ -138,7 +146,7 @@ public class SimpleValuePanel extends JPanel {
         this.widgetsAndProperties = widgetsAndProperties;
 
         String defaultTextToUse = null;
-        for (Element objectPropertiesElement : widgetsAndProperties.values()) {
+        for (final Element objectPropertiesElement: widgetsAndProperties.values()) {
             final Element valueProperties = (Element) objectPropertiesElement.getElementsByTagName("value").item(0);
 
             final String defaultText = XMLUtils.getAttributeFromChildElement(valueProperties, "Default").orElse("");

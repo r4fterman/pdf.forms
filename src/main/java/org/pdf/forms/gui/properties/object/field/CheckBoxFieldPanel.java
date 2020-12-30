@@ -17,14 +17,14 @@ import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.gui.windows.RadioButtonGroupOrganiser;
+import org.pdf.forms.gui.windows.CheckBoxButtonGroupOrganiser;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.ButtonGroup;
+import org.pdf.forms.widgets.CheckBoxWidget;
 import org.pdf.forms.widgets.IWidget;
-import org.pdf.forms.widgets.RadioButtonWidget;
 import org.w3c.dom.Element;
 
-public class RadioButtonFieldPanel extends JPanel {
+public class CheckBoxFieldPanel extends JPanel {
 
     private static final String[] APPEARANCES = {
             "None",
@@ -38,9 +38,10 @@ public class RadioButtonFieldPanel extends JPanel {
 
     private Map<IWidget, Element> widgetsAndProperties;
     private List<ButtonGroup> buttonGroups;
+
     private JComboBox<String> buttonGroupBox;
 
-    public RadioButtonFieldPanel(final IDesigner designerPanel) {
+    public CheckBoxFieldPanel(final IDesigner designerPanel) {
         this.designerPanel = designerPanel;
 
         initComponents();
@@ -114,7 +115,8 @@ public class RadioButtonFieldPanel extends JPanel {
         final List<IWidget> widgets = mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage()).getWidgets();
 
         final JDialog dialog = new JDialog();
-        final RadioButtonGroupOrganiser buttonGroupOrganiser = new RadioButtonGroupOrganiser(dialog,
+        final CheckBoxButtonGroupOrganiser buttonGroupOrganiser = new CheckBoxButtonGroupOrganiser(
+                dialog,
                 buttonGroups,
                 widgets);
 
@@ -131,8 +133,8 @@ public class RadioButtonFieldPanel extends JPanel {
 
     private void updateButtonGroup(final ActionEvent event) {
         for (final IWidget widget: widgetsAndProperties.keySet()) {
-            final RadioButtonWidget radioButtonWidget = (RadioButtonWidget) widget;
-            radioButtonWidget.setRadioButtonGroupName((String) buttonGroupBox.getSelectedItem());
+            final CheckBoxWidget checkBoxWidget = (CheckBoxWidget) widget;
+            checkBoxWidget.setCheckBoxGroupName((String) buttonGroupBox.getSelectedItem());
 
             final Element objectProperties = widget.getProperties().getDocumentElement();
             XMLUtils.getPropertyElement(objectProperties, "Default")
@@ -150,7 +152,7 @@ public class RadioButtonFieldPanel extends JPanel {
 
         final IMainFrame mainFrame = designerPanel.getMainFrame();
         final Page page = mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage());
-        this.buttonGroups = page.getRadioButtonGroups();
+        this.buttonGroups = page.getCheckBoxGroups();
 
         populateButtonGroups();
 
