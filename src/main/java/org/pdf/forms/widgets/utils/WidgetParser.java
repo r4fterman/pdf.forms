@@ -1,8 +1,6 @@
 package org.pdf.forms.widgets.utils;
 
-import java.awt.Color;
-import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.AbstractButton;
+import javax.swing.*;
 
 import org.jpedal.objects.acroforms.formData.FormObject;
 import org.jpedal.objects.acroforms.rendering.AcroRenderer;
@@ -42,7 +40,7 @@ public final class WidgetParser {
             final List<IWidget> widgetsOnPage) {
         final Map<String, FormObject> rawFormData = currentFormRenderer.getRawFormData();
 
-        for (final String widgetName : rawFormData.keySet()) {
+        for (final String widgetName: rawFormData.keySet()) {
             final FormObject formObject = rawFormData.get(widgetName);
 
             final int type = formObject.getType();
@@ -63,14 +61,22 @@ public final class WidgetParser {
                     }
 
                     if (isPushButton) {
-                        final IWidget widget = getBasicWidget(formObject, IWidget.BUTTON, pageHeight, cropHeight, cropX, cropY, mainFrame, widgetsOnPage);
+                        final IWidget widget = getBasicWidget(formObject,
+                                IWidget.BUTTON,
+                                pageHeight,
+                                cropHeight,
+                                cropX,
+                                cropY,
+                                mainFrame,
+                                widgetsOnPage);
 
                         final Document document = widget.getProperties();
 
                         final String text = formObject.getNormalCaption();
 
                         final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
-                        final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
+                        final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default")
+                                .get();
                         defaultTextElement.getAttributeNode("value").setValue(text);
                         widget.setObjectProperties(objectProperties);
 
@@ -84,7 +90,15 @@ public final class WidgetParser {
                         // radio button
                     } else {
                         //checkBox
-                        addCheckBox(formObject, page, null, pageHeight, cropHeight, cropX, cropY, mainFrame, widgetsOnPage);
+                        addCheckBox(formObject,
+                                page,
+                                null,
+                                pageHeight,
+                                cropHeight,
+                                cropX,
+                                cropY,
+                                mainFrame,
+                                widgetsOnPage);
                     }
 
                     break;
@@ -94,7 +108,14 @@ public final class WidgetParser {
 
                     //System.out.println(formObject.getBoundingRectangle());
 
-                    final IWidget widget = getBasicWidget(formObject, IWidget.TEXT_FIELD, pageHeight, cropHeight, cropX, cropY, mainFrame, widgetsOnPage);
+                    final IWidget widget = getBasicWidget(formObject,
+                            IWidget.TEXT_FIELD,
+                            pageHeight,
+                            cropHeight,
+                            cropX,
+                            cropY,
+                            mainFrame,
+                            widgetsOnPage);
 
                     final Document document = widget.getProperties();
 
@@ -133,14 +154,28 @@ public final class WidgetParser {
                     }
 
                     if (isCombo) {
-                        final IWidget widget = getBasicWidget(formObject, IWidget.COMBO_BOX, pageHeight, cropHeight, cropX, cropY, mainFrame, widgetsOnPage);
+                        final IWidget widget = getBasicWidget(formObject,
+                                IWidget.COMBO_BOX,
+                                pageHeight,
+                                cropHeight,
+                                cropX,
+                                cropY,
+                                mainFrame,
+                                widgetsOnPage);
 
                         handleChoiceField(formObject, widget);
 
                         widgetsOnPage.add(widget);
                     } else {
                         //it is a list
-                        final IWidget widget = getBasicWidget(formObject, IWidget.LIST_BOX, pageHeight, cropHeight, cropX, cropY, mainFrame, widgetsOnPage);
+                        final IWidget widget = getBasicWidget(formObject,
+                                IWidget.LIST_BOX,
+                                pageHeight,
+                                cropHeight,
+                                cropX,
+                                cropY,
+                                mainFrame,
+                                widgetsOnPage);
 
                         handleChoiceField(formObject, widget);
 
@@ -165,7 +200,7 @@ public final class WidgetParser {
             return widgetArrays.getNextArrayIndex(name);
         }
 
-        for (final IWidget widget : widgetList) {
+        for (final IWidget widget: widgetList) {
             final String widgetName = widget.getWidgetName();
             if (name.equals(widgetName) && !widget.equals(widgetToTest)) {
                 /*
@@ -287,9 +322,11 @@ public final class WidgetParser {
         final Set<IWidget> set = new HashSet<>();
         set.add(widget);
 
-        PropertyChanger.updateSizeAndPosition(set, new Integer[] {
-                bounds.x, bounds.y,
-                bounds.width, bounds.height });
+        PropertyChanger.updateSizeAndPosition(
+                set,
+                new Point(bounds.x, bounds.y),
+                new Dimension(bounds.width, bounds.height)
+        );
 
         /*
          * if the component is split, then because we are parsing it in from a
@@ -355,7 +392,7 @@ public final class WidgetParser {
         if (items != null) {
             final Element itemsElement = (Element) objectProperties.getElementsByTagName("items").item(0);
 
-            for (final String value : items) {
+            for (final String value: items) {
                 if (value != null && !value.equals("")) {
                     XMLUtils.addBasicProperty(document, "item", value, itemsElement);
                 }

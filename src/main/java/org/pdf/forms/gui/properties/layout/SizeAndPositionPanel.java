@@ -7,32 +7,50 @@ import static org.jdesktop.layout.GroupLayout.PREFERRED_SIZE;
 import static org.jdesktop.layout.LayoutStyle.RELATED;
 import static org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBox.NOT_SELECTED;
 
-import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.google.common.base.Strings;
+import javax.swing.*;
+
 import org.jdesktop.layout.GroupLayout;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.Rule;
 import org.pdf.forms.gui.properties.PropertyChanger;
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBox;
-import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBoxParent;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxParent {
+import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Ints;
 
-    private static final String[] ANCHORS = {"Top Left", "Top Middle", "Top Right", "Middle Left", "Center", "Middle Right", "Middle Right", "Bottom Middle", "Bottom Right"};
+public class SizeAndPositionPanel extends JPanel {
+
+    private static final String[] ANCHORS = {
+            "Top Left",
+            "Top Middle",
+            "Top Right",
+            "Middle Left",
+            "Center",
+            "Middle Right",
+            "Button Left",
+            "Bottom Middle",
+            "Bottom Right"
+    };
+
     private static final String EXPAND_TO_FIT = "Expand to fit";
     private static final int UNITS = (int) (Rule.INCH / 2.54);
 
@@ -63,11 +81,8 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
     private void initializePanel() {
         setBorder(BorderFactory.createTitledBorder("Size & Position"));
 
-        final JLabel xLabel = new JLabel();
-        xLabel.setText("X:");
-
-        final JLabel widthLabel = new JLabel();
-        widthLabel.setText("Width:");
+        final JLabel xLabel = new JLabel("X:");
+        final JLabel widthLabel = new JLabel("Width:");
 
         xBox = new JTextField();
         xBox.addFocusListener(new FocusAdapter() {
@@ -85,17 +100,15 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
             }
         });
 
-        xExpandToFitBox = new TristateCheckBox(EXPAND_TO_FIT, NOT_SELECTED, this);
+        xExpandToFitBox = new TristateCheckBox(EXPAND_TO_FIT, NOT_SELECTED, this::checkboxClicked);
         //xExpandToFitBox.setText(EXPAND_TO_FIT);
         xExpandToFitBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         xExpandToFitBox.setEnabled(false);
         xExpandToFitBox.setMargin(new java.awt.Insets(0, 0, 0, 0));
 
-        final JLabel yLabel = new JLabel();
-        yLabel.setText("Y:");
+        final JLabel yLabel = new JLabel("Y:");
 
-        final JLabel heightLabel = new JLabel();
-        heightLabel.setText("Height:");
+        final JLabel heightLabel = new JLabel("Height:");
 
         heightBox = new JTextField();
         heightBox.addFocusListener(new FocusAdapter() {
@@ -113,18 +126,16 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
             }
         });
 
-        yExpandToFitBox = new TristateCheckBox(EXPAND_TO_FIT, NOT_SELECTED, this);
+        yExpandToFitBox = new TristateCheckBox(EXPAND_TO_FIT, NOT_SELECTED, this::checkboxClicked);
         //yExpandToFitBox.setText(EXPAND_TO_FIT);
         yExpandToFitBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         yExpandToFitBox.setEnabled(false);
         yExpandToFitBox.setMargin(new java.awt.Insets(0, 0, 0, 0));
 
-        final JLabel anchorLabel = new JLabel();
-        anchorLabel.setText("Anchor:");
+        final JLabel anchorLabel = new JLabel("Anchor:");
         anchorLabel.setEnabled(false);
 
-        anchorLocationBox = new JComboBox<>();
-        anchorLocationBox.setModel(new DefaultComboBoxModel<>(ANCHORS));
+        anchorLocationBox = new JComboBox<>(ANCHORS);
         anchorLocationBox.setEnabled(false);
         anchorLocationBox.addActionListener(this::updateAnchor);
 
@@ -139,7 +150,7 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
         buttonGroup.add(rotate180Degree);
         buttonGroup.add(rotate270Degree);
 
-        final org.jdesktop.layout.GroupLayout groupLayout = new org.jdesktop.layout.GroupLayout(this);
+        final GroupLayout groupLayout = new GroupLayout(this);
         setLayout(groupLayout);
         groupLayout.setHorizontalGroup(
                 groupLayout.createParallelGroup(LEADING)
@@ -148,10 +159,10 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
                                         .add(groupLayout.createSequentialGroup()
                                                 .addContainerGap()
                                                 .add(xExpandToFitBox))
-                                        .add(createSequentialGroup(xLabel, widthLabel, xBox, widthBox, groupLayout)))
+                                        .add(createSequentialGroup(xLabel, xBox, widthLabel, widthBox, groupLayout)))
                                 .add(25, 25, 25)
                                 .add(groupLayout.createParallelGroup(LEADING)
-                                        .add(createSequentialGroup(yLabel, heightLabel, yBox, heightBox, groupLayout))
+                                        .add(createSequentialGroup(yLabel, yBox, heightLabel, heightBox, groupLayout))
                                         .add(groupLayout.createSequentialGroup()
                                                 .add(10, 10, 10)
                                                 .add(yExpandToFitBox))))
@@ -171,9 +182,9 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
         groupLayout.setVerticalGroup(
                 groupLayout.createParallelGroup(LEADING)
                         .add(groupLayout.createSequentialGroup()
-                                .add(createParallelGroup(xLabel, yLabel, xBox, yBox, groupLayout))
+                                .add(createParallelGroup(xLabel, xBox, yLabel, yBox, groupLayout))
                                 .addPreferredGap(RELATED)
-                                .add(createParallelGroup(widthLabel, heightLabel, widthBox, heightBox, groupLayout))
+                                .add(createParallelGroup(widthLabel, widthBox, heightLabel, heightBox, groupLayout))
                                 .addPreferredGap(RELATED)
                                 .add(groupLayout.createParallelGroup(BASELINE)
                                         .add(xExpandToFitBox)
@@ -190,8 +201,8 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
     }
 
     private JToggleButton createRotate270DegreeButton() {
-        final JToggleButton rotateButton = new JToggleButton();
-        rotateButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Anchor Rotation 270.png")));
+        final JToggleButton rotateButton = new JToggleButton(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/Anchor Rotation 270.png")));
         rotateButton.setEnabled(false);
         rotateButton.setName("270");
         rotateButton.addActionListener(this::updateRotation);
@@ -199,8 +210,8 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
     }
 
     private JToggleButton createRotate180DegreeButton() {
-        final JToggleButton rotateButton = new JToggleButton();
-        rotateButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Anchor Rotation 180.png")));
+        final JToggleButton rotateButton = new JToggleButton(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/Anchor Rotation 180.png")));
         rotateButton.setEnabled(false);
         rotateButton.setName("180");
         rotateButton.addActionListener(this::updateRotation);
@@ -208,8 +219,8 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
     }
 
     private JToggleButton createRotate90DegreeButton() {
-        final JToggleButton rotateButton = new JToggleButton();
-        rotateButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Anchor Rotation 90.png")));
+        final JToggleButton rotateButton = new JToggleButton(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/Anchor Rotation 90.png")));
         rotateButton.setEnabled(false);
         rotateButton.setName("90");
         rotateButton.addActionListener(this::updateRotation);
@@ -217,8 +228,8 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
     }
 
     private JToggleButton createRotate0DegreeButton() {
-        final JToggleButton rotateButton = new JToggleButton();
-        rotateButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Anchor Rotation 0.png")));
+        final JToggleButton rotateButton = new JToggleButton(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/Anchor Rotation 0.png")));
         rotateButton.setEnabled(false);
         rotateButton.setName("0");
         rotateButton.addActionListener(this::updateRotation);
@@ -227,8 +238,8 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
 
     private GroupLayout.SequentialGroup createSequentialGroup(
             final JLabel labelForTextFieldA,
-            final JLabel labelForTextFieldB,
             final JTextField textFieldA,
+            final JLabel labelForTextFieldB,
             final JTextField textFieldB,
             final GroupLayout groupLayout) {
         return groupLayout.createSequentialGroup()
@@ -243,8 +254,8 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
 
     private GroupLayout.ParallelGroup createParallelGroup(
             final JLabel labelForTextFieldA,
-            final JLabel labelForTextFieldB,
             final JTextField textFieldA,
+            final JLabel labelForTextFieldB,
             final JTextField textFieldB,
             final GroupLayout groupLayout) {
         return groupLayout.createParallelGroup(BASELINE)
@@ -255,74 +266,34 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
     }
 
     private void updateAnchor(final ActionEvent e) {
-        final Object anchor = anchorLocationBox.getSelectedItem();
-        if (anchor != null) {
-            widgetsAndProperties.forEach((key, widgetProperties) -> {
-                final Element anchorElement = XMLUtils.getPropertyElement(widgetProperties, "Anchor").get();
-                anchorElement.getAttributeNode("value").setValue(anchor.toString());
-            });
-        }
+        Optional.ofNullable(anchorLocationBox.getSelectedItem())
+                .ifPresent(anchor -> updatePropertyValue("Anchor", anchor.toString()));
     }
 
     private void updateRotation(final ActionEvent e) {
-        final String alignment = ((JComponent) e.getSource()).getName();
-        widgetsAndProperties.forEach((key, widgetProperties) -> {
-            final Element rotationElement = XMLUtils.getPropertyElement(widgetProperties, "Rotation").get();
-            rotationElement.getAttributeNode("value").setValue(alignment);
-        });
+        final String value = ((JComponent) e.getSource()).getName();
+
+        updatePropertyValue("Rotation", value);
+    }
+
+    private void updatePropertyValue(
+            final String propertyName,
+            final String value) {
+        widgetsAndProperties.forEach((key, widgetProperties) ->
+                XMLUtils.getPropertyElement(widgetProperties, propertyName)
+                        .ifPresent(propertyElement ->
+                                propertyElement.getAttributeNode("value").setValue(value)));
     }
 
     private void updateSizeAndPosition() {
-        final Integer[] props = new Integer[4];
-
-        if (!xBox.getText().equals("mixed")) {
-            final String xText = xBox.getText().replace("cm", "");
-            double x = asDouble(xText);
-            xBox.setText(x + " cm");
-
-            x = x * UNITS;
-
-            props[0] = (int) (Math.round(x) + IMainFrame.INSET);
-        }
-
-        if (!yBox.getText().equals("mixed")) {
-            final String yText = yBox.getText().replace("cm", "");
-            double y = asDouble(yText);
-            yBox.setText(y + " cm");
-
-            y = y * UNITS;
-
-            props[1] = (int) (Math.round(y) + IMainFrame.INSET);
-        }
-
-        if (!widthBox.getText().equals("mixed")) {
-            final String widthText = widthBox.getText().replace("cm", "");
-            double width = asDouble(widthText);
-            widthBox.setText(width + " cm");
-
-            width = width * UNITS;
-
-            props[2] = (int) Math.round(width);
-        }
-
-        if (!heightBox.getText().equals("mixed")) {
-            final String heightText = heightBox.getText().replace("cm", "");
-            double height = asDouble(heightText);
-            heightBox.setText(height + " cm");
-
-            height = height * UNITS;
-
-            props[3] = (int) Math.round(height);
-        }
-
         if (widgetsAndProperties != null) {
             final Set<IWidget> widgets = widgetsAndProperties.keySet();
 
-            PropertyChanger.updateSizeAndPosition(widgets, props);
+            final Point point = getPoint();
+            final Dimension dimension = getDimension();
+            PropertyChanger.updateSizeAndPosition(widgets, point, dimension);
 
-            for (final IWidget widget : widgets) {
-                widget.setLayoutProperties(widgetsAndProperties.get(widget));
-            }
+            widgetsAndProperties.forEach(IWidget::setLayoutProperties);
         }
 
         if (designerPanel != null) {
@@ -330,158 +301,147 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
         }
     }
 
-    public JTextField getXBox() {
-        return xBox;
+    private Point getPoint() {
+        final Point point = new Point(-1, -1);
+
+        if (!xBox.getText().equals("mixed")) {
+            final String xText = xBox.getText().replace("cm", "");
+            final double customX = asDouble(xText);
+            xBox.setText(customX + " cm");
+
+            final double x = customX * UNITS;
+            point.x = (int) (Math.round(x) + IMainFrame.INSET);
+        }
+
+        if (!yBox.getText().equals("mixed")) {
+            final String yText = yBox.getText().replace("cm", "");
+            final double customY = asDouble(yText);
+            yBox.setText(customY + " cm");
+
+            final double y = customY * UNITS;
+            point.y = (int) (Math.round(y) + IMainFrame.INSET);
+        }
+
+        return point;
     }
 
-    public JTextField getWidthBox() {
-        return widthBox;
-    }
+    private Dimension getDimension() {
+        final Dimension dimension = new Dimension(-1, -1);
 
-    public JTextField getHeightBox() {
-        return heightBox;
-    }
+        if (!widthBox.getText().equals("mixed")) {
+            final String widthText = widthBox.getText().replace("cm", "");
+            final double customWidth = asDouble(widthText);
+            widthBox.setText(customWidth + " cm");
 
-    public JTextField getYBox() {
-        return yBox;
-    }
+            final double width = customWidth * UNITS;
+            dimension.width = (int) Math.round(width);
+        }
 
-    public JComboBox<String> getAnchorLocationBox() {
-        return anchorLocationBox;
-    }
+        if (!heightBox.getText().equals("mixed")) {
+            final String heightText = heightBox.getText().replace("cm", "");
+            final double customHeight = asDouble(heightText);
+            heightBox.setText(customHeight + " cm");
 
-    public JToggleButton getRotate0Degree() {
-        return rotate0Degree;
-    }
+            final double height = customHeight * UNITS;
+            dimension.height = (int) Math.round(height);
+        }
 
-    public JToggleButton getRotate90Degree() {
-        return rotate90Degree;
-    }
-
-    public JToggleButton getRotate180Degree() {
-        return rotate180Degree;
-    }
-
-    public JToggleButton getRotate270Degree() {
-        return rotate270Degree;
-    }
-
-    public TristateCheckBox getXExpandToFitBox() {
-        return xExpandToFitBox;
-    }
-
-    public TristateCheckBox getYExpandToFitBox() {
-        return yExpandToFitBox;
+        return dimension;
     }
 
     public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
         this.widgetsAndProperties = widgetsAndProperties;
 
-        String xCordToUse = null;
-        String yCordToUse = null;
-        String widthToUse = null;
-        String heightToUse = null;
-        String anchorLocationToUse = null;
-        String rotationToUse = null;
+        final String xCordToUse = getXCoordinateToUse(widgetsAndProperties.values());
+        setXCoordinate(xCordToUse);
 
-        for (final Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
-            final IWidget widget = entry.getKey();
-            final Element props = entry.getValue();
+        final String yCordToUse = getYCoordinateToUse(widgetsAndProperties.values());
+        setYCoordinate(yCordToUse);
 
-            /* add size & position properties */
-            final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
+        final String widthToUse = getWidthToUse(widgetsAndProperties.values());
+        setWidth(widthToUse);
 
-            final String xCord = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "X").get();
-            final String width = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Width").get();
-            final String yCord = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Y").get();
-            final String height = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Height").get();
-            final String anchor = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Anchor").get();
-            final String rotation = XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Rotation").get();
+        final String heightToUse = getHeightToUse(widgetsAndProperties.values());
+        setHeight(heightToUse);
 
-            if (xCordToUse == null) {
-                // this must be the first time round
-                xCordToUse = xCord;
-                yCordToUse = yCord;
-                widthToUse = width;
-                heightToUse = height;
-                anchorLocationToUse = anchor;
-                rotationToUse = rotation;
-            } else {
-                // check for subsequent widgets
-                if (!xCordToUse.equals(xCord)) {
-                    xCordToUse = "mixed";
-                }
+        final String anchorLocationToUse = getAnchorToUse(widgetsAndProperties.values());
+        setAnchorLocation(anchorLocationToUse);
 
-                if (!yCordToUse.equals(yCord)) {
-                    yCordToUse = "mixed";
-                }
-
-                if (!widthToUse.equals(width)) {
-                    widthToUse = "mixed";
-                }
-
-                if (!heightToUse.equals(height)) {
-                    heightToUse = "mixed";
-                }
-
-                if (!anchorLocationToUse.equals(anchor)) {
-                    anchorLocationToUse = "mixed";
-                }
-
-                if (!rotationToUse.equals(rotation)) {
-                    rotationToUse = "mixed";
-                }
-            }
-        }
-        setProperties(xCordToUse, yCordToUse, widthToUse, heightToUse, anchorLocationToUse, rotationToUse);
+        final String rotationToUse = getRotationToUse(widgetsAndProperties.values());
+        setRotation(rotationToUse);
     }
 
-    private void setProperties(
-            final String xCordToUse,
-            final String yCordToUse,
-            final String widthToUse,
-            final String heightToUse,
-            final String anchorLocationToUse,
-            final String rotationToUse) {
-        if ("mixed".equals(xCordToUse)) {
+    private void setXCoordinate(final String xCordToUse) {
+        if (xCordToUse == null) {
+            return;
+        }
+
+        if (xCordToUse.equals("mixed")) {
             xBox.setText("mixed");
         } else {
-            double x = asInteger(xCordToUse);
-            x = round((x - IMainFrame.INSET) / UNITS);
-            xBox.setText(x + " cm");
+            final double x = asInteger(xCordToUse);
+            final double xForTextField = round((x - IMainFrame.INSET) / UNITS);
+            xBox.setText(xForTextField + " cm");
+        }
+    }
+
+    private void setYCoordinate(final String yCordToUse) {
+        if (yCordToUse == null) {
+            return;
         }
 
-        if ("mixed".equals(yCordToUse)) {
+        if (yCordToUse.equals("mixed")) {
             yBox.setText("mixed");
         } else {
-            double y = asInteger(yCordToUse);
-            y = round((y - IMainFrame.INSET) / UNITS);
-            yBox.setText(y + " cm");
+            final double y = asInteger(yCordToUse);
+            final double yForTextField = round((y - IMainFrame.INSET) / UNITS);
+            yBox.setText(yForTextField + " cm");
+        }
+    }
+
+    private void setWidth(final String widthToUse) {
+        if (widthToUse == null) {
+            return;
         }
 
-        if ("mixed".equals(widthToUse)) {
+        if (widthToUse.equals("mixed")) {
             widthBox.setText("mixed");
         } else {
-            double width = asInteger(widthToUse);
-            width = round(width / UNITS);
-            widthBox.setText(width + " cm");
+            final double width = asInteger(widthToUse);
+            final double widthForTextField = round(width / UNITS);
+            widthBox.setText(widthForTextField + " cm");
+        }
+    }
+
+    private void setHeight(final String heightToUse) {
+        if (heightToUse == null) {
+            return;
         }
 
-        if ("mixed".equals(heightToUse)) {
+        if (heightToUse.equals("mixed")) {
             heightBox.setText("mixed");
         } else {
-            double height = asInteger(heightToUse);
-            height = round(height / UNITS);
-            heightBox.setText(height + " cm");
+            final double height = asInteger(heightToUse);
+            final double heightForTextField = round(height / UNITS);
+            heightBox.setText(heightForTextField + " cm");
         }
+    }
 
-        final Object anchorSelection;
+    private void setAnchorLocation(final String anchorLocationToUse) {
+        final String anchorSelection;
         if ("mixed".equals(anchorLocationToUse)) {
             anchorSelection = null;
         } else {
             anchorSelection = anchorLocationToUse;
         }
+
         anchorLocationBox.setSelectedItem(anchorSelection);
+    }
+
+    private void setRotation(final String rotationToUse) {
+        if (rotationToUse == null) {
+            return;
+        }
 
         if ("mixed".equals(rotationToUse)) {
             buttonGroup.setSelected(new JToggleButton("").getModel(), true);
@@ -498,18 +458,111 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
         }
     }
 
-    private double asInteger(final String integerNumber) {
-        if (Strings.isNullOrEmpty(integerNumber)) {
-            return 0d;
+    private String getXCoordinateToUse(final Collection<Element> elements) {
+        final List<String> xCoordValues = elements.stream()
+                .map(props -> {
+                    final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
+                    return XMLUtils.getAttributeFromChildElement(sizeAndPosition, "X").orElse("");
+                })
+                .collect(Collectors.toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(xCoordValues, xCoordValues.get(0)) == xCoordValues.size();
+        if (listContainsOnlyEqualValues) {
+            return xCoordValues.get(0);
         }
-        return Integer.parseInt(integerNumber);
+        return "mixed";
+    }
+
+    private String getYCoordinateToUse(final Collection<Element> elements) {
+        final List<String> yCoordValues = elements.stream()
+                .map(props -> {
+                    final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
+                    return XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Y").orElse("");
+                })
+                .collect(Collectors.toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(yCoordValues, yCoordValues.get(0)) == yCoordValues.size();
+        if (listContainsOnlyEqualValues) {
+            return yCoordValues.get(0);
+        }
+        return "mixed";
+    }
+
+    private String getWidthToUse(final Collection<Element> elements) {
+        final List<String> widthValues = elements.stream()
+                .map(props -> {
+                    final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
+                    return XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Width").orElse("");
+                })
+                .collect(Collectors.toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(widthValues, widthValues.get(0)) == widthValues.size();
+        if (listContainsOnlyEqualValues) {
+            return widthValues.get(0);
+        }
+        return "mixed";
+    }
+
+    private String getHeightToUse(final Collection<Element> elements) {
+        final List<String> heightValues = elements.stream()
+                .map(props -> {
+                    final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
+                    return XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Height").orElse("");
+                })
+                .collect(Collectors.toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(heightValues, heightValues.get(0)) == heightValues.size();
+        if (listContainsOnlyEqualValues) {
+            return heightValues.get(0);
+        }
+        return "mixed";
+    }
+
+    private String getAnchorToUse(final Collection<Element> elements) {
+        final List<String> anchorValues = elements.stream()
+                .map(props -> {
+                    final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
+                    return XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Anchor").orElse("");
+                })
+                .collect(Collectors.toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(anchorValues, anchorValues.get(0)) == anchorValues.size();
+        if (listContainsOnlyEqualValues) {
+            return anchorValues.get(0);
+        }
+        return "mixed";
+    }
+
+    private String getRotationToUse(final Collection<Element> elements) {
+        final List<String> rotationValues = elements.stream()
+                .map(props -> {
+                    final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
+                    return XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Rotation")
+                            .orElse("");
+                })
+                .collect(Collectors.toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(rotationValues, rotationValues.get(0)) == rotationValues.size();
+        if (listContainsOnlyEqualValues) {
+            return rotationValues.get(0);
+        }
+        return "mixed";
+    }
+
+    private int asInteger(final String integerNumber) {
+        return Optional.of(Ints.tryParse(integerNumber))
+                .orElse(-1);
     }
 
     private double asDouble(final String doubleNumber) {
-        if (Strings.isNullOrEmpty(doubleNumber)) {
-            return 0d;
-        }
-        return Double.parseDouble(doubleNumber);
+        return Optional.ofNullable(Doubles.tryParse(doubleNumber))
+                .orElse(-1d);
     }
 
     private double round(final double number) {
@@ -523,16 +576,14 @@ public class SizeAndPositionPanel extends JPanel implements TristateCheckBoxPare
         return number;
     }
 
-    @Override
-    public void checkboxClicked(final MouseEvent e) {
-        final TristateCheckBox.State xExpandState = getXExpandToFitBox().getState();
-        final TristateCheckBox.State yExpandState = getYExpandToFitBox().getState();
+    private void checkboxClicked(final MouseEvent mouseEvent) {
+        final TristateCheckBox.State xExpandState = xExpandToFitBox.getState();
+        final TristateCheckBox.State yExpandState = yExpandToFitBox.getState();
 
         widgetsAndProperties.forEach((key, widgetProperties) -> {
             final List<Element> layoutProperties = XMLUtils.getElementsFromNodeList(widgetProperties.getChildNodes());
-
-            /* add size & position properties */
-            final List<Element> sizeAndPosition = XMLUtils.getElementsFromNodeList(layoutProperties.get(0).getChildNodes());
+            final List<Element> sizeAndPosition = XMLUtils.getElementsFromNodeList(layoutProperties.get(0)
+                    .getChildNodes());
 
             if (xExpandState != TristateCheckBox.DONT_CARE) {
                 final Element xExpand = sizeAndPosition.get(4);

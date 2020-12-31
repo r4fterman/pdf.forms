@@ -1,5 +1,6 @@
 package org.pdf.forms.gui.properties;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +16,9 @@ public class PropertyChanger {
             final Element captionElement,
             final Element valueElement) {
         if (value != null) {
-            captionElement.getAttributeNode("value").setValue(value);
+            if (captionElement != null) {
+                captionElement.getAttributeNode("value").setValue(value);
+            }
             if (valueElement != null) {
                 valueElement.getAttributeNode("value").setValue(value);
             }
@@ -27,23 +30,25 @@ public class PropertyChanger {
             final String fontName,
             final String fontSize,
             final int fontStyle) {
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             final Document properties = widget.getProperties();
 
             final Element fontElement = (Element) properties.getElementsByTagName("font").item(0);
 
-            final List fontList = XMLUtils.getElementsFromNodeList(fontElement.getChildNodes());
-            final Element captionElement = (Element) fontList.get(0);
+            final List<Element> fontList = XMLUtils.getElementsFromNodeList(fontElement.getChildNodes());
+            final Element captionElement = fontList.get(0);
             Element valueElement = null;
             if (widget.allowEditCaptionAndValue()) {
-                valueElement = (Element) fontList.get(1);
+                valueElement = fontList.get(1);
             }
 
             final Element captionFontName = XMLUtils.getPropertyElement(captionElement, "Font Name").get();
             final Element captionFontSize = XMLUtils.getPropertyElement(captionElement, "Font Size").get();
             final Element captionFontStyle = XMLUtils.getPropertyElement(captionElement, "Font Style").get();
 
-            Element valueFontName = null, valueFontSize = null, valueFontStyle = null;
+            Element valueFontName = null;
+            Element valueFontSize = null;
+            Element valueFontStyle = null;
 
             if (widget.allowEditCaptionAndValue()) {
                 valueFontName = XMLUtils.getPropertyElement(valueElement, "Font Name").get();
@@ -61,54 +66,72 @@ public class PropertyChanger {
     }
 
     public static void updateSizeAndPosition(final Set<IWidget> widgetSelection) {
-        for (final IWidget widget : widgetSelection) {
-            final Document properties = widget.getProperties();
+        for (final IWidget widget: widgetSelection) {
+            final Element element = (Element) widget.getProperties().getElementsByTagName("sizeandposition").item(0);
 
-            final Element element = (Element) properties.getElementsByTagName("sizeandposition").item(0);
+            XMLUtils.getPropertyElement(element, "X")
+                    .ifPresent(xCord -> xCord.getAttributeNode("value").setValue(String.valueOf(widget.getX())));
 
-            final Element xCord = XMLUtils.getPropertyElement(element, "X").get();
-            xCord.getAttributeNode("value").setValue(widget.getX() + "");
+            XMLUtils.getPropertyElement(element, "Y")
+                    .ifPresent(yCord -> yCord.getAttributeNode("value").setValue(String.valueOf(widget.getY())));
 
-            final Element yCord = XMLUtils.getPropertyElement(element, "Y").get();
-            yCord.getAttributeNode("value").setValue(widget.getY() + "");
+            XMLUtils.getPropertyElement(element, "Width")
+                    .ifPresent(width -> width.getAttributeNode("value").setValue(String.valueOf(widget.getWidth())));
 
-            final Element width = XMLUtils.getPropertyElement(element, "Width").get();
-            width.getAttributeNode("value").setValue(widget.getWidth() + "");
-
-            final Element height = XMLUtils.getPropertyElement(element, "Height").get();
-            height.getAttributeNode("value").setValue(widget.getHeight() + "");
+            XMLUtils.getPropertyElement(element, "Height")
+                    .ifPresent(height -> height.getAttributeNode("value").setValue(String.valueOf(widget.getHeight())));
         }
     }
 
     public static void updateSizeAndPosition(
-            final Set<IWidget> widgetSelection,
-            final Integer[] props) {
-        //TODO can we change the props parameter type to int[]?
+            final Set<IWidget> widgets,
+            final Point point,
+            final Dimension dimension) {
+        widgets.stream()
+                .map(widget -> (Element) widget.getProperties().getElementsByTagName("sizeandposition").item(0))
+                .forEach(element -> {
+                    updatePosition(point, element);
+                    updateSize(dimension, element);
+                });
+    }
 
-        for (final IWidget widget : widgetSelection) {
-            final Document properties = widget.getProperties();
+    private static void updatePosition(
+            final Point point,
+            final Element element) {
+        if (point == null) {
+            return;
+        }
 
-            final Element element = (Element) properties.getElementsByTagName("sizeandposition").item(0);
+        if (point.x > -1) {
+            final String valueX = String.valueOf(point.getX());
+            XMLUtils.getPropertyElement(element, "X")
+                    .ifPresent(xCord -> xCord.getAttributeNode("value").setValue(valueX));
+        }
+        if (point.y > -1) {
+            final String valueY = String.valueOf(point.getY());
+            XMLUtils.getPropertyElement(element, "Y")
+                    .ifPresent(yCord -> yCord.getAttributeNode("value").setValue(valueY));
+        }
+    }
 
-            if (props[0] != null) {
-                final Element xCord = XMLUtils.getPropertyElement(element, "X").get();
-                xCord.getAttributeNode("value").setValue(props[0] + "");
-            }
+    private static void updateSize(
+            final Dimension dimension,
+            final Element element) {
+        if (dimension == null) {
+            return;
+        }
 
-            if (props[1] != null) {
-                final Element yCord = XMLUtils.getPropertyElement(element, "Y").get();
-                yCord.getAttributeNode("value").setValue(props[1] + "");
-            }
-
-            if (props[2] != null) {
-                final Element width = XMLUtils.getPropertyElement(element, "Width").get();
-                width.getAttributeNode("value").setValue(props[2] + "");
-            }
-
-            if (props[3] != null) {
-                final Element height = XMLUtils.getPropertyElement(element, "Height").get();
-                height.getAttributeNode("value").setValue(props[3] + "");
-            }
+        if (dimension.width > -1) {
+            final String width = String.valueOf(dimension.getWidth());
+            XMLUtils.getPropertyElement(element, "Width")
+                    .ifPresent(propertyElement ->
+                            propertyElement.getAttributeNode("value").setValue(width));
+        }
+        if (dimension.height > -1) {
+            final String height = String.valueOf(dimension.getHeight());
+            XMLUtils.getPropertyElement(element, "Height")
+                    .ifPresent(propertyElement ->
+                            propertyElement.getAttributeNode("value").setValue(height));
         }
     }
 }
