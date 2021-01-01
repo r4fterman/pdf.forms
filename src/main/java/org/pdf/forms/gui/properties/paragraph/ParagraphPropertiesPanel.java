@@ -1,5 +1,6 @@
 package org.pdf.forms.gui.properties.paragraph;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static javax.swing.SwingConstants.VERTICAL;
 import static org.jdesktop.layout.GroupLayout.BASELINE;
 import static org.jdesktop.layout.GroupLayout.DEFAULT_SIZE;
@@ -7,12 +8,13 @@ import static org.jdesktop.layout.GroupLayout.LEADING;
 import static org.jdesktop.layout.GroupLayout.PREFERRED_SIZE;
 import static org.jdesktop.layout.LayoutStyle.RELATED;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
+
+import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.pdf.forms.gui.designer.IDesigner;
@@ -24,9 +26,11 @@ import org.w3c.dom.Element;
 
 public class ParagraphPropertiesPanel extends JPanel {
 
-    private final Logger logger = LoggerFactory.getLogger(ParagraphPropertiesPanel.class);
+    private static final String[] EDITING_MODES = {"Caption and Value", "Caption properties", "Value properties"};
 
-    private IDesigner designerPanel;
+    private final Logger logger = LoggerFactory.getLogger(ParagraphPropertiesPanel.class);
+    private final IDesigner designerPanel;
+
     private Map<IWidget, Element> widgetsAndProperties;
 
     private ButtonGroup horizontalAlignmentButtonGroup;
@@ -41,18 +45,14 @@ public class ParagraphPropertiesPanel extends JPanel {
     private JToggleButton verticalAlignCenter;
     private JToggleButton verticalAlignBottom;
 
-    ParagraphPropertiesPanel() {
+    public ParagraphPropertiesPanel(final IDesigner designerPanel) {
+        this.designerPanel = designerPanel;
         initComponents();
         horizontalAlignJustify.setVisible(false);
     }
 
-    public void setDesignerPanel(final IDesigner designerPanel) {
-        this.designerPanel = designerPanel;
-    }
-
     private void initComponents() {
-        final JLabel currentlyEditingLabel = new JLabel();
-        currentlyEditingLabel.setText("Currently Editing:");
+        final JLabel currentlyEditingLabel = new JLabel("Currently Editing:");
 
         currentlyEditingBox = createEditingBox();
         horizontalAlignLeft = createAlignHorizontalLeftButton();
@@ -130,7 +130,8 @@ public class ParagraphPropertiesPanel extends JPanel {
     }
 
     private JToggleButton createAlignVerticalTopButton() {
-        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Top.gif")));
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/Paragraph Align Top.gif")));
         button.setToolTipText("Vertical Align Top");
         button.setName("top");
         button.addActionListener(this::updateVerticalAlignment);
@@ -138,7 +139,8 @@ public class ParagraphPropertiesPanel extends JPanel {
     }
 
     private JToggleButton createAlignVerticalCenterButton() {
-        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Middle.gif")));
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/Paragraph Align Middle.gif")));
         button.setToolTipText("Vertical Align Center");
         button.setName("center");
         button.addActionListener(this::updateVerticalAlignment);
@@ -146,7 +148,8 @@ public class ParagraphPropertiesPanel extends JPanel {
     }
 
     private JToggleButton createAlignVerticalBottomButton() {
-        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Bottom.gif")));
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/Paragraph Align Bottom.gif")));
         button.setToolTipText("Vertical Align Bottom");
         button.setName("bottom");
         button.addActionListener(this::updateVerticalAlignment);
@@ -154,7 +157,8 @@ public class ParagraphPropertiesPanel extends JPanel {
     }
 
     private JToggleButton createAlignHorizontalLeftButton() {
-        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Left.gif")));
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/Paragraph Align Left.gif")));
         button.setToolTipText("Horizontal Align Left");
         button.setName("left");
         button.addActionListener(this::updateHorizontalAlignment);
@@ -162,7 +166,8 @@ public class ParagraphPropertiesPanel extends JPanel {
     }
 
     private JToggleButton createAlignHorizontalCenterButton() {
-        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Center.gif")));
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/Paragraph Align Center.gif")));
         button.setToolTipText("Horizontal Align Center");
         button.setName("center");
         button.addActionListener(this::updateHorizontalAlignment);
@@ -170,7 +175,8 @@ public class ParagraphPropertiesPanel extends JPanel {
     }
 
     private JToggleButton createAlignHorizontalRightButton() {
-        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Right.gif")));
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/Paragraph Align Right.gif")));
         button.setToolTipText("Horizontal Align Right");
         button.setName("right");
         button.addActionListener(this::updateHorizontalAlignment);
@@ -178,7 +184,8 @@ public class ParagraphPropertiesPanel extends JPanel {
     }
 
     private JToggleButton createAlignHorizontalJustify() {
-        final JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Paragraph Align Justify.gif")));
+        final JToggleButton button = new JToggleButton(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/Paragraph Align Justify.gif")));
         button.setToolTipText("Horizontal Align Justify");
         button.setName("justify");
         button.addActionListener(this::updateHorizontalAlignment);
@@ -186,7 +193,7 @@ public class ParagraphPropertiesPanel extends JPanel {
     }
 
     private JComboBox<String> createEditingBox() {
-        final JComboBox<String> comboBox = new JComboBox<>(new String[]{"Caption and Value", "Caption properties", "Value properties"});
+        final JComboBox<String> comboBox = new JComboBox<>(EDITING_MODES);
         comboBox.addActionListener(this::updateCurrentlyEditingBox);
         return comboBox;
     }
@@ -206,56 +213,74 @@ public class ParagraphPropertiesPanel extends JPanel {
     private void updateAlignment(
             final String propertyName,
             final ActionEvent evt) {
-        final Set<Map.Entry<IWidget, Element>> entries = widgetsAndProperties.entrySet();
-        for (final Map.Entry<IWidget, Element> entry : entries) {
+        final String alignment = ((JComponent) evt.getSource()).getName();
+
+        for (final Map.Entry<IWidget, Element> entry: widgetsAndProperties.entrySet()) {
             final IWidget widget = entry.getKey();
             final Element paragraphElement = entry.getValue();
 
-            final List<Element> paragraphList = XMLUtils.getElementsFromNodeList(paragraphElement.getChildNodes());
-
-            final Element captionElement = paragraphList.get(0);
-            final Element valueElement;
-            if (widget.allowEditCaptionAndValue()) {
-                valueElement = paragraphList.get(1);
-            } else {
-                valueElement = null;
-            }
-
-            final Element captionAlignment = XMLUtils.getPropertyElement(captionElement, propertyName).get();
-            Optional<Element> valueAlignment = Optional.empty();
-            if (widget.allowEditCaptionAndValue()) {
-                valueAlignment = XMLUtils.getPropertyElement(valueElement, propertyName);
-            }
-
-            final String alignment = ((JComponent) evt.getSource()).getName();
-
             final Object selectedItem = currentlyEditingBox.getSelectedItem();
             if ("Caption and Value".equals(selectedItem)) {
-                captionAlignment.getAttributeNode("value").setValue(alignment);
-                valueAlignment.ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
+                setCaptionAndValueAlignment(paragraphElement, propertyName, alignment, widget);
             } else if ("Caption properties".equals(selectedItem)) {
-                captionAlignment.getAttributeNode("value").setValue(alignment);
+                setCaptionPropertiesAlignment(paragraphElement, propertyName, alignment);
             } else if ("Value properties".equals(selectedItem)) {
-                valueAlignment.ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
+                setValuePropertiesAlignment(paragraphElement, propertyName, alignment, widget);
             } else {
                 logger.warn("Unexpected selected item {}", selectedItem);
             }
 
-            widget.setParagraphProperties(widgetsAndProperties.get(widget), currentlyEditingBox.getSelectedIndex());
+            widget.setParagraphProperties(paragraphElement, currentlyEditingBox.getSelectedIndex());
         }
 
         designerPanel.getMainFrame().setPropertiesToolBar(widgetsAndProperties.keySet());
         designerPanel.repaint();
     }
 
+    private void setValuePropertiesAlignment(
+            final Element paragraphElement,
+            final String propertyName,
+            final String alignment,
+            final IWidget widget) {
+        final List<Element> paragraphList = XMLUtils.getElementsFromNodeList(paragraphElement.getChildNodes());
+
+        final Optional<Element> valueAlignment = getValueAlignment(widget, paragraphList.get(1), propertyName);
+        valueAlignment.ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
+    }
+
+    private void setCaptionPropertiesAlignment(
+            final Element paragraphElement,
+            final String propertyName,
+            final String alignment) {
+        final List<Element> paragraphList = XMLUtils.getElementsFromNodeList(paragraphElement.getChildNodes());
+
+        final Element captionElement = paragraphList.get(0);
+        final Optional<Element> captionAlignment = XMLUtils.getPropertyElement(captionElement, propertyName);
+        captionAlignment.ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
+    }
+
+    private void setCaptionAndValueAlignment(
+            final Element paragraphElement,
+            final String propertyName,
+            final String alignment,
+            final IWidget widget) {
+        final List<Element> paragraphList = XMLUtils.getElementsFromNodeList(paragraphElement.getChildNodes());
+
+        final Optional<Element> valueAlignment = getValueAlignment(widget, paragraphList.get(1), propertyName);
+
+        final Element captionElement = paragraphList.get(0);
+        final Optional<Element> captionAlignment = XMLUtils.getPropertyElement(captionElement, propertyName);
+        captionAlignment.ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
+        valueAlignment.ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
+    }
+
     public void setProperties(
             final Map<IWidget, Element> widgetsAndProperties,
             final int currentlyEditing) {
-
         this.widgetsAndProperties = widgetsAndProperties;
 
         boolean allowEditCaptionAndValue = false;
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
+        for (final IWidget widget: widgetsAndProperties.keySet()) {
             if (widget.allowEditCaptionAndValue()) {
                 allowEditCaptionAndValue = true;
                 break;
@@ -272,54 +297,106 @@ public class ParagraphPropertiesPanel extends JPanel {
         currentlyEditingBox.setSelectedIndex(editing);
         currentlyEditingBox.setEnabled(allowEditCaptionAndValue);
 
-        String horizontalAlignmentToUse = null;
-        String verticalAlignmentToUse = null;
-        for (final Map.Entry<IWidget, Element> entry : widgetsAndProperties.entrySet()) {
-            final IWidget widget = entry.getKey();
-            final Element paragraphPropertiesElement = entry.getValue();
-
-            /* get caption properties */
-            final Element captionElement = (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
-
-            final String captionHorizontalAlignment = XMLUtils.getAttributeFromChildElement(captionElement, "Horizontal Alignment").orElse("left");
-            final String captionVerticalAlignment = XMLUtils.getAttributeFromChildElement(captionElement, "Vertical Alignment").orElse("top");
-
-            final String valueHorizontalAlignment;
-            final String valueVerticalAlignment;
-
-            if (widget.allowEditCaptionAndValue()) {
-                final Element valueElement = (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_value").item(0);
-
-                valueHorizontalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Horizontal Alignment").orElse("left");
-                valueVerticalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Vertical Alignment").orElse("top");
-            } else {
-                valueHorizontalAlignment = captionHorizontalAlignment;
-                valueVerticalAlignment = captionVerticalAlignment;
-            }
-
-            final String[] alignments = getAlignments(currentlyEditing, captionHorizontalAlignment, valueHorizontalAlignment, captionVerticalAlignment, valueVerticalAlignment);
-
-            final String horizontalAlignment = alignments[0];
-            final String verticalAlignment = alignments[1];
-            if (horizontalAlignmentToUse == null) {
-                horizontalAlignmentToUse = horizontalAlignment;
-                verticalAlignmentToUse = verticalAlignment;
-            } else {
-                if (!horizontalAlignmentToUse.equals(horizontalAlignment)) {
-                    horizontalAlignmentToUse = "mixed";
-                }
-                if (!verticalAlignmentToUse.equals(verticalAlignment)) {
-                    verticalAlignmentToUse = "mixed";
-                }
-            }
-        }
+        final String horizontalAlignmentToUse = getHorizontalAlignment(currentlyEditing, widgetsAndProperties);
         selectHorizontalAlignment(horizontalAlignmentToUse);
+
+        final String verticalAlignmentToUse = getVerticalAlignment(currentlyEditing, widgetsAndProperties);
         selectVerticalAlignment(verticalAlignmentToUse);
+    }
+
+    private String getHorizontalAlignment(
+            final int currentlyEditing,
+            final Map<IWidget, Element> widgetsAndProperties) {
+        final List<String> horizontalAlignmentValues = widgetsAndProperties.entrySet().stream()
+                .map(entry -> getAlignment(
+                        currentlyEditing,
+                        entry.getKey(),
+                        entry.getValue(),
+                        "Horizontal Alignment",
+                        "left"))
+                .collect(toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(horizontalAlignmentValues, horizontalAlignmentValues.get(0)) == horizontalAlignmentValues
+                .size();
+        if (listContainsOnlyEqualValues) {
+            return horizontalAlignmentValues.get(0);
+        }
+        return "mixed";
+    }
+
+    private String getVerticalAlignment(
+            final int currentlyEditing,
+            final Map<IWidget, Element> widgetsAndProperties) {
+        final List<String> verticalAlignmentValues = widgetsAndProperties.entrySet().stream()
+                .map(entry -> getAlignment(
+                        currentlyEditing,
+                        entry.getKey(),
+                        entry.getValue(),
+                        "Vertical Alignment",
+                        "top"))
+                .collect(toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(verticalAlignmentValues, verticalAlignmentValues.get(0)) == verticalAlignmentValues.size();
+        if (listContainsOnlyEqualValues) {
+            return verticalAlignmentValues.get(0);
+        }
+        return "mixed";
+    }
+
+    private String getAlignment(
+            final int currentlyEditing,
+            final IWidget widget,
+            final Element paragraphPropertiesElement,
+            final String attributeName,
+            final String defaultValue) {
+        final String alignmentCaption = getPropertyValue(
+                paragraphPropertiesElement,
+                "paragraph_caption",
+                attributeName,
+                defaultValue);
+
+        final String alignmentValue;
+        if (widget.allowEditCaptionAndValue()) {
+            alignmentValue = getPropertyValue(
+                    paragraphPropertiesElement,
+                    "paragraph_value",
+                    attributeName,
+                    defaultValue);
+        } else {
+            alignmentValue = alignmentCaption;
+        }
+
+        return getAlignment(
+                currentlyEditing,
+                alignmentCaption,
+                alignmentValue);
+    }
+
+    private Optional<Element> getValueAlignment(
+            final IWidget widget,
+            final Element paragraphElement,
+            final String propertyName) {
+        if (!widget.allowEditCaptionAndValue()) {
+            return Optional.empty();
+        }
+
+        final Optional<Element> valueElement;
+        if (widget.allowEditCaptionAndValue()) {
+            valueElement = Optional.ofNullable(paragraphElement);
+        } else {
+            valueElement = Optional.empty();
+        }
+
+        return valueElement
+                .map(element -> XMLUtils.getPropertyElement(element, propertyName))
+                .flatMap(element -> element);
     }
 
     private void selectHorizontalAlignment(final String horizontalAlignmentToUse) {
         if ("mixed".equals(horizontalAlignmentToUse)) {
-            removeButtonGroupSelection(horizontalAlignmentButtonGroup);
+            horizontalAlignmentButtonGroup.clearSelection();
         } else if ("left".equals(horizontalAlignmentToUse)) {
             horizontalAlignLeft.setSelected(true);
         } else if ("right".equals(horizontalAlignmentToUse)) {
@@ -335,7 +412,7 @@ public class ParagraphPropertiesPanel extends JPanel {
 
     private void selectVerticalAlignment(final String verticalAlignmentToUse) {
         if ("mixed".equals(verticalAlignmentToUse)) {
-            removeButtonGroupSelection(verticalAlignmentButtonGroup);
+            verticalAlignmentButtonGroup.clearSelection();
         } else if ("top".equals(verticalAlignmentToUse)) {
             verticalAlignTop.setSelected(true);
         } else if ("bottom".equals(verticalAlignmentToUse)) {
@@ -347,58 +424,33 @@ public class ParagraphPropertiesPanel extends JPanel {
         }
     }
 
-    private void removeButtonGroupSelection(final ButtonGroup buttonGroup) {
-        buttonGroup.setSelected(new JToggleButton("").getModel(), true);
-    }
-
-    private String[] getAlignments(
+    private String getAlignment(
             final int currentlyEditing,
-            final String captionHorizontalAlignment,
-            final String valueHorizontalAlignment,
-            final String captionVerticalAlignment,
-            final String valueVerticalAlignment) {
-
-        String verticalAlignmentToUse = null;
-        String horizontalAlignmentToUse = null;
-
-        switch (currentlyEditing) {
-            case IWidget.COMPONENT_BOTH:
-                if (captionHorizontalAlignment.equals(valueHorizontalAlignment)) {
-                    // both value and caption are the same
-                    horizontalAlignmentToUse = captionHorizontalAlignment;
-                } else {
-                    /* caption and value are different so use hack to push all buttons out */
-                    horizontalAlignmentToUse = "mixed";
-                }
-
-                if (captionVerticalAlignment.equals(valueVerticalAlignment)) {
-                    // both value and caption are the same
-                    verticalAlignmentToUse = captionVerticalAlignment;
-                } else {
-                    /* caption and value are different so use hack to push all buttons out */
-                    verticalAlignmentToUse = "mixed";
-                }
-
-                break;
-            case IWidget.COMPONENT_CAPTION:
-                /* just set the caption properties */
-                horizontalAlignmentToUse = captionHorizontalAlignment;
-                verticalAlignmentToUse = captionVerticalAlignment;
-
-                break;
-
-            case IWidget.COMPONENT_VALUE:
-                /* just set the value properties */
-                horizontalAlignmentToUse = valueHorizontalAlignment;
-                verticalAlignmentToUse = valueVerticalAlignment;
-
-                break;
-            default:
-                break;
+            final String captionAlignment,
+            final String valueAlignment) {
+        if (currentlyEditing == IWidget.COMPONENT_BOTH) {
+            if (captionAlignment.equals(valueAlignment)) {
+                return captionAlignment;
+            } else {
+                // caption and value are different so use hack to push all buttons out
+                return "mixed";
+            }
+        } else if (currentlyEditing == IWidget.COMPONENT_CAPTION) {
+            return captionAlignment;
+        } else if (currentlyEditing == IWidget.COMPONENT_VALUE) {
+            return valueAlignment;
         }
 
-        return new String[]{
-                horizontalAlignmentToUse, verticalAlignmentToUse};
+        return "";
+    }
+
+    private String getPropertyValue(
+            final Element propertiesElement,
+            final String propertiesName,
+            final String attributeName,
+            final String defaultValue) {
+        final Element propertyElement = (Element) propertiesElement.getElementsByTagName(propertiesName).item(0);
+        return XMLUtils.getAttributeFromChildElement(propertyElement, attributeName).orElse(defaultValue);
     }
 
 }

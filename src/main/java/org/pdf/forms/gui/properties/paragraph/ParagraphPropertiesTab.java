@@ -1,25 +1,27 @@
 package org.pdf.forms.gui.properties.paragraph;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.vlsolutions.swing.docking.DockKey;
-import com.vlsolutions.swing.docking.Dockable;
+import javax.swing.*;
+
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
+
 public class ParagraphPropertiesTab extends JPanel implements Dockable {
 
-    private final ParagraphPropertiesPanel paragraphPanel = new ParagraphPropertiesPanel();
+    private final ParagraphPropertiesPanel paragraphPanel;
 
     public ParagraphPropertiesTab(final IDesigner designer) {
-        paragraphPanel.setDesignerPanel(designer);
+        this.paragraphPanel = new ParagraphPropertiesPanel(designer);
 
         setLayout(new BorderLayout());
 
@@ -31,7 +33,7 @@ public class ParagraphPropertiesTab extends JPanel implements Dockable {
             removeAll();
         } else {
             final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
-            for (final IWidget widget : widgets) {
+            for (final IWidget widget: widgets) {
                 if (widget.getType() == IWidget.IMAGE) {
                     removeAll();
                     return;
