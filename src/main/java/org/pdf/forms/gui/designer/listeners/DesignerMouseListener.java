@@ -48,7 +48,7 @@ public class DesignerMouseListener implements MouseListener {
             final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
 
             /* get a flatterned set of widgets, this means if widgets are in a group, then get them out */
-            final Set<IWidget> flatternedWidgets = widgetSelection.getFlatternedWidgets(selectedWidgets);
+            final Set<IWidget> flatternedWidgets = widgetSelection.getFlattenedWidgets(selectedWidgets);
 
             for (final IWidget widget: flatternedWidgets) {
                 if (!widget.allowEditOfCaptionOnClick()) {
@@ -126,7 +126,7 @@ public class DesignerMouseListener implements MouseListener {
         } else {
             // set up the widget to be moved or resized
             final Rectangle selectionBoxBounds = widgetSelection.getSelectionBoxBounds();
-            for (IWidget widget: widgetSelection.getFlatternedWidgets(selectedWidgets)) {
+            for (IWidget widget: widgetSelection.getFlattenedWidgets(selectedWidgets)) {
                 widget.setResizeHeightRatio(widget.getBoxSize().getHeight() / (selectionBoxBounds.getHeight()));
                 widget.setResizeWidthRatio(widget.getBoxSize().getWidth() / (selectionBoxBounds.getWidth()));
 

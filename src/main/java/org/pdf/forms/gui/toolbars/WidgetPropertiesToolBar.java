@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -326,55 +325,16 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     }
 
     private void setParagraphProperties(final Set<IWidget> widgets) {
-        final Map<IWidget, Element> widgetsAndProperties = new HashMap<>();
+        final Map<IWidget, Element> widgetsAndProperties = widgets.stream()
+                .collect(toUnmodifiableMap(
+                        widget -> widget,
+                        widget -> {
+                            final Document properties = widget.getProperties();
+                            return (Element) properties.getElementsByTagName("paragraph").item(0);
+                        }
+                ));
 
-        for (final IWidget widget: widgets) {
-            final Document properties = widget.getProperties();
-
-            final Element layoutProperties = (Element) properties.getElementsByTagName("paragraph").item(0);
-
-            widgetsAndProperties.put(widget, layoutProperties);
-        }
-
-        String horizontalAlignmentToUse = null;
-
-        /* iterate through the widgets */
-        final Set<Map.Entry<IWidget, Element>> entries = widgetsAndProperties.entrySet();
-        for (final Map.Entry<IWidget, Element> entry: entries) {
-            final IWidget widget = entry.getKey();
-            final Element paragraphPropertiesElement = entry.getValue();
-
-            /* get caption properties */
-            final Element captionElement =
-                    (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
-
-            final String captionHorizontalAlignment = XMLUtils.getAttributeFromChildElement(captionElement,
-                    "Horizontal Alignment").orElse("left");
-            final String valueHorizontalAlignment;
-
-            /* get value properties */
-            if (widget.allowEditCaptionAndValue()) {
-                final Element valueElement = (Element) paragraphPropertiesElement
-                        .getElementsByTagName("paragraph_value").item(0);
-
-                valueHorizontalAlignment = XMLUtils.getAttributeFromChildElement(valueElement, "Horizontal Alignment")
-                        .orElse("left");
-            } else {
-                valueHorizontalAlignment = captionHorizontalAlignment;
-            }
-
-            final String horizontalAlignment = getComparedPropertyValue(captionHorizontalAlignment,
-                    valueHorizontalAlignment);
-
-            if (horizontalAlignmentToUse == null) {
-                horizontalAlignmentToUse = horizontalAlignment;
-            } else {
-                if (!horizontalAlignmentToUse.equals(horizontalAlignment)) {
-                    horizontalAlignmentToUse = "mixed";
-                }
-            }
-        }
-
+        final String horizontalAlignmentToUse = getHorizontalAlignmentToUse(widgetsAndProperties);
         if ("mixed".equals(horizontalAlignmentToUse)) {
             alignmentGroup.clearSelection();
         } else if ("left".equals(horizontalAlignmentToUse)) {
@@ -386,6 +346,44 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         } else {
             logger.warn("Unexpected horizontal alignment {}", horizontalAlignmentToUse);
         }
+    }
+
+    private String getHorizontalAlignmentToUse(final Map<IWidget, Element> widgetsAndProperties) {
+        final String captionPropertyName = "paragraph_caption";
+        final String valuePropertyName = "paragraph_value";
+        final String attributeName = "Horizontal Alignment";
+
+        final List<String> horizontalAlignmentValues = widgetsAndProperties.entrySet().stream()
+                .map(entry -> {
+                    final Element propertiesElement = entry.getValue();
+
+                    final Element captionElement = (Element) propertiesElement.getElementsByTagName(captionPropertyName)
+                            .item(0);
+                    final String captionHorizontalAlignment = XMLUtils.getAttributeFromChildElement(captionElement,
+                            attributeName).orElse("left");
+
+                    final String valueHorizontalAlignment;
+                    if (entry.getKey().allowEditCaptionAndValue()) {
+                        final Element valueElement = (Element) propertiesElement
+                                .getElementsByTagName(valuePropertyName).item(0);
+
+                        valueHorizontalAlignment = XMLUtils.getAttributeFromChildElement(valueElement,
+                                attributeName).orElse("left");
+                    } else {
+                        valueHorizontalAlignment = captionHorizontalAlignment;
+                    }
+
+                    return getComparedPropertyValue(captionHorizontalAlignment, valueHorizontalAlignment);
+                })
+                .collect(toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(horizontalAlignmentValues, horizontalAlignmentValues.get(0)) == horizontalAlignmentValues
+                .size();
+        if (listContainsOnlyEqualValues) {
+            return horizontalAlignmentValues.get(0);
+        }
+        return "mixed";
     }
 
     private void setProperty(

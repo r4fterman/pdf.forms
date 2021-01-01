@@ -3,6 +3,7 @@ package org.pdf.forms.widgets.utils;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.*;
 
@@ -166,7 +167,7 @@ public class WidgetSelection {
         groupButton.setVisible(false);
         unGroupButton.setVisible(false);
 
-        final Set<IWidget> flattenedWidgets = getFlatternedWidgets(selectedWidgets);
+        final Set<IWidget> flattenedWidgets = getFlattenedWidgets(selectedWidgets);
         final Rectangle multipleWidgetBounds = getMultipleWidgetBounds(flattenedWidgets);
 
         selectionBoxBounds = new Rectangle(multipleWidgetBounds.x - BOX_MARGIN, multipleWidgetBounds.y - BOX_MARGIN,
@@ -408,17 +409,17 @@ public class WidgetSelection {
         unGroupButton.setVisible(false);
     }
 
-    public Set<IWidget> getFlatternedWidgets(final Set<IWidget> widgets) {
-        final Set<IWidget> set = new HashSet<>();
-        for (final IWidget widget: widgets) {
-            if (widget.getType() == IWidget.GROUP) {
-                set.addAll(getFlatternedWidgets(new HashSet<>(widget.getWidgetsInGroup())));
-            } else {
-                set.add(widget);
-            }
-        }
-
-        return set;
+    public Set<IWidget> getFlattenedWidgets(final Set<IWidget> widgets) {
+        return widgets.stream()
+                .map(widget -> {
+                    if (widget.getType() == IWidget.GROUP) {
+                        return getFlattenedWidgets(new HashSet<>(widget.getWidgetsInGroup()));
+                    } else {
+                        return Set.of(widget);
+                    }
+                })
+                .flatMap(Set::stream)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public static Rectangle getMultipleWidgetBounds(final Set<IWidget> selectedWidgets) {

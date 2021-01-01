@@ -119,7 +119,7 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
         final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
 
         //IWidget w= (IWidget) selectedWidgets.iterator().next();
-        final Set<IWidget> widgetsToUse = widgetSelection.getFlatternedWidgets(selectedWidgets); //w.getType() == IWidget.GROUP ? w.getWidgetsInGroup() : selectedWidgets;
+        final Set<IWidget> widgetsToUse = widgetSelection.getFlattenedWidgets(selectedWidgets); //w.getType() == IWidget.GROUP ? w.getWidgetsInGroup() : selectedWidgets;
 
         // move a selection or single widget
         if (resizeType == DesignerMouseMotionListener.DEFAULT_CURSOR) {
