@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -103,113 +104,122 @@ public class ValuePanel extends JPanel {
     }
 
     private void updateDefaultText(final ActionEvent evt) {
-        final String selectedItem = String.valueOf(defaultBox.getSelectedItem());
+        final String value = String.valueOf(defaultBox.getSelectedItem());
 
-        final IWidget firstWidget = widgetsAndProperties.keySet().iterator().next();
-        switch (firstWidget.getType()) {
-            case IWidget.CHECK_BOX:
-                if (selectedItem.equals("null")) {
-                    break;
-                }
-
-                for (final IWidget widget: widgetsAndProperties.keySet()) {
-                    final Element objectProperties = widgetsAndProperties.get(widget);
-                    final Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
-                    defaultElement.getAttributeNode("value").setValue(selectedItem);
-                    widget.setObjectProperties(objectProperties);
-                }
-
-                break;
-            case IWidget.RADIO_BUTTON:
-                Element objectProperties = widgetsAndProperties.get(firstWidget);
-                Element defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
-                defaultElement.getAttributeNode("value").setValue(selectedItem);
-                firstWidget.setObjectProperties(objectProperties);
-
-                if (selectedItem.equals("On")) {
-                    final List<IWidget> allwidgets = designerPanel.getWidgets();
-                    // todo flattern to account for groups
-                    for (final IWidget widget: allwidgets) {
-                        if (widget.getType() == IWidget.RADIO_BUTTON && widget != firstWidget) {
-                            final RadioButtonWidget rbw = (RadioButtonWidget) widget;
-                            if (rbw.getRadioButtonGroupName().equals(((RadioButtonWidget) firstWidget)
-                                    .getRadioButtonGroupName())) {
-                                objectProperties = rbw.getProperties().getDocumentElement();
-                                defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
-                                defaultElement.getAttributeNode("value").setValue("Off");
-                                rbw.setObjectProperties(objectProperties);
-                            }
-                        }
-                    }
-                }
-
-                break;
-            default:
-                objectProperties = widgetsAndProperties.get(firstWidget);
-                defaultElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
-                defaultElement.getAttributeNode("value").setValue(selectedItem);
-                firstWidget.setObjectProperties(objectProperties);
-
-                break;
+        final IWidget widget = widgetsAndProperties.keySet().iterator().next();
+        final int widgetType = widget.getType();
+        if (widgetType == IWidget.CHECK_BOX) {
+            updateCheckBoxValue(value);
+        } else if (widgetType == IWidget.RADIO_BUTTON) {
+            updateRadioButtonValue(value, widget);
+        } else {
+            final Element objectProperties = widgetsAndProperties.get(widget);
+            updateElementDefaultValue(widget, objectProperties, value);
         }
 
         designerPanel.repaint();
     }
 
+    private void updateCheckBoxValue(final String value) {
+        if (value.equals("null")) {
+            return;
+        }
+
+        for (final Map.Entry<IWidget, Element> entry: widgetsAndProperties.entrySet()) {
+            updateElementDefaultValue(entry.getKey(), entry.getValue(), value);
+        }
+    }
+
+    private void updateRadioButtonValue(
+            final String value,
+            final IWidget firstWidget) {
+        updateElementDefaultValue(firstWidget, widgetsAndProperties.get(firstWidget), value);
+
+        if (value.equals("On")) {
+            for (final IWidget widget: designerPanel.getWidgets()) {
+                if (widget.getType() == IWidget.RADIO_BUTTON && widget != firstWidget) {
+                    final RadioButtonWidget radioButtonWidget = (RadioButtonWidget) widget;
+                    if (radioButtonWidget.getRadioButtonGroupName()
+                            .equals(((RadioButtonWidget) firstWidget).getRadioButtonGroupName())) {
+                        final Element objectProperties = radioButtonWidget.getProperties().getDocumentElement();
+                        updateElementDefaultValue(radioButtonWidget, objectProperties, "Off");
+                    }
+                }
+            }
+        }
+    }
+
+    private void updateElementDefaultValue(
+            final IWidget widget,
+            final Element objectElement,
+            final String value) {
+        XMLUtils.getPropertyElement(objectElement, "Default")
+                .ifPresent(defaultElement -> defaultElement.getAttributeNode("value").setValue(value));
+        widget.setObjectProperties(objectElement);
+    }
+
     public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
         this.widgetsAndProperties = widgetsAndProperties;
 
-        final IWidget testWidget = widgetsAndProperties.keySet().iterator().next();
-
-        final ActionListener listener = defaultBox.getActionListeners()[0];
-        defaultBox.removeActionListener(listener);
+        final ActionListener[] listeners = defaultBox.getActionListeners();
+        Arrays.stream(listeners).forEach(defaultBox::removeActionListener);
 
         defaultBox.removeAllItems();
+        applyProperties(widgetsAndProperties);
 
-        final int type = testWidget.getType();
-        switch (type) {
-            case IWidget.CHECK_BOX:
-                setupToggleWidget();
-                break;
-            case IWidget.RADIO_BUTTON:
-                if (widgetsAndProperties.size() == 1) {
-                    setItemsEnabled(true);
-                    setupToggleWidget();
-                } else {
-                    setItemsEnabled(false);
-                }
+        Arrays.stream(listeners).forEach(defaultBox::addActionListener);
+    }
 
-                break;
-            default:
-                if (widgetsAndProperties.size() == 1) {
-                    // only 1 widget selected
-                    setItemsEnabled(true);
-
-                    final Element objectProperties = widgetsAndProperties.get(testWidget);
-                    if (widgetsAndProperties.size() == 1) {
-                        if (type == IWidget.COMBO_BOX) {
-                            defaultBox.addItem("< None >");
-                        }
-
-                        final Element itemElement = (Element) objectProperties.getElementsByTagName("items").item(0);
-                        if (itemElement != null) {
-                            final List<Element> items = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
-                            for (final Element item: items) {
-                                final String value = XMLUtils.getAttributeFromElement(item, "item").orElse("");
-                                defaultBox.addItem(value);
-                            }
-                        }
-                    }
-
-                    final String defaultText = getDefault(objectProperties);
-                    defaultBox.setSelectedItem(defaultText);
-                } else {
-                    setItemsEnabled(false);
-                }
-                break;
+    private void applyProperties(final Map<IWidget, Element> widgetsAndProperties) {
+        final IWidget widget = widgetsAndProperties.keySet().iterator().next();
+        final int widgetType = widget.getType();
+        if (widgetType == IWidget.CHECK_BOX) {
+            setupToggleWidget();
+        } else if (widgetType == IWidget.RADIO_BUTTON) {
+            applyRadioButtonProperties(widgetsAndProperties);
+        } else {
+            applyProperties(widgetsAndProperties, widget, widgetType);
         }
+    }
 
-        defaultBox.addActionListener(listener);
+    private void applyProperties(
+            final Map<IWidget, Element> widgetsAndProperties,
+            final IWidget widget,
+            final int widgetType) {
+        if (widgetsAndProperties.size() == 1) {
+            // only 1 widget selected
+            setItemsEnabled(true);
+
+            final Element objectProperties = widgetsAndProperties.get(widget);
+            if (widgetsAndProperties.size() == 1) {
+                if (widgetType == IWidget.COMBO_BOX) {
+                    defaultBox.addItem("< None >");
+                }
+
+                final Element itemElement = (Element) objectProperties.getElementsByTagName("items").item(0);
+                if (itemElement != null) {
+                    final List<Element> items = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
+                    for (final Element item: items) {
+                        final String value = XMLUtils.getAttributeFromElement(item, "item").orElse("");
+                        defaultBox.addItem(value);
+                    }
+                }
+            }
+
+            final String defaultText = getDefault(objectProperties);
+            defaultBox.setSelectedItem(defaultText);
+        } else {
+            setItemsEnabled(false);
+        }
+    }
+
+    private void applyRadioButtonProperties(final Map<IWidget, Element> widgetsAndProperties) {
+        if (widgetsAndProperties.size() == 1) {
+            setItemsEnabled(true);
+            setupToggleWidget();
+        } else {
+            setItemsEnabled(false);
+        }
     }
 
     private void setupToggleWidget() {

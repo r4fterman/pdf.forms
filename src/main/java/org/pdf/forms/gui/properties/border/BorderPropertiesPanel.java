@@ -1,24 +1,21 @@
 package org.pdf.forms.gui.properties.border;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import static java.util.stream.Collectors.toUnmodifiableList;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
@@ -40,7 +37,7 @@ public class BorderPropertiesPanel extends JPanel {
             "Solid"
     };
 
-    private final int units = (int) (Rule.INCH / 2.54);
+    private static final int UNITS = (int) (Rule.INCH / 2.54);
 
     private IDesigner designerPanel;
     private Map<IWidget, Element> widgetsAndProperties;
@@ -69,16 +66,28 @@ public class BorderPropertiesPanel extends JPanel {
                 layout.createParallelGroup(GroupLayout.LEADING)
                         .add(GroupLayout.TRAILING, layout.createSequentialGroup()
                                 .add(layout.createParallelGroup(GroupLayout.TRAILING)
-                                        .add(backgroundPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .add(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .add(backgroundPanel,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                Short.MAX_VALUE)
+                                        .add(panel,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                Short.MAX_VALUE))
                                 .addContainerGap())
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(GroupLayout.LEADING)
                         .add(layout.createSequentialGroup()
-                                .add(panel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .add(panel,
+                                        GroupLayout.PREFERRED_SIZE,
+                                        GroupLayout.DEFAULT_SIZE,
+                                        GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(LayoutStyle.RELATED)
-                                .add(backgroundPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .add(backgroundPanel,
+                                        GroupLayout.PREFERRED_SIZE,
+                                        GroupLayout.DEFAULT_SIZE,
+                                        GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap(16, Short.MAX_VALUE))
         );
     }
@@ -87,19 +96,18 @@ public class BorderPropertiesPanel extends JPanel {
         final JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createTitledBorder("Borders"));
 
-        final JLabel leftEdgesIcon = new JLabel();
-        leftEdgesIcon.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Border Together.png")));
+        final JLabel leftEdgesIcon = new JLabel(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/Border Together.png")));
         leftEdgesIcon.setOpaque(true);
 
-        borderStyleBox = new JComboBox<>();
-        borderStyleBox.setModel(new DefaultComboBoxModel<>(BORDER_STYLES));
+        borderStyleBox = new JComboBox<>(BORDER_STYLES);
         borderStyleBox.addActionListener(this::updateBorderStyle);
 
         borderWidthBox = new JTextField();
         borderWidthBox.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent event) {
-                updateBorderSize(event);
+                updateBorderStyle(null);
             }
         });
 
@@ -128,12 +136,24 @@ public class BorderPropertiesPanel extends JPanel {
                         .add(groupLayout.createSequentialGroup()
                                 .add(groupLayout.createParallelGroup(GroupLayout.TRAILING)
                                         .add(groupLayout.createSequentialGroup()
-                                                .add(leftEdgesIcon, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
+                                                .add(leftEdgesIcon,
+                                                        GroupLayout.PREFERRED_SIZE,
+                                                        16,
+                                                        GroupLayout.PREFERRED_SIZE)
                                                 .add(4, 4, 4))
                                         .add(groupLayout.createParallelGroup(GroupLayout.BASELINE)
-                                                .add(borderColorButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-                                                .add(borderStyleBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                                .add(borderWidthBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+                                                .add(borderColorButton,
+                                                        GroupLayout.PREFERRED_SIZE,
+                                                        23,
+                                                        GroupLayout.PREFERRED_SIZE)
+                                                .add(borderStyleBox,
+                                                        GroupLayout.PREFERRED_SIZE,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        GroupLayout.PREFERRED_SIZE)
+                                                .add(borderWidthBox,
+                                                        GroupLayout.PREFERRED_SIZE,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         return panel;
@@ -143,11 +163,9 @@ public class BorderPropertiesPanel extends JPanel {
         final JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createTitledBorder("Background Fill"));
 
-        final JLabel styleLabel = new JLabel();
-        styleLabel.setText("Style:");
+        final JLabel styleLabel = new JLabel("Style:");
 
-        backgroundFillBox = new JComboBox<>();
-        backgroundFillBox.setModel(new DefaultComboBoxModel<>(BACKGROUND_FILL_STYLES));
+        backgroundFillBox = new JComboBox<>(BACKGROUND_FILL_STYLES);
         backgroundFillBox.setEnabled(false);
         backgroundFillBox.addActionListener(this::updateFillStyle);
 
@@ -166,7 +184,10 @@ public class BorderPropertiesPanel extends JPanel {
                                 .addPreferredGap(LayoutStyle.RELATED)
                                 .add(backgroundFillBox, 0, 191, Short.MAX_VALUE)
                                 .addPreferredGap(LayoutStyle.RELATED)
-                                .add(backgroundFillColorButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                                .add(backgroundFillColorButton,
+                                        GroupLayout.PREFERRED_SIZE,
+                                        23,
+                                        GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap())
         );
         groupLayout.setVerticalGroup(
@@ -174,8 +195,14 @@ public class BorderPropertiesPanel extends JPanel {
                         .add(groupLayout.createSequentialGroup()
                                 .add(groupLayout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(styleLabel)
-                                        .add(backgroundFillColorButton, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-                                        .add(backgroundFillBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .add(backgroundFillColorButton,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                23,
+                                                GroupLayout.PREFERRED_SIZE)
+                                        .add(backgroundFillBox,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         return panel;
@@ -183,14 +210,6 @@ public class BorderPropertiesPanel extends JPanel {
 
     private void fillColorClicked(final ActionEvent evt) {
         // TODO add your handling code here:
-    }
-
-    private void setProperty(
-            final Element borderProperties,
-            final String attribute,
-            final String value) {
-        final Element leftEdgeWidthElement = XMLUtils.getPropertyElement(borderProperties, attribute).get();
-        leftEdgeWidthElement.getAttributeNode("value").setValue(value);
     }
 
     private void updateFillStyle(final ActionEvent evt) {
@@ -210,10 +229,6 @@ public class BorderPropertiesPanel extends JPanel {
         updateBorderStyle(null);
     }
 
-    private void updateBorderSize(final FocusEvent evt) {
-        updateBorderStyle(null);
-    }
-
     private void updateBorderStyle(final ActionEvent evt) {
         final String style = (String) borderStyleBox.getSelectedItem();
         final boolean borderEnabled = style != null && !style.equals("None");
@@ -222,8 +237,7 @@ public class BorderPropertiesPanel extends JPanel {
         borderColorButton.setEnabled(borderEnabled);
 
         final Set<IWidget> widgets = widgetsAndProperties.keySet();
-
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             final Element borderProperties = widgetsAndProperties.get(widget);
 
             if (style != null) {
@@ -236,14 +250,13 @@ public class BorderPropertiesPanel extends JPanel {
             }
 
             if (!borderWidthBox.getText().equals("mixed")) {
-                final String widthText = borderWidthBox.getText().replaceAll("cm", "");
+                final String widthText = borderWidthBox.getText().replace("cm", "");
 
-                double width = Double.parseDouble(widthText);
-                borderWidthBox.setText(width + " cm");
+                final double customWidth = Double.parseDouble(widthText);
+                borderWidthBox.setText(customWidth + " cm");
 
-                width = width * units;
-
-                setProperty(borderProperties, "Border Width", (Math.round(width)) + "");
+                final double width = customWidth * UNITS;
+                setProperty(borderProperties, "Border Width", String.valueOf(Math.round(width)));
             }
 
             widget.setBorderAndBackgroundProperties(borderProperties);
@@ -255,83 +268,124 @@ public class BorderPropertiesPanel extends JPanel {
     public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
         this.widgetsAndProperties = widgetsAndProperties;
 
-        String borderStyleToUse = null;
-        String borderWidthToUse = null;
-        String borderColorToUse = null;
-        String backgroundStyleToUse = null;
-        String backgroundColorToUse = null;
+        final String borderStyleToUse = getBorderStyle(widgetsAndProperties.values());
+        applyBorderStyle(borderStyleToUse);
 
-        for (Element borderProperties : widgetsAndProperties.values()) {
-            final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
+        final String borderWidthToUse = getBorderWidth(widgetsAndProperties.values());
+        applyBorderWidth(borderWidthToUse);
 
-            final String borderStyle = XMLUtils.getAttributeFromChildElement(border, "Border Style").get();
-            final String borderWidth = XMLUtils.getAttributeFromChildElement(border, "Border Width").get();
-            final String borderColor = XMLUtils.getAttributeFromChildElement(border, "Border Color").get();
+        final String borderColorToUse = getBorderColor(widgetsAndProperties.values());
+        setButtonBackgroundColor(borderColorToUse, borderColorButton);
 
-            /* add background fill properties */
-            final Element background = (Element) borderProperties.getElementsByTagName("backgroundfill").item(0);
+        final String backgroundStyleToUse = getBackgroundStyle(widgetsAndProperties.values());
+        // TODO: apply background style
 
-            final String backgroundStyle = XMLUtils.getAttributeFromChildElement(background, "Style").get();
-            final String backgroundColor = XMLUtils.getAttributeFromChildElement(background, "Fill Color").get();
+        final String backgroundColorToUse = getBackgroundColor(widgetsAndProperties.values());
+        setComboBoxValue(backgroundColorToUse, backgroundFillBox);
+        setButtonBackgroundColor(backgroundColorToUse, backgroundFillColorButton);
+    }
 
-            if (borderStyleToUse == null) { // this must be the first time round
-                borderStyleToUse = borderStyle;
-                borderWidthToUse = borderWidth;
-                borderColorToUse = borderColor;
-                backgroundStyleToUse = backgroundStyle;
-                backgroundColorToUse = backgroundColor;
-            } else {
-                // check for subsequent widgets
-                if (!borderStyleToUse.equals(borderStyle)) {
-                    borderStyleToUse = "mixed";
-                }
+    private void applyBorderStyle(final String borderStyle) {
+        setComboBoxValue(borderStyle, borderStyleBox);
 
-                if (!borderWidthToUse.equals(borderWidth)) {
-                    borderWidthToUse = "mixed";
-                }
-
-                if (!borderColorToUse.equals(borderColor)) {
-                    borderColorToUse = "mixed";
-                }
-
-                if (!backgroundStyleToUse.equals(backgroundStyle)) {
-                    backgroundStyleToUse = "mixed";
-                }
-
-                if (!backgroundColorToUse.equals(backgroundColor)) {
-                    backgroundColorToUse = "mixed";
-                }
-            }
-        }
-
-        /* set borders properties */
-        final Object value1;
-        if ("mixed".equals(borderStyleToUse)) {
-            value1 = null;
-        } else {
-            value1 = borderStyleToUse;
-        }
-        setComboValue(borderStyleBox, value1);
-
-        final boolean borderEnabled = !"None".equals(borderStyleToUse);
+        final boolean borderEnabled = !"None".equals(borderStyle);
         borderWidthBox.setEnabled(borderEnabled);
         borderColorButton.setEnabled(borderEnabled);
+    }
 
-        double width = Integer.parseInt(borderWidthToUse);
-        width = round(width / units);
-        borderWidthBox.setText(width + " cm");
+    private void applyBorderWidth(final String borderWidth) {
+        final double borderWidthAsDouble = Integer.parseInt(borderWidth);
+        final double convertedBorderWidth = round(borderWidthAsDouble / UNITS);
+        borderWidthBox.setText(convertedBorderWidth + " cm");
+    }
 
-        setButtonColor(borderColorToUse, borderColorButton);
+    private String getBorderStyle(final Collection<Element> elements) {
+        return getPropertyValueFromCollection(elements, "borders", "Border Style");
+    }
 
-        /* set background fill properties */
-        final Object value;
-        if ("mixed".equals(backgroundColorToUse)) {
-            value = null;
+    private String getBorderWidth(final Collection<Element> elements) {
+        return getPropertyValueFromCollection(elements, "borders", "Border Width");
+    }
+
+    private String getBorderColor(final Collection<Element> elements) {
+        return getPropertyValueFromCollection(elements, "borders", "Border Color");
+    }
+
+    private String getBackgroundStyle(final Collection<Element> elements) {
+        return getPropertyValueFromCollection(elements, "backgroundfill", "Style");
+    }
+
+    private String getBackgroundColor(final Collection<Element> elements) {
+        return getPropertyValueFromCollection(elements, "backgroundfill", "Fill Color");
+    }
+
+    private void setButtonBackgroundColor(
+            final String color,
+            final JButton button) {
+        if (color.equals("mixed")) {
+            final BufferedImage bufferedImage = new BufferedImage(button.getWidth(),
+                    button.getHeight(),
+                    BufferedImage.TYPE_INT_ARGB);
+            final Graphics2D g2 = (Graphics2D) bufferedImage.getGraphics();
+            g2.setColor(Color.red);
+            g2.drawLine(-1, 0, bufferedImage.getWidth() - 1, bufferedImage.getHeight());
+            g2.drawLine(-1, bufferedImage.getHeight() - 1, bufferedImage.getWidth() - 1, -1);
+
+            button.setContentAreaFilled(true);
+            button.setBackground(null);
+            button.setIcon(new ImageIcon(bufferedImage));
         } else {
-            value = backgroundColorToUse;
+            button.setIcon(null);
+            button.setContentAreaFilled(false);
+            button.setOpaque(true);
+            button.setBackground(new Color(Integer.parseInt(color)));
         }
-        setComboValue(backgroundFillBox, value);
-        setButtonColor(backgroundColorToUse, backgroundFillColorButton);
+    }
+
+    private void setComboBoxValue(
+            final String value,
+            final JComboBox<String> comboBox) {
+        final ActionListener[] listeners = comboBox.getActionListeners();
+        Arrays.stream(listeners).forEach(comboBox::removeActionListener);
+
+        final String comboboxValue = convertMixedValueForComboBoxSelection(value);
+        comboBox.setSelectedItem(comboboxValue);
+
+        Arrays.stream(listeners).forEach(comboBox::addActionListener);
+    }
+
+    private String convertMixedValueForComboBoxSelection(final String value) {
+        if ("mixed".equals(value)) {
+            return null;
+        }
+        return value;
+    }
+
+    private String getPropertyValueFromCollection(
+            final Collection<Element> elements,
+            final String propertyName,
+            final String attributeName) {
+        final List<String> values = elements.stream()
+                .map(borderProperties -> {
+                    final Element border = (Element) borderProperties.getElementsByTagName(propertyName).item(0);
+                    return XMLUtils.getAttributeFromChildElement(border, attributeName).orElse("");
+                })
+                .collect(toUnmodifiableList());
+
+        final int numberOfIdenticalItems = Collections.frequency(values, values.get(0));
+        final boolean listContainsOnlyEqualValues = numberOfIdenticalItems == values.size();
+        if (listContainsOnlyEqualValues) {
+            return values.get(0);
+        }
+        return "mixed";
+    }
+
+    private void setProperty(
+            final Element borderProperties,
+            final String attribute,
+            final String value) {
+        XMLUtils.getPropertyElement(borderProperties, attribute)
+                .ifPresent(leftEdgeWidthElement -> leftEdgeWidthElement.getAttributeNode("value").setValue(value));
     }
 
     private double round(final double number) {
@@ -344,35 +398,4 @@ public class BorderPropertiesPanel extends JPanel {
 
         return value;
     }
-
-    private void setButtonColor(
-            final String borderColorToUse,
-            final JButton button) {
-        if (borderColorToUse.equals("mixed")) {
-            final BufferedImage bi = new BufferedImage(button.getWidth(), button.getHeight(), BufferedImage.TYPE_INT_ARGB);
-            final Graphics2D g2 = (Graphics2D) bi.getGraphics();
-            g2.setColor(Color.red);
-            g2.drawLine(-1, 0, bi.getWidth() - 1, bi.getHeight());
-            g2.drawLine(-1, bi.getHeight() - 1, bi.getWidth() - 1, -1);
-
-            button.setContentAreaFilled(true);
-            button.setBackground(null);
-            button.setIcon(new ImageIcon(bi));
-        } else {
-            button.setIcon(null);
-            button.setContentAreaFilled(false);
-            button.setOpaque(true);
-            button.setBackground(new Color(Integer.parseInt(borderColorToUse)));
-        }
-    }
-
-    private void setComboValue(
-            final JComboBox<String> comboBox,
-            final Object value) {
-        final ActionListener listener = comboBox.getActionListeners()[0];
-        comboBox.removeActionListener(listener);
-        comboBox.setSelectedItem(value);
-        comboBox.addActionListener(listener);
-    }
-
 }
