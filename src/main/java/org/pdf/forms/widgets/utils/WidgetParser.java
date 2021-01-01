@@ -1,7 +1,6 @@
 package org.pdf.forms.widgets.utils;
 
 import java.awt.*;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -24,9 +23,13 @@ import org.w3c.dom.Element;
 public final class WidgetParser {
 
     private final WidgetFactory widgetFactory;
+    private final IMainFrame mainFrame;
 
-    public WidgetParser(final WidgetFactory widgetFactory) {
+    public WidgetParser(
+            final WidgetFactory widgetFactory,
+            final IMainFrame mainFrame) {
         this.widgetFactory = widgetFactory;
+        this.mainFrame = mainFrame;
     }
 
     public void parseWidgets(
@@ -36,158 +39,194 @@ public final class WidgetParser {
             final int cropHeight,
             final int cropX,
             final int cropY,
-            final IMainFrame mainFrame,
             final List<IWidget> widgetsOnPage) {
         final Map<String, FormObject> rawFormData = currentFormRenderer.getRawFormData();
 
-        for (final String widgetName: rawFormData.keySet()) {
-            final FormObject formObject = rawFormData.get(widgetName);
+        for (final Map.Entry<String, FormObject> entry: rawFormData.entrySet()) {
+            final FormObject formObject = entry.getValue();
 
             final int type = formObject.getType();
-            switch (type) {
-
-                case FormObject.FORMBUTTON: {
-                    final boolean[] flags = formObject.getFieldFlags();
-
-                    boolean isPushButton = false;
-                    boolean isRadio = false;
-                    boolean hasNoToggleToOff = false;
-                    boolean radioinUnison = false;
-                    if (flags != null) {
-                        isPushButton = flags[FormObject.PUSHBUTTON];
-                        isRadio = flags[FormObject.RADIO];
-                        hasNoToggleToOff = flags[FormObject.NOTOGGLETOOFF];
-                        radioinUnison = flags[FormObject.RADIOINUNISON];
-                    }
-
-                    if (isPushButton) {
-                        final IWidget widget = getBasicWidget(formObject,
-                                IWidget.BUTTON,
-                                pageHeight,
-                                cropHeight,
-                                cropX,
-                                cropY,
-                                mainFrame,
-                                widgetsOnPage);
-
-                        final Document document = widget.getProperties();
-
-                        final String text = formObject.getNormalCaption();
-
-                        final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
-                        final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default")
-                                .get();
-                        defaultTextElement.getAttributeNode("value").setValue(text);
-                        widget.setObjectProperties(objectProperties);
-
-                        handleBorder(formObject, widget);
-
-                        handleVisibility(formObject, document);
-
-                        widgetsOnPage.add(widget);
-
-                        //} else if (isRadio) {
-                        // radio button
-                    } else {
-                        //checkBox
-                        addCheckBox(formObject,
-                                page,
-                                null,
-                                pageHeight,
-                                cropHeight,
-                                cropX,
-                                cropY,
-                                mainFrame,
-                                widgetsOnPage);
-                    }
-
-                    break;
-
-                }
-                case FormObject.FORMTEXT: {
-
-                    //System.out.println(formObject.getBoundingRectangle());
-
-                    final IWidget widget = getBasicWidget(formObject,
-                            IWidget.TEXT_FIELD,
-                            pageHeight,
-                            cropHeight,
-                            cropX,
-                            cropY,
-                            mainFrame,
-                            widgetsOnPage);
-
-                    final Document document = widget.getProperties();
-
-                    final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
-                    final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
-
-                    final String text = formObject.getTextString();
-                    defaultTextElement.getAttributeNode("value").setValue(text);
-
-                    widget.setObjectProperties(objectProperties);
-
-                    handleBorder(formObject, widget);
-
-                    handleVisibility(formObject, document);
-
-                    widgetsOnPage.add(widget);
-
-                    break;
-                }
-                case FormObject.FORMCHOICE: {
-                    final boolean[] flags = formObject.getFieldFlags();
-
-                    boolean isCombo = false;
-                    boolean multiSelect = false;
-                    boolean sort = false;
-                    boolean isEditable = false;
-                    boolean doNotSpellCheck = false;
-                    boolean comminOnSelChange = false;
-                    if (flags != null) {
-                        isCombo = flags[FormObject.COMBO];
-                        multiSelect = flags[FormObject.MULTISELECT];
-                        sort = flags[FormObject.SORT];
-                        isEditable = flags[FormObject.EDIT];
-                        doNotSpellCheck = flags[FormObject.DONOTSPELLCHECK];
-                        comminOnSelChange = flags[FormObject.COMMITONSELCHANGE];
-                    }
-
-                    if (isCombo) {
-                        final IWidget widget = getBasicWidget(formObject,
-                                IWidget.COMBO_BOX,
-                                pageHeight,
-                                cropHeight,
-                                cropX,
-                                cropY,
-                                mainFrame,
-                                widgetsOnPage);
-
-                        handleChoiceField(formObject, widget);
-
-                        widgetsOnPage.add(widget);
-                    } else {
-                        //it is a list
-                        final IWidget widget = getBasicWidget(formObject,
-                                IWidget.LIST_BOX,
-                                pageHeight,
-                                cropHeight,
-                                cropX,
-                                cropY,
-                                mainFrame,
-                                widgetsOnPage);
-
-                        handleChoiceField(formObject, widget);
-
-                        widgetsOnPage.add(widget);
-                    }
-
-                    break;
-                }
-                default:
-                    break;
+            if (type == FormObject.FORMBUTTON) {
+                addFormButton(page, pageHeight, cropHeight, cropX, cropY, widgetsOnPage, formObject);
+            } else if (type == FormObject.FORMTEXT) {
+                addTextField(pageHeight, cropHeight, cropX, cropY, widgetsOnPage, formObject);
+            } else if (type == FormObject.FORMCHOICE) {
+                addChoice(pageHeight, cropHeight, cropX, cropY, widgetsOnPage, formObject);
             }
         }
+    }
+
+    private void addChoice(
+            final int pageHeight,
+            final int cropHeight,
+            final int cropX,
+            final int cropY,
+            final List<IWidget> widgetsOnPage,
+            final FormObject formObject) {
+        final boolean[] flags = formObject.getFieldFlags();
+
+        boolean isCombo = false;
+        boolean multiSelect = false;
+        boolean sort = false;
+        boolean isEditable = false;
+        boolean doNotSpellCheck = false;
+        boolean comminOnSelChange = false;
+        if (flags != null) {
+            isCombo = flags[FormObject.COMBO];
+            multiSelect = flags[FormObject.MULTISELECT];
+            sort = flags[FormObject.SORT];
+            isEditable = flags[FormObject.EDIT];
+            doNotSpellCheck = flags[FormObject.DONOTSPELLCHECK];
+            comminOnSelChange = flags[FormObject.COMMITONSELCHANGE];
+        }
+
+        if (isCombo) {
+            addComboBox(pageHeight, cropHeight, cropX, cropY, widgetsOnPage, formObject);
+        } else {
+            addListBox(pageHeight, cropHeight, cropX, cropY, widgetsOnPage, formObject);
+        }
+    }
+
+    private void addFormButton(
+            final Page page,
+            final int pageHeight,
+            final int cropHeight,
+            final int cropX,
+            final int cropY,
+            final List<IWidget> widgetsOnPage,
+            final FormObject formObject) {
+        final boolean[] flags = formObject.getFieldFlags();
+
+        boolean isPushButton = false;
+        boolean isRadio = false;
+        boolean hasNoToggleToOff = false;
+        boolean radioinUnison = false;
+        if (flags != null) {
+            isPushButton = flags[FormObject.PUSHBUTTON];
+            isRadio = flags[FormObject.RADIO];
+            hasNoToggleToOff = flags[FormObject.NOTOGGLETOOFF];
+            radioinUnison = flags[FormObject.RADIOINUNISON];
+        }
+
+        if (isPushButton) {
+            addPushButton(pageHeight, cropHeight, cropX, cropY, widgetsOnPage, formObject);
+        } else if (isRadio) {
+            // TODO: radio button
+        } else {
+            //checkBox
+            addCheckBox(formObject,
+                    page,
+                    null,
+                    pageHeight,
+                    cropHeight,
+                    cropX,
+                    cropY,
+                    widgetsOnPage);
+        }
+    }
+
+    private void addListBox(
+            final int pageHeight,
+            final int cropHeight,
+            final int cropX,
+            final int cropY,
+            final List<IWidget> widgetsOnPage,
+            final FormObject formObject) {
+        //it is a list
+        final IWidget widget = getBasicWidget(formObject,
+                IWidget.LIST_BOX,
+                pageHeight,
+                cropHeight,
+                cropX,
+                cropY,
+                widgetsOnPage);
+
+        handleChoiceField(formObject, widget);
+
+        widgetsOnPage.add(widget);
+    }
+
+    private void addComboBox(
+            final int pageHeight,
+            final int cropHeight,
+            final int cropX,
+            final int cropY,
+            final List<IWidget> widgetsOnPage,
+            final FormObject formObject) {
+        final IWidget widget = getBasicWidget(formObject,
+                IWidget.COMBO_BOX,
+                pageHeight,
+                cropHeight,
+                cropX,
+                cropY,
+                widgetsOnPage);
+
+        handleChoiceField(formObject, widget);
+
+        widgetsOnPage.add(widget);
+    }
+
+    private void addTextField(
+            final int pageHeight,
+            final int cropHeight,
+            final int cropX,
+            final int cropY,
+            final List<IWidget> widgetsOnPage,
+            final FormObject formObject) {
+        final IWidget widget = getBasicWidget(formObject,
+                IWidget.TEXT_FIELD,
+                pageHeight,
+                cropHeight,
+                cropX,
+                cropY,
+                widgetsOnPage);
+
+        final Document document = widget.getProperties();
+
+        final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
+        final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default").get();
+
+        final String text = formObject.getTextString();
+        defaultTextElement.getAttributeNode("value").setValue(text);
+
+        widget.setObjectProperties(objectProperties);
+
+        handleBorder(formObject, widget);
+        handleVisibility(formObject, document);
+
+        widgetsOnPage.add(widget);
+    }
+
+    private void addPushButton(
+            final int pageHeight,
+            final int cropHeight,
+            final int cropX,
+            final int cropY,
+            final List<IWidget> widgetsOnPage,
+            final FormObject formObject) {
+        final IWidget widget = getBasicWidget(formObject,
+                IWidget.BUTTON,
+                pageHeight,
+                cropHeight,
+                cropX,
+                cropY,
+                widgetsOnPage);
+
+        final Document document = widget.getProperties();
+
+        final String text = formObject.getNormalCaption();
+
+        final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
+        final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default")
+                .get();
+        defaultTextElement.getAttributeNode("value").setValue(text);
+        widget.setObjectProperties(objectProperties);
+
+        handleBorder(formObject, widget);
+
+        handleVisibility(formObject, document);
+
+        widgetsOnPage.add(widget);
     }
 
     private int getNextArrayNumberForName(
@@ -195,21 +234,22 @@ public final class WidgetParser {
             final IWidget widgetToTest,
             final WidgetArrays widgetArrays,
             final List<IWidget> widgetList) {
-        if (widgetArrays.isWidgetArrayInList(name)) { // an array with this name already exists
-            widgetArrays.addWidgetToArray(name, widgetToTest); // add the new widget
+        if (widgetArrays.isWidgetArrayInList(name)) {
+            // an array with this name already exists
+            widgetArrays.addWidgetToArray(name, widgetToTest);
+            // add the new widget
             return widgetArrays.getNextArrayIndex(name);
         }
 
         for (final IWidget widget: widgetList) {
             final String widgetName = widget.getWidgetName();
             if (name.equals(widgetName) && !widget.equals(widgetToTest)) {
-                /*
-                 * another widget of this name already exists, and this is the first
-                 * we've heard of it
-                 */
-
-                widgetArrays.addWidgetToArray(name, widget); // add the original widget
-                widgetArrays.addWidgetToArray(name, widgetToTest); // add the new widget
+                // another widget of this name already exists, and this is the first
+                // we've heard of it
+                widgetArrays.addWidgetToArray(name, widget);
+                // add the original widget
+                widgetArrays.addWidgetToArray(name, widgetToTest);
+                // add the new widget
 
                 return widgetArrays.getNextArrayIndex(name);
             }
@@ -226,18 +266,18 @@ public final class WidgetParser {
             final int cropHeight,
             final int cropX,
             final int cropY,
-            final IMainFrame mainFrame,
             final List<IWidget> widgetList) {
-        if (formObject.getKidData() != null) { // this is a holder for more checkboxes
-            final Map kidData = formObject.getKidData();
-            final Iterator iter = kidData.keySet().iterator();
+        if (formObject.getKidData() != null) {
+            // this is a holder for more checkboxes
+            final Map<?, FormObject> kidData = formObject.getKidData();
+            final Iterator<?> iter = kidData.keySet().iterator();
 
             final String name = formObject.getFieldName();
 
             while (iter.hasNext()) {
-                final FormObject form = (FormObject) kidData.get(iter.next());
+                final FormObject form = kidData.get(iter.next());
 
-                addCheckBox(form, page, name, pageHeight, cropHeight, cropX, cropY, mainFrame, widgetList);
+                addCheckBox(form, page, name, pageHeight, cropHeight, cropX, cropY, widgetList);
             }
         } else {
             String group = groupName;
@@ -250,7 +290,7 @@ public final class WidgetParser {
             final IWidget widget = widgetFactory.createCheckBoxWidget(page, bounds, group);
             final Document document = widget.getProperties();
 
-            setGenericWidgetProperties(formObject, bounds, widget, document, mainFrame, widgetList);
+            setGenericWidgetProperties(formObject, bounds, widget, document, widgetList);
 
             final AbstractButton checkBox = (AbstractButton) widget.getValueComponent();
 
@@ -292,17 +332,10 @@ public final class WidgetParser {
             final int cropHeight,
             final int cropX,
             final int cropY,
-            final IMainFrame mainFrame,
             final List<IWidget> widgetList) {
-
         final Rectangle bounds = getBounds(formObject, pageHeight, cropHeight, cropX, cropY);
-
         final IWidget widget = widgetFactory.createWidget(type, bounds);
-
-        final Document document = widget.getProperties();
-
-        setGenericWidgetProperties(formObject, bounds, widget, document, mainFrame, widgetList);
-
+        setGenericWidgetProperties(formObject, bounds, widget, widget.getProperties(), widgetList);
         return widget;
     }
 
@@ -311,7 +344,6 @@ public final class WidgetParser {
             final Rectangle bounds,
             final IWidget widget,
             final Document document,
-            final IMainFrame mainFrame,
             final List<IWidget> widgetList) {
 
         //System.out.println("bounds = " + bounds);
@@ -349,7 +381,10 @@ public final class WidgetParser {
 
         widget.setObjectProperties(objectProperties);
 
-        final int arrayNumber = getNextArrayNumberForName(widgetName, widget, mainFrame.getWidgetArrays(), widgetList);
+        final int arrayNumber = getNextArrayNumberForName(widgetName,
+                widget,
+                this.mainFrame.getWidgetArrays(),
+                widgetList);
         final Element arrayNumberElement = XMLUtils.getPropertyElement(objectProperties, "Array Number").get();
         arrayNumberElement.getAttributeNode("value").setValue(arrayNumber + "");
 
@@ -362,7 +397,6 @@ public final class WidgetParser {
             final int cropHeight,
             final int cropX,
             final int cropY) {
-
         /* get a clone of the bounding rectangle so not to affect the original */
         final Rectangle bounds = (Rectangle) formObject.getBoundingRectangle().getBounds().clone();
 
@@ -407,22 +441,20 @@ public final class WidgetParser {
             textValue = formObject.getValuesMap().get(textValue).toString();
         }
         defaultTextElement.getAttributeNode("value").setValue(textValue);
-
         widget.setObjectProperties(objectProperties);
-
         handleBorder(formObject, widget);
-
         handleVisibility(formObject, document);
     }
 
     private void handleBorder(
             final FormObject formObject,
             final IWidget widget) {
-        Map<String, String> border = (Map) formObject.getBorder();
+        Map<String, String> border = (Map<String, String>) formObject.getBorder();
         if (border == null) {
-            border = new HashMap<>();
-            border.put("S", "/S");
-            border.put("W", "1");
+            border = Map.of(
+                    "S", "/S",
+                    "W", "1"
+            );
         }
         final Document document = widget.getProperties();
 
@@ -482,17 +514,18 @@ public final class WidgetParser {
     private void appearanceImages(
             final FormObject form,
             final IWidget widget) {
+        final CheckBoxWidget checkBoxWidget = (CheckBoxWidget) widget;
 
-        final CheckBoxWidget cbw = (CheckBoxWidget) widget;
-
-        Image onImage = null, offImage = null;
-
+        Image offImage = null;
         if (form.hasNormalOff()) {
             offImage = (form.getNormalOffImage());
         }
+
+        Image onImage = null;
         if (form.hasNormalOn()) {
             onImage = (form.getNormalOnImage());
         }
-        cbw.setOnOffImage(onImage, offImage);
+
+        checkBoxWidget.setOnOffImage(onImage, offImage);
     }
 }
