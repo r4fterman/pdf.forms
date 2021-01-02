@@ -252,8 +252,7 @@ public class CheckBoxWidget extends Widget implements IWidget {
             final Image onImage,
             final Image offImage) {
         final PdfCheckBox checkBox = (PdfCheckBox) getValueComponent();
-        final CheckBoxIcon checkBoxIcon = new CheckBoxIcon();
-        checkBoxIcon.setOnOffImage(onImage, offImage);
+        final CheckBoxIcon checkBoxIcon = new CheckBoxIcon(onImage, offImage);
         checkBox.setIcon(checkBoxIcon);
     }
 }

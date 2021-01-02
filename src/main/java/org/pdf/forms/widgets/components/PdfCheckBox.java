@@ -1,6 +1,6 @@
 package org.pdf.forms.widgets.components;
 
-import javax.swing.JCheckBox;
+import javax.swing.*;
 
 public class PdfCheckBox extends JCheckBox implements IPdfComponent {
 
@@ -10,9 +10,11 @@ public class PdfCheckBox extends JCheckBox implements IPdfComponent {
 
     @Override
     public void setUnderlineType(final int type) {
+        // do nothing
     }
 
     @Override
     public void setStrikethrough(final boolean isStrikethrough) {
+        // do nothing
     }
 }

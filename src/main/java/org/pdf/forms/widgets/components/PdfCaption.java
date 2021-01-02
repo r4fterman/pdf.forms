@@ -1,10 +1,9 @@
 package org.pdf.forms.widgets.components;
 
-import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.JLabel;
+import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.widgets.IWidget;
@@ -30,48 +29,48 @@ public class PdfCaption extends JLabel implements IPdfComponent {
         super.paintComponent(graphics);
 
         final String text = getText();
-
         final FontMetrics f = getFontMetrics(getFont());
-
         final Rectangle2D textBounds = f.getStringBounds(text, graphics);
 
         int x = getInsets().left;
         int y = getHeight() / 2 + (int) (textBounds.getHeight() / 2);
-        final int w = (int) textBounds.getWidth() + x;
+        final int width = (int) textBounds.getWidth() + x;
 
         if (standardUnderline) {
-            graphics.drawLine(x, y, w, y);
+            graphics.drawLine(x, y, width, y);
 
             if (doubleUnderline) {
-                graphics.drawLine(x, y + 2, w, y + 2);
+                graphics.drawLine(x, y + 2, width, y + 2);
             }
         } else if (wordUnderline) {
-            final int startX = x;
-
-            for (int i = 0; i < text.length(); i++) {
-                final char currentChar = text.charAt(i);
-                final int charWidth = f.charWidth(currentChar);
-
-                if (currentChar != ' ') {
-                    graphics.drawLine(x, y, x + charWidth, y);
-
-                    if (doubleUnderline) {
-                        y += 2;
-                        graphics.drawLine(x, y, x + charWidth, y);
-                        y -= 2;
-                    }
-                }
-
-                x += charWidth;
-            }
-
-            x = startX;
+            underlineWord(graphics, text, f, x, y);
         }
 
         if (isStrikethrough) {
-            y = getHeight() / 2;
+            graphics.drawLine(x, getHeight() / 2, width, getHeight() / 2);
+        }
+    }
 
-            graphics.drawLine(x, y, w, y);
+    private void underlineWord(
+            final Graphics graphics,
+            final String text,
+            final FontMetrics f,
+            final int x,
+            final int y) {
+
+        int startX = x;
+        for (int i = 0; i < text.length(); i++) {
+            final char currentChar = text.charAt(i);
+            final int charWidth = f.charWidth(currentChar);
+
+            if (currentChar != ' ') {
+                graphics.drawLine(startX, y, startX + charWidth, y);
+
+                if (doubleUnderline) {
+                    graphics.drawLine(startX, y + 2, startX + charWidth, y + 2);
+                }
+            }
+            startX += charWidth;
         }
     }
 

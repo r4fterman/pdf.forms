@@ -1,27 +1,27 @@
 package org.pdf.forms.widgets.components;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
 
 public class PdfList extends JScrollPane implements IPdfComponent {
 
-    private final Lst list;
+    private static final float FONT_SIZE = 11f;
 
-    public JList<String> getList() {
-        return list;
-    }
+    private final JList<String> list;
 
     public PdfList(final FontHandler fontHandler) {
-        list = new Lst(new DefaultListModel<>(), fontHandler);
+        list = new JList<>(new DefaultListModel<>());
+        list.setFont(fontHandler.getDefaultFont().deriveFont(FONT_SIZE));
 
         setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         setViewportView(list);
+    }
+
+    public JList<String> getList() {
+        return list;
     }
 
     @Override
@@ -31,36 +31,27 @@ public class PdfList extends JScrollPane implements IPdfComponent {
 
     @Override
     public void setText(final String text) {
+        // do nothing
     }
 
     @Override
     public void setUnderlineType(final int type) {
+        // do nothing
     }
 
     @Override
     public void setStrikethrough(final boolean isStrikethrough) {
+        // do nothing
     }
 
     @Override
     public void setHorizontalAlignment(final int alignment) {
+        // do nothing
 
     }
 
     @Override
     public void setVerticalAlignment(final int alignment) {
+        // do nothing
     }
 }
-
-class Lst extends JList<String> {
-
-    private static final float FONT_SIZE = 11f;
-
-    Lst(
-            final DefaultListModel<String> defaultListModel,
-            final FontHandler fontHandler) {
-        super(defaultListModel);
-        setFont(fontHandler.getDefaultFont().deriveFont(FONT_SIZE));
-    }
-
-}
-

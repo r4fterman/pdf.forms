@@ -1,13 +1,9 @@
 package org.pdf.forms.widgets.components;
 
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 import javax.swing.text.Element;
 import javax.swing.text.FieldView;
@@ -43,8 +39,8 @@ public class PdfTextField extends JTextField implements IPdfComponent {
         final FontMetrics f = getFontMetrics(getFont());
         final Rectangle2D textBounds = f.getStringBounds(text, graphics);
 
-        int x = getInsets().left;
-        int y = getHeight() / 2 + (int) (textBounds.getHeight() / 2);
+        final int x = getInsets().left;
+        final int y = getHeight() / 2 + (int) (textBounds.getHeight() / 2);
         final int w = (int) textBounds.getWidth() + x;
 
         if (standardUnderline) {
@@ -54,62 +50,53 @@ public class PdfTextField extends JTextField implements IPdfComponent {
                 graphics.drawLine(x, y + 2, w, y + 2);
             }
         } else if (wordUnderline) {
-            final int startX = x;
-
-            for (int i = 0; i < text.length(); i++) {
-                final char currentChar = text.charAt(i);
-                final int charWidth = f.charWidth(currentChar);
-                if (currentChar != ' ') {
-                    graphics.drawLine(x, y, x + charWidth, y);
-
-                    if (doubleUnderline) {
-                        y += 2;
-                        graphics.drawLine(x, y, x + charWidth, y);
-                        y -= 2;
-                    }
-                }
-
-                x += charWidth;
-            }
-
-            x = startX;
+            underlineWord(graphics, text, f, x, y);
         }
 
         if (isStrikethrough) {
-            y = getHeight() / 2;
-            graphics.drawLine(x, y, w, y);
+            graphics.drawLine(x, getHeight() / 2, w, getHeight() / 2);
+        }
+    }
+
+    private void underlineWord(
+            final Graphics graphics,
+            final String text,
+            final FontMetrics f,
+            final int x,
+            final int y) {
+        int startX = x;
+        for (int i = 0; i < text.length(); i++) {
+            final char currentChar = text.charAt(i);
+            final int charWidth = f.charWidth(currentChar);
+            if (currentChar != ' ') {
+                graphics.drawLine(startX, y, startX + charWidth, y);
+
+                if (doubleUnderline) {
+                    graphics.drawLine(startX, y + 2, startX + charWidth, y + 2);
+                }
+            }
+            startX += charWidth;
         }
     }
 
     @Override
     public void setUnderlineType(final int type) {
-        switch (type) {
-            case IWidget.UNDERLINE_SINGLE:
-                standardUnderline = true;
-                doubleUnderline = false;
-                wordUnderline = false;
-
-                break;
-            case IWidget.UNDERLINE_DOUBLE:
-                standardUnderline = true;
-                doubleUnderline = true;
-                wordUnderline = false;
-
-                break;
-            case IWidget.UNDERLINE_WORD_SINGLE:
-                standardUnderline = false;
-                doubleUnderline = false;
-                wordUnderline = true;
-
-                break;
-            case IWidget.UNDERLINE_WORD_DOUBLE:
-                standardUnderline = false;
-                doubleUnderline = true;
-                wordUnderline = true;
-
-                break;
-            default:
-                break;
+        if (type == IWidget.UNDERLINE_SINGLE) {
+            standardUnderline = true;
+            doubleUnderline = false;
+            wordUnderline = false;
+        } else if (type == IWidget.UNDERLINE_DOUBLE) {
+            standardUnderline = true;
+            doubleUnderline = true;
+            wordUnderline = false;
+        } else if (type == IWidget.UNDERLINE_WORD_SINGLE) {
+            standardUnderline = false;
+            doubleUnderline = false;
+            wordUnderline = true;
+        } else if (type == IWidget.UNDERLINE_WORD_DOUBLE) {
+            standardUnderline = false;
+            doubleUnderline = true;
+            wordUnderline = true;
         }
     }
 
@@ -135,42 +122,24 @@ public class PdfTextField extends JTextField implements IPdfComponent {
                             return null;
                         }
 
-                        Rectangle bounds = shape.getBounds();
-                        final int height = bounds.height;
-                        final int y = bounds.y;
-                        final int vspan = (int) getPreferredSpan(Y_AXIS);
-                        final int hspan = (int) getPreferredSpan(X_AXIS);
-
-                        bounds = (Rectangle) super.adjustAllocation(shape);
+                        final Rectangle bounds = (Rectangle) super.adjustAllocation(shape);
 
                         // adjust the vertical alignment
-                        if (height != vspan) {
-                            final int slop = bounds.height - vspan;
-
-                            switch (alignment) {
-                                case SwingConstants.TOP:
-                                    bounds.y = y;
-                                    break;
-
-                                case SwingConstants.BOTTOM:
-                                    bounds.y = height - vspan;
-                                    break;
-                                default:
-                                    break;
+                        final int height = shape.getBounds().height;
+                        final int vSpan = (int) getPreferredSpan(Y_AXIS);
+                        if (height != vSpan) {
+                            final int slop = bounds.height - vSpan;
+                            if (alignment == SwingConstants.TOP) {
+                                bounds.y = shape.getBounds().y;
+                            } else if (alignment == SwingConstants.BOTTOM) {
+                                bounds.y = height - vSpan;
                             }
-
                             bounds.height -= slop;
                         }
-
                         return bounds;
                     }
                 };
             }
         });
-    }
-
-    @Override
-    public void setHorizontalAlignment(final int alignment) {
-        super.setHorizontalAlignment(alignment);
     }
 }
