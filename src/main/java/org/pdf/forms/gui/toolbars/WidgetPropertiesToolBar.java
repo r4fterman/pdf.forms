@@ -28,7 +28,19 @@ import com.vlsolutions.swing.toolbars.VLToolBar;
 public class WidgetPropertiesToolBar extends VLToolBar {
 
     private static final String[] FONT_SIZES = {
-            "6", "8", "10", "12", "14", "16", "18", "20", "24", "28", "36", "48", "72"
+            "6",
+            "8",
+            "10",
+            "12",
+            "14",
+            "16",
+            "18",
+            "20",
+            "24",
+            "28",
+            "36",
+            "48",
+            "72"
     };
 
     private final Logger logger = LoggerFactory.getLogger(WidgetPropertiesToolBar.class);
@@ -139,21 +151,20 @@ public class WidgetPropertiesToolBar extends VLToolBar {
             final List<Element> paragraphList = XMLUtils.getElementsFromNodeList(paragraphElement.getChildNodes());
             final Element captionElement = paragraphList.get(0);
 
-            final Optional<Element> horizontalAlignment = XMLUtils.getPropertyElement(captionElement,
-                    "Horizontal Alignment");
-            if (horizontalAlignment.isPresent()) {
-                final Element captionAlignment = horizontalAlignment.get();
-                captionAlignment.getAttributeNode("value").setValue(alignment);
+            XMLUtils.getPropertyElement(captionElement, "Horizontal Alignment")
+                    .ifPresent(captionAlignment -> {
+                        captionAlignment.getAttributeNode("value").setValue(alignment);
 
-                if (widget.allowEditCaptionAndValue()) {
-                    Optional.of(paragraphList.get(1))
-                            .map(valueElement -> XMLUtils.getPropertyElement(valueElement, "Horizontal Alignment"))
-                            .flatMap(value -> value)
-                            .ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
-                }
+                        if (widget.allowEditCaptionAndValue()) {
+                            Optional.of(paragraphList.get(1))
+                                    .map(valueElement -> XMLUtils
+                                            .getPropertyElement(valueElement, "Horizontal Alignment"))
+                                    .flatMap(value -> value)
+                                    .ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
+                        }
 
-                widget.setParagraphProperties(paragraphElement, IWidget.COMPONENT_BOTH);
-            }
+                        widget.setParagraphProperties(paragraphElement, IWidget.COMPONENT_BOTH);
+                    });
         }
 
         designerPanel.getMainFrame().setPropertiesCompound(widgets);
@@ -197,28 +208,22 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         for (final IWidget widget: widgets) {
             final Document properties = widget.getProperties();
             final Element fontElement = (Element) properties.getElementsByTagName("font").item(0);
-
             final List<Element> fontList = XMLUtils.getElementsFromNodeList(fontElement.getChildNodes());
             final Element captionElement = fontList.get(0);
 
-            final Optional<Element> fontCaption = XMLUtils.getPropertyElement(captionElement, fontPropertyName);
-            if (fontCaption.isPresent()) {
-                final Element fontCaptionElement = fontCaption.get();
+            XMLUtils.getPropertyElement(captionElement, fontPropertyName)
+                    .ifPresent(fontCaptionElement -> {
+                        Element fontPropertyElement = null;
+                        if (widget.allowEditCaptionAndValue()) {
+                            final Element valueElement = fontList.get(1);
+                            fontPropertyElement = XMLUtils.getPropertyElement(valueElement, fontPropertyName)
+                                    .orElse(null);
+                        }
 
-                Element fontPropertyElement = null;
-                if (widget.allowEditCaptionAndValue()) {
-                    final Element valueElement = fontList.get(1);
-                    final Optional<Element> propertyElement = XMLUtils.getPropertyElement(valueElement,
-                            fontPropertyName);
-                    if (propertyElement.isPresent()) {
-                        fontPropertyElement = propertyElement.get();
-                    }
-                }
+                        setProperty(fontValue, fontCaptionElement, fontPropertyElement);
 
-                setProperty(fontValue, fontCaptionElement, fontPropertyElement);
-
-                widget.setFontProperties(fontElement, IWidget.COMPONENT_BOTH);
-            }
+                        widget.setFontProperties(fontElement, IWidget.COMPONENT_BOTH);
+                    });
         }
     }
 

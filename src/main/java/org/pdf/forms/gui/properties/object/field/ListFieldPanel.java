@@ -80,7 +80,8 @@ public class ListFieldPanel extends JPanel {
 
         final JComboBox<String> presenceBox = new JComboBox<>(PRESENCES);
 
-        allowCustomTextEntryBox = new TristateCheckBox("Allow Custom Text Entry",
+        allowCustomTextEntryBox = new TristateCheckBox(
+                "Allow Custom Text Entry",
                 TristateCheckBox.NOT_SELECTED,
                 this::saveAllowedCustomText);
         allowCustomTextEntryBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));

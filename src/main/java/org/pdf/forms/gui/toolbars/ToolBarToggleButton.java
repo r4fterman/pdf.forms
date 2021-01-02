@@ -15,7 +15,6 @@ public class ToolBarToggleButton extends JToggleButton {
     void init(
             final String path,
             final String toolTip) {
-        /* bookmarks icon */
         setToolTipText(toolTip);
 
         setBorderPainted(false);
@@ -34,12 +33,15 @@ public class ToolBarToggleButton extends JToggleButton {
     private void createPressedLook(
             final AbstractButton button,
             final ImageIcon icon) {
-        final BufferedImage image = new BufferedImage(icon.getIconWidth() + 2, icon.getIconHeight() + 2, BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage image = new BufferedImage(
+                icon.getIconWidth() + 2,
+                icon.getIconHeight() + 2,
+                BufferedImage.TYPE_INT_ARGB);
+
         final Graphics2D g = (Graphics2D) image.getGraphics();
         g.drawImage(icon.getImage(), 1, 1, null);
         g.dispose();
-        final ImageIcon iconPressed = new ImageIcon(image);
-        button.setPressedIcon(iconPressed);
+        button.setPressedIcon(new ImageIcon(image));
     }
 
 }

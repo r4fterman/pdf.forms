@@ -23,10 +23,11 @@ public class ItemsTableModel extends AbstractTableModel {
             return;
         }
 
-        final Map<String, Object> map = Arrays.stream(HEADINGS).collect(toUnmodifiableMap(
-                heading -> heading,
-                heading -> new Object()
-        ));
+        final Map<String, Object> map = Arrays.stream(HEADINGS)
+                .collect(toUnmodifiableMap(
+                        heading -> heading,
+                        heading -> new Object()
+                ));
         values.add(rowIndex, map);
         fireTableDataChanged();
     }

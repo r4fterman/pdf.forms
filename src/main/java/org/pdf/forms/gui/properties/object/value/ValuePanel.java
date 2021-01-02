@@ -1,10 +1,14 @@
 package org.pdf.forms.gui.properties.object.value;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -136,17 +140,21 @@ public class ValuePanel extends JPanel {
         updateElementDefaultValue(firstWidget, widgetsAndProperties.get(firstWidget), value);
 
         if (value.equals("On")) {
-            for (final IWidget widget: designerPanel.getWidgets()) {
-                if (widget.getType() == IWidget.RADIO_BUTTON && widget != firstWidget) {
-                    final RadioButtonWidget radioButtonWidget = (RadioButtonWidget) widget;
-                    if (radioButtonWidget.getRadioButtonGroupName()
-                            .equals(((RadioButtonWidget) firstWidget).getRadioButtonGroupName())) {
-                        final Element objectProperties = radioButtonWidget.getProperties().getDocumentElement();
-                        updateElementDefaultValue(radioButtonWidget, objectProperties, "Off");
-                    }
-                }
-            }
+            updateRadioButtonWidgets(firstWidget);
         }
+    }
+
+    private void updateRadioButtonWidgets(final IWidget firstWidget) {
+        final String radioButtonGroupName = ((RadioButtonWidget) firstWidget).getRadioButtonGroupName();
+
+        designerPanel.getWidgets().stream()
+                .filter(widget -> widget.getType() == IWidget.RADIO_BUTTON && widget != firstWidget)
+                .filter(widget -> ((RadioButtonWidget) widget).getRadioButtonGroupName().equals(radioButtonGroupName))
+                .forEach(widget -> {
+                    final RadioButtonWidget radioButtonWidget = (RadioButtonWidget) widget;
+                    final Element objectProperties = radioButtonWidget.getProperties().getDocumentElement();
+                    updateElementDefaultValue(radioButtonWidget, objectProperties, "Off");
+                });
     }
 
     private void updateElementDefaultValue(
@@ -192,24 +200,33 @@ public class ValuePanel extends JPanel {
 
             final Element objectProperties = widgetsAndProperties.get(widget);
             if (widgetsAndProperties.size() == 1) {
-                if (widgetType == IWidget.COMBO_BOX) {
-                    defaultBox.addItem("< None >");
-                }
-
-                final Element itemElement = (Element) objectProperties.getElementsByTagName("items").item(0);
-                if (itemElement != null) {
-                    final List<Element> items = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
-                    for (final Element item: items) {
-                        final String value = XMLUtils.getAttributeFromElement(item, "item").orElse("");
-                        defaultBox.addItem(value);
-                    }
-                }
+                fillComboBox(widgetType, objectProperties);
             }
 
-            final String defaultText = getDefault(objectProperties);
+            final Element valueProperties = (Element) objectProperties.getElementsByTagName("value").item(0);
+            final String defaultText = XMLUtils.getAttributeFromChildElement(valueProperties, "Default").orElse("");
             defaultBox.setSelectedItem(defaultText);
         } else {
             setItemsEnabled(false);
+        }
+    }
+
+    private void fillComboBox(
+            final int widgetType,
+            final Element objectProperties) {
+        if (widgetType == IWidget.COMBO_BOX) {
+            defaultBox.addItem("< None >");
+        }
+
+        final Element itemElement = (Element) objectProperties.getElementsByTagName("items").item(0);
+        if (itemElement == null) {
+            return;
+        }
+
+        final List<Element> items = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
+        for (final Element item: items) {
+            XMLUtils.getAttributeFromElement(item, "item")
+                    .ifPresent(value -> defaultBox.addItem(value));
         }
     }
 
@@ -223,36 +240,31 @@ public class ValuePanel extends JPanel {
     }
 
     private void setupToggleWidget() {
-        String defaultStateToUse = null;
-
         defaultBox.addItem("On");
         defaultBox.addItem("Off");
 
-        for (final Element objectProperties: widgetsAndProperties.values()) {
-            final String defaultState = getDefault(objectProperties);
-            if (defaultStateToUse == null) {
-                // this must be the first time round
-                defaultStateToUse = defaultState;
-            } else {
-                // check for subsequent widgets
-                if (!defaultStateToUse.equals(defaultState)) {
-                    defaultStateToUse = "mixed";
-                }
-            }
-        }
-
-        final Object selectedItem;
-        if ("mixed".equals(defaultStateToUse)) {
-            selectedItem = null;
+        final String defaultState = getDefaultState(widgetsAndProperties.values());
+        if (defaultState.equals("mixed")) {
+            defaultBox.setSelectedItem(null);
         } else {
-            selectedItem = defaultStateToUse;
+            defaultBox.setSelectedItem(defaultState);
         }
-        defaultBox.setSelectedItem(selectedItem);
     }
 
-    private String getDefault(final Element objectProperties) {
-        final Element valueProperties = (Element) objectProperties.getElementsByTagName("value").item(0);
-        return XMLUtils.getAttributeFromChildElement(valueProperties, "Default").orElse("");
+    private String getDefaultState(final Collection<Element> elements) {
+        final List<String> values = elements.stream()
+                .map(objectProperties -> {
+                    final Element valueProperties = (Element) objectProperties.getElementsByTagName("value").item(0);
+                    return XMLUtils.getAttributeFromChildElement(valueProperties, "Default")
+                            .orElse("");
+                })
+                .collect(toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections.frequency(values, values.get(0)) == values.size();
+        if (listContainsOnlyEqualValues) {
+            return values.get(0);
+        }
+        return "mixed";
     }
 
     private void setItemsEnabled(final boolean enabled) {

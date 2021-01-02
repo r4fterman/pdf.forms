@@ -61,7 +61,8 @@ public class WidgetSelection {
         unGroupButton.setToolTipText("Ungroup Selection");
 
         unGroupButton.addActionListener(e -> {
-            final Commands commands = new Commands(designerPanel.getMainFrame(),
+            final Commands commands = new Commands(
+                    designerPanel.getMainFrame(),
                     version,
                     fontHandler,
                     widgetFactory,
@@ -85,12 +86,10 @@ public class WidgetSelection {
                 (int) Math.round(selectionBoxBounds.height * resizeHeightRatio) - (BOX_MARGIN * 2));
 
         selectedWidget.setY(
-                (int) Math.round(
-                        selectionBoxBounds.y + BOX_MARGIN + (selectionBoxBounds.height * resizeFromTopRatio)));
+                (int) Math.round(selectionBoxBounds.y + BOX_MARGIN + (selectionBoxBounds.height * resizeFromTopRatio)));
 
         selectedWidget.setX(
-                (int) Math.round(
-                        selectionBoxBounds.x + BOX_MARGIN + (selectionBoxBounds.width * resizeFromLeftRatio)));
+                (int) Math.round(selectionBoxBounds.x + BOX_MARGIN + (selectionBoxBounds.width * resizeFromLeftRatio)));
     }
 
     private void drawBox(
@@ -103,19 +102,26 @@ public class WidgetSelection {
     private void drawNodes(
             final Graphics2D g2,
             final Rectangle rectangle) {
-        g2.fillRect(rectangle.x - RESIZE_NODE_SIZE + 1,
+        g2.fillRect(
+                rectangle.x - RESIZE_NODE_SIZE + 1,
                 rectangle.y - RESIZE_NODE_SIZE + 1,
                 RESIZE_NODE_SIZE,
                 RESIZE_NODE_SIZE);
-        g2.fillRect(rectangle.x + rectangle.width,
+        g2.fillRect(
+                rectangle.x + rectangle.width,
                 rectangle.y - RESIZE_NODE_SIZE + 1,
                 RESIZE_NODE_SIZE,
                 RESIZE_NODE_SIZE);
-        g2.fillRect(rectangle.x - RESIZE_NODE_SIZE + 1,
+        g2.fillRect(
+                rectangle.x - RESIZE_NODE_SIZE + 1,
                 rectangle.y + rectangle.height,
                 RESIZE_NODE_SIZE,
                 RESIZE_NODE_SIZE);
-        g2.fillRect(rectangle.x + rectangle.width, rectangle.y + rectangle.height, RESIZE_NODE_SIZE, RESIZE_NODE_SIZE);
+        g2.fillRect(
+                rectangle.x + rectangle.width,
+                rectangle.y + rectangle.height,
+                RESIZE_NODE_SIZE,
+                RESIZE_NODE_SIZE);
     }
 
     /**
@@ -142,11 +148,12 @@ public class WidgetSelection {
         drawBox(g2, localSelectionBoxBounds.getSize());
 
         if (drawNodes) {
-            drawNodes(g2,
-                    new Rectangle(-BOX_MARGIN,
-                            -BOX_MARGIN,
-                            localSelectionBoxBounds.width,
-                            localSelectionBoxBounds.height));
+            final Rectangle rectangle = new Rectangle(
+                    -BOX_MARGIN,
+                    -BOX_MARGIN,
+                    localSelectionBoxBounds.width,
+                    localSelectionBoxBounds.height);
+            drawNodes(g2, rectangle);
 
             selectionBoxBounds = localSelectionBoxBounds;
         }
@@ -170,15 +177,23 @@ public class WidgetSelection {
         final Set<IWidget> flattenedWidgets = getFlattenedWidgets(selectedWidgets);
         final Rectangle multipleWidgetBounds = getMultipleWidgetBounds(flattenedWidgets);
 
-        selectionBoxBounds = new Rectangle(multipleWidgetBounds.x - BOX_MARGIN, multipleWidgetBounds.y - BOX_MARGIN,
-                multipleWidgetBounds.width + (BOX_MARGIN * 2), multipleWidgetBounds.height + (BOX_MARGIN * 2));
+        selectionBoxBounds = new Rectangle(
+                multipleWidgetBounds.x - BOX_MARGIN,
+                multipleWidgetBounds.y - BOX_MARGIN,
+                multipleWidgetBounds.width + (BOX_MARGIN * 2),
+                multipleWidgetBounds.height + (BOX_MARGIN * 2));
 
         g2.translate(multipleWidgetBounds.x, multipleWidgetBounds.y);
 
         drawBox(g2, selectionBoxBounds.getSize());
 
         if (drawNodes) {
-            drawNodes(g2, new Rectangle(-BOX_MARGIN, -BOX_MARGIN, selectionBoxBounds.width, selectionBoxBounds.height));
+            final Rectangle rectangle = new Rectangle(
+                    -BOX_MARGIN,
+                    -BOX_MARGIN,
+                    selectionBoxBounds.width,
+                    selectionBoxBounds.height);
+            drawNodes(g2, rectangle);
         }
 
         g2.translate(-multipleWidgetBounds.x, -multipleWidgetBounds.y);
@@ -191,7 +206,8 @@ public class WidgetSelection {
                 button = groupButton;
             }
 
-            button.setLocation((int) (selectionBoxBounds.x + (selectionBoxBounds.width * 0.7)),
+            button.setLocation(
+                    (int) (selectionBoxBounds.x + (selectionBoxBounds.width * 0.7)),
                     selectionBoxBounds.y + selectionBoxBounds.height + 20);
 
             button.setVisible(true);
@@ -202,7 +218,6 @@ public class WidgetSelection {
             final int mouseX,
             final int mouseY,
             final Set<IWidget> selectedWidgets) {
-
         if (selectionBoxBounds == null || selectedWidgets.isEmpty()) {
             return DesignerMouseMotionListener.DEFAULT_CURSOR;
         }
@@ -210,49 +225,28 @@ public class WidgetSelection {
         final int widgetX = selectionBoxBounds.x;
         final int widgetY = selectionBoxBounds.y;
 
-        int resizeType;
-
         final IWidget selectedWidget = selectedWidgets.iterator().next();
 
+        int resizeType;
         /*
          * if just one widget is selected, and it is split, check to see if the cursor is over
          * the split
          */
         if (selectedWidgets.size() == 1 && selectedWidget.isComponentSplit()) {
             resizeType = selectedWidget.getResizeTypeForSplitComponent(mouseX, mouseY);
-
             if (resizeType != -1) {
                 return resizeType;
             }
-
         }
 
-        if (mouseX >= widgetX - WidgetSelection.BOX_MARGIN - 5 && mouseX <= widgetX
-                && mouseY >= widgetY - WidgetSelection.BOX_MARGIN - 5 && mouseY <= widgetY) {
-
+        if (isMouseNorthWestOfSelectedWidget(mouseX, mouseY, widgetX, widgetY)) {
             resizeType = DesignerMouseMotionListener.NW_RESIZE_CURSOR;
-
-        } else if (mouseX >= getSelectionBoxBounds().width + widgetX
-                && mouseX <= getSelectionBoxBounds().width + widgetX + 5 + WidgetSelection.BOX_MARGIN
-                && mouseY >= getSelectionBoxBounds().height + widgetY
-                && mouseY <= getSelectionBoxBounds().height + widgetY + 5 + WidgetSelection.BOX_MARGIN) {
-
+        } else if (isMouseSouthEastOfSelectedWidget(mouseX, mouseY, widgetX, widgetY)) {
             resizeType = DesignerMouseMotionListener.SE_RESIZE_CURSOR;
-
-        } else if (mouseX >= getSelectionBoxBounds().width + widgetX
-                && mouseX <= getSelectionBoxBounds().width + widgetX + 5 + WidgetSelection.BOX_MARGIN
-                && mouseY >= widgetY - 5 - WidgetSelection.BOX_MARGIN
-                && mouseY <= widgetY) {
-
+        } else if (isMouseNorthEastOfSelectedWidget(mouseX, mouseY, widgetX, widgetY)) {
             resizeType = DesignerMouseMotionListener.NE_RESIZE_CURSOR;
-
-        } else if (mouseX >= widgetX - 5 - WidgetSelection.BOX_MARGIN
-                && mouseX <= widgetX
-                && mouseY >= getSelectionBoxBounds().height + widgetY
-                && mouseY <= getSelectionBoxBounds().height + widgetY + 5 + WidgetSelection.BOX_MARGIN) {
-
+        } else if (isMouseSouthWestOfSelectedWidget(mouseX, mouseY, widgetX, widgetY)) {
             resizeType = DesignerMouseMotionListener.SW_RESIZE_CURSOR;
-
         } else {
             resizeType = DesignerMouseMotionListener.DEFAULT_CURSOR;
         }
@@ -260,12 +254,55 @@ public class WidgetSelection {
         return resizeType;
     }
 
+    private boolean isMouseSouthWestOfSelectedWidget(
+            final int mouseX,
+            final int mouseY,
+            final int widgetX,
+            final int widgetY) {
+        return mouseX >= widgetX - 5 - WidgetSelection.BOX_MARGIN
+                && mouseX <= widgetX
+                && mouseY >= getSelectionBoxBounds().height + widgetY
+                && mouseY <= getSelectionBoxBounds().height + widgetY + 5 + WidgetSelection.BOX_MARGIN;
+    }
+
+    private boolean isMouseNorthEastOfSelectedWidget(
+            final int mouseX,
+            final int mouseY,
+            final int widgetX,
+            final int widgetY) {
+        return mouseX >= getSelectionBoxBounds().width + widgetX
+                && mouseX <= getSelectionBoxBounds().width + widgetX + 5 + WidgetSelection.BOX_MARGIN
+                && mouseY >= widgetY - 5 - WidgetSelection.BOX_MARGIN
+                && mouseY <= widgetY;
+    }
+
+    private boolean isMouseSouthEastOfSelectedWidget(
+            final int mouseX,
+            final int mouseY,
+            final int widgetX,
+            final int widgetY) {
+        return mouseX >= getSelectionBoxBounds().width + widgetX
+                && mouseX <= getSelectionBoxBounds().width + widgetX + 5 + WidgetSelection.BOX_MARGIN
+                && mouseY >= getSelectionBoxBounds().height + widgetY
+                && mouseY <= getSelectionBoxBounds().height + widgetY + 5 + WidgetSelection.BOX_MARGIN;
+    }
+
+    private boolean isMouseNorthWestOfSelectedWidget(
+            final int mouseX,
+            final int mouseY,
+            final int widgetX,
+            final int widgetY) {
+        return mouseX >= widgetX - WidgetSelection.BOX_MARGIN - 5
+                && mouseX <= widgetX
+                && mouseY >= widgetY - WidgetSelection.BOX_MARGIN - 5
+                && mouseY <= widgetY;
+    }
+
     public void moveWidgets(
             final Set<IWidget> selectedWidgets,
             final int mouseX,
             final int mouseY) {
         for (final IWidget selectedWidget: selectedWidgets) {
-
             final int widgetLastX = selectedWidget.getLastX();
             final int widgetLastY = selectedWidget.getLastY();
 

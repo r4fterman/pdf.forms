@@ -12,36 +12,26 @@ public class PreviewNavigationToolbar extends NavigationToolbar {
 
     @Override
     public void executeCommand(final int type) {
-        switch (type) {
-            case FIRSTPAGE:
-                designer.displayPreviewPage(1);
-                break;
-            case FBACKPAGE:
-                designer.displayPreviewPage(designer.getPreviewCurrentPage() - 10);
-                break;
-            case BACKPAGE:
-                designer.displayPreviewPage(designer.getPreviewCurrentPage() - 1);
-                break;
-            case FORWARDPAGE:
-                designer.displayPreviewPage(designer.getPreviewCurrentPage() + 1);
-                break;
-            case FFORWARDPAGE:
-                designer.displayPreviewPage(designer.getPreviewCurrentPage() + 10);
-                break;
-            case LASTPAGE:
-                designer.displayPreviewPage(designer.getPreviewCurrentPage());
-                break;
-            case SETPAGE:
-                final int page = Integer.parseInt(getCurrentPageBox().getText());
+        if (type == FIRSTPAGE) {
+            designer.displayPreviewPage(1);
+        } else if (type == FBACKPAGE) {
+            designer.displayPreviewPage(designer.getPreviewCurrentPage() - 10);
+        } else if (type == BACKPAGE) {
+            designer.displayPreviewPage(designer.getPreviewCurrentPage() - 1);
+        } else if (type == FORWARDPAGE) {
+            designer.displayPreviewPage(designer.getPreviewCurrentPage() + 1);
+        } else if (type == FFORWARDPAGE) {
+            designer.displayPreviewPage(designer.getPreviewCurrentPage() + 10);
+        } else if (type == LASTPAGE) {
+            designer.displayPreviewPage(designer.getPreviewCurrentPage());
+        } else if (type == SETPAGE) {
+            final int page = Integer.parseInt(getCurrentPageBox().getText());
 
-                if (page >= 1 && page <= designer.getTotalNoOfPages()) {
-                    designer.displayPreviewPage(page);
-                } else {
-                    getCurrentPageBox().setText(designer.getPreviewCurrentPage() + "");
-                }
-                break;
-            default:
-                break;
+            if (page >= 1 && page <= designer.getTotalNoOfPages()) {
+                designer.displayPreviewPage(page);
+            } else {
+                getCurrentPageBox().setText(designer.getPreviewCurrentPage() + "");
+            }
         }
     }
 }

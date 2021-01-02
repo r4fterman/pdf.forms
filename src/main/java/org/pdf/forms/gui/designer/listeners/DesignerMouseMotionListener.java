@@ -1,7 +1,6 @@
 package org.pdf.forms.gui.designer.listeners;
 
-import java.awt.Cursor;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.Set;
@@ -38,16 +37,12 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
         designerPanel.updateRulers(new Point(e.getX(), e.getY()));
 
         if (designerPanel.getWidgetToAdd() == IWidget.NONE) {
-
-            /*
-             * nothing selected, so just drag out selection box
-             */
+            //nothing selected, so just drag out selection box
             if (designerPanel.getSelectedWidgets().isEmpty()) {
                 selectionBox.updateSize(e);
             } else {
                 // A widget(s) is being resized
                 moveAndResizeSelectedWidget(e);
-
                 if (!designerPanel.isResizing() && !designerPanel.isResizingSplitComponent()) {
                     designerPanel.setCurrentlyDragging(true);
                 }
@@ -55,7 +50,6 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
         } else {
             selectionBox.updateSize(e);
         }
-
         designerPanel.repaint();
     }
 
@@ -63,69 +57,59 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
     public void mouseMoved(final MouseEvent e) {
         designerPanel.updateRulers(new Point(e.getX(), e.getY()));
 
-        final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
 
         /*
          * if we're resizing, or adding a new component, then dont change the cursor here,
          * otherwise, set the cusor to whatever it needs to be
          */
+        final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
         if (!(designerPanel.isResizing() || designerPanel.getWidgetToAdd() != IWidget.NONE)) {
 
-            //            int resizeType = widgetSelection.getResizeType((int) (e.getX() / scale), (int) (e.getY() / scale), selectedWidgets); //@scale
-            int resizeType = widgetSelection.getResizeType(e.getX(), e.getY(), selectedWidgets);
-
+            //int resizeType = widgetSelection.getResizeType((int) (e.getX() / scale), (int) (e.getY() / scale), selectedWidgets); //@scale
+            final int resizeType = widgetSelection.getResizeType(e.getX(), e.getY(), selectedWidgets);
             designerPanel.setResizeType(resizeType);
 
-            switch (resizeType) {
-                case DesignerMouseMotionListener.DEFAULT_CURSOR: {
-                    resizeType = Cursor.DEFAULT_CURSOR;
-                    break;
-                }
-                case DesignerMouseMotionListener.SE_RESIZE_CURSOR: {
-                    resizeType = Cursor.SE_RESIZE_CURSOR;
-                    break;
-                }
-                case DesignerMouseMotionListener.NE_RESIZE_CURSOR: {
-                    resizeType = Cursor.NE_RESIZE_CURSOR;
-                    break;
-                }
-                case DesignerMouseMotionListener.SW_RESIZE_CURSOR: {
-                    resizeType = Cursor.SW_RESIZE_CURSOR;
-                    break;
-                }
-                case DesignerMouseMotionListener.NW_RESIZE_CURSOR: {
-                    resizeType = Cursor.NW_RESIZE_CURSOR;
-                    break;
-                }
-                case DesignerMouseMotionListener.RESIZE_SPLIT_HORIZONTAL_CURSOR: {
-                    resizeType = Cursor.W_RESIZE_CURSOR;
-                    break;
-                }
-                case DesignerMouseMotionListener.RESIZE_SPLIT_VERTICAL_CURSOR: {
-                    resizeType = Cursor.S_RESIZE_CURSOR;
-                    break;
-                }
-                default:
-                    break;
-            }
-
-            designerPanel.setCursor(new Cursor(resizeType));
+            final int cursorType = getCursorType(resizeType);
+            designerPanel.setCursor(new Cursor(cursorType));
         }
     }
 
-    private void moveAndResizeSelectedWidget(final MouseEvent e) {
+    private int getCursorType(final int resizeType) {
+        if (resizeType == DesignerMouseMotionListener.DEFAULT_CURSOR) {
+            return Cursor.DEFAULT_CURSOR;
+        } else if (resizeType == DesignerMouseMotionListener.SE_RESIZE_CURSOR) {
+            return Cursor.SE_RESIZE_CURSOR;
+        } else if (resizeType == DesignerMouseMotionListener.NE_RESIZE_CURSOR) {
+            return Cursor.NE_RESIZE_CURSOR;
+        } else if (resizeType == DesignerMouseMotionListener.SW_RESIZE_CURSOR) {
+            return Cursor.SW_RESIZE_CURSOR;
+        } else if (resizeType == DesignerMouseMotionListener.NW_RESIZE_CURSOR) {
+            return Cursor.NW_RESIZE_CURSOR;
+        } else if (resizeType == DesignerMouseMotionListener.RESIZE_SPLIT_HORIZONTAL_CURSOR) {
+            return Cursor.W_RESIZE_CURSOR;
+        } else if (resizeType == DesignerMouseMotionListener.RESIZE_SPLIT_VERTICAL_CURSOR) {
+            return Cursor.S_RESIZE_CURSOR;
+        }
+        return resizeType;
+    }
 
+    private void moveAndResizeSelectedWidget(final MouseEvent mouseEvent) {
         final int resizeType = designerPanel.getResizeType();
         final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
 
         //IWidget w= (IWidget) selectedWidgets.iterator().next();
-        final Set<IWidget> widgetsToUse = widgetSelection.getFlattenedWidgets(selectedWidgets); //w.getType() == IWidget.GROUP ? w.getWidgetsInGroup() : selectedWidgets;
+        final Set<IWidget> widgetsToUse = widgetSelection.getFlattenedWidgets(selectedWidgets);
+        //w.getType() == IWidget.GROUP ? w.getWidgetsInGroup() : selectedWidgets;
 
         // move a selection or single widget
         if (resizeType == DesignerMouseMotionListener.DEFAULT_CURSOR) {
-            widgetSelection.moveWidgets(widgetsToUse, e.getX(), e.getY());
+            widgetSelection.moveWidgets(widgetsToUse, mouseEvent.getX(), mouseEvent.getY());
         } else {
-            widgetSelection.resizeWidgets(widgetsToUse, designerPanel, e.getX(), e.getY(), resizeType);
+            widgetSelection.resizeWidgets(widgetsToUse,
+                    designerPanel,
+                    mouseEvent.getX(),
+                    mouseEvent.getY(),
+                    resizeType);
         }
 
         designerPanel.getMainFrame().setPropertiesCompound(widgetsToUse);

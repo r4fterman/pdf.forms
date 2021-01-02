@@ -1,11 +1,10 @@
 package org.pdf.forms.gui.properties.object.binding;
 
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.Map;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
@@ -32,11 +31,10 @@ public class BindingPanel extends JPanel {
     }
 
     private void initComponents() {
-        final JLabel nameLabel = new JLabel();
-        nameLabel.setText("Name:");
+        final JLabel nameLabel = new JLabel("Name:");
 
         nameField = new JTextField();
-        nameField.addFocusListener(new java.awt.event.FocusAdapter() {
+        nameField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(final FocusEvent evt) {
                 updateName();
@@ -65,8 +63,14 @@ public class BindingPanel extends JPanel {
                                 .addContainerGap()
                                 .add(layout.createParallelGroup(GroupLayout.BASELINE)
                                         .add(nameLabel)
-                                        .add(nameField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                        .add(arrayField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .add(nameField,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE)
+                                        .add(arrayField,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(268, Short.MAX_VALUE))
         );
     }
@@ -77,7 +81,7 @@ public class BindingPanel extends JPanel {
         }
 
         final String name = nameField.getText();
-        for (final IWidget widget : widgetsAndProperties.keySet()) {
+        for (final IWidget widget: widgetsAndProperties.keySet()) {
             final IMainFrame mainFrame = designerPanel.getMainFrame();
             final Element widgetProperties = widgetsAndProperties.get(widget);
             if (name != null && !name.equals("mixed")) {
@@ -86,12 +90,13 @@ public class BindingPanel extends JPanel {
                     mainFrame.renameWidget(oldName, name, widget);
                 }
 
-                final Element nameElement = XMLUtils.getPropertyElement(widgetProperties, "Name").get();
-                nameElement.getAttributeNode("value").setValue(name);
+                XMLUtils.getPropertyElement(widgetProperties, "Name")
+                        .ifPresent(nameElement -> nameElement.getAttributeNode("value").setValue(name));
 
                 final int arrayNumber = mainFrame.getNextArrayNumberForName(name, widget);
-                final Element arrayNumberElement = XMLUtils.getPropertyElement(widgetProperties, "Array Number").get();
-                arrayNumberElement.getAttributeNode("value").setValue(arrayNumber + "");
+                XMLUtils.getPropertyElement(widgetProperties, "Array Number")
+                        .ifPresent(arrayNumberElement -> arrayNumberElement.getAttributeNode("value")
+                                .setValue(String.valueOf(arrayNumber)));
             }
 
             widget.setObjectProperties(widgetProperties);
@@ -114,7 +119,8 @@ public class BindingPanel extends JPanel {
             final Element valueProperties = (Element) objectProperties.getElementsByTagName("binding").item(0);
 
             final String name = XMLUtils.getAttributeFromChildElement(valueProperties, "Name").orElse("");
-            final String arrayNumber = XMLUtils.getAttributeFromChildElement(valueProperties, "Array Number").orElse("0");
+            final String arrayNumber = XMLUtils.getAttributeFromChildElement(valueProperties, "Array Number")
+                    .orElse("0");
 
             nameField.setText(name);
             arrayField.setText(arrayNumber);

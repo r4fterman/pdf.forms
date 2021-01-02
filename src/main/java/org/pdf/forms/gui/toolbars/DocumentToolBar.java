@@ -15,13 +15,18 @@ import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public class DocumentToolBar extends VLToolBar {
 
-    private final CommandListener commandListener;
-
-    private final JButton saveButton;
+    private static final String[] ZOOMS = {
+            "100%",
+            "75%",
+            "50%",
+            "25%"
+    };
 
     private final List<JComponent> zoomComponents = new ArrayList<>();
     private final List<JComponent> documentComponents = new ArrayList<>();
 
+    private final CommandListener commandListener;
+    private final JButton saveButton;
     private final SwingCombo zoomBox;
 
     public DocumentToolBar(final CommandListener commandListener) {
@@ -38,12 +43,7 @@ public class DocumentToolBar extends VLToolBar {
         zoomIn.setEnabled(false);
         zoomComponents.add(zoomIn);
 
-        zoomBox = new SwingCombo(new String[]{
-                "100%",
-                "75%",
-                "50%",
-                "25%"
-        });
+        zoomBox = new SwingCombo(ZOOMS);
         zoomBox.setEditable(true);
         zoomBox.setID(Commands.ZOOM);
         zoomBox.addActionListener(commandListener);

@@ -27,7 +27,7 @@
         <dependency>
             <groupId>org.jpedal</groupId>
             <artifactId>jpedal-lgpl</artifactId>
-            <version>1.0</version>
+            <version>3.45b37</version>
             <scope>system</scope>
             <systemPath>${basedir}/libs/jpedal.jar</systemPath>
         </dependency>
