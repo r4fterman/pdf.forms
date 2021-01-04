@@ -54,13 +54,13 @@ public final class XMLUtils {
         return getAttribute(getElementsFromNodeList(element.getChildNodes()), index);
     }
 
-    public static Optional<String> getAttributeFromChildElement(
+    public static Optional<String> getAttributeValueFromChildElement(
             final Element element,
             final String name) {
-        return getAttributeByName(getElementsFromNodeList(element.getChildNodes()), name);
+        return getAttributeValueByAttributeName(getElementsFromNodeList(element.getChildNodes()), name);
     }
 
-    public static Optional<String> getAttributeFromElement(
+    public static Optional<String> getAttributeValueFromElement(
             final Element element,
             final String attributeName) {
         final NamedNodeMap attributes = element.getAttributes();
@@ -125,11 +125,11 @@ public final class XMLUtils {
 
     }
 
-    private static Optional<String> getAttributeByName(
+    private static Optional<String> getAttributeValueByAttributeName(
             final List<Element> elements,
             final String attributeName) {
         for (final Element element : elements) {
-            final Optional<String> value = getAttributeFromElement(element, attributeName);
+            final Optional<String> value = getAttributeValueFromElement(element, attributeName);
             if (value.isPresent()) {
                 return value;
             }

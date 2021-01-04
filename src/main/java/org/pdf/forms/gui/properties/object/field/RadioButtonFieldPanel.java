@@ -166,7 +166,7 @@ public class RadioButtonFieldPanel extends JPanel {
         final List<String> buttonGroupValues = elementValues.stream()
                 .map(element -> {
                     final Element fieldProperties = (Element) element.getElementsByTagName("field").item(0);
-                    return XMLUtils.getAttributeFromChildElement(fieldProperties, "Group Name").orElse("");
+                    return XMLUtils.getAttributeValueFromChildElement(fieldProperties, "Group Name").orElse("");
                 })
                 .collect(toUnmodifiableList());
 

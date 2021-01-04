@@ -149,7 +149,7 @@ public class SimpleValuePanel extends JPanel {
         for (final Element objectPropertiesElement: widgetsAndProperties.values()) {
             final Element valueProperties = (Element) objectPropertiesElement.getElementsByTagName("value").item(0);
 
-            final String defaultText = XMLUtils.getAttributeFromChildElement(valueProperties, "Default").orElse("");
+            final String defaultText = XMLUtils.getAttributeValueFromChildElement(valueProperties, "Default").orElse("");
             if (defaultTextToUse == null) {
                 defaultTextToUse = defaultText;
             } else {

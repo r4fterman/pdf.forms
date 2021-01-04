@@ -67,7 +67,7 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
         final Element itemsElement = (Element) rootElement.getElementsByTagName("items").item(0);
 
         final String[] items = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes()).stream()
-                .map(item -> XMLUtils.getAttributeFromElement(item, "item").get())
+                .map(item -> XMLUtils.getAttributeValueFromElement(item, "item").get())
                 .toArray(String[]::new);
 
         final Font font = value.getFont();
@@ -166,9 +166,9 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
 
         final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
 
-        final String style = XMLUtils.getAttributeFromChildElement(border, "Border Style").orElse("None");
-        final String width = XMLUtils.getAttributeFromChildElement(border, "Border Width").orElse("1");
-        final String color = XMLUtils.getAttributeFromChildElement(border, "Border Color").orElse(String.valueOf(Color.WHITE.getRGB()));
+        final String style = XMLUtils.getAttributeValueFromChildElement(border, "Border Style").orElse("None");
+        final String width = XMLUtils.getAttributeValueFromChildElement(border, "Border Width").orElse("1");
+        final String color = XMLUtils.getAttributeValueFromChildElement(border, "Border Color").orElse(String.valueOf(Color.WHITE.getRGB()));
 
         switch (style) {
             case "Solid":

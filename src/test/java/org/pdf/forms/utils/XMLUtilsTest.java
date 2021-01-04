@@ -73,7 +73,7 @@ class XMLUtilsTest {
 
     @Test
     void getAttributeFromChildElement_should_return_attribute_value_of_child_element() throws Exception {
-        final Optional<String> attributeValue = XMLUtils.getAttributeFromChildElement(getElement(FONT_CAPTION_ELEMENT), "Font Style");
+        final Optional<String> attributeValue = XMLUtils.getAttributeValueFromChildElement(getElement(FONT_CAPTION_ELEMENT), "Font Style");
 
         assertThat(attributeValue.isPresent(), is(true));
         assertThat(attributeValue.get(), is("1"));
@@ -81,14 +81,14 @@ class XMLUtilsTest {
 
     @Test
     void getAttributeFromChildElement_should_return_null_when_element_name_is_not_existing() throws Exception {
-        final Optional<String> attributeValue = XMLUtils.getAttributeFromChildElement(getElement(FONT_CAPTION_ELEMENT), "Not Existing");
+        final Optional<String> attributeValue = XMLUtils.getAttributeValueFromChildElement(getElement(FONT_CAPTION_ELEMENT), "Not Existing");
 
         assertThat(attributeValue, is(Optional.empty()));
     }
 
     @Test
     void getAttributeFromElement_should_return_attribute_value() throws Exception {
-        final Optional<String> attributeValue = XMLUtils.getAttributeFromElement(getElement("<property name=\"Font Style\" value=\"1\"/>"), "Font Style");
+        final Optional<String> attributeValue = XMLUtils.getAttributeValueFromElement(getElement("<property name=\"Font Style\" value=\"1\"/>"), "Font Style");
 
         assertThat(attributeValue.isPresent(), is(true));
         assertThat(attributeValue.get(), is("1"));
@@ -96,7 +96,7 @@ class XMLUtilsTest {
 
     @Test
     void getAttributeFromElement_should_return_null_when_attribute_is_not_exisiting() throws Exception {
-        final Optional<String> attributeValue = XMLUtils.getAttributeFromElement(getElement(FONT_CAPTION_ELEMENT), "Font Style");
+        final Optional<String> attributeValue = XMLUtils.getAttributeValueFromElement(getElement(FONT_CAPTION_ELEMENT), "Font Style");
 
         assertThat(attributeValue, is(Optional.empty()));
     }

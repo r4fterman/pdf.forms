@@ -368,7 +368,7 @@ public class BorderPropertiesPanel extends JPanel {
         final List<String> values = elements.stream()
                 .map(borderProperties -> {
                     final Element border = (Element) borderProperties.getElementsByTagName(propertyName).item(0);
-                    return XMLUtils.getAttributeFromChildElement(border, attributeName).orElse("");
+                    return XMLUtils.getAttributeValueFromChildElement(border, attributeName).orElse("");
                 })
                 .collect(toUnmodifiableList());
 

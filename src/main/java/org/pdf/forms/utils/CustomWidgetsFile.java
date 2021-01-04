@@ -66,7 +66,7 @@ public final class CustomWidgetsFile extends PropertiesFile {
 
     public boolean isNameTaken(final String name) {
         return XMLUtils.getElementsFromNodeList(getDoc().getElementsByTagName("custom_component")).stream()
-                .map(element -> XMLUtils.getAttributeFromChildElement(element, "name"))
+                .map(element -> XMLUtils.getAttributeValueFromChildElement(element, "name"))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .anyMatch(text -> text.equals(name));

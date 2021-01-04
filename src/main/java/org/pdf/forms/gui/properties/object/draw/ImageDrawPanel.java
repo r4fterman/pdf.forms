@@ -180,7 +180,7 @@ public class ImageDrawPanel extends JPanel {
         final List<String> sizingValues = elements.stream()
                 .map(objectProperties -> {
                     final Element drawProperties = (Element) objectProperties.getElementsByTagName("draw").item(0);
-                    return XMLUtils.getAttributeFromChildElement(drawProperties, "Sizing")
+                    return XMLUtils.getAttributeValueFromChildElement(drawProperties, "Sizing")
                             .orElse("Stretch Image To Fit");
                 })
                 .collect(toUnmodifiableList());
@@ -197,7 +197,7 @@ public class ImageDrawPanel extends JPanel {
         final List<String> locationValues = elements.stream()
                 .map(objectProperties -> {
                     final Element drawProperties = (Element) objectProperties.getElementsByTagName("draw").item(0);
-                    return XMLUtils.getAttributeFromChildElement(drawProperties, "Location").orElse("top left");
+                    return XMLUtils.getAttributeValueFromChildElement(drawProperties, "Location").orElse("top left");
                 })
                 .collect(toUnmodifiableList());
 

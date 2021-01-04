@@ -61,8 +61,8 @@ public class CheckBoxWidget extends Widget implements IWidget {
         setAllowEditOfCaptionOnClick(true);
 
         final Element bindingElement = XMLUtils.getElementsFromNodeList(root.getElementsByTagName("binding")).get(0);
-        setWidgetName(XMLUtils.getAttributeFromChildElement(bindingElement, "Name").orElse(""));
-        setArrayNumber(Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingElement, "Array Number").orElse("0")));
+        setWidgetName(XMLUtils.getAttributeValueFromChildElement(bindingElement, "Name").orElse(""));
+        setArrayNumber(Integer.parseInt(XMLUtils.getAttributeValueFromChildElement(bindingElement, "Array Number").orElse("0")));
 
         final Element rootElement = setupProperties();
         final Node newRoot = getProperties().importNode(root, true);
@@ -202,7 +202,7 @@ public class CheckBoxWidget extends Widget implements IWidget {
 
     private int extractCaptionLocation(final Element layoutProperties) {
         final Element captionElement = (Element) layoutProperties.getElementsByTagName("caption").item(0);
-        return XMLUtils.getAttributeFromChildElement(captionElement, "Position")
+        return XMLUtils.getAttributeValueFromChildElement(captionElement, "Position")
                 .map(caption -> new Caption(caption).getLocation())
                 .orElse(Caption.DEFAULT_LOCATION);
     }
@@ -226,7 +226,7 @@ public class CheckBoxWidget extends Widget implements IWidget {
 
         final Element valueElement = (Element) objectProperties.getElementsByTagName("value").item(0);
 
-        final String state = XMLUtils.getAttributeFromChildElement(valueElement, "Default").orElse("Off");
+        final String state = XMLUtils.getAttributeValueFromChildElement(valueElement, "Default").orElse("Off");
 
         comboBox.setSelected(state.equals("On"));
 

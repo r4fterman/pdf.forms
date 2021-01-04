@@ -204,7 +204,7 @@ public class ValuePanel extends JPanel {
             }
 
             final Element valueProperties = (Element) objectProperties.getElementsByTagName("value").item(0);
-            final String defaultText = XMLUtils.getAttributeFromChildElement(valueProperties, "Default").orElse("");
+            final String defaultText = XMLUtils.getAttributeValueFromChildElement(valueProperties, "Default").orElse("");
             defaultBox.setSelectedItem(defaultText);
         } else {
             setItemsEnabled(false);
@@ -225,7 +225,7 @@ public class ValuePanel extends JPanel {
 
         final List<Element> items = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
         for (final Element item: items) {
-            XMLUtils.getAttributeFromElement(item, "item")
+            XMLUtils.getAttributeValueFromElement(item, "item")
                     .ifPresent(value -> defaultBox.addItem(value));
         }
     }
@@ -255,7 +255,7 @@ public class ValuePanel extends JPanel {
         final List<String> values = elements.stream()
                 .map(objectProperties -> {
                     final Element valueProperties = (Element) objectProperties.getElementsByTagName("value").item(0);
-                    return XMLUtils.getAttributeFromChildElement(valueProperties, "Default")
+                    return XMLUtils.getAttributeValueFromChildElement(valueProperties, "Default")
                             .orElse("");
                 })
                 .collect(toUnmodifiableList());

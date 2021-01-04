@@ -423,14 +423,14 @@ public class FontPropertiesPanel extends JPanel {
 
         final Element caption = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
 
-        final String captionFontName = XMLUtils.getAttributeFromChildElement(caption, PROPERTY_FONT_NAME)
+        final String captionFontName = XMLUtils.getAttributeValueFromChildElement(caption, PROPERTY_FONT_NAME)
                 .orElse("Arial");
-        final String captionFontSize = XMLUtils.getAttributeFromChildElement(caption, PROPERTY_FONT_SIZE).orElse("10");
-        final String captionFontStyle = XMLUtils.getAttributeFromChildElement(caption, PROPERTY_FONT_STYLE).orElse("1");
-        final String captionUnderline = XMLUtils.getAttributeFromChildElement(caption, PROPERTY_UNDERLINE).orElse("1");
-        final String captionStrikethrough = XMLUtils.getAttributeFromChildElement(caption, PROPERTY_STRIKETHROUGH)
+        final String captionFontSize = XMLUtils.getAttributeValueFromChildElement(caption, PROPERTY_FONT_SIZE).orElse("10");
+        final String captionFontStyle = XMLUtils.getAttributeValueFromChildElement(caption, PROPERTY_FONT_STYLE).orElse("1");
+        final String captionUnderline = XMLUtils.getAttributeValueFromChildElement(caption, PROPERTY_UNDERLINE).orElse("1");
+        final String captionStrikethrough = XMLUtils.getAttributeValueFromChildElement(caption, PROPERTY_STRIKETHROUGH)
                 .orElse("1");
-        final String captionColor = XMLUtils.getAttributeFromChildElement(caption, PROPERTY_COLOR).orElse(String
+        final String captionColor = XMLUtils.getAttributeValueFromChildElement(caption, PROPERTY_COLOR).orElse(String
                 .valueOf(Color.BLACK.getRGB()));
 
         final String valueFontName;
@@ -444,12 +444,12 @@ public class FontPropertiesPanel extends JPanel {
             /* get value properties */
             final Element value = (Element) fontProperties.getElementsByTagName("font_value").item(0);
 
-            valueFontName = XMLUtils.getAttributeFromChildElement(value, PROPERTY_FONT_NAME).get();
-            valueFontSize = XMLUtils.getAttributeFromChildElement(value, PROPERTY_FONT_SIZE).get();
-            valueFontStyle = XMLUtils.getAttributeFromChildElement(value, PROPERTY_FONT_STYLE).get();
-            valueUnderline = XMLUtils.getAttributeFromChildElement(value, PROPERTY_UNDERLINE).get();
-            valueStrikethrough = XMLUtils.getAttributeFromChildElement(value, PROPERTY_STRIKETHROUGH).get();
-            valueColor = XMLUtils.getAttributeFromChildElement(value, PROPERTY_COLOR).get();
+            valueFontName = XMLUtils.getAttributeValueFromChildElement(value, PROPERTY_FONT_NAME).get();
+            valueFontSize = XMLUtils.getAttributeValueFromChildElement(value, PROPERTY_FONT_SIZE).get();
+            valueFontStyle = XMLUtils.getAttributeValueFromChildElement(value, PROPERTY_FONT_STYLE).get();
+            valueUnderline = XMLUtils.getAttributeValueFromChildElement(value, PROPERTY_UNDERLINE).get();
+            valueStrikethrough = XMLUtils.getAttributeValueFromChildElement(value, PROPERTY_STRIKETHROUGH).get();
+            valueColor = XMLUtils.getAttributeValueFromChildElement(value, PROPERTY_COLOR).get();
         } else {
             valueFontName = captionFontName;
             valueFontSize = captionFontSize;

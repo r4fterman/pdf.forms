@@ -102,8 +102,8 @@ public class OpenDesignerFileCommand implements Command {
 
             final Map<String, String> changedFiles = getChangedPdfFileLocations(pages);
             for (final Element page : pages) {
-                final Optional<String> pageType = XMLUtils.getAttributeFromChildElement(page, "pagetype");
-                final Optional<String> pageName = XMLUtils.getAttributeFromChildElement(page, "pagename");
+                final Optional<String> pageType = XMLUtils.getAttributeValueFromChildElement(page, "pagetype");
+                final Optional<String> pageName = XMLUtils.getAttributeValueFromChildElement(page, "pagename");
 
                 final Element pageData = (Element) page.getElementsByTagName("pagedata").item(0);
 
@@ -200,7 +200,7 @@ public class OpenDesignerFileCommand implements Command {
         XMLUtils.getElementsFromNodeList(radioButtonGroupsElement.getChildNodes())
                 .forEach(buttonGroupElement -> {
                     final ButtonGroup buttonGroup = new ButtonGroup(type);
-                    XMLUtils.getAttributeFromElement(buttonGroupElement, "buttongroupname")
+                    XMLUtils.getAttributeValueFromElement(buttonGroupElement, "buttongroupname")
                             .ifPresent(buttonGroup::setName);
 
                     if (type == IWidget.RADIO_BUTTON) {
@@ -245,7 +245,7 @@ public class OpenDesignerFileCommand implements Command {
 
         final List<IWidget> widgets = new ArrayList<>();
         for (final Element widgetElement : widgetsInPageList) {
-            XMLUtils.getAttributeFromChildElement(widgetElement, "type")
+            XMLUtils.getAttributeValueFromChildElement(widgetElement, "type")
                     .map(type -> IWidget.WIDGET_TYPES.getOrDefault(type.toLowerCase(), IWidget.NONE))
                     .map(widgetType -> createWidgetByType(widgetElement, widgetType))
                     .ifPresent(widgets::add);

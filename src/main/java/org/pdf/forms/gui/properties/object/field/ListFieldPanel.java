@@ -249,7 +249,7 @@ public class ListFieldPanel extends JPanel {
                 for (int i = 0; i < itemsList.size(); i++) {
                     final Element item = itemsList.get(i);
 
-                    final String value = XMLUtils.getAttributeFromElement(item, "item").orElse("");
+                    final String value = XMLUtils.getAttributeValueFromElement(item, "item").orElse("");
 
                     ((ItemsTableModel) itemsTable.getModel()).insertRow(i);
                     itemsTable.setValueAt(value, i, 0);

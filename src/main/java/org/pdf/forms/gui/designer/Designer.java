@@ -114,7 +114,7 @@ public class Designer extends PdfDecoder implements IDesigner {
             final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
             final Element fieldProperties = (Element) objectProperties.getElementsByTagName("field").item(0);
 
-            final String visibility = XMLUtils.getAttributeFromChildElement(fieldProperties, "Presence").orElse("");
+            final String visibility = XMLUtils.getAttributeValueFromChildElement(fieldProperties, "Presence").orElse("");
             if (visibility.equals("Visible")) {
                 g2.translate(widget.getX(), widget.getY());
 

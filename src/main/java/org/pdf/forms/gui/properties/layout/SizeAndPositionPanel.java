@@ -462,7 +462,7 @@ public class SizeAndPositionPanel extends JPanel {
         final List<String> xCoordValues = elements.stream()
                 .map(props -> {
                     final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
-                    return XMLUtils.getAttributeFromChildElement(sizeAndPosition, "X").orElse("");
+                    return XMLUtils.getAttributeValueFromChildElement(sizeAndPosition, "X").orElse("");
                 })
                 .collect(Collectors.toUnmodifiableList());
 
@@ -478,7 +478,7 @@ public class SizeAndPositionPanel extends JPanel {
         final List<String> yCoordValues = elements.stream()
                 .map(props -> {
                     final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
-                    return XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Y").orElse("");
+                    return XMLUtils.getAttributeValueFromChildElement(sizeAndPosition, "Y").orElse("");
                 })
                 .collect(Collectors.toUnmodifiableList());
 
@@ -494,7 +494,7 @@ public class SizeAndPositionPanel extends JPanel {
         final List<String> widthValues = elements.stream()
                 .map(props -> {
                     final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
-                    return XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Width").orElse("");
+                    return XMLUtils.getAttributeValueFromChildElement(sizeAndPosition, "Width").orElse("");
                 })
                 .collect(Collectors.toUnmodifiableList());
 
@@ -510,7 +510,7 @@ public class SizeAndPositionPanel extends JPanel {
         final List<String> heightValues = elements.stream()
                 .map(props -> {
                     final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
-                    return XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Height").orElse("");
+                    return XMLUtils.getAttributeValueFromChildElement(sizeAndPosition, "Height").orElse("");
                 })
                 .collect(Collectors.toUnmodifiableList());
 
@@ -526,7 +526,7 @@ public class SizeAndPositionPanel extends JPanel {
         final List<String> anchorValues = elements.stream()
                 .map(props -> {
                     final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
-                    return XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Anchor").orElse("");
+                    return XMLUtils.getAttributeValueFromChildElement(sizeAndPosition, "Anchor").orElse("");
                 })
                 .collect(Collectors.toUnmodifiableList());
 
@@ -542,7 +542,7 @@ public class SizeAndPositionPanel extends JPanel {
         final List<String> rotationValues = elements.stream()
                 .map(props -> {
                     final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
-                    return XMLUtils.getAttributeFromChildElement(sizeAndPosition, "Rotation")
+                    return XMLUtils.getAttributeValueFromChildElement(sizeAndPosition, "Rotation")
                             .orElse("");
                 })
                 .collect(Collectors.toUnmodifiableList());

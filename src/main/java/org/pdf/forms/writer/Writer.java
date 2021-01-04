@@ -249,9 +249,9 @@ public class Writer {
         final Element page = pages.get(currentPage - 1);
         final Element pageDataElement = (Element) page.getElementsByTagName("pagedata").item(0);
 
-        final int width = Integer.parseInt(XMLUtils.getAttributeFromChildElement(pageDataElement, "width")
+        final int width = Integer.parseInt(XMLUtils.getAttributeValueFromChildElement(pageDataElement, "width")
                 .orElse("25"));
-        final int height = Integer.parseInt(XMLUtils.getAttributeFromChildElement(pageDataElement, "height")
+        final int height = Integer.parseInt(XMLUtils.getAttributeValueFromChildElement(pageDataElement, "height")
                 .orElse("25"));
 
         return new Rectangle(width, height);
@@ -432,9 +432,9 @@ public class Writer {
 
         final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
 
-        final String style = XMLUtils.getAttributeFromChildElement(border, "Border Style").orElse("None");
-        final String width = XMLUtils.getAttributeFromChildElement(border, "Border Width").orElse("1");
-        final String color = XMLUtils.getAttributeFromChildElement(border, "Border Color").orElse(String
+        final String style = XMLUtils.getAttributeValueFromChildElement(border, "Border Style").orElse("None");
+        final String width = XMLUtils.getAttributeValueFromChildElement(border, "Border Width").orElse("1");
+        final String color = XMLUtils.getAttributeValueFromChildElement(border, "Border Color").orElse(String
                 .valueOf(Color.WHITE.getRGB()));
 
         if ("Solid".equals(style)) {

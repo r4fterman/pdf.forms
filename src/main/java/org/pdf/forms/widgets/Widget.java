@@ -337,12 +337,12 @@ public class Widget {
     protected void setFontProperties(
             final Element properties,
             final IPdfComponent component) {
-        final Optional<String> fontNameProperty = XMLUtils.getAttributeFromChildElement(properties, "Font Name");
-        final Optional<String> fontSizeProperty = XMLUtils.getAttributeFromChildElement(properties, "Font Size");
-        final Optional<String> fontStyleProperty = XMLUtils.getAttributeFromChildElement(properties, "Font Style");
-        final Optional<String> underlineProperty = XMLUtils.getAttributeFromChildElement(properties, "Underline");
-        final Optional<String> strikethroughProperty = XMLUtils.getAttributeFromChildElement(properties, "Strikethrough");
-        final Optional<String> colorProperty = XMLUtils.getAttributeFromChildElement(properties, "Color");
+        final Optional<String> fontNameProperty = XMLUtils.getAttributeValueFromChildElement(properties, "Font Name");
+        final Optional<String> fontSizeProperty = XMLUtils.getAttributeValueFromChildElement(properties, "Font Size");
+        final Optional<String> fontStyleProperty = XMLUtils.getAttributeValueFromChildElement(properties, "Font Style");
+        final Optional<String> underlineProperty = XMLUtils.getAttributeValueFromChildElement(properties, "Underline");
+        final Optional<String> strikethroughProperty = XMLUtils.getAttributeValueFromChildElement(properties, "Strikethrough");
+        final Optional<String> colorProperty = XMLUtils.getAttributeValueFromChildElement(properties, "Color");
 
         final Font baseFont = fontHandler.getFontFromName(fontNameProperty.get());
 
@@ -387,10 +387,10 @@ public class Widget {
     void setSizeAndPosition(final Element layoutPropertiesElement) {
         final Element sizeAndPositionElement = (Element) layoutPropertiesElement.getElementsByTagName("sizeandposition").item(0);
 
-        final int x = Integer.parseInt(XMLUtils.getAttributeFromChildElement(sizeAndPositionElement, "X").orElse("0"));
-        final int width = Integer.parseInt(XMLUtils.getAttributeFromChildElement(sizeAndPositionElement, "Width").orElse("25"));
-        final int y = Integer.parseInt(XMLUtils.getAttributeFromChildElement(sizeAndPositionElement, "Y").orElse("0"));
-        final int height = Integer.parseInt(XMLUtils.getAttributeFromChildElement(sizeAndPositionElement, "Height").orElse("25"));
+        final int x = Integer.parseInt(XMLUtils.getAttributeValueFromChildElement(sizeAndPositionElement, "X").orElse("0"));
+        final int width = Integer.parseInt(XMLUtils.getAttributeValueFromChildElement(sizeAndPositionElement, "Width").orElse("25"));
+        final int y = Integer.parseInt(XMLUtils.getAttributeValueFromChildElement(sizeAndPositionElement, "Y").orElse("0"));
+        final int height = Integer.parseInt(XMLUtils.getAttributeValueFromChildElement(sizeAndPositionElement, "Height").orElse("25"));
 
         setPosition(x, y);
         setSize(width, height);
@@ -399,8 +399,8 @@ public class Widget {
     protected void setParagraphProperties(
             final Element captionPropertiesElement,
             final IPdfComponent component) {
-        final Optional<String> horizontalAlignment = XMLUtils.getAttributeFromChildElement(captionPropertiesElement, "Horizontal Alignment");
-        final Optional<String> verticallAlignment = XMLUtils.getAttributeFromChildElement(captionPropertiesElement, "Vertical Alignment");
+        final Optional<String> horizontalAlignment = XMLUtils.getAttributeValueFromChildElement(captionPropertiesElement, "Horizontal Alignment");
+        final Optional<String> verticallAlignment = XMLUtils.getAttributeValueFromChildElement(captionPropertiesElement, "Vertical Alignment");
 
         if (component instanceof PdfCaption) {
             String text = component.getText();
@@ -490,8 +490,8 @@ public class Widget {
     void setBindingProperties(final Element objectPropertiesElement) {
         final Element bindingPropertiesElement = (Element) objectPropertiesElement.getElementsByTagName("binding").item(0);
 
-        widgetName = XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Name").orElse("");
-        arrayNumber = Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingPropertiesElement, "Array Number").orElse("0"));
+        widgetName = XMLUtils.getAttributeValueFromChildElement(bindingPropertiesElement, "Name").orElse("");
+        arrayNumber = Integer.parseInt(XMLUtils.getAttributeValueFromChildElement(bindingPropertiesElement, "Array Number").orElse("0"));
 
         setSize(getWidth(), getHeight());
     }
@@ -502,10 +502,10 @@ public class Widget {
 
             final Element captionProperties = (Element) properties.getElementsByTagName("caption_properties").item(0);
 
-            final String captionText = XMLUtils.getAttributeFromChildElement(captionProperties, "Text").orElse("");
+            final String captionText = XMLUtils.getAttributeValueFromChildElement(captionProperties, "Text").orElse("");
             getCaptionComponent().setText(captionText);
 
-            final Optional<String> stringLocation = XMLUtils.getAttributeFromChildElement(captionProperties, "Divisor Location");
+            final Optional<String> stringLocation = XMLUtils.getAttributeValueFromChildElement(captionProperties, "Divisor Location");
             if (stringLocation.isPresent() && !stringLocation.get().equals("")) {
                 final int divisorLocation = Integer.parseInt(stringLocation.get());
                 final SplitComponent ptf = (SplitComponent) baseComponent;
@@ -521,12 +521,12 @@ public class Widget {
 
         final Element borderProperties = (Element) borderPropertiesElement.getElementsByTagName("borders").item(0);
 
-        final String borderStyle = XMLUtils.getAttributeFromChildElement(borderProperties, "Border Style").orElse("None");
+        final String borderStyle = XMLUtils.getAttributeValueFromChildElement(borderProperties, "Border Style").orElse("None");
         if (borderStyle.equals("None")) {
             component.setBorder(null);
         } else {
-            final Optional<String> leftEdgeWidth = XMLUtils.getAttributeFromChildElement(borderProperties, "Border Width");
-            final Optional<String> leftEdgeColor = XMLUtils.getAttributeFromChildElement(borderProperties, "Border Color");
+            final Optional<String> leftEdgeWidth = XMLUtils.getAttributeValueFromChildElement(borderProperties, "Border Width");
+            final Optional<String> leftEdgeColor = XMLUtils.getAttributeValueFromChildElement(borderProperties, "Border Color");
 
             final Map<String, String> borderPropertiesMap = new HashMap<>();
             if (borderStyle.equals("Beveled")) {
@@ -552,7 +552,7 @@ public class Widget {
         final Element backgroundFillProperties =
                 (Element) borderPropertiesElement.getElementsByTagName("backgroundfill").item(0);
 
-        final String backgroundColor = XMLUtils.getAttributeFromChildElement(backgroundFillProperties, "Fill Color").orElse(String.valueOf(Color.WHITE.getRGB()));
+        final String backgroundColor = XMLUtils.getAttributeValueFromChildElement(backgroundFillProperties, "Fill Color").orElse(String.valueOf(Color.WHITE.getRGB()));
         component.setBackground(new Color(Integer.parseInt(backgroundColor)));
 
         setSize(getWidth(), getHeight());

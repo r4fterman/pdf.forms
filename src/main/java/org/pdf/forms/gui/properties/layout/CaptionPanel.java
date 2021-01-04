@@ -6,8 +6,11 @@ import static org.jdesktop.layout.GroupLayout.PREFERRED_SIZE;
 import static org.jdesktop.layout.LayoutStyle.RELATED;
 
 import java.awt.event.ActionEvent;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.swing.*;
 
@@ -19,7 +22,13 @@ import org.w3c.dom.Element;
 
 public class CaptionPanel extends JPanel {
 
-    private static final String[] CAPTIONS = {"Left", "Right", "Top", "Bottom", "None"};
+    private static final String[] CAPTIONS = {
+            "Left",
+            "Right",
+            "Top",
+            "Bottom",
+            "None"
+    };
 
     private final IDesigner designerPanel;
 
@@ -52,27 +61,26 @@ public class CaptionPanel extends JPanel {
         final GroupLayout.ParallelGroup horizontalGroup = groupLayout
                 .createParallelGroup(LEADING)
                 .add(groupLayout.createSequentialGroup()
-                             .add(positionLabel)
-                             .addPreferredGap(RELATED)
-                             .add(captionLocationBox, PREFERRED_SIZE, 68, PREFERRED_SIZE)
-                             .add(22, 22, 22)
-                             .add(reserveLabel).addPreferredGap(RELATED)
-                             .add(reserveBox, PREFERRED_SIZE, 66, PREFERRED_SIZE));
+                        .add(positionLabel)
+                        .addPreferredGap(RELATED)
+                        .add(captionLocationBox, PREFERRED_SIZE, 68, PREFERRED_SIZE)
+                        .add(22, 22, 22)
+                        .add(reserveLabel).addPreferredGap(RELATED)
+                        .add(reserveBox, PREFERRED_SIZE, 66, PREFERRED_SIZE));
         groupLayout.setHorizontalGroup(horizontalGroup);
 
         final GroupLayout.ParallelGroup verticalGroup = groupLayout
                 .createParallelGroup(LEADING)
                 .add(groupLayout.createParallelGroup(GroupLayout.BASELINE)
-                             .add(positionLabel)
-                             .add(reserveLabel)
-                             .add(captionLocationBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE)
-                             .add(reserveBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE));
+                        .add(positionLabel)
+                        .add(reserveLabel)
+                        .add(captionLocationBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE)
+                        .add(reserveBox, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE));
         groupLayout.setVerticalGroup(verticalGroup);
     }
 
-    @SuppressWarnings("unchecked")
     private void updateCaptionPosition(final ActionEvent event) {
-        final String captionPosition = (String) ((JComboBox<String>) event.getSource()).getSelectedItem();
+        final String captionPosition = (String) captionLocationBox.getSelectedItem();
         if (captionPosition == null) {
             return;
         }
@@ -99,46 +107,38 @@ public class CaptionPanel extends JPanel {
         final boolean isComponentSplit = isComponentSplit(widgetsAndProperties);
         captionLocationBox.setEnabled(isComponentSplit);
 
-        String captionPositionToUse = null;
-        for (final Map.Entry<IWidget, Element> entry: widgetsAndProperties.entrySet()) {
-            final IWidget widget = entry.getKey();
-            final Element props = entry.getValue();
-            final boolean componentSplit = widget.isComponentSplit();
-
-            final String captionPosition = getCaptionPosition(props, componentSplit);
-            if (captionPositionToUse == null) {
-                captionPositionToUse = captionPosition;
-            } else {
-                if (componentSplit && !captionPositionToUse.equals(captionPosition)) {
-                    captionPositionToUse = "mixed";
-                }
-            }
-        }
-
         if (isComponentSplit) {
-            final Object selectedItem;
-            if ("mixed".equals(captionPositionToUse)) {
-                selectedItem = null;
+            final String captionPositionToUse = getCaptionPositionToUse(widgetsAndProperties);
+            if (captionPositionToUse.equals("mixed")) {
+                captionLocationBox.setSelectedItem(null);
             } else {
-                selectedItem = captionPositionToUse;
+                captionLocationBox.setSelectedItem(captionPositionToUse);
             }
-            captionLocationBox.setSelectedItem(selectedItem);
         } else {
             captionLocationBox.setSelectedItem(null);
         }
     }
 
-    private String getCaptionPosition(
-            final Element props,
-            final boolean componentSplit) {
-        if (componentSplit) {
-            final Element caption = (Element) props.getElementsByTagName("caption").item(0);
-            final Optional<String> position = XMLUtils.getAttributeFromChildElement(caption, "Position");
-            if (position.isPresent()) {
-                return position.get();
-            }
+    private String getCaptionPositionToUse(final Map<IWidget, Element> widgetsAndProperties) {
+        final List<String> captionValues = widgetsAndProperties.entrySet().stream()
+                .map(entry -> {
+                    final IWidget widget = entry.getKey();
+                    final Element widgetProperties = entry.getValue();
+                    if (widget.isComponentSplit()) {
+                        final Element caption = (Element) widgetProperties.getElementsByTagName("caption").item(0);
+                        return XMLUtils.getAttributeValueFromChildElement(caption, "Position").orElse("");
+                    }
+                    return "";
+                })
+                .collect(Collectors.toUnmodifiableList());
+
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(captionValues, captionValues.get(0)) == captionValues.size();
+        if (listContainsOnlyEqualValues) {
+            return captionValues.get(0);
         }
-        return null;
+        return "mixed";
+
     }
 
     private boolean isComponentSplit(final Map<IWidget, Element> widgetsAndProperties) {

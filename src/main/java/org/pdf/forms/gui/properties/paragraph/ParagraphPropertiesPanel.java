@@ -450,7 +450,7 @@ public class ParagraphPropertiesPanel extends JPanel {
             final String attributeName,
             final String defaultValue) {
         final Element propertyElement = (Element) propertiesElement.getElementsByTagName(propertiesName).item(0);
-        return XMLUtils.getAttributeFromChildElement(propertyElement, attributeName).orElse(defaultValue);
+        return XMLUtils.getAttributeValueFromChildElement(propertyElement, attributeName).orElse(defaultValue);
     }
 
 }

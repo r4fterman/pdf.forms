@@ -315,13 +315,13 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         final Element fontProperties = entry.getValue();
 
         final Element caption = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
-        final String captionFontStyle = XMLUtils.getAttributeFromChildElement(caption, fontPropertyName)
+        final String captionFontStyle = XMLUtils.getAttributeValueFromChildElement(caption, fontPropertyName)
                 .orElse("");
 
         final String valueFontStyle;
         if (widget.allowEditCaptionAndValue()) {
             final Element value = (Element) fontProperties.getElementsByTagName("font_value").item(0);
-            valueFontStyle = XMLUtils.getAttributeFromChildElement(value, fontPropertyName).orElse("");
+            valueFontStyle = XMLUtils.getAttributeValueFromChildElement(value, fontPropertyName).orElse("");
         } else {
             valueFontStyle = captionFontStyle;
         }
@@ -364,7 +364,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
 
                     final Element captionElement = (Element) propertiesElement.getElementsByTagName(captionPropertyName)
                             .item(0);
-                    final String captionHorizontalAlignment = XMLUtils.getAttributeFromChildElement(captionElement,
+                    final String captionHorizontalAlignment = XMLUtils.getAttributeValueFromChildElement(captionElement,
                             attributeName).orElse("left");
 
                     final String valueHorizontalAlignment;
@@ -372,7 +372,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
                         final Element valueElement = (Element) propertiesElement
                                 .getElementsByTagName(valuePropertyName).item(0);
 
-                        valueHorizontalAlignment = XMLUtils.getAttributeFromChildElement(valueElement,
+                        valueHorizontalAlignment = XMLUtils.getAttributeValueFromChildElement(valueElement,
                                 attributeName).orElse("left");
                     } else {
                         valueHorizontalAlignment = captionHorizontalAlignment;

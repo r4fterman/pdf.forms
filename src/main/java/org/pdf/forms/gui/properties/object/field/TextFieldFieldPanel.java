@@ -180,7 +180,7 @@ public class TextFieldFieldPanel extends JPanel {
                     final Element fieldProperties = (Element) element.getElementsByTagName("field")
                             .item(0);
 
-                    return XMLUtils.getAttributeFromChildElement(fieldProperties,
+                    return XMLUtils.getAttributeValueFromChildElement(fieldProperties,
                             "Allow Multiple Lines")
                             .map(Boolean::valueOf)
                             .orElse(false);
@@ -196,7 +196,7 @@ public class TextFieldFieldPanel extends JPanel {
                     final Element fieldProperties = (Element) element.getElementsByTagName("field")
                             .item(0);
 
-                    return XMLUtils.getAttributeFromChildElement(fieldProperties, "Limit Length")
+                    return XMLUtils.getAttributeValueFromChildElement(fieldProperties, "Limit Length")
                             .map(Boolean::valueOf)
                             .orElse(false);
                 })
@@ -222,7 +222,7 @@ public class TextFieldFieldPanel extends JPanel {
         final List<String> maxCharValues = widgetElements.stream()
                 .map(element -> {
                     final Element fieldProperties = (Element) element.getElementsByTagName("field").item(0);
-                    return XMLUtils.getAttributeFromChildElement(fieldProperties, "Max Chars")
+                    return XMLUtils.getAttributeValueFromChildElement(fieldProperties, "Max Chars")
                             .orElse("10");
                 })
                 .collect(toUnmodifiableList());

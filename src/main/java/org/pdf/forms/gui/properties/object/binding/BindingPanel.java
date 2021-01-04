@@ -118,8 +118,8 @@ public class BindingPanel extends JPanel {
             /* add binding properties */
             final Element valueProperties = (Element) objectProperties.getElementsByTagName("binding").item(0);
 
-            final String name = XMLUtils.getAttributeFromChildElement(valueProperties, "Name").orElse("");
-            final String arrayNumber = XMLUtils.getAttributeFromChildElement(valueProperties, "Array Number")
+            final String name = XMLUtils.getAttributeValueFromChildElement(valueProperties, "Name").orElse("");
+            final String arrayNumber = XMLUtils.getAttributeValueFromChildElement(valueProperties, "Array Number")
                     .orElse("0");
 
             nameField.setText(name);

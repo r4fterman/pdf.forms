@@ -57,8 +57,8 @@ public class ButtonWidget extends Widget implements IWidget {
         setAllowEditCaptionAndValue(false);
 
         final Element bindingElement = XMLUtils.getElementsFromNodeList(root.getElementsByTagName("binding")).get(0);
-        setWidgetName(XMLUtils.getAttributeFromChildElement(bindingElement, "Name").orElse(""));
-        setArrayNumber(Integer.parseInt(XMLUtils.getAttributeFromChildElement(bindingElement, "Array Number").orElse("0")));
+        setWidgetName(XMLUtils.getAttributeValueFromChildElement(bindingElement, "Name").orElse(""));
+        setArrayNumber(Integer.parseInt(XMLUtils.getAttributeValueFromChildElement(bindingElement, "Array Number").orElse("0")));
 
         final Element rootElement = setupProperties();
         final Node newRoot = getProperties().importNode(root, true);
@@ -186,7 +186,7 @@ public class ButtonWidget extends Widget implements IWidget {
         /* set value getProperties() */
         final Element valueElement = (Element) objectProperties.getElementsByTagName("value").item(0);
 
-        final String defaultText = XMLUtils.getAttributeFromChildElement(valueElement, "Default").orElse("");
+        final String defaultText = XMLUtils.getAttributeValueFromChildElement(valueElement, "Default").orElse("");
 
         button.setText(defaultText);
 
