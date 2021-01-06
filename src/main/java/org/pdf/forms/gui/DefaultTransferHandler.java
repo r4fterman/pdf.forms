@@ -3,6 +3,7 @@ package org.pdf.forms.gui;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.commands.ImportPdfCommand;
 import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.IDesigner;
+import org.pdf.forms.utils.DesignerPropertiesFile;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
@@ -37,18 +39,21 @@ public class DefaultTransferHandler extends TransferHandler {
     private final String version;
     private final WidgetFactory widgetFactory;
     private final Configuration configuration;
+    private final DesignerPropertiesFile designerPropertiesFile;
 
     DefaultTransferHandler(
             final IDesigner designerPanel,
             final IMainFrame mainFrame,
             final String version,
             final WidgetFactory widgetFactory,
-            final Configuration configuration) {
+            final Configuration configuration,
+            final DesignerPropertiesFile designerPropertiesFile) {
         this.designerPanel = designerPanel;
         this.mainFrame = mainFrame;
         this.version = version;
         this.widgetFactory = widgetFactory;
         this.configuration = configuration;
+        this.designerPropertiesFile = designerPropertiesFile;
     }
 
     @Override
@@ -65,27 +70,26 @@ public class DefaultTransferHandler extends TransferHandler {
         final int widgetToAdd = designerPanel.getWidgetToAdd();
         if (widgetToAdd == IWidget.NONE) {
             final DataFlavor[] flavors = transferable.getTransferDataFlavors();
-            final int lastFlavor = flavors.length - 1;
-
-            // Check the flavors and see if we find one we like.
-            // If we do, save it.
-            DataFlavor listFlavor = null;
-            for (int f = 0; f <= lastFlavor; f++) {
-                if (flavors[f].isFlavorJavaFileListType()) {
-                    listFlavor = flavors[f];
-                }
-            }
-
-            return !dropData(srcComponent, transferable, flavors, listFlavor);
+            return dropData(srcComponent, transferable, flavors);
         }
         return false;
+    }
+
+    private DataFlavor getListDataFlavor(final DataFlavor[] flavors) {
+        // Check the flavors and see if we find one we like.
+        // If we do, save it.
+        for (final DataFlavor flavor: flavors) {
+            if (flavor.isFlavorJavaFileListType()) {
+                return flavor;
+            }
+        }
+        return null;
     }
 
     private boolean dropData(
             final JComponent srcComponent,
             final Transferable transferable,
-            final DataFlavor[] flavors,
-            final DataFlavor listFlavor) {
+            final DataFlavor[] flavors) {
         // Ok, now try to display the content of the drop.
         try {
             final DataFlavor bestTextFlavor = DataFlavor.selectBestTextFlavor(flavors);
@@ -110,7 +114,11 @@ public class DefaultTransferHandler extends TransferHandler {
                         openFile(url.get(), srcComponent);
                     }
                 }
-            } else if (listFlavor != null) {
+                return true;
+            }
+
+            final DataFlavor listFlavor = getListDataFlavor(flavors);
+            if (listFlavor != null) {
                 // this is most likely a file being dragged in
                 final List<File> list = (List<File>) transferable.getTransferData(listFlavor);
                 if (list.size() == 1) {
@@ -121,47 +129,41 @@ public class DefaultTransferHandler extends TransferHandler {
                     JOptionPane.showMessageDialog(srcComponent, "You may only import 1 file at a time");
                 }
             }
-        } catch (final Exception e) {
-            logger.error("Caught exception decoding drag'n'drop transferable", e);
             return true;
+        } catch (SAXException | IOException | UnsupportedFlavorException | ParserConfigurationException e) {
+            logger.error("Caught exception decoding drag'n'drop transferable", e);
+            return false;
         }
-        return false;
     }
 
     private void openFile(
-            final String file,
-            final Component src) {
-        if (file == null) {
+            final String filePath,
+            final Component component) {
+        if (filePath == null) {
             return;
         }
 
-        final File testExists = new File(file);
-        boolean isURL = false;
-        if (file.startsWith("http:") || file.startsWith("file:")) {
-            isURL = true;
-        }
+        final File file = new File(filePath);
+        final boolean isNotURL = !filePath.startsWith("http:") && !filePath.startsWith("file:");
 
-        if ((!isURL) && (!testExists.exists())) {
-            JOptionPane.showMessageDialog(src, file + '\n' + "does not exist");
-        } else if ((!isURL) && (testExists.isDirectory())) {
-            JOptionPane.showMessageDialog(src, file + '\n' + "This file is a Directory and cannot be opened");
+        if (isNotURL && !file.exists()) {
+            JOptionPane.showMessageDialog(component, filePath + '\n' + "does not exist.");
+        } else if (isNotURL && file.isDirectory()) {
+            JOptionPane.showMessageDialog(component,
+                    filePath + '\n' + "This file is a directory and cannot be opened.");
+        } else if (filePath.endsWith(".pdf")) {
+            new ImportPdfCommand(mainFrame, version, widgetFactory, designerPropertiesFile).importPDF(filePath);
+        } else if (filePath.endsWith(".des")) {
+            new OpenDesignerFileCommand(mainFrame, version, widgetFactory, designerPropertiesFile)
+                    .openDesignerFile(filePath);
+            // final boolean isImage = filePath.endsWith(".des") || filePath.endsWith(".tif")
+            // || filePath.endsWith(".tiff") || filePath.endsWith(".png")
+            // || filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")
+            // || filePath.endsWith(".gif");
+            //} else if (isImage) {
+            //currentCommands.openFile(file);
         } else {
-            final boolean isPdf = file.endsWith(".pdf");
-            final boolean isDes = file.endsWith(".des");
-            final boolean isImage = file.endsWith(".des") || file.endsWith(".tif")
-                    || file.endsWith(".tiff") || file.endsWith(".png")
-                    || file.endsWith(".jpg") || file.endsWith(".jpeg")
-                    || file.endsWith(".gif");
-
-            if (isPdf) {
-                new ImportPdfCommand(mainFrame, version, widgetFactory, configuration).importPDF(file);
-            } else if (isDes) {
-                new OpenDesignerFileCommand(mainFrame, version, widgetFactory, configuration).openDesignerFile(file);
-                //} else if (isImage) {
-                //currentCommands.openFile(file);
-            } else {
-                JOptionPane.showMessageDialog(src, "You may only import a valid PDF, des file or image");
-            }
+            JOptionPane.showMessageDialog(component, "You may only import a valid PDF, des file or image.");
         }
     }
 

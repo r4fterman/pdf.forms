@@ -1,9 +1,10 @@
 package org.pdf.forms.gui.properties.object;
 
+import static java.util.stream.Collectors.toUnmodifiableMap;
+
 import java.awt.*;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.swing.*;
 
@@ -55,25 +56,41 @@ public class ObjectPropertiesPanel extends JPanel {
         }
 
         final Map<IWidget, Element> widgetsAndProperties = widgets.stream()
-                .collect(Collectors.toUnmodifiableMap(
+                .collect(toUnmodifiableMap(
                         widget -> widget,
                         widget -> (Element) widget.getProperties().getElementsByTagName("object").item(0))
                 );
 
-        if (type == IWidget.TEXT_FIELD) {
-            setTextFieldOptionToPanel(widgetsAndProperties);
-        } else if (type == IWidget.BUTTON) {
-            setButtonOptionsToPanel(widgetsAndProperties);
-        } else if (type == IWidget.COMBO_BOX) {
-            setComboBoxOptionsToPanel(widgetsAndProperties);
-        } else if (type == IWidget.LIST_BOX) {
-            setListBoxOptionsToPanel(widgetsAndProperties);
-        } else if (type == IWidget.CHECK_BOX) {
-            setCheckBoxOptionsToPanel(widgetsAndProperties);
-        } else if (type == IWidget.RADIO_BUTTON) {
-            setRadioButtonOptionsToPanel(widgetsAndProperties);
-        } else if (type == IWidget.IMAGE) {
-            setImageOptionsToPanel(widgetsAndProperties);
+        setPropertiesToPanel(type, widgetsAndProperties);
+    }
+
+    private void setPropertiesToPanel(
+            final int type,
+            final Map<IWidget, Element> widgetsAndProperties) {
+        switch (type) {
+            case IWidget.TEXT_FIELD:
+                setTextFieldOptionToPanel(widgetsAndProperties);
+                break;
+            case IWidget.BUTTON:
+                setButtonOptionsToPanel(widgetsAndProperties);
+                break;
+            case IWidget.COMBO_BOX:
+                setComboBoxOptionsToPanel(widgetsAndProperties);
+                break;
+            case IWidget.LIST_BOX:
+                setListBoxOptionsToPanel(widgetsAndProperties);
+                break;
+            case IWidget.CHECK_BOX:
+                setCheckBoxOptionsToPanel(widgetsAndProperties);
+                break;
+            case IWidget.RADIO_BUTTON:
+                setRadioButtonOptionsToPanel(widgetsAndProperties);
+                break;
+            case IWidget.IMAGE:
+                setImageOptionsToPanel(widgetsAndProperties);
+                break;
+            default:
+                break;
         }
     }
 
@@ -147,8 +164,7 @@ public class ObjectPropertiesPanel extends JPanel {
     }
 
     private BindingPanel createBindingPanel(final Map<IWidget, Element> widgetsAndProperties) {
-        final BindingPanel bindingPanel = new BindingPanel();
-        bindingPanel.setDesignerPanel(designerPanel);
+        final BindingPanel bindingPanel = new BindingPanel(designerPanel.getMainFrame());
         bindingPanel.setProperties(widgetsAndProperties);
         return bindingPanel;
     }

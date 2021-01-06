@@ -1,10 +1,10 @@
 package org.pdf.forms.gui.commands;
 
-import java.awt.Component;
+import java.awt.*;
+import java.io.File;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
-import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.utils.CustomWidgetsFile;
 
@@ -15,9 +15,9 @@ class AddSelectionToLibraryCommand implements Command {
 
     AddSelectionToLibraryCommand(
             final IMainFrame mainFrame,
-            final Configuration configuration) {
+            final File configurationDirectory) {
         this.mainFrame = mainFrame;
-        this.customWidgetsFile = CustomWidgetsFile.getInstance(configuration.getConfigDirectory());
+        this.customWidgetsFile = CustomWidgetsFile.getInstance(configurationDirectory);
     }
 
     @Override
@@ -49,13 +49,17 @@ class AddSelectionToLibraryCommand implements Command {
     }
 
     private String askForOtherComponentName() {
-        return JOptionPane.showInputDialog((Component) mainFrame, "The name you have entered is already taken, please enter another name", "New component name",
+        return JOptionPane.showInputDialog((Component) mainFrame,
+                "The name you have entered is already taken, please enter another name",
+                "New component name",
                 JOptionPane.WARNING_MESSAGE);
     }
 
     private String askForNewComponentName() {
-        return JOptionPane.showInputDialog((Component) mainFrame, "Enter a name for the new component", "New component name",
-                    JOptionPane.QUESTION_MESSAGE);
+        return JOptionPane.showInputDialog((Component) mainFrame,
+                "Enter a name for the new component",
+                "New component name",
+                JOptionPane.QUESTION_MESSAGE);
     }
 
 }

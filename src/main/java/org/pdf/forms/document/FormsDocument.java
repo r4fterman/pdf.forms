@@ -29,7 +29,7 @@ public class FormsDocument {
             //todo: we really need this to be generated each time the file is saved
             addVersion(rootElement, version);
             addJavaScript(rootElement);
-        } catch (final ParserConfigurationException e) {
+        } catch (ParserConfigurationException e) {
             logger.error("Error building forms document", e);
         }
     }
@@ -40,7 +40,7 @@ public class FormsDocument {
 
             final Node newRoot = documentProperties.importNode(loadedRoot, true);
             documentProperties.appendChild(newRoot);
-        } catch (final ParserConfigurationException e) {
+        } catch (ParserConfigurationException e) {
             logger.error("Error building forms document", e);
         }
     }

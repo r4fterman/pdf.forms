@@ -1,14 +1,9 @@
 package org.pdf.forms.gui.designer.gui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Toolkit;
+import java.awt.*;
+import java.util.Optional;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 
 public class Rule extends JComponent {
 
@@ -19,7 +14,7 @@ public class Rule extends JComponent {
 
     public static final double DPI = 72;
 
-    private boolean isMetric;
+    private final boolean isMetric;
 
     private final int orientation;
     private int increment;
@@ -30,15 +25,15 @@ public class Rule extends JComponent {
 
     public Rule(
             final int inset,
-            final int o,
-            final boolean m) {
+            final int orientation,
+            final boolean isMetric) {
 
-        orientation = o;
-        isMetric = m;
+        this.orientation = orientation;
+        this.isMetric = isMetric;
 
         start = inset;
 
-        if (orientation == HORIZONTAL) {
+        if (this.orientation == HORIZONTAL) {
             end = Toolkit.getDefaultToolkit().getScreenSize().width;
         } else {
             end = Toolkit.getDefaultToolkit().getScreenSize().height;
@@ -49,32 +44,19 @@ public class Rule extends JComponent {
         setFont(new Font("SansSerif", Font.PLAIN, 10));
     }
 
-    public void setIsMetric(final boolean isMetric) {
-        this.isMetric = isMetric;
-        setIncrementAndUnits();
-        repaint();
-    }
-
     private void setIncrementAndUnits() {
-        int units;
+        final int units;
         if (isMetric) {
+            this.incrementsPerUnit = 10;
 
-            incrementsPerUnit = 10;
-
-            units = (int) (INCH / 2.54); // dots per centimeter
-            increment = Math.round((float) units / (float) incrementsPerUnit);
+            // dots per centimeter
+            units = (int) (INCH / 2.54);
+            this.increment = Math.round((float) units / (float) incrementsPerUnit);
         } else {
+            this.incrementsPerUnit = 2;
             units = INCH;
-            increment = units / 2;
+            this.increment = units / incrementsPerUnit;
         }
-    }
-
-    public boolean isMetric() {
-        return this.isMetric;
-    }
-
-    public int getIncrement() {
-        return increment;
     }
 
     public void setPreferredHeight(final int ph) {
@@ -87,7 +69,6 @@ public class Rule extends JComponent {
 
     @Override
     protected void paintComponent(final Graphics g) {
-
         super.paintComponent(g);
 
         final Graphics2D g2 = (Graphics2D) g;
@@ -99,54 +80,70 @@ public class Rule extends JComponent {
 
         if (orientation == HORIZONTAL) {
             g2.drawLine(markerLocation, 0, markerLocation, getHeight());
+            paintComponentHorizontal(g2);
         } else {
             g2.drawLine(0, markerLocation, getWidth(), markerLocation);
+            paintComponentVertical(g2);
         }
+    }
 
+    private void paintComponentHorizontal(final Graphics2D g2) {
         int incrementCount = 0;
         int numberCount = 0;
-        String text;
 
         for (int i = start; i < end; i += increment) {
-            int tickLength;
-            if (incrementCount % incrementsPerUnit == 0) {
-                tickLength = 13;
-                text = numberCount + "";
-                numberCount++;
-            } else {
-                if (incrementCount % (incrementsPerUnit / 2) == 0) {
-                    tickLength = 8;
-                } else {
-                    tickLength = 5;
-                }
+            g2.drawLine(i, SIZE - 1, i, SIZE - getTickLength(incrementCount) - 1);
 
-                text = null;
+            final Optional<String> text = getComponentText(incrementCount, numberCount);
+            if (text.isPresent()) {
+                g2.drawString(text.get(), i + 3, 10);
+                numberCount++;
             }
 
             incrementCount++;
-
-            if (orientation == HORIZONTAL) {
-                g2.drawLine(i, SIZE - 1, i, SIZE - tickLength - 1);
-
-                if (text != null) {
-                    g2.drawString(text, i + 3, 10);
-                }
-
-            } else {
-                g2.drawLine(SIZE - 1, i, SIZE - tickLength - 1, i);
-
-                if (text != null) {
-                    final FontMetrics metrics = g2.getFontMetrics();
-                    final int width = (int) metrics.getStringBounds(text, g2).getWidth() + i + 2;
-
-                    g2.rotate(-Math.PI / 2.0, 9, width);
-
-                    g2.drawString(text, 9, width);
-
-                    g2.rotate(Math.PI / 2.0, 9, width);
-                }
-            }
         }
+    }
+
+    private void paintComponentVertical(final Graphics2D g2) {
+        int incrementCount = 0;
+        int numberCount = 0;
+        for (int i = start; i < end; i += increment) {
+            g2.drawLine(SIZE - 1, i, SIZE - getTickLength(incrementCount) - 1, i);
+
+            final Optional<String> text = getComponentText(incrementCount, numberCount);
+            if (text.isPresent()) {
+                final FontMetrics metrics = g2.getFontMetrics();
+                final int width = (int) metrics.getStringBounds(text.get(), g2).getWidth() + i + 2;
+
+                g2.rotate(-Math.PI / 2.0, 9, width);
+                g2.drawString(text.get(), 9, width);
+                g2.rotate(Math.PI / 2.0, 9, width);
+
+                numberCount++;
+            }
+
+            incrementCount++;
+        }
+    }
+
+    private Optional<String> getComponentText(
+            final int incrementCount,
+            final int numberCount) {
+        if (incrementCount % incrementsPerUnit == 0) {
+            final String text = String.valueOf(numberCount);
+            return Optional.of(text);
+        }
+        return Optional.empty();
+    }
+
+    private int getTickLength(final int incrementCount) {
+        if (incrementCount % incrementsPerUnit == 0) {
+            return 13;
+        }
+        if (incrementCount % (incrementsPerUnit / 2) == 0) {
+            return 8;
+        }
+        return 5;
     }
 
     public void updateMarker(final int location) {

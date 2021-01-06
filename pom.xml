@@ -181,7 +181,7 @@
                             <Class-Path>${library.folder}/jpedal.jar</Class-Path>
                         </manifestEntries>
                     </archive>
-                    <finalName>pdfforms</finalName>
+                    <finalName>pdf-forms-designer</finalName>
                 </configuration>
             </plugin>
 

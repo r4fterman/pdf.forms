@@ -1,7 +1,6 @@
 package org.pdf.forms.gui.designer;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,6 +20,7 @@ import org.pdf.forms.gui.designer.gui.Rule;
 import org.pdf.forms.gui.designer.listeners.DesignerKeyListener;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseListener;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
+import org.pdf.forms.utils.DesignerPropertiesFile;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
@@ -41,9 +41,9 @@ public class Designer extends PdfDecoder implements IDesigner {
     private final Rule verticalRuler;
     private final Point mouseLocation = new Point();
     private final CaptionChanger captionChanger = new CaptionChanger();
-
-    private List<IWidget> widgets;
     private final Set<IWidget> selectedWidgets = new HashSet<>();
+
+    private List<IWidget> pageWidgets;
     private int resizeType = DesignerMouseMotionListener.DEFAULT_CURSOR;
     private int widgetToAdd = IWidget.NONE;
     private Point dragBoxMouseLocation = null;
@@ -65,13 +65,14 @@ public class Designer extends PdfDecoder implements IDesigner {
             final String version,
             final FontHandler fontHandler,
             final WidgetFactory widgetFactory,
-            final Configuration configuration) {
+            final Configuration configuration,
+            final DesignerPropertiesFile designerPropertiesFile) {
         super();
 
         setBackground(BACKGROUND_COLOR);
 
         selectionBox = new DesignerSelectionBox(this);
-        widgetSelection = new WidgetSelection(this, version, fontHandler, widgetFactory, configuration);
+        widgetSelection = new WidgetSelection(this, version, fontHandler, widgetFactory, configuration, designerPropertiesFile);
 
         this.horizontalRuler = horizontalRuler;
         this.verticalRuler = verticalRuler;
@@ -104,28 +105,43 @@ public class Designer extends PdfDecoder implements IDesigner {
             final IWidget widget,
             final Graphics2D g2) {
         if (widget.getType() == IWidget.GROUP) {
-            widgetSelection.drawMulitipleSelectionBox(g2, new HashSet<>(widget.getWidgetsInGroup()), false);
-
-            for (final IWidget drawWidget: widget.getWidgetsInGroup()) {
-                drawWidget(drawWidget, g2);
-            }
+            drawGroupWidget(widget, g2);
         } else {
-            final Document document = widget.getProperties();
-            final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
-            final Element fieldProperties = (Element) objectProperties.getElementsByTagName("field").item(0);
+            drawNormalWidget(widget, g2);
+        }
+    }
 
-            final String visibility = XMLUtils.getAttributeValueFromChildElement(fieldProperties, "Presence").orElse("");
-            if (visibility.equals("Visible")) {
-                g2.translate(widget.getX(), widget.getY());
+    private void drawNormalWidget(
+            final IWidget widget,
+            final Graphics2D g2) {
+        final Document document = widget.getProperties();
+        final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
+        final Element fieldProperties = (Element) objectProperties.getElementsByTagName("field").item(0);
 
-                widget.getWidget().paint(g2);
+        XMLUtils.getAttributeValueFromChildElement(fieldProperties, "Presence")
+                .filter(visibility -> visibility.equals("Visible"))
+                .ifPresent(visibility -> {
+                    g2.translate(widget.getX(), widget.getY());
 
-                widgetSelection.drawSingleSectionBox(g2,
-                                                     widget,
-                                                     selectedWidgets.size() == 1 && selectedWidgets.contains(widget));
+                    widget.getWidget().paint(g2);
 
-                g2.translate(-widget.getX(), -widget.getY());
-            }
+                    final boolean drawNodes = selectedWidgets.size() == 1 && selectedWidgets.contains(widget);
+                    widgetSelection.drawSingleSectionBox(
+                            g2,
+                            widget,
+                            drawNodes);
+
+                    g2.translate(-widget.getX(), -widget.getY());
+                });
+    }
+
+    private void drawGroupWidget(
+            final IWidget widget,
+            final Graphics2D g2) {
+        final List<IWidget> widgetsInGroup = widget.getWidgetsInGroup();
+        widgetSelection.drawMulitipleSelectionBox(g2, Set.copyOf(widgetsInGroup), false);
+        for (final IWidget drawWidget: widgetsInGroup) {
+            drawWidget(drawWidget, g2);
         }
     }
 
@@ -133,59 +149,43 @@ public class Designer extends PdfDecoder implements IDesigner {
     public void paintComponent(final Graphics g) {
         super.paintComponent(g);
 
-        final Graphics2D graphics2D = (Graphics2D) g;
+        final Graphics2D g2 = (Graphics2D) g;
 
-        final AffineTransform transform = graphics2D.getTransform();
         //  transform.scale(scale, scale); @scale
-        graphics2D.setTransform(transform);
+        g2.setTransform(g2.getTransform());
+        // draw the basic blank page
+        drawPage(g2);
+        // draw each widget in turn onto the page
+        pageWidgets.forEach(widget -> drawWidget(widget, g2));
 
-        /*
-         * draw the basic blank page
-         */
-        drawPage(graphics2D);
-
-        /*
-         * draw each widget in turn onto the page
-         */
-        for (final IWidget widget: widgets) {
-            drawWidget(widget, graphics2D);
+        if (!selectedWidgets.isEmpty()) {
+            drawSelection(g2);
         }
+        selectionBox.paintBox(g2);
+    }
 
-        final IWidget selectedWidget;
-        if (selectedWidgets.isEmpty()) {
-            selectedWidget = null;
-        } else {
-            selectedWidget = selectedWidgets.iterator().next();
-        }
+    private void drawSelection(final Graphics2D g2) {
+        final IWidget selectedWidget = selectedWidgets.iterator().next();
 
-        /*
-         * if we're dragging out a component from the library, dragBoxMouseLocation will
-         * not be null, so we need to draw the special box, and display the tooltip.
-         */
-        if (dragBoxMouseLocation != null && selectedWidget != null) {
+        // if we're dragging out a component from the library, dragBoxMouseLocation will
+        // not be null, so we need to draw the special box, and display the tooltip.
+        if (dragBoxMouseLocation != null) {
             final Rectangle boxSize = selectedWidget.getBounds();
-            drawDragOutBoxAndDisplayTooltip(graphics2D, boxSize);
+            drawDragOutBoxAndDisplayTooltip(g2, boxSize);
         }
 
-        if (selectedWidget != null) {
-            final Rectangle boxSize = WidgetSelection.getMultipleWidgetBounds(selectedWidgets);
-
-            /*
-             * if we are dragging the widget, or resizing it, we need to display the
-             * required tooltip which displays the components size/coordinates details
-             */
-            if (currentlyDragging) {
-                displayTooltip(graphics2D, boxSize, false);
-            } else if (isResizing) {
-                displayTooltip(graphics2D, boxSize, true);
-            }
+        // if we are dragging the widget, or resizing it, we need to display the
+        // required tooltip which displays the components size/coordinates details
+        final Rectangle boxSize = WidgetSelection.getMultipleWidgetBounds(selectedWidgets);
+        if (currentlyDragging) {
+            displayTooltip(g2, boxSize, false);
+        } else if (isResizing) {
+            displayTooltip(g2, boxSize, true);
         }
 
-        if (selectedWidgets.size() > 1 || (selectedWidget != null && selectedWidget.getType() == IWidget.GROUP)) {
-            widgetSelection.drawMulitipleSelectionBox(graphics2D, selectedWidgets, true);
+        if (selectedWidgets.size() > 1 || selectedWidget.getType() == IWidget.GROUP) {
+            widgetSelection.drawMulitipleSelectionBox(g2, selectedWidgets, true);
         }
-
-        selectionBox.paintBox(graphics2D);
     }
 
     private void drawDragOutBoxAndDisplayTooltip(
@@ -234,12 +234,12 @@ public class Designer extends PdfDecoder implements IDesigner {
         if (isResizing) {
             final double width = (double) boxSize.width / units;
             final double height = (double) boxSize.height / units;
-            return round(width) + "cm x " + round(height) + "cm";
+            return round(width) + " cm x " + round(height) + " cm";
         }
 
         final double xLocation = (double) (boxSize.x - inset) / units;
         final double yLocation = (double) (boxSize.y - inset) / units;
-        return round(xLocation) + "cm , " + round(yLocation) + "cm";
+        return round(xLocation) + " cm , " + round(yLocation) + " cm";
     }
 
     private double round(final double number) {
@@ -255,9 +255,9 @@ public class Designer extends PdfDecoder implements IDesigner {
 
     @Override
     public void close() {
-        removeWidgetsFromHierarchy(widgets);
+        removeWidgetsFromHierarchy(pageWidgets);
 
-        widgets.clear();
+        pageWidgets.clear();
         selectedWidgets.clear();
 
         drawingState = IDesigner.CLOSED;
@@ -281,42 +281,30 @@ public class Designer extends PdfDecoder implements IDesigner {
 
     @Override
     public void displayPage(final Page page) {
-        currentPage = page;
-        widgets = page.getWidgets();
+        this.currentPage = page;
+        this.pageWidgets = page.getWidgets();
         selectedWidgets.clear();
 
         final String pdfFile = page.getPdfFileLocation();
         if (pdfFile == null) {
-            drawingState = IDesigner.SIMPLEPAGE;
-
-            pageWidth = page.getWidth();
-            pageHeight = page.getHeight();
+            this.drawingState = IDesigner.SIMPLEPAGE;
 
             closePdfFile();
+
+            this.pageWidth = page.getWidth();
+            this.pageHeight = page.getHeight();
         } else {
-            drawingState = IDesigner.PDFPAGE;
+            this.drawingState = IDesigner.PDFPAGE;
+
+            closePdfFile();
+            setDisplayForms(false);
 
             try {
-                closePdfFile();
+                final int pdfPageNumber = displayPdfFile(page, pdfFile);
 
-                setDisplayForms(false);
-
-                if (pdfFile.startsWith("http:") || pdfFile.startsWith("file:")) {
-                    openPdfFileFromURL(pdfFile);
-                } else {
-                    openPdfFile(pdfFile);
-                }
-
-                setPDFBorder(BorderFactory.createLineBorder(Color.black, 1));
-                setInset(inset, inset);
-
-                final int pdfPageNumber = page.getPdfPageNumber();
-                setPageParameters(1, pdfPageNumber);
-                decodePage(pdfPageNumber);
-
-                pageWidth = getPdfPageData().getCropBoxWidth(pdfPageNumber);
-                pageHeight = getPdfPageData().getCropBoxHeight(pdfPageNumber);
-            } catch (final Exception e) {
+                this.pageWidth = getPdfPageData().getCropBoxWidth(pdfPageNumber);
+                this.pageHeight = getPdfPageData().getCropBoxHeight(pdfPageNumber);
+            } catch (Exception e) {
                 logger.error("Error displaying page", e);
             }
         }
@@ -324,12 +312,31 @@ public class Designer extends PdfDecoder implements IDesigner {
         updateUI();
     }
 
+    private int displayPdfFile(
+            final Page page,
+            final String pdfFile) throws Exception {
+        if (pdfFile.startsWith("http:") || pdfFile.startsWith("file:")) {
+            openPdfFileFromURL(pdfFile);
+        } else {
+            openPdfFile(pdfFile);
+        }
+
+        setPDFBorder(BorderFactory.createLineBorder(Color.black, 1));
+        setInset(inset, inset);
+
+        final int pdfPageNumber = page.getPdfPageNumber();
+        setPageParameters(1, pdfPageNumber);
+        decodePage(pdfPageNumber);
+
+        return pdfPageNumber;
+    }
+
     @Override
     public IWidget getWidgetAt(
             final int x,
             final int y) {
-        for (int i = widgets.size() - 1; i > 0; i--) {
-            final IWidget widget = widgets.get(i);
+        for (int i = pageWidgets.size() - 1; i > 0; i--) {
+            final IWidget widget = pageWidgets.get(i);
             if (widget.getBounds().contains(x, y)) {
                 return widget;
             }
@@ -342,31 +349,27 @@ public class Designer extends PdfDecoder implements IDesigner {
         mainFrame.addWidgetToHierarchy(widget);
         mainFrame.addWidgetToPage(widget);
 
-        final Set<IWidget> set = new HashSet<>();
-        set.add(widget);
-
-        mainFrame.setPropertiesCompound(set);
-        mainFrame.setPropertiesToolBar(set);
+        final Set<IWidget> widgets = Set.of(widget);
+        mainFrame.setPropertiesCompound(widgets);
+        mainFrame.setPropertiesToolBar(widgets);
     }
 
     @Override
     public void addWidget(
             final int index,
-            final IWidget w) {
-        widgets.add(index, w);
+            final IWidget widget) {
+        pageWidgets.add(index, widget);
     }
 
     @Override
     public void removeSelectedWidgets() {
-        widgets.removeAll(selectedWidgets);
+        pageWidgets.removeAll(selectedWidgets);
 
         removeWidgetsFromHierarchy(selectedWidgets);
     }
 
     private void removeWidgetsFromHierarchy(final Collection<IWidget> widgets) {
-        for (final IWidget widget: widgets) {
-            mainFrame.removeWidgetFromHierarchy(widget);
-        }
+        widgets.forEach(mainFrame::removeWidgetFromHierarchy);
     }
 
     @Override
@@ -495,12 +498,12 @@ public class Designer extends PdfDecoder implements IDesigner {
 
     @Override
     public List<IWidget> getWidgets() {
-        return widgets;
+        return pageWidgets;
     }
 
     @Override
-    public void setIsResizingSplitComponent(final boolean isResizingSplitComponentSplitComponent) {
-        isResizingSplitComponent = isResizingSplitComponentSplitComponent;
+    public void setIsResizingSplitComponent(final boolean isResizingSplitComponent) {
+        this.isResizingSplitComponent = isResizingSplitComponent;
     }
 
     @Override

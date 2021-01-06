@@ -6,13 +6,11 @@ import static org.hamcrest.Matchers.is;
 import java.nio.file.Path;
 import java.util.Set;
 
-import javax.swing.JLabel;
+import javax.swing.*;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.TextWidget;
@@ -22,18 +20,11 @@ class CustomWidgetsFileTest {
 
     private CustomWidgetsFile customWidgetFile;
 
-    @AfterEach
-    void tearDown() {
-        if (customWidgetFile != null) {
-            customWidgetFile.destroy();
-        }
-    }
-
     @Test
-    void checkAllElementsPresent_should_return_true_for_new_created_properties_file(@TempDir final Path configDir) throws Exception {
+    void checkAllElementsPresent_should_return_true_for_new_created_properties_file(@TempDir final Path configDir) {
         customWidgetFile = CustomWidgetsFile.getInstance(configDir.toFile());
 
-        assertThat(customWidgetFile.checkAllElementsPresent(), is(true));
+        assertThat(customWidgetFile.checkForModelUpdate(customWidgetFile.getDocument()), is(false));
     }
 
     @Test
@@ -45,10 +36,9 @@ class CustomWidgetsFileTest {
 
     @Disabled(value = "Does not work on headless Travis CI")
     void addCustomWidget_should_add_widget_component(@TempDir final Path configDir) {
-        final Configuration configuration = new Configuration();
         customWidgetFile = CustomWidgetsFile.getInstance(configDir.toFile());
-
-        final FontHandler fontHandler = new FontHandler(configuration);
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir.toFile());
+        final FontHandler fontHandler = new FontHandler(designerPropertiesFile);
         final PdfCaption pdfCaption = new PdfCaption("Text", fontHandler);
         final JLabel jLabel = new JLabel("Text");
         final TextWidget textWidget = new TextWidget(IWidget.TEXT, pdfCaption, jLabel, fontHandler);

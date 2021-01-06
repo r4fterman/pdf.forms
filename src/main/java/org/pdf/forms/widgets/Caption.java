@@ -15,13 +15,13 @@ class Caption {
             "bottom", SplitComponent.CAPTION_BOTTOM
     );
 
-    private final String caption;
+    private final String value;
 
-    Caption(final String caption) {
-        this.caption = caption;
+    Caption(final String value) {
+        this.value = value;
     }
 
     public int getLocation() {
-        return LOCATIONS.getOrDefault(caption.toLowerCase(), DEFAULT_LOCATION);
+        return LOCATIONS.getOrDefault(value.toLowerCase(), DEFAULT_LOCATION);
     }
 }

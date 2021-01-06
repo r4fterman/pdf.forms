@@ -5,11 +5,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 
-import javax.swing.JLabel;
+import javax.swing.*;
 
 import org.easymock.EasyMockSupport;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.fonts.FontHandler;
+import org.pdf.forms.utils.DesignerPropertiesFile;
 import org.pdf.forms.widgets.CheckBoxWidget;
 import org.pdf.forms.widgets.ComboBoxWidget;
 import org.pdf.forms.widgets.IWidget;
@@ -35,7 +35,7 @@ class WidgetFactoryTest extends EasyMockSupport {
     @BeforeEach
     void setUp() {
         final Configuration configuration = new Configuration();
-        final FontHandler fontHandler = new FontHandler(configuration);
+        final FontHandler fontHandler = new FontHandler(new DesignerPropertiesFile(configuration.getConfigDirectory()));
         this.widgetFactory = new WidgetFactory(fontHandler);
     }
 

@@ -9,7 +9,7 @@ import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class PropertyChanger {
+public final class PropertyChanger {
 
     private static void setProperty(
             final String value,
@@ -133,5 +133,9 @@ public class PropertyChanger {
                     .ifPresent(propertyElement ->
                             propertyElement.getAttributeNode("value").setValue(height));
         }
+    }
+
+    private PropertyChanger() {
+        // do nothing
     }
 }

@@ -92,7 +92,7 @@ public class PdfTextWriter implements PdfComponentWriter {
          */
         try {
             mapper.awtToPdf(font);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Failed converting font from AWT to PDF for {}!", font.getName(), e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());

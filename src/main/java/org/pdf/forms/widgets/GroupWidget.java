@@ -37,7 +37,7 @@ public class GroupWidget implements IWidget {
     private Element setupProperties() {
         try {
             properties = XMLUtils.createNewDocument();
-        } catch (final ParserConfigurationException e) {
+        } catch (ParserConfigurationException e) {
             logger.error("Error setting up properties", e);
         }
 

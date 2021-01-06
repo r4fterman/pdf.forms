@@ -103,6 +103,7 @@ public class DragableComponent implements DragGestureListener, DragSourceListene
 
     @Override
     public void dropActionChanged(final DragSourceDragEvent dsde) {
+        // do nothing
     }
 
     @Override

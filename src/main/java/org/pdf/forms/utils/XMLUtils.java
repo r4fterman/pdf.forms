@@ -5,14 +5,23 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -22,7 +31,10 @@ import org.xml.sax.SAXException;
 
 public final class XMLUtils {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMLUtils.class);
+
     private static final DocumentBuilderFactory FACTORY = DocumentBuilderFactory.newInstance();
+
     private static final String ATTRIBUTE_NAME = "name";
     private static final String ATTRIBUTE_VALUE = "value";
     private static final String ELEMENT_PROPERTY = "property";
@@ -128,7 +140,7 @@ public final class XMLUtils {
     private static Optional<String> getAttributeValueByAttributeName(
             final List<Element> elements,
             final String attributeName) {
-        for (final Element element : elements) {
+        for (final Element element: elements) {
             final Optional<String> value = getAttributeValueFromElement(element, attributeName);
             if (value.isPresent()) {
                 return value;
@@ -155,5 +167,22 @@ public final class XMLUtils {
 
     private static DocumentBuilder createDocumentBuilder() throws ParserConfigurationException {
         return FACTORY.newDocumentBuilder();
+    }
+
+    public static String serialize(final Node node) {
+        try {
+            final TransformerFactory transFactory = TransformerFactory.newInstance();
+            transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+//            transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+            final Transformer transformer = transFactory.newTransformer();
+            final StringWriter buffer = new StringWriter();
+            transformer.transform(new DOMSource(node), new StreamResult(buffer));
+            return buffer.toString();
+        } catch (TransformerException e) {
+            LOGGER.error("Unable to serialize node.", e);
+            return "";
+        }
     }
 }

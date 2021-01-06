@@ -210,7 +210,7 @@ public class TextFieldFieldPanel extends JPanel {
                 .frequency(valueList, valueList.get(0)) == valueList.size();
 
         if (listContainsOnlyEqualValues) {
-            if (valueList.get(0)) {
+            if (Boolean.TRUE.equals(valueList.get(0))) {
                 return TristateCheckBox.SELECTED;
             }
             return TristateCheckBox.NOT_SELECTED;

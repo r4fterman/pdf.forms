@@ -1,8 +1,6 @@
 package org.pdf.forms.writer;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,7 +34,7 @@ import com.itextpdf.text.pdf.TextField;
 
 public class PdfTextFieldWriter implements PdfComponentWriter {
 
-    private Logger logger = LoggerFactory.getLogger(PdfTextFieldWriter.class);
+    private final Logger logger = LoggerFactory.getLogger(PdfTextFieldWriter.class);
 
     private final Set<String> fontSubstitutions = new HashSet<>();
 
@@ -132,7 +130,7 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
          */
         try {
             mapper.awtToPdf(font);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Failed converting font from AWT to PDF for {}!", font.getName(), e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());
@@ -198,20 +196,19 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
             final Map<PdfName, String> eventsAndScripts,
             final PdfFormField formField,
             final PdfWriter writer) {
-        for (final PdfName pdfName : eventsAndScripts.keySet()) {
-            final String script = eventsAndScripts.get(pdfName);
-
+        for (final Map.Entry<PdfName, String> entry : eventsAndScripts.entrySet()) {
+            final String script = entry.getValue();
             if (!script.equals("")) {
-                formField.setAdditionalActions(pdfName, PdfAction.javaScript(script, writer));
+                formField.setAdditionalActions(entry.getKey(), PdfAction.javaScript(script, writer));
             }
         }
     }
 
     private BaseFont getBaseFont(final Font font) throws IOException, DocumentException {
-        final String fontPath = fontHandler.getAbsoluteFontPath(font);
         try {
+            final String fontPath = fontHandler.getAbsoluteFontPath(font);
             return BaseFont.createFont(fontPath, "Cp1250", BaseFont.EMBEDDED);
-        } catch (final DocumentException e) {
+        } catch (DocumentException e) {
             logger.error("Error embedding font. So use Helvetica instead.", e);
 
             /*

@@ -1,13 +1,13 @@
 package org.pdf.forms.gui.commands;
 
-import java.awt.Component;
-import java.awt.Frame;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.swing.JDialog;
+import javax.swing.*;
+import javax.xml.XMLConstants;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -52,7 +52,7 @@ class BugReportCommand implements Command {
 
             final Double size = round(designerFile.length() / 1000d);
             filesAndSizes.put("Designer File", size);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             logger.error("Unable to create temporary bug report file", e);
         }
 
@@ -63,11 +63,14 @@ class BugReportCommand implements Command {
             final Document documentProperties,
             final String fileName) {
         try {
-            final Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            // transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
 
+            final Transformer transformer = transformerFactory.newTransformer();
             transformer.transform(new DOMSource(documentProperties), new StreamResult(fileName));
-        } catch (final TransformerException e) {
+        } catch (TransformerException e) {
             logger.error("Error writing xml to file {}", fileName, e);
         }
     }

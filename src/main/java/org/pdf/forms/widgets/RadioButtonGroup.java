@@ -7,10 +7,12 @@ public class RadioButtonGroup {
     private String name;
 
     public RadioButtonGroup() {
-        String name = "Radio Button Group" + nextNumber;
+        this.name = createUniqueName();
         nextNumber++;
+    }
 
-        this.name = name;
+    private String createUniqueName() {
+        return "Radio Button Group " + nextNumber;
     }
 
     public String getName() {

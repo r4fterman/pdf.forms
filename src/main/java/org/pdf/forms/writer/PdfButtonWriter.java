@@ -1,10 +1,8 @@
 package org.pdf.forms.writer;
 
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.pdf.forms.fonts.FontHandler;
@@ -60,7 +58,6 @@ public class PdfButtonWriter implements PdfComponentWriter {
         final Rectangle pdfValueBounds = convertJavaCoordsToPdfCoords(valueBounds, pageSize);
 
         final Font font = value.getFont();
-
         final BaseFont baseFont = getBaseFont(font);
 
         final PushbuttonField pushbutton = new PushbuttonField(writer, pdfValueBounds, widget.getWidgetName());
@@ -70,21 +67,14 @@ public class PdfButtonWriter implements PdfComponentWriter {
         pushbutton.setTextColor(getBaseColor(value.getForeground()));
         pushbutton.setBackgroundColor(getBaseColor(value.getBackground()));
 
-        final org.w3c.dom.Document document = widget.getProperties();
-        final Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
-        final List borderElement = XMLUtils.getElementsFromNodeList(borderProperties.getElementsByTagName("borders").item(0).getChildNodes());
-
         addBorder(widget, pushbutton);
-
-        /* potential code for creating custom dash border */
-        //pushbutton.getField().setBorderStyle(new PdfBorderDictionary(Float.parseFloat(width),PdfBorderDictionary.STYLE_BEVELED,new PdfDashPattern(2)));
 
         return pushbutton.getField();
     }
 
     private void addBorder(
             final IWidget widget,
-            final BaseField tf) {
+            final BaseField baseField) {
         final org.w3c.dom.Document document = widget.getProperties();
         final Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
 
@@ -96,13 +86,13 @@ public class PdfButtonWriter implements PdfComponentWriter {
 
         switch (style) {
             case "Solid":
-                tf.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
+                baseField.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
                 break;
             case "Dashed":
-                tf.setBorderStyle(PdfBorderDictionary.STYLE_DASHED);
+                baseField.setBorderStyle(PdfBorderDictionary.STYLE_DASHED);
                 break;
             case "Beveled":
-                tf.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
+                baseField.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
                 break;
             case "None":
                 return;
@@ -110,8 +100,8 @@ public class PdfButtonWriter implements PdfComponentWriter {
                 return;
         }
 
-        tf.setBorderColor(new GrayColor(Integer.parseInt(color)));
-        tf.setBorderWidth(Integer.parseInt(width));
+        baseField.setBorderColor(new GrayColor(Integer.parseInt(color)));
+        baseField.setBorderWidth(Integer.parseInt(width));
     }
 
     private Rectangle convertJavaCoordsToPdfCoords(
@@ -123,7 +113,6 @@ public class PdfButtonWriter implements PdfComponentWriter {
         final float javaX2 = javaX1 + bounds.width;
 
         final float pdfY1 = pageSize.getHeight() - javaY1 - bounds.height;
-
         final float pdfY2 = pdfY1 + bounds.height;
 
         return new Rectangle(javaX1, pdfY1, javaX2, pdfY2);
@@ -133,7 +122,7 @@ public class PdfButtonWriter implements PdfComponentWriter {
         final String fontPath = fontHandler.getAbsoluteFontPath(font);
         try {
             return BaseFont.createFont(fontPath, BaseFont.CP1250, BaseFont.EMBEDDED);
-        } catch (final DocumentException e) {
+        } catch (DocumentException e) {
             logger.error("Failed creating font from path {}!", fontPath, e);
 
             /*

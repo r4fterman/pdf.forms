@@ -109,43 +109,51 @@ public class RadioButtonGroupOrganiser extends JPanel {
             return;
         }
 
+        askForNewButtonGroupName()
+                .ifPresent(newName -> {
+                    updateButtonGroupName(selectedItem, newName);
+                    populateButtonGroupsList();
+                });
+    }
+
+    private Optional<String> askForNewButtonGroupName() {
         final String newName = JOptionPane.showInputDialog(parentDialog,
                 "Enter new name",
                 "Rename",
                 JOptionPane.QUESTION_MESSAGE);
         if (newName == null) {
-            return;
+            return Optional.empty();
         }
 
-        for (final ButtonGroup buttonGroup: radioButtonGroups) {
-            if (buttonGroup.getName().equals(newName)) {
-                // name already exists
-                JOptionPane.showMessageDialog(parentDialog, "A button group with name already exists");
-                return;
-            }
+        final boolean newNameAlreadyExists = radioButtonGroups.stream()
+                .anyMatch(buttonGroup -> buttonGroup.getName().equals(newName));
+        if (newNameAlreadyExists) {
+            // name already exists
+            JOptionPane.showMessageDialog(parentDialog, "A button group with this name already exists.");
+            return Optional.empty();
         }
 
-        for (final ButtonGroup buttonGroup: radioButtonGroups) {
-            if (buttonGroup.getName().equals(selectedItem)) {
-                buttonGroup.setName(newName);
-                setButtonGroupName(selectedItem, newName);
+        return Optional.of(newName);
+    }
 
-                break;
-            }
-        }
+    private void updateButtonGroupName(
+            final String oldName,
+            final String newName) {
+        radioButtonGroups.stream()
+                .filter(buttonGroup -> buttonGroup.getName().equals(oldName))
+                .forEach(buttonGroup -> buttonGroup.setName(newName));
 
-        populateButtonGroupsList();
+        setButtonGroupName(oldName, newName);
     }
 
     private void setButtonGroupName(
             final String oldButtonGroupName,
             final String newButtonGroupName) {
-        for (final IWidget widget: widgetsOnPage) {
-            final RadioButtonWidget radioButtonWidget = (RadioButtonWidget) widget;
-            if (radioButtonWidget.getRadioButtonGroupName().equals(oldButtonGroupName)) {
-                radioButtonWidget.setRadioButtonGroupName(newButtonGroupName);
-            }
-        }
+        widgetsOnPage.stream()
+                .filter(widget -> widget instanceof RadioButtonWidget)
+                .map(widget -> (RadioButtonWidget) widget)
+                .filter(widget -> widget.getRadioButtonGroupName().equals(oldButtonGroupName))
+                .forEach(widget -> widget.setRadioButtonGroupName(newButtonGroupName));
     }
 
     private void removeClicked(final ActionEvent event) {
@@ -155,70 +163,69 @@ public class RadioButtonGroupOrganiser extends JPanel {
         }
 
         if (buttonGroupsList.getModel().getSize() == 1) {
-            JOptionPane.showMessageDialog(parentDialog, "You must always have at least one button group per page");
+            JOptionPane.showMessageDialog(parentDialog, "You must always have at least one button group per page.");
             return;
         }
 
+        removeButtonGroup(selectedItem);
+        populateButtonGroupsList();
+    }
+
+    private void removeButtonGroup(final String buttonGroupName) {
         for (final ButtonGroup buttonGroup: radioButtonGroups) {
-            if (buttonGroup.getName().equals(selectedItem)) {
+            if (buttonGroup.getName().equals(buttonGroupName)) {
                 radioButtonGroups.remove(buttonGroup);
 
                 final ButtonGroup lastGroup = radioButtonGroups.get(radioButtonGroups.size() - 1);
-                switchButtonOff(selectedItem, lastGroup);
+                switchButtonOff(buttonGroupName, lastGroup.getName());
 
                 break;
             }
         }
-
-        populateButtonGroupsList();
     }
 
     private void switchButtonOff(
-            final String selectedItem,
-            final ButtonGroup lastGroup) {
-        for (final IWidget widgetOnPage: widgetsOnPage) {
-            final RadioButtonWidget radioButtonWidget = (RadioButtonWidget) widgetOnPage;
-            if (radioButtonWidget.getRadioButtonGroupName().equals(selectedItem)) {
-                radioButtonWidget.setRadioButtonGroupName(lastGroup.getName());
+            final String buttonGroupName,
+            final String buttonGroupToSelect) {
+        widgetsOnPage.stream()
+                .filter(widget -> widget instanceof RadioButtonWidget)
+                .map(widget -> (RadioButtonWidget) widget)
+                .filter(widget -> widget.getRadioButtonGroupName().equals(buttonGroupName))
+                .forEach(widget -> {
+                    widget.setRadioButtonGroupName(buttonGroupToSelect);
 
-                final Element objectProperties = radioButtonWidget.getProperties().getDocumentElement();
-                final Optional<Element> propertyElement = XMLUtils
-                        .getPropertyElement(objectProperties, "Default");
-                if (propertyElement.isPresent()) {
-                    final Element defaultElement = propertyElement.get();
-                    defaultElement.getAttributeNode("value").setValue("Off");
-                    radioButtonWidget.setObjectProperties(objectProperties);
-                }
-            }
-        }
+                    final Element objectProperties = widget.getProperties().getDocumentElement();
+                    XMLUtils.getPropertyElement(objectProperties, "Default")
+                            .ifPresent(defaultElement -> {
+                                defaultElement.getAttributeNode("value").setValue("Off");
+                                widget.setObjectProperties(objectProperties);
+                            });
+                });
     }
 
     private void addClicked(final ActionEvent evt) {
         final ButtonGroup newButtonGroup = new ButtonGroup(IWidget.RADIO_BUTTON);
-        String newGroupName = newButtonGroup.getName();
-        for (final ButtonGroup buttonGroup: radioButtonGroups) {
-            if (buttonGroup.getName().equals(newGroupName)) {
-                final char c = newGroupName.charAt(newGroupName.length() - 1);
-                final int number = Integer.parseInt(String.valueOf(c));
-
-                newGroupName = newGroupName.replaceAll(String.valueOf(number), String.valueOf(number + 1));
-                newButtonGroup.setName(newGroupName);
-
-                break;
-            }
-        }
-
+        newButtonGroup.setName(createNonExistingButtonGroupName(newButtonGroup.getName()));
         radioButtonGroups.add(newButtonGroup);
 
         populateButtonGroupsList();
+    }
+
+    private String createNonExistingButtonGroupName(final String buttonGroupName) {
+        for (final ButtonGroup buttonGroup: radioButtonGroups) {
+            if (buttonGroup.getName().equals(buttonGroupName)) {
+                final char c = buttonGroupName.charAt(buttonGroupName.length() - 1);
+                final int number = Integer.parseInt(String.valueOf(c));
+                return buttonGroupName.replaceAll(String.valueOf(number), String.valueOf(number + 1));
+            }
+        }
+        return buttonGroupName;
     }
 
     private void populateButtonGroupsList() {
         final DefaultListModel<String> model = (DefaultListModel<String>) buttonGroupsList.getModel();
         model.removeAllElements();
 
-        for (final ButtonGroup buttonGroup: radioButtonGroups) {
-            model.addElement(buttonGroup.getName());
-        }
+        radioButtonGroups.forEach(buttonGroup -> model.addElement(buttonGroup.getName()));
     }
 }

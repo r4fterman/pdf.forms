@@ -142,7 +142,7 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
          */
         try {
             mapper.awtToPdf(font);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Failed converting font from AWT to PDF for {}!", font.getName(), e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());
@@ -208,7 +208,7 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
         final String fontPath = fontHandler.getAbsoluteFontPath(font);
         try {
             return BaseFont.createFont(fontPath, BaseFont.CP1250, BaseFont.EMBEDDED);
-        } catch (final DocumentException e) {
+        } catch (DocumentException e) {
             logger.error("Failed creating font from path {}!", fontPath, e);
 
             /*

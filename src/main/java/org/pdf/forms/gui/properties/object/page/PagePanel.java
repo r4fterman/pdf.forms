@@ -233,7 +233,7 @@ public class PagePanel extends JPanel {
         try {
             final String widthText = widthBox.getText().replace("cm", "");
             return Double.parseDouble(widthText);
-        } catch (final NumberFormatException e) {
+        } catch (NumberFormatException e) {
             // do nothing
         }
         return page.getWidth();
@@ -243,7 +243,7 @@ public class PagePanel extends JPanel {
         try {
             final String heightText = heightBox.getText().replace("cm", "");
             return Double.parseDouble(heightText);
-        } catch (final NumberFormatException e) {
+        } catch (NumberFormatException e) {
             // do nothing
         }
         return page.getHeight();

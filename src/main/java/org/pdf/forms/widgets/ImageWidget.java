@@ -35,7 +35,7 @@ public class ImageWidget extends Widget implements IWidget {
         setAllowEditCaptionAndValue(false);
         setAllowEditOfCaptionOnClick(false);
 
-        final String widgetName = "Image" + nextWidgetNumber;
+        final String widgetName = "Image " + nextWidgetNumber;
         nextWidgetNumber++;
 
         setWidgetName(widgetName);
@@ -73,7 +73,6 @@ public class ImageWidget extends Widget implements IWidget {
         final Element propertiesElement = XMLUtils.createAndAppendElement(getProperties(), "properties", rootElement);
 
         addObjectProperties(propertiesElement);
-
         addLayoutProperties(propertiesElement);
     }
 
@@ -118,30 +117,17 @@ public class ImageWidget extends Widget implements IWidget {
         final Element drawElement = (Element) objectElement.getElementsByTagName("draw").item(0);
 
         final String location = XMLUtils.getAttributeValueFromChildElement(drawElement, "Location").orElse("");
-        final String sizing = XMLUtils.getAttributeValueFromChildElement(drawElement, "Sizing").orElse("Stretch Image To Fit");
-
-        if (sizing.equals("Stretch Image To Fit")) {
+        final String sizingPropertyValue = XMLUtils.getAttributeValueFromChildElement(drawElement, "Sizing").orElse("Stretch Image To Fit");
+        if (sizingPropertyValue.equals("Stretch Image To Fit")) {
             this.sizing = STRETCH;
-        } else if (sizing.equals("Use Image Size")) {
+        } else if (sizingPropertyValue.equals("Use Image Size")) {
             this.sizing = FULL_SIZE;
         }
 
         if (new File(location).exists()) {
-            currentImage = Toolkit.getDefaultToolkit().createImage(location);
+            this.currentImage = Toolkit.getDefaultToolkit().createImage(location);
         } else {
-            currentImage = null;
-        }
-
-        final JLabel imageLabel = (JLabel) getBaseComponent();
-
-        if (currentImage == null) {
-            imageLabel.setIcon(null);
-        } else {
-            if (this.sizing == STRETCH) {
-                imageLabel.setIcon(new ImageIcon(currentImage.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH)));
-            } else if (this.sizing == FULL_SIZE) {
-                imageLabel.setIcon(new ImageIcon(currentImage));
-            }
+            this.currentImage = null;
         }
 
         setSize(getWidth(), getHeight());

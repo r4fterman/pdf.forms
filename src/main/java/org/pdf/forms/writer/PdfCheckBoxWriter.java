@@ -31,10 +31,8 @@ import com.itextpdf.text.pdf.RadioCheckField;
 
 public class PdfCheckBoxWriter implements PdfComponentWriter {
 
-    private final Logger logger = LoggerFactory.getLogger(PdfComboBoxWriter.class);
-
+    private final Logger logger = LoggerFactory.getLogger(PdfCheckBoxWriter.class);
     private final Set<String> fontSubstitutions = new HashSet<>();
-
     private final FontHandler fontHandler;
 
     public PdfCheckBoxWriter(final FontHandler fontHandler) {
@@ -123,7 +121,7 @@ public class PdfCheckBoxWriter implements PdfComponentWriter {
          */
         try {
             mapper.awtToPdf(font);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Failed converting font from AWT to PDF for {}!", font.getName(), e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());

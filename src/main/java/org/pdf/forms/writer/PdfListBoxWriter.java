@@ -1,16 +1,13 @@
 package org.pdf.forms.writer;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JList;
-import javax.swing.ListModel;
+import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
@@ -70,7 +67,6 @@ public class PdfListBoxWriter implements PdfComponentWriter {
         final Rectangle pdfValueBounds = convertJavaCoordsToPdfCoords(valueBounds, pageSize);
 
         final ListModel<String> listModel = value.getModel();
-
         final List<String> items = new ArrayList<>();
         for (int i = 0; i < listModel.getSize(); i++) {
             items.add(listModel.getElementAt(i));
@@ -85,8 +81,9 @@ public class PdfListBoxWriter implements PdfComponentWriter {
         list.setFontSize(value.getFont().getSize());
         list.setChoices(items.toArray(String[]::new));
 
-        final Element defaultElement = XMLUtils.getPropertyElement(rootElement, "Default").get();
-        final String defaultText = defaultElement.getAttributes().getNamedItem("value").getNodeValue();
+        final String defaultText = XMLUtils.getPropertyElement(rootElement, "Default")
+                .map(defaultElement -> defaultElement.getAttributes().getNamedItem("value").getNodeValue())
+                .orElse("");
 
         int index = 0;
         if (!defaultText.equals("")) {
@@ -120,8 +117,9 @@ public class PdfListBoxWriter implements PdfComponentWriter {
             final Element captionElement = XMLUtils.getElementsFromNodeList(
                     widget.getProperties().getElementsByTagName("layout")).get(0);
 
-            final Element positionElement = XMLUtils.getPropertyElement(captionElement, "Position").get();
-            final String location = positionElement.getAttributeNode("value").getValue();
+            final String location = XMLUtils.getPropertyElement(captionElement, "Position")
+                    .map(positionElement -> positionElement.getAttributeNode("value").getValue())
+                    .orElse("None");
             if (location.equals("None")) {
                 return;
             }
@@ -132,36 +130,37 @@ public class PdfListBoxWriter implements PdfComponentWriter {
         final Rectangle pdfCaptionBounds = convertJavaCoordsToPdfCoords(captionBounds, pageSize);
 
         // write out caption
-        final PdfContentByte cb = globalPdfWriter.getContentByte(currentPage);
-        cb.saveState();
-        cb.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
+        final PdfContentByte pdfContentByte = globalPdfWriter.getContentByte(currentPage);
+        pdfContentByte.saveState();
+        pdfContentByte.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
 
         final Font font = caption.getFont();
         final String fontDirectory = fontHandler.getFontDirectory(font);
 
-        DefaultFontMapper mapper = new DefaultFontMapper();
-        mapper.insertDirectory(fontDirectory);
 
         /*
          * we need to make this erroneous call to awtToPdf to see if an exception is thrown, if it is, it is
          * probably because the font cannot be embedded due to licensing restrictions, so substitute with Helvetica
          */
+        DefaultFontMapper mapper;
         try {
+            mapper = new DefaultFontMapper();
+            mapper.insertDirectory(fontDirectory);
             mapper.awtToPdf(font);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Failed converting font from AWT to PDF for {}!", font.getName(), e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());
         }
 
-        final Graphics2D graphics2D = cb.createGraphics(captionBounds.width, captionBounds.height, mapper, true, .95f);
+        final Graphics2D graphics2D = pdfContentByte.createGraphics(captionBounds.width, captionBounds.height, mapper, true, .95f);
 
         //Graphics2D graphics2D = cb.createGraphicsShapes(captionBounds.width, captionBounds.height, true, 0.95f);
 
         caption.paint(graphics2D);
 
         graphics2D.dispose();
-        cb.restoreState();
+        pdfContentByte.restoreState();
     }
 
     private void addBorder(
@@ -174,7 +173,8 @@ public class PdfListBoxWriter implements PdfComponentWriter {
 
         final String style = XMLUtils.getAttributeValueFromChildElement(border, "Border Style").orElse("None");
         final String width = XMLUtils.getAttributeValueFromChildElement(border, "Border Width").orElse("1");
-        final String color = XMLUtils.getAttributeValueFromChildElement(border, "Border Color").orElse(String.valueOf(Color.WHITE.getRGB()));
+        final String color = XMLUtils.getAttributeValueFromChildElement(border, "Border Color").orElse(String
+                .valueOf(Color.WHITE.getRGB()));
 
         switch (style) {
             case "Solid":
@@ -214,7 +214,7 @@ public class PdfListBoxWriter implements PdfComponentWriter {
         final String fontPath = fontHandler.getAbsoluteFontPath(font);
         try {
             return BaseFont.createFont(fontPath, "Cp1250", BaseFont.EMBEDDED);
-        } catch (final DocumentException e) {
+        } catch (DocumentException e) {
             logger.error("Error embedding font. So use Helvetica instead.", e);
             /*
              * A document exception has been thrown meaning that the font cannot be embedded

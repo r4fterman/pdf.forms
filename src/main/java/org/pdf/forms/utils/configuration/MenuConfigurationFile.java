@@ -7,19 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
+import javax.swing.*;
 
 import org.jpedal.examples.simpleviewer.gui.swing.SwingMenuItem;
-import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetAlignmentAndOrder;
 import org.w3c.dom.Document;
@@ -47,31 +41,31 @@ public class MenuConfigurationFile extends ConfigurationFile {
             final IDesigner designer,
             final IMainFrame mainFrame,
             final File configDir,
-            final Configuration configuration) {
-        super(new File(configDir, "menus.xml"), configuration);
+            final File configurationDirectory) {
+        super(new File(configDir, "menus.xml"), configurationDirectory);
 
         this.commandListener = commandListener;
         this.designer = designer;
         this.mainFrame = mainFrame;
 
-        menus = generateMenus();
+        menus = generateMenus(getDocument());
     }
 
-    private JMenu[] generateMenus() {
-        final List<JMenu> menus = new ArrayList<>();
+    private JMenu[] generateMenus(final Document document) {
+        final List<JMenu> menuList = new ArrayList<>();
 
-        final NodeList nodeList = getDoc().getElementsByTagName("menu");
+        final NodeList nodeList = document.getElementsByTagName("menu");
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Element menuElement = (Element) nodeList.item(i);
             if (isElementVisible(menuElement)) {
                 final String menuName = menuElement.getAttribute("name");
                 final JMenu menu = new JMenu(menuName);
                 addItemsToMenu(menuElement, menu);
-                menus.add(menu);
+                menuList.add(menu);
             }
         }
 
-        return menus.toArray(new JMenu[0]);
+        return menuList.toArray(new JMenu[0]);
     }
 
     public JMenu[] getMenus() {
@@ -79,9 +73,7 @@ public class MenuConfigurationFile extends ConfigurationFile {
     }
 
     @Override
-    protected void writeDefaultConfiguration() throws Exception {
-        final Document document = XMLUtils.createNewDocument();
-
+    protected void writeToDefaultConfiguration(final Document document) {
         final Element menuConfigurationElement = document.createElement("menu_configuration");
         document.appendChild(menuConfigurationElement);
 
@@ -90,8 +82,6 @@ public class MenuConfigurationFile extends ConfigurationFile {
         writeDefaultLayoutMenuConfiguration(menuConfigurationElement, document);
         writeDefaultWindowMenuConfiguration(menuConfigurationElement, document);
         writeDefaultHelpMenuConfiguration(menuConfigurationElement, document);
-
-        setDoc(document);
     }
 
     private void writeDefaultHelpMenuConfiguration(
@@ -219,7 +209,7 @@ public class MenuConfigurationFile extends ConfigurationFile {
 
     private boolean isElementVisible(final Element element) {
         final String visible = element.getAttribute("visible");
-        return visible.toLowerCase().equals("true");
+        return visible.equalsIgnoreCase("true");
     }
 
     private JMenu createMenu(final String text) {
@@ -310,7 +300,7 @@ public class MenuConfigurationFile extends ConfigurationFile {
                 menu.add(alignMenu);
 
                 final String[] alignButtons = WidgetAlignmentAndOrder.getAlignButtons();
-                for (final String url : alignButtons) {
+                for (final String url: alignButtons) {
                     if (!url.equals("Seperator")) {
                         final String[] splitFilename = url.split("/");
                         final String type = splitFilename[splitFilename.length - 1].split("\\.")[0];
@@ -328,30 +318,36 @@ public class MenuConfigurationFile extends ConfigurationFile {
                 groupMenuItems.add(groupMenuItem);
                 break;
             case Commands.UNGROUP:
-                final JMenuItem ungroupMenuItem = createMenuItemWithIcon(name, "/org/pdf/forms/res/Ungrouped.gif", command);
+                final JMenuItem ungroupMenuItem = createMenuItemWithIcon(name,
+                        "/org/pdf/forms/res/Ungrouped.gif",
+                        command);
                 menu.add(ungroupMenuItem);
                 groupMenuItems.add(ungroupMenuItem);
                 break;
             case Commands.BRING_TO_FRONT:
-                final JMenuItem bringToFrontMenuItem = createAlignAndOrderMenuItem(name, WidgetAlignmentAndOrder.BRING_TO_FRONT,
+                final JMenuItem bringToFrontMenuItem = createAlignAndOrderMenuItem(name,
+                        WidgetAlignmentAndOrder.BRING_TO_FRONT,
                         "/org/pdf/forms/res/Bring to Front.gif");
                 menu.add(bringToFrontMenuItem);
                 alignAndOrderMenuItems.add(bringToFrontMenuItem);
                 break;
             case Commands.SEND_TO_BACK:
-                final JMenuItem sendToBackMenuItem = createAlignAndOrderMenuItem(name, WidgetAlignmentAndOrder.SEND_TO_BACK,
+                final JMenuItem sendToBackMenuItem = createAlignAndOrderMenuItem(name,
+                        WidgetAlignmentAndOrder.SEND_TO_BACK,
                         "/org/pdf/forms/res/Send to Back.gif");
                 menu.add(sendToBackMenuItem);
                 alignAndOrderMenuItems.add(sendToBackMenuItem);
                 break;
             case Commands.BRING_FORWARDS:
-                final JMenuItem bringForwardsMenuItem = createAlignAndOrderMenuItem(name, WidgetAlignmentAndOrder.BRING_FORWARDS,
+                final JMenuItem bringForwardsMenuItem = createAlignAndOrderMenuItem(name,
+                        WidgetAlignmentAndOrder.BRING_FORWARDS,
                         "/org/pdf/forms/res/Bring Forwards.gif");
                 menu.add(bringForwardsMenuItem);
                 alignAndOrderMenuItems.add(bringForwardsMenuItem);
                 break;
             case Commands.SEND_BACKWARDS:
-                final JMenuItem sendBackwardsMenuItem = createAlignAndOrderMenuItem(name, WidgetAlignmentAndOrder.SEND_BACKWARDS,
+                final JMenuItem sendBackwardsMenuItem = createAlignAndOrderMenuItem(name,
+                        WidgetAlignmentAndOrder.SEND_BACKWARDS,
                         "/org/pdf/forms/res/Send Backwards.gif");
                 menu.add(sendBackwardsMenuItem);
                 alignAndOrderMenuItems.add(sendBackwardsMenuItem);
@@ -375,7 +371,7 @@ public class MenuConfigurationFile extends ConfigurationFile {
     }
 
     private void setCloseState(final boolean state) {
-        for (final JMenuItem menuItem : closeItems) {
+        for (final JMenuItem menuItem: closeItems) {
             menuItem.setEnabled(state);
         }
     }
@@ -383,7 +379,7 @@ public class MenuConfigurationFile extends ConfigurationFile {
     public void setState(final boolean state) {
         setCloseState(state);
 
-        for (final JMenuItem menuItem : previewItems) {
+        for (final JMenuItem menuItem: previewItems) {
             menuItem.setEnabled(state);
         }
     }
@@ -401,20 +397,21 @@ public class MenuConfigurationFile extends ConfigurationFile {
             setAlignAndOrderMenuItemsEnabled(false);
             groupMenuItems.get(0).setEnabled(false);
             groupMenuItems.get(1).setEnabled(false);
-        } else {
-            setAlignAndOrderMenuItemsEnabled(true);
-            if (widgets.size() == 1 && widgets.iterator().next().getType() == IWidget.GROUP) {
-                groupMenuItems.get(0).setEnabled(false);
-                groupMenuItems.get(1).setEnabled(true);
-            } else if (widgets.size() > 1) {
-                groupMenuItems.get(0).setEnabled(true);
-                groupMenuItems.get(1).setEnabled(false);
-            }
+            return;
+        }
+
+        setAlignAndOrderMenuItemsEnabled(true);
+        if (widgets.size() == 1 && widgets.iterator().next().getType() == IWidget.GROUP) {
+            groupMenuItems.get(0).setEnabled(false);
+            groupMenuItems.get(1).setEnabled(true);
+        } else if (widgets.size() > 1) {
+            groupMenuItems.get(0).setEnabled(true);
+            groupMenuItems.get(1).setEnabled(false);
         }
     }
 
     private void setAlignAndOrderMenuItemsEnabled(final boolean enabled) {
-        for (final JMenuItem menu : alignAndOrderMenuItems) {
+        for (final JMenuItem menu: alignAndOrderMenuItems) {
             menu.setEnabled(enabled);
         }
     }

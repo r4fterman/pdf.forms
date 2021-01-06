@@ -12,10 +12,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.pdf.forms.Configuration;
+import org.pdf.forms.utils.XMLUtils;
 import org.w3c.dom.Document;
 
 class WindowConfigurationFileTest {
@@ -29,16 +28,10 @@ class WindowConfigurationFileTest {
             + "<window command=\"PROPERTIES\" name=\"Properties\" visible=\"true\"/>"
             + "</window_configuration>";
 
-    private Configuration configuration;
-
-    @BeforeEach
-    void setUp() {
-        configuration = new Configuration();
-    }
-
     @Test
     void isWindowVisible_should_return_true_on_new_created_properties_file_for_known_command(@TempDir final Path configDir) {
-        final WindowConfigurationFile windowConfigurationFile = new WindowConfigurationFile(configDir.toFile(), configuration);
+        final WindowConfigurationFile windowConfigurationFile = new WindowConfigurationFile(configDir.toFile(),
+                configDir.toFile());
 
         assertThat(windowConfigurationFile.isWindowVisible(WindowConfigurationFile.SCRIPT_EDITOR), is(true));
         assertThat(windowConfigurationFile.isWindowVisible(WindowConfigurationFile.PROPERTIES), is(true));
@@ -48,18 +41,20 @@ class WindowConfigurationFileTest {
 
     @Test
     void isWindowVisible_should_return_false_on_new_created_properties_file_for_unknown_command(@TempDir final Path configDir) {
-        final WindowConfigurationFile windowConfigurationFile = new WindowConfigurationFile(configDir.toFile(), configuration);
+        final WindowConfigurationFile windowConfigurationFile = new WindowConfigurationFile(configDir.toFile(),
+                configDir.toFile());
 
         assertThat(windowConfigurationFile.isWindowVisible("unknown"), is(false));
     }
 
     @Test
     void writeDefaultConfiguration(@TempDir final Path configDir) throws Exception {
-        final WindowConfigurationFile windowConfigurationFile = new WindowConfigurationFile(configDir.toFile(), configuration);
+        final WindowConfigurationFile windowConfigurationFile = new WindowConfigurationFile(configDir.toFile(),
+                configDir.toFile());
 
-        windowConfigurationFile.writeDefaultConfiguration();
+        final Document document = XMLUtils.createNewDocument();
+        windowConfigurationFile.writeToDefaultConfiguration(document);
 
-        final Document document = windowConfigurationFile.getDoc();
         assertThat(serialize(document), is(DEFAULT_WINDOW_CONFIGURATION));
     }
 

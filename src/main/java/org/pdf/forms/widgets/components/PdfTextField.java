@@ -81,22 +81,29 @@ public class PdfTextField extends JTextField implements IPdfComponent {
 
     @Override
     public void setUnderlineType(final int type) {
-        if (type == IWidget.UNDERLINE_SINGLE) {
-            standardUnderline = true;
-            doubleUnderline = false;
-            wordUnderline = false;
-        } else if (type == IWidget.UNDERLINE_DOUBLE) {
-            standardUnderline = true;
-            doubleUnderline = true;
-            wordUnderline = false;
-        } else if (type == IWidget.UNDERLINE_WORD_SINGLE) {
-            standardUnderline = false;
-            doubleUnderline = false;
-            wordUnderline = true;
-        } else if (type == IWidget.UNDERLINE_WORD_DOUBLE) {
-            standardUnderline = false;
-            doubleUnderline = true;
-            wordUnderline = true;
+        switch (type) {
+            case IWidget.UNDERLINE_SINGLE:
+                standardUnderline = true;
+                doubleUnderline = false;
+                wordUnderline = false;
+                break;
+            case IWidget.UNDERLINE_DOUBLE:
+                standardUnderline = true;
+                doubleUnderline = true;
+                wordUnderline = false;
+                break;
+            case IWidget.UNDERLINE_WORD_SINGLE:
+                standardUnderline = false;
+                doubleUnderline = false;
+                wordUnderline = true;
+                break;
+            case IWidget.UNDERLINE_WORD_DOUBLE:
+                standardUnderline = false;
+                doubleUnderline = true;
+                wordUnderline = true;
+                break;
+            default:
+                break;
         }
     }
 

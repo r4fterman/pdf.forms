@@ -15,7 +15,7 @@ public class ColorComboBoxEditor implements ComboBoxEditor {
 
     private final JTextField editor;
 
-    private final transient EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
 
     public ColorComboBoxEditor(
             final Color initialColor,

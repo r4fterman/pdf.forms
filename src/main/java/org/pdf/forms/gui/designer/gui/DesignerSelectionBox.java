@@ -1,12 +1,9 @@
 package org.pdf.forms.gui.designer.gui;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import static java.util.stream.Collectors.toUnmodifiableSet;
+
+import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.pdf.forms.gui.designer.IDesigner;
@@ -14,13 +11,11 @@ import org.pdf.forms.widgets.IWidget;
 
 public class DesignerSelectionBox {
 
-    private Rectangle currentRect = null;
-
-    private Rectangle rectToDraw = null;
-
     private final Rectangle previousRectDrawn = new Rectangle();
-
     private final IDesigner designerPanel;
+
+    private Rectangle currentRect = null;
+    private Rectangle rectToDraw = null;
 
     public DesignerSelectionBox(final IDesigner designerPanel) {
         this.designerPanel = designerPanel;
@@ -39,22 +34,49 @@ public class DesignerSelectionBox {
     public void updateDrawableRect(
             final int compWidth,
             final int compHeight) {
-        int x = currentRect.x;
-        int y = currentRect.y;
-        int width = currentRect.width;
-        int height = currentRect.height;
+        final Rectangle rectangleToDraw = calculateRectangleToDraw(currentRect, compWidth, compHeight);
 
-        //Make the width and height positive, if necessary.
+        //Update rectToDraw after saving old value.
+        if (rectToDraw == null) {
+            this.rectToDraw = rectangleToDraw;
+        } else {
+            previousRectDrawn.setBounds(
+                    rectToDraw.x,
+                    rectToDraw.y,
+                    rectToDraw.width,
+                    rectToDraw.height);
+
+            rectToDraw.setBounds(
+                    rectangleToDraw.x,
+                    rectangleToDraw.y,
+                    rectangleToDraw.width,
+                    rectangleToDraw.height);
+        }
+    }
+
+    private Rectangle calculateRectangleToDraw(
+            final Rectangle rectangle,
+            final int componentWidth,
+            final int componentHeight) {
+        int x = rectangle.x;
+        int y = rectangle.y;
+        int width = rectangle.width;
+        int height = rectangle.height;
+
+        // Make the width and height positive, if necessary.
         if (width < 0) {
-            width = 0 - width;
+            width = -width;
+
             x = x - width + 1;
             if (x < 0) {
                 width += x;
                 x = 0;
             }
         }
+
         if (height < 0) {
-            height = 0 - height;
+            height = -height;
+
             y = y - height + 1;
             if (y < 0) {
                 height += y;
@@ -63,21 +85,20 @@ public class DesignerSelectionBox {
         }
 
         //The rectangle shouldn't extend past the drawing area.
-        if ((x + width) > compWidth) {
-            width = compWidth - x;
-        }
-        if ((y + height) > compHeight) {
-            height = compHeight - y;
-        }
+        width = calculateRectangleBounds(componentWidth, x, width);
+        height = calculateRectangleBounds(componentHeight, y, height);
 
-        //Update rectToDraw after saving old value.
-        if (rectToDraw != null) {
-            previousRectDrawn.setBounds(rectToDraw.x, rectToDraw.y,
-                    rectToDraw.width, rectToDraw.height);
-            rectToDraw.setBounds(x, y, width, height);
-        } else {
-            rectToDraw = new Rectangle(x, y, width, height);
+        return new Rectangle(x, y, width, height);
+    }
+
+    private int calculateRectangleBounds(
+            final int maxValue,
+            final int delta,
+            final int valueToUpdate) {
+        if ((delta + valueToUpdate) > maxValue) {
+            return maxValue - delta;
         }
+        return valueToUpdate;
     }
 
     public void setCurrentRect(final Rectangle currentRect) {
@@ -90,12 +111,11 @@ public class DesignerSelectionBox {
 
     public void paintBox(final Graphics2D g2) {
         if (currentRect != null) {
-            //g2.setPaint(Color.green);
-
             final float[] dashPattern = {
                     1,
                     1
             };
+
             g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
                     BasicStroke.JOIN_MITER, 1,
                     dashPattern, 0));
@@ -105,42 +125,28 @@ public class DesignerSelectionBox {
         }
     }
 
-    public void setSelectedWedgets() {
-
+    public void setSelectedWidgets() {
         if (currentRect == null) {
             return;
         }
 
         final int width = currentRect.width;
-        final int height = currentRect.height;
-
         if (width < 0) {
             currentRect.setLocation(currentRect.x + width, currentRect.y);
             currentRect.setSize(-currentRect.width, currentRect.height);
         }
+
+        final int height = currentRect.height;
         if (height < 0) {
             currentRect.setLocation(currentRect.x, currentRect.y + height);
             currentRect.setSize(currentRect.width, -currentRect.height);
         }
 
-        final List<IWidget> widgets = designerPanel.getWidgets();
-
-        final Set<IWidget> widgetSet = new HashSet<>();
-        for (final IWidget widget : widgets) {
-            Rectangle bounds = widget.getBounds();
-
-            //            double scale = designerPanel.getScale(); @scale
-            //            bounds = new Rectangle((int) (bounds.x * scale), (int) (bounds.y * scale), (int) (bounds.width * scale), (int) (bounds.height * scale)); //@scale
-
-            bounds = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
-
-            if (currentRect.contains(bounds)) {
-                widgetSet.add(widget);
-            }
-        }
+        final Set<IWidget> widgetSet = designerPanel.getWidgets().stream()
+                .filter(widget -> currentRect.contains(widget.getBounds()))
+                .collect(toUnmodifiableSet());
 
         designerPanel.setSelectedWidgets(widgetSet);
-
         designerPanel.getMainFrame().setPropertiesCompound(widgetSet);
         designerPanel.getMainFrame().setPropertiesToolBar(widgetSet);
     }

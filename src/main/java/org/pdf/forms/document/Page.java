@@ -93,7 +93,7 @@ public class Page {
             /* add check box groups to the page */
             final Element checkBoxGroupsElement = XMLUtils.createAndAppendElement(pageProperties, "checkboxgroups", rootElement);
             addButtonGroupsToPage(checkBoxGroupsElement, IWidget.CHECK_BOX);
-        } catch (final ParserConfigurationException e) {
+        } catch (ParserConfigurationException e) {
             logger.error("Error build page properties", e);
         }
 

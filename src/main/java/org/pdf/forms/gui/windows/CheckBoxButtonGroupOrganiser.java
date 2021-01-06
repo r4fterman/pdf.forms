@@ -108,30 +108,38 @@ public class CheckBoxButtonGroupOrganiser extends JPanel {
             return;
         }
 
+        askForNewButtonGroupName()
+                .ifPresent(newName -> {
+                    updateButtonGroupName(selectedItem, newName);
+                    populateButtonGroupsList();
+                });
+    }
+
+    private Optional<String> askForNewButtonGroupName() {
         final String newName = JOptionPane.showInputDialog(parentDialog,
                 "Enter new name",
                 "Rename",
                 JOptionPane.QUESTION_MESSAGE);
         if (newName == null) {
-            return;
+            return Optional.empty();
         }
 
-        for (final ButtonGroup buttonGroup: checkBoxButtonGroups) {
-            if (buttonGroup.getName().equals(newName)) {
-                // name already exists
-                JOptionPane.showMessageDialog(parentDialog, "A button group with name already exists");
-                return;
-            }
+        final boolean newNameAlreadyExists = checkBoxButtonGroups.stream().anyMatch(buttonGroup -> buttonGroup.getName()
+                .equals(newName));
+        if (newNameAlreadyExists) {
+            // name already exists
+            JOptionPane.showMessageDialog(parentDialog, "A button group with this name already exists.");
+            return Optional.empty();
         }
+        return Optional.of(newName);
+    }
 
-        for (final ButtonGroup buttonGroup: checkBoxButtonGroups) {
-            if (buttonGroup.getName().equals(selectedItem)) {
-                buttonGroup.setName(newName);
-                break;
-            }
-        }
-
-        populateButtonGroupsList();
+    private void updateButtonGroupName(
+            final String oldName,
+            final String newName) {
+        checkBoxButtonGroups.stream()
+                .filter(buttonGroup -> buttonGroup.getName().equals(oldName))
+                .forEach(buttonGroup -> buttonGroup.setName(newName));
     }
 
     private void removeClicked(final ActionEvent event) {
@@ -141,71 +149,76 @@ public class CheckBoxButtonGroupOrganiser extends JPanel {
         }
 
         if (buttonGroupsList.getModel().getSize() == 1) {
-            JOptionPane.showMessageDialog(parentDialog, "You must always have at least one button group per page");
+            JOptionPane.showMessageDialog(parentDialog, "You must always have at least one button group per page.");
             return;
         }
 
-        for (final ButtonGroup buttonGroup: checkBoxButtonGroups) {
-            if (buttonGroup.getName().equals(selectedItem)) {
-                checkBoxButtonGroups.remove(buttonGroup);
-
-                final ButtonGroup lastGroup = checkBoxButtonGroups.get(checkBoxButtonGroups.size() - 1);
-                switchButtonOff(selectedItem, lastGroup);
-
-                break;
-            }
-        }
+        removeButtonGroup(selectedItem);
 
         populateButtonGroupsList();
     }
 
-    private void switchButtonOff(
-            final String selectedItem,
-            final ButtonGroup lastGroup) {
-        for (final IWidget widgetOnPage: widgetsOnPage) {
-            final RadioButtonWidget radioButtonWidget = (RadioButtonWidget) widgetOnPage;
-            if (radioButtonWidget.getRadioButtonGroupName().equals(selectedItem)) {
-                radioButtonWidget.setRadioButtonGroupName(lastGroup.getName());
+    private void removeButtonGroup(final String buttonGroupName) {
+        for (final ButtonGroup buttonGroup: checkBoxButtonGroups) {
+            if (buttonGroup.getName().equals(buttonGroupName)) {
+                checkBoxButtonGroups.remove(buttonGroup);
 
-                final Element objectProperties = radioButtonWidget.getProperties().getDocumentElement();
-                final Optional<Element> propertyElement = XMLUtils
-                        .getPropertyElement(objectProperties, "Default");
-                if (propertyElement.isPresent()) {
-                    final Element defaultElement = propertyElement.get();
-                    defaultElement.getAttributeNode("value").setValue("Off");
-                    radioButtonWidget.setObjectProperties(objectProperties);
-                }
+                final ButtonGroup lastGroup = checkBoxButtonGroups.get(checkBoxButtonGroups.size() - 1);
+                switchButtonOff(buttonGroupName, lastGroup);
+
+                break;
             }
+        }
+    }
+
+    private void switchButtonOff(
+            final String buttonGroupName,
+            final ButtonGroup lastGroup) {
+        widgetsOnPage.stream()
+                .filter(widget -> widget instanceof RadioButtonWidget)
+                .map(widget -> (RadioButtonWidget) widget)
+                .filter(radioButtonWidget -> radioButtonWidget.getRadioButtonGroupName().equals(buttonGroupName))
+                .forEach(radioButtonWidget -> switchRadioButtonOff(radioButtonWidget, lastGroup.getName()));
+    }
+
+    private void switchRadioButtonOff(
+            final RadioButtonWidget radioButtonWidget,
+            final String radioButtonGroupName) {
+        radioButtonWidget.setRadioButtonGroupName(radioButtonGroupName);
+
+        final Element objectProperties = radioButtonWidget.getProperties().getDocumentElement();
+        final Optional<Element> propertyElement = XMLUtils
+                .getPropertyElement(objectProperties, "Default");
+        if (propertyElement.isPresent()) {
+            final Element defaultElement = propertyElement.get();
+            defaultElement.getAttributeNode("value").setValue("Off");
+            radioButtonWidget.setObjectProperties(objectProperties);
         }
     }
 
     private void addClicked(final ActionEvent evt) {
         final ButtonGroup newButtonGroup = new ButtonGroup(IWidget.CHECK_BOX);
-        String newGroupName = newButtonGroup.getName();
-
-        for (final ButtonGroup buttonGroup: checkBoxButtonGroups) {
-            if (buttonGroup.getName().equals(newGroupName)) {
-                final char c = newGroupName.charAt(newGroupName.length() - 1);
-                final int number = Integer.parseInt(String.valueOf(c));
-
-                newGroupName = newGroupName.replaceAll(String.valueOf(number), String.valueOf(number + 1));
-                newButtonGroup.setName(newGroupName);
-
-                break;
-            }
-        }
-
+        newButtonGroup.setName(createNonExistingButtonGroupName(newButtonGroup.getName()));
         checkBoxButtonGroups.add(newButtonGroup);
 
         populateButtonGroupsList();
+    }
+
+    private String createNonExistingButtonGroupName(final String buttonGroupName) {
+        for (final ButtonGroup buttonGroup: checkBoxButtonGroups) {
+            if (buttonGroup.getName().equals(buttonGroupName)) {
+                final char c = buttonGroupName.charAt(buttonGroupName.length() - 1);
+                final int number = Integer.parseInt(String.valueOf(c));
+                return buttonGroupName.replaceAll(String.valueOf(number), String.valueOf(number + 1));
+            }
+        }
+        return buttonGroupName;
     }
 
     private void populateButtonGroupsList() {
         final DefaultListModel<String> model = (DefaultListModel<String>) buttonGroupsList.getModel();
         model.removeAllElements();
 
-        for (final ButtonGroup buttonGroup: checkBoxButtonGroups) {
-            model.addElement(buttonGroup.getName());
-        }
+        checkBoxButtonGroups.forEach(buttonGroup -> model.addElement(buttonGroup.getName()));
     }
 }

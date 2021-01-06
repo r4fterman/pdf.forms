@@ -8,6 +8,6 @@ class BindingPanelTest extends UIPanelTest {
 
     @Override
     protected JPanel createPanel() {
-        return new BindingPanel();
+        return new BindingPanel(getDesignerPanel().getMainFrame());
     }
 }

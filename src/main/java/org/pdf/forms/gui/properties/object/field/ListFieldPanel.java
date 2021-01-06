@@ -208,71 +208,56 @@ public class ListFieldPanel extends JPanel {
     }
 
     private void updateItems() {
-        final Set<IWidget> widgets = widgetsAndProperties.keySet();
-        if (widgets.size() == 1) {
-            final IWidget widget = widgets.iterator().next();
-            final Element widgetProperties = widgetsAndProperties.get(widget);
-            final Element itemsElement = (Element) widgetProperties.getElementsByTagName("items").item(0);
-            final List<Element> items = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes());
-
-            /* remove all elements from list before re-populating */
-            for (final Element element: items) {
-                itemsElement.removeChild(element);
-            }
-
-            for (int i = 0; i < itemsTable.getRowCount(); i++) {
-                final String value = (String) itemsTable.getValueAt(i, 0);
-                if (value != null && !value.equals("")) {
-                    XMLUtils.addBasicProperty(widget.getProperties(), "item", value, itemsElement);
-                }
-            }
-
-            widget.setObjectProperties(widgetProperties);
+        final Set<Map.Entry<IWidget, Element>> entries = widgetsAndProperties.entrySet();
+        if (entries.size() == 1) {
+            final Map.Entry<IWidget, Element> entry = entries.iterator().next();
+            final IWidget widget = entry.getKey();
+            final Element widgetProperties = entry.getValue();
+            updateItemsInModel(widget, widgetProperties);
         }
 
         designerPanel.repaint();
     }
 
+    private void updateItemsInModel(
+            final IWidget widget,
+            final Element widgetProperties) {
+        final Element itemsElement = (Element) widgetProperties.getElementsByTagName("items").item(0);
+        final List<Element> items = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes());
+
+        // remove all elements from list before re-populating
+        items.forEach(itemsElement::removeChild);
+
+        for (int i = 0; i < itemsTable.getRowCount(); i++) {
+            final String value = (String) itemsTable.getValueAt(i, 0);
+            if (value != null && !value.equals("")) {
+                XMLUtils.addBasicProperty(widget.getProperties(), "item", value, itemsElement);
+            }
+        }
+
+        widget.setObjectProperties(widgetProperties);
+    }
+
     public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
         this.widgetsAndProperties = widgetsAndProperties;
 
-        final TristateCheckBox.State allowCustomTextEntryToUse = null;
         setItemsEnabled(widgetsAndProperties.size() == 1);
 
-        for (final Element objectProperties: widgetsAndProperties.values()) {
-            if (widgetsAndProperties.size() == 1) {
-                // only 1 widget is currently selected
-                final Element itemElement = (Element) objectProperties.getElementsByTagName("items").item(0);
+        // only 1 widget is currently selected
+        if (widgetsAndProperties.size() == 1) {
+            final Element objectProperties = widgetsAndProperties.values().iterator().next();
+            final Element itemElement = (Element) objectProperties.getElementsByTagName("items").item(0);
 
-                final List<Element> itemsList = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
+            final List<Element> itemsList = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
 
-                for (int i = 0; i < itemsList.size(); i++) {
-                    final Element item = itemsList.get(i);
+            for (int i = 0; i < itemsList.size(); i++) {
+                final Element item = itemsList.get(i);
 
-                    final String value = XMLUtils.getAttributeValueFromElement(item, "item").orElse("");
+                final String value = XMLUtils.getAttributeValueFromElement(item, "item").orElse("");
 
-                    ((ItemsTableModel) itemsTable.getModel()).insertRow(i);
-                    itemsTable.setValueAt(value, i, 0);
-                }
+                ((ItemsTableModel) itemsTable.getModel()).insertRow(i);
+                itemsTable.setValueAt(value, i, 0);
             }
-
-            //            if (type == IWidget.COMBO_BOX) {
-            //                boolean allowCustomTextEntry = Boolean.valueOf(XMLUtils.getAttribute(fieldProperties, 2)).booleanValue();
-            //
-            //                if (allowCustomTextEntryToUse == null) {
-            //                    allowCustomTextEntryToUse = allowCustomTextEntry ? TristateCheckBox.SELECTED : TristateCheckBox.NOT_SELECTED;
-            //                } else {
-            //                    if (allowCustomTextEntryToUse != TristateCheckBox.DONT_CARE) {
-            //                        if (allowCustomTextEntryToUse == TristateCheckBox.SELECTED && !allowCustomTextEntry) {
-            //                            allowCustomTextEntryToUse = TristateCheckBox.DONT_CARE;
-            //                        } else if (allowCustomTextEntryToUse == TristateCheckBox.NOT_SELECTED && allowCustomTextEntry) {
-            //                            allowCustomTextEntryToUse = TristateCheckBox.DONT_CARE;
-            //                        }
-            //                    }
-            //                }
-            //
-            //                ((TristateCheckBox) allowCustomTextEntryBox).setState(allowCustomTextEntryToUse);
-            //            }
         }
 
         itemsTable.getModel().addTableModelListener(e -> updateItems());

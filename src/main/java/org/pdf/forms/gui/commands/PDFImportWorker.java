@@ -72,10 +72,7 @@ class PDFImportWorker extends SwingWorker {
                 mainFrame.setCurrentPage(pageNumber);
 
                 addPage(pageNumber, newPage);
-
-                for (final IWidget widget: widgetsOnPage) {
-                    mainFrame.getDesigner().addWidget(widget);
-                }
+                widgetsOnPage.forEach(widget -> mainFrame.getDesigner().addWidget(widget));
             }
 
             setTotalPages();
@@ -84,7 +81,6 @@ class PDFImportWorker extends SwingWorker {
             mainFrame.displayPage(mainFrame.getCurrentPage());
 
             progressDialog.close();
-
         });
 
         return null;
@@ -204,7 +200,7 @@ class PDFImportWorker extends SwingWorker {
         try {
             final PdfDecoder decoder = getDecoder(pdfPath);
             decoder.decodePage(pdfPageNumber);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Error decoding PDF page {} of file {}", pdfPageNumber, pdfPath, e);
         }
 

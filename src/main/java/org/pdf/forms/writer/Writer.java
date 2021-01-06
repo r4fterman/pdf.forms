@@ -91,8 +91,10 @@ public class Writer {
         final List<PdfDocumentLayout.Page> pdfPages = pdfDocumentLayout.getPdfPages();
 
         if (pdfPages.isEmpty()) {
+            logger.info("write: PDF page list is empty.");
             writeModelToPDF(fileToWriteTo, widgetsByPageNumber, pages, documentJavaScript);
         } else {
+            logger.info("write: " + pages.size() + " PDF pages.");
             writeExternalPDFPagesToPDF(fileToWriteTo,
                     widgetsByPageNumber,
                     pages,
@@ -136,7 +138,7 @@ public class Writer {
             }
 
             documentJavaScript.ifPresent(writer::addJavaScript);
-        } catch (final IOException | DocumentException e) {
+        } catch (IOException | DocumentException e) {
             logger.error("Writing to file {} failed!", fileToWriteTo, e);
         } finally {
             document.close();
@@ -187,7 +189,7 @@ public class Writer {
             documentJavaScript.ifPresent(stamper::addJavaScript);
 
             stamper.close();
-        } catch (final IOException | DocumentException e) {
+        } catch (IOException | DocumentException e) {
             logger.error("Writing to file {} failed!", fileToWriteTo, e);
         }
     }
@@ -575,7 +577,7 @@ public class Writer {
          */
         try {
             mapper.awtToPdf(font);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Error writing out caption", e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());

@@ -3,7 +3,10 @@ package org.pdf.forms.utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -14,7 +17,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -24,25 +26,24 @@ import org.xml.sax.SAXException;
 
 public abstract class PropertiesFile {
 
-    private final Logger logger = LoggerFactory.getLogger(PropertiesFile.class);
+    private static final int NO_OF_RECENT_DOCS = 6;
 
+    private final Logger logger = LoggerFactory.getLogger(PropertiesFile.class);
     private final File configFile;
 
     private Document doc;
 
-    private final int noOfRecentDocs = 6;
-
     PropertiesFile(final File configFile) {
         this.configFile = configFile;
         try {
-            doc = readConfigFile(configFile);
+            this.doc = readConfigFile(configFile);
 
-            final boolean hasAllElements = checkAllElementsPresent();
-            //only write out if needed
-            if (!hasAllElements) {
+            final boolean modelUpdated = checkForModelUpdate(doc);
+            if (modelUpdated) {
+                //only write out if needed
                 writeDoc();
             }
-        } catch (final DOMException | ParserConfigurationException | TransformerException e) {
+        } catch (ParserConfigurationException | TransformerException e) {
             logger.error("Error generating properties file {}", configFile.getAbsolutePath(), e);
         }
     }
@@ -51,19 +52,24 @@ public abstract class PropertiesFile {
         if (configFile.exists() && configFile.canRead()) {
             try {
                 return XMLUtils.readDocument(configFile);
-            } catch (final SAXException | IOException e) {
+            } catch (SAXException | IOException e) {
                 logger.error("Error parsing properties file {}", configFile.getAbsolutePath(), e);
             }
         }
         return XMLUtils.createNewDocument();
     }
 
-    public abstract boolean checkAllElementsPresent() throws DOMException, ParserConfigurationException;
+    public abstract boolean checkForModelUpdate(Document document);
 
     void writeDoc() throws TransformerException {
-        final InputStream stylesheet = getClass().getResourceAsStream("/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
+        final InputStream stylesheet = getClass().getResourceAsStream(
+                "/org/jpedal/examples/simpleviewer/res/xmlstyle.xslt");
 
         final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+//        transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
         final Transformer transformer = transformerFactory.newTransformer(new StreamSource(stylesheet));
 
         transformer.transform(new DOMSource(doc), new StreamResult(configFile));
@@ -72,7 +78,7 @@ public abstract class PropertiesFile {
     void removeOldFiles(final Element recentElement) {
         final NodeList allRecentDocs = recentElement.getElementsByTagName("*");
 
-        while (allRecentDocs.getLength() > noOfRecentDocs) {
+        while (allRecentDocs.getLength() > NO_OF_RECENT_DOCS) {
             recentElement.removeChild(allRecentDocs.item(0));
         }
     }
@@ -103,7 +109,7 @@ public abstract class PropertiesFile {
             }
             attrs = element.getAttributes();
 
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Error generating properties file", e);
             return "";
         }
@@ -120,26 +126,60 @@ public abstract class PropertiesFile {
             element.setAttribute("value", newValue);
 
             writeDoc();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Error setting value in properties file", e);
         }
     }
 
     public int getNumberRecentDocumentsToDisplay() {
-        return noOfRecentDocs;
+        return NO_OF_RECENT_DOCS;
     }
 
-    Document getDoc() {
+    Document getDocument() {
         return doc;
     }
 
-    void setDoc(final Document doc) {
-        this.doc = doc;
+    int getNumberOfRecentDocuments() {
+        return NO_OF_RECENT_DOCS;
     }
 
-    int getNoOfRecentDocs() {
-        return noOfRecentDocs;
+    void updateElementInModel(
+            final Document document,
+            final String tagName) {
+        Element propertiesElement;
+        NodeList elements = document.getElementsByTagName("properties");
+        if (elements.getLength() == 0) {
+            propertiesElement = addPropertiesElement(document);
+        } else {
+            propertiesElement = (Element) elements.item(0);
+        }
+
+        final Element element = document.createElement(tagName);
+        propertiesElement.appendChild(element);
     }
 
-    abstract void destroy();
+    void createNewModelInstance(final Document document) {
+        addPropertiesElement(document);
+    }
+
+    private Element addPropertiesElement(final Document document) {
+        final Element propertiesElement = document.createElement("properties");
+        document.appendChild(propertiesElement);
+        return propertiesElement;
+    }
+
+    List<String> getElementNamesUnderRoot(final Document document) {
+        final NodeList elements = document.getElementsByTagName("*");
+        final List<String> elementsNames = new ArrayList<>(elements.getLength());
+        for (int i = 0; i < elements.getLength(); i++) {
+            elementsNames.add(elements.item(i).getNodeName());
+        }
+        return elementsNames;
+    }
+
+    boolean isElementMissing(
+            final Document document,
+            final String elementName) {
+        return !getElementNamesUnderRoot(document).contains(elementName);
+    }
 }

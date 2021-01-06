@@ -8,15 +8,13 @@ public class ButtonGroup {
     private String name;
 
     public ButtonGroup(final int type) {
-        final String name;
         if (type == IWidget.RADIO_BUTTON) {
-            name = "Radio Button Group" + nextRadioButtonGroupNumber;
+            name = "Radio Button Group " + nextRadioButtonGroupNumber;
             nextRadioButtonGroupNumber++;
         } else {
-            name = "CheckBox Group" + nextCheckBoxGroupNumber;
+            name = "CheckBox Group " + nextCheckBoxGroupNumber;
             nextCheckBoxGroupNumber++;
         }
-        this.name = name;
     }
 
     public ButtonGroup(final String groupName) {

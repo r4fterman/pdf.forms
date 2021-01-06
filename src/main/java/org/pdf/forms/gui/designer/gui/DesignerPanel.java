@@ -1,18 +1,13 @@
 package org.pdf.forms.gui.designer.gui;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableMap;
-import com.vlsolutions.swing.docking.DockKey;
-import com.vlsolutions.swing.docking.Dockable;
-import com.vlsolutions.swing.toolbars.ToolBarConstraints;
-import com.vlsolutions.swing.toolbars.ToolBarContainer;
-import com.vlsolutions.swing.toolbars.ToolBarPanel;
+import javax.swing.*;
+
 import org.jpedal.PdfDecoder;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.fonts.FontHandler;
@@ -25,6 +20,13 @@ import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.writer.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableMap;
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
+import com.vlsolutions.swing.toolbars.ToolBarConstraints;
+import com.vlsolutions.swing.toolbars.ToolBarContainer;
+import com.vlsolutions.swing.toolbars.ToolBarPanel;
 
 public class DesignerPanel extends JTabbedPane implements Dockable, DesignNavigatable, PreviewNavigatable {
 
@@ -53,7 +55,12 @@ public class DesignerPanel extends JTabbedPane implements Dockable, DesignNaviga
         this.mainFrame = mainFrame;
         this.fontHandler = fontHandler;
 
-        final ToolBarContainer designerContainer = ToolBarContainer.createDefaultContainer(true, false, true, false, FlowLayout.CENTER);
+        final ToolBarContainer designerContainer = ToolBarContainer.createDefaultContainer(
+                true,
+                false,
+                true,
+                false,
+                FlowLayout.CENTER);
 
         final JScrollPane designerScrollPane = new JScrollPane((Component) designer,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -68,10 +75,17 @@ public class DesignerPanel extends JTabbedPane implements Dockable, DesignNaviga
 
         addTab("Designer", designerContainer);
 
-        final ToolBarContainer previewContainer = ToolBarContainer.createDefaultContainer(true, false, true, false, FlowLayout.CENTER);
+        final ToolBarContainer previewContainer = ToolBarContainer.createDefaultContainer(
+                true,
+                false,
+                true,
+                false,
+                FlowLayout.CENTER);
 
-        final JScrollPane previewScrollPane = new JScrollPane(decodePDF,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        final JScrollPane previewScrollPane = new JScrollPane(
+                decodePDF,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         //add a border and center
         decodePDF.setPDFBorder(BorderFactory.createLineBorder(Color.black, 1));
@@ -84,31 +98,36 @@ public class DesignerPanel extends JTabbedPane implements Dockable, DesignNaviga
 
         addTab("Preview", previewContainer);
 
-        addChangeListener(event -> {
-            if (getSelectedIndex() == 0) {
-                mainFrame.setDesignerCompoundContent(DesignerPanel.DESIGNER);
-            } else if (getSelectedIndex() == 1) {
-                mainFrame.setDesignerCompoundContent(DesignerPanel.PREVIEW);
-                decodePDF.closePdfFile();
+        addChangeListener(event -> documentChanged(mainFrame));
+    }
 
-                try {
-                    final File previewPDF = writePreviewPDF(mainFrame);
+    private void documentChanged(final IMainFrame mainFrame) {
+        if (getSelectedIndex() == 0) {
+            mainFrame.setDesignerCompoundContent(DesignerPanel.DESIGNER);
+            return;
+        }
 
-                    currentFile = previewPDF.getAbsolutePath();
-                    logger.info("Current file: {}", currentFile);
-                    decodePDF.openPdfFile(currentFile);
+        if (getSelectedIndex() == 1) {
+            mainFrame.setDesignerCompoundContent(DesignerPanel.PREVIEW);
+            decodePDF.closePdfFile();
 
-                    decodePDF.setPageParameters((float) previewScaling, 1);
-                    decodePDF.decodePage(1);
-                } catch (final Exception e) {
-                    logger.error("Error decoding PDF {}", currentFile, e);
-                }
+            try {
+                final File previewPDF = writePreviewPDF(mainFrame);
 
-                this.currentPdfPage = 1;
-                previewToolBar.setCurrentPage(currentPdfPage);
-                previewToolBar.setTotalNoOfPages(decodePDF.getPageCount());
+                currentFile = previewPDF.getAbsolutePath();
+                logger.info("Current file: {}", currentFile);
+                decodePDF.openPdfFile(currentFile);
+
+                decodePDF.setPageParameters((float) previewScaling, 1);
+                decodePDF.decodePage(1);
+            } catch (Exception e) {
+                logger.error("Error decoding PDF {}", currentFile, e);
             }
-        });
+
+            this.currentPdfPage = 1;
+            previewToolBar.setCurrentPage(currentPdfPage);
+            previewToolBar.setTotalNoOfPages(decodePDF.getPageCount());
+        }
     }
 
     private File writePreviewPDF(final IMainFrame mainFrame) throws IOException {
@@ -175,7 +194,7 @@ public class DesignerPanel extends JTabbedPane implements Dockable, DesignNaviga
 
                 previewToolBar.setCurrentPage(page);
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Error displaying preview page", e);
         }
 
@@ -211,7 +230,7 @@ public class DesignerPanel extends JTabbedPane implements Dockable, DesignNaviga
 
             decodePDF.setPageParameters((float) previewScaling, currentPdfPage);
             decodePDF.decodePage(currentPdfPage);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Error during preview zoom", e);
         }
     }

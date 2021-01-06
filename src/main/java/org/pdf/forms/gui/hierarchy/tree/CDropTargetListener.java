@@ -1,9 +1,5 @@
 package org.pdf.forms.gui.hierarchy.tree;
 
-import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -24,6 +20,11 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.IDesigner;
@@ -37,14 +38,15 @@ class CDropTargetListener implements DropTargetListener {
 
     private final Logger logger = LoggerFactory.getLogger(CDropTargetListener.class);
 
-    private TreePath pathLast = null;
     private final Rectangle2D raCueLine = new Rectangle2D.Float();
-    private Rectangle2D raGhost = new Rectangle2D.Float();
     private final Color colorCueLine;
-    private Point ptLast = new Point();
     private final Timer timerHover;
     private final CTree cTree;
     private final IDesigner designer;
+
+    private TreePath lastTreePath = null;
+    private Rectangle2D raGhost = new Rectangle2D.Float();
+    private Point lastDragPoint = new Point();
 
     CDropTargetListener(
             final CTree cTree,
@@ -52,7 +54,7 @@ class CDropTargetListener implements DropTargetListener {
         this.cTree = cTree;
         this.designer = designer;
 
-        colorCueLine = new Color(
+        this.colorCueLine = new Color(
                 SystemColor.controlShadow.getRed(),
                 SystemColor.controlShadow.getGreen(),
                 SystemColor.controlShadow.getBlue(),
@@ -61,13 +63,13 @@ class CDropTargetListener implements DropTargetListener {
 
         // Set up a hover timer, so that a node will be automatically expanded or collapsed
         // if the user lingers on it for more than a short time
-        timerHover = new Timer(500, e -> {
-            if (this.cTree.isRootPath(pathLast)) {
+        this.timerHover = new Timer(500, e -> {
+            if (this.cTree.isRootPath(lastTreePath)) {
                 // Do nothing if we are hovering over the root node
                 return;
             }
-            if (!this.cTree.isExpanded(pathLast)) {
-                this.cTree.expandPath(pathLast);
+            if (!this.cTree.isExpanded(lastTreePath)) {
+                this.cTree.expandPath(lastTreePath);
             }
         });
         // Set timer to one-shot mode
@@ -75,26 +77,26 @@ class CDropTargetListener implements DropTargetListener {
     }
 
     @Override
-    public void dragEnter(final DropTargetDragEvent e) {
-        acceptOrRejectDrag(e, isDragNotAcceptable(e));
+    public void dragEnter(final DropTargetDragEvent event) {
+        acceptOrRejectDrag(event, isDragNotAcceptable(event));
     }
 
     @Override
-    public void dragExit(final DropTargetEvent e) {
+    public void dragExit(final DropTargetEvent event) {
         if (!DragSource.isDragImageSupported()) {
             cTree.repaint(raGhost.getBounds());
         }
     }
 
     @Override
-    public void dragOver(final DropTargetDragEvent e) {
+    public void dragOver(final DropTargetDragEvent event) {
         // This is where the ghost image is drawn.
         // Even if the mouse is not moving, this method is still invoked 10 times per second
-        final Point pt = e.getLocation();
-        if (pt.equals(ptLast)) {
+        final Point point = event.getLocation();
+        if (point.equals(lastDragPoint)) {
             return;
         }
-        ptLast = pt;
+        this.lastDragPoint = point;
 
         final Graphics2D g2 = (Graphics2D) cTree.getGraphics();
 
@@ -103,8 +105,8 @@ class CDropTargetListener implements DropTargetListener {
             // Rub out the last ghost image and cue line
             cTree.paintImmediately(raGhost.getBounds());
             // And remember where we are about to draw the new ghost image
-            final int x = pt.x - cTree.getPtOffset().x;
-            final int y = pt.y - cTree.getPtOffset().y;
+            final int x = point.x - cTree.getPtOffset().x;
+            final int y = point.y - cTree.getPtOffset().y;
             raGhost.setRect(x, y, cTree.getImgGhost().getWidth(), cTree.getImgGhost().getHeight());
             g2.drawImage(cTree.getImgGhost(), AffineTransform.getTranslateInstance(raGhost.getX(), raGhost.getY()), null);
         } else {
@@ -112,14 +114,14 @@ class CDropTargetListener implements DropTargetListener {
             cTree.paintImmediately(raCueLine.getBounds());
         }
 
-        final TreePath path = cTree.getClosestPathForLocation(pt.x, pt.y);
-        if (path != pathLast) {
-            pathLast = path;
+        final TreePath treePath = cTree.getClosestPathForLocation(point.x, point.y);
+        if (treePath != lastTreePath) {
+            lastTreePath = treePath;
             timerHover.restart();
         }
 
         // In any case draw (over the ghost image if necessary) a cue line indicating where a drop will occur
-        final Rectangle raPath = Objects.requireNonNullElse(cTree.getPathBounds(path), new Rectangle(0, 0, 0, 0));
+        final Rectangle raPath = Objects.requireNonNullElse(cTree.getPathBounds(treePath), new Rectangle(0, 0, 0, 0));
 
         final double y = raPath.y + raPath.getHeight();
         final Rectangle2D.Double rect = new Rectangle2D.Double(0, y, cTree.getWidth(), 2);
@@ -131,7 +133,7 @@ class CDropTargetListener implements DropTargetListener {
         // And include the cue line in the area to be rubbed out next time
         raGhost = raGhost.createUnion(raCueLine);
 
-        final DefaultMutableTreeNode targetNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+        final DefaultMutableTreeNode targetNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
         final DefaultMutableTreeNode sourceNode = (DefaultMutableTreeNode) cTree.getPathSource().getLastPathComponent();
 
         final List<TreeNode> flattenedTreeItems = new ArrayList<>();
@@ -142,28 +144,28 @@ class CDropTargetListener implements DropTargetListener {
 
         // check to see if a page is being moved
         if (sourceUserObject instanceof Page) {
-            dragOverPage(e, targetNode, sourceNode, flattenedTreeItems, targetUserObject);
+            dragOverPage(event, targetNode, sourceNode, flattenedTreeItems, targetUserObject);
         } else {
-            dragOverWidget(e, targetNode, sourceNode, targetUserObject);
+            dragOverWidget(event, targetNode, sourceNode, targetUserObject);
         }
     }
 
     private void dragOverWidget(
-            final DropTargetDragEvent e,
+            final DropTargetDragEvent event,
             final DefaultMutableTreeNode targetNode,
             final DefaultMutableTreeNode sourceNode,
             final Object targetUserObject) {
         // we must be moving a widget
         if (targetUserObject instanceof Page) {
             // we are trying to drop a widget on a page which is allowed
-            e.acceptDrag(e.getDropAction());
+            event.acceptDrag(event.getDropAction());
             return;
         }
 
         // we are not trying to drop a widget on a page, so we need to check if it is being dropped in a group
         final TreeNode targetParent = targetNode.getParent();
         if (targetParent == null) {
-            e.rejectDrag();
+            event.rejectDrag();
             return;
         }
 
@@ -176,7 +178,7 @@ class CDropTargetListener implements DropTargetListener {
         }
 
         final boolean rejectDrag = targetIndex == sourceIndex && sourceNode.getParent() == targetNode.getParent();
-        acceptOrRejectDrag(e, rejectDrag);
+        acceptOrRejectDrag(event, rejectDrag);
     }
 
     private void dragOverPage(
@@ -277,7 +279,7 @@ class CDropTargetListener implements DropTargetListener {
 
             designer.repaint();
             return true;
-        } catch (final UnsupportedFlavorException | IOException e) {
+        } catch (UnsupportedFlavorException | IOException e) {
             logger.error("Error during drag and drop", e);
             return false;
         }
@@ -456,7 +458,8 @@ class CDropTargetListener implements DropTargetListener {
             }
 
             final IWidget widget = (IWidget) object;
-            if (widget.getType() == IWidget.GROUP && (isTarget || widget != objectPath[objectPath.length - 1])) {
+            if (widget.getType() == IWidget.GROUP
+                    && (isTarget || widget != objectPath[objectPath.length - 1])) {
                 return widget.getWidgetsInGroup();
             }
         }

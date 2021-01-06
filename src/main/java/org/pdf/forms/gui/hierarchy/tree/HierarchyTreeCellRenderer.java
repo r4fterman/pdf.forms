@@ -1,29 +1,18 @@
 package org.pdf.forms.gui.hierarchy.tree;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.net.URL;
+import java.awt.*;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.widgets.IWidget;
 
 public class HierarchyTreeCellRenderer extends DefaultTreeCellRenderer {
+
+    private final IMainFrame mainFrame;
+
     private Icon icon;
-
-    private IMainFrame mainFrame;
-
-    private HierarchyTreeCellRenderer() {
-    }
 
     public HierarchyTreeCellRenderer(final IMainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -37,12 +26,14 @@ public class HierarchyTreeCellRenderer extends DefaultTreeCellRenderer {
     @Override
     public Dimension getPreferredSize() {
         final Font font = getFont();
-        if (font != null) {
-            final int width = SwingUtilities.computeStringWidth(getFontMetrics(getFont()), getText())
-                    + getIcon().getIconWidth() + getIconTextGap();
-            return new Dimension(width, super.getPreferredSize().height);
+        if (font == null) {
+            return super.getPreferredSize();
         }
-        return super.getPreferredSize();
+
+        final FontMetrics fontMetrics = getFontMetrics(font);
+        final int textWidth = SwingUtilities.computeStringWidth(fontMetrics, getText());
+        final int width = textWidth + getIcon().getIconWidth() + getIconTextGap();
+        return new Dimension(width, super.getPreferredSize().height);
     }
 
     @Override
@@ -54,49 +45,41 @@ public class HierarchyTreeCellRenderer extends DefaultTreeCellRenderer {
             final boolean leaf,
             final int row,
             final boolean hasFocus) {
-
         final Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
+        final TreeNodeRenderer treeNodeRenderer = TreeNodeRendererFactory.getInstance(userObject, mainFrame);
+        this.icon = treeNodeRenderer.getIcon();
 
-        String s = "";
-        if (userObject instanceof IWidget) {
-            final IWidget w = (IWidget) userObject;
-
-            s = w.getWidgetName();
-
-            if (mainFrame.getWidgetArrays().isWidgetArrayInList(s)) {
-                final int arrayNumber = w.getArrayNumber();
-                s += "[" + arrayNumber + "]";
-            }
-
-            icon = w.getIcon();
-        } else if (userObject instanceof Page) {
-            final Page page = (Page) userObject;
-
-            s = page.getPageName();
-            final URL resource = getClass().getResource("/org/pdf/forms/res/Page.gif");
-            icon = new ImageIcon(resource);
-
-        } else if (userObject.equals("Document Root")) {
-            s = userObject.toString();
-            final URL resource = getClass().getResource("/org/pdf/forms/res/Form.gif");
-            icon = new ImageIcon(resource);
-        }
-
-        setText(s);
+        setText(treeNodeRenderer.getText());
         setIcon(icon);
-        if (isSelected) {
-            setBackground(new Color(236, 233, 216));
-            setForeground(Color.BLACK);
-        } else {
-            setBackground(tree.getBackground());
-            setForeground(tree.getForeground());
-        }
+
+        setBackground(getBackgroundColor(isSelected, tree.getBackground()));
+        setForeground(getForegroundColor(isSelected, tree.getForeground()));
+
         setEnabled(tree.isEnabled());
         setFont(tree.getFont());
+
         setOpaque(true);
 
         setPreferredSize(getPreferredSize());
 
         return this;
+    }
+
+    private Color getForegroundColor(
+            final boolean isSelected,
+            final Color defaultColor) {
+        if (isSelected) {
+            return Color.BLACK;
+        }
+        return defaultColor;
+    }
+
+    private Color getBackgroundColor(
+            final boolean isSelected,
+            final Color defaultColor) {
+        if (isSelected) {
+            return new Color(236, 233, 216);
+        }
+        return defaultColor;
     }
 }

@@ -33,24 +33,29 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
     }
 
     @Override
-    public void mouseDragged(final MouseEvent e) {
-        designerPanel.updateRulers(new Point(e.getX(), e.getY()));
+    public void mouseDragged(final MouseEvent event) {
+        designerPanel.updateRulers(new Point(event.getX(), event.getY()));
 
         if (designerPanel.getWidgetToAdd() == IWidget.NONE) {
-            //nothing selected, so just drag out selection box
-            if (designerPanel.getSelectedWidgets().isEmpty()) {
-                selectionBox.updateSize(e);
-            } else {
-                // A widget(s) is being resized
-                moveAndResizeSelectedWidget(e);
-                if (!designerPanel.isResizing() && !designerPanel.isResizingSplitComponent()) {
-                    designerPanel.setCurrentlyDragging(true);
-                }
-            }
+            dragOutSelectionBox(event);
         } else {
-            selectionBox.updateSize(e);
+            selectionBox.updateSize(event);
         }
         designerPanel.repaint();
+    }
+
+    private void dragOutSelectionBox(final MouseEvent event) {
+        //nothing selected, so just drag out selection box
+        if (designerPanel.getSelectedWidgets().isEmpty()) {
+            selectionBox.updateSize(event);
+            return;
+        }
+
+        // A widget(s) is being resized
+        moveAndResizeSelectedWidget(event);
+        if (!designerPanel.isResizing() && !designerPanel.isResizingSplitComponent()) {
+            designerPanel.setCurrentlyDragging(true);
+        }
     }
 
     @Override
@@ -75,22 +80,24 @@ public class DesignerMouseMotionListener implements MouseMotionListener {
     }
 
     private int getCursorType(final int resizeType) {
-        if (resizeType == DesignerMouseMotionListener.DEFAULT_CURSOR) {
-            return Cursor.DEFAULT_CURSOR;
-        } else if (resizeType == DesignerMouseMotionListener.SE_RESIZE_CURSOR) {
-            return Cursor.SE_RESIZE_CURSOR;
-        } else if (resizeType == DesignerMouseMotionListener.NE_RESIZE_CURSOR) {
-            return Cursor.NE_RESIZE_CURSOR;
-        } else if (resizeType == DesignerMouseMotionListener.SW_RESIZE_CURSOR) {
-            return Cursor.SW_RESIZE_CURSOR;
-        } else if (resizeType == DesignerMouseMotionListener.NW_RESIZE_CURSOR) {
-            return Cursor.NW_RESIZE_CURSOR;
-        } else if (resizeType == DesignerMouseMotionListener.RESIZE_SPLIT_HORIZONTAL_CURSOR) {
-            return Cursor.W_RESIZE_CURSOR;
-        } else if (resizeType == DesignerMouseMotionListener.RESIZE_SPLIT_VERTICAL_CURSOR) {
-            return Cursor.S_RESIZE_CURSOR;
+        switch (resizeType) {
+            case DesignerMouseMotionListener.DEFAULT_CURSOR:
+                return Cursor.DEFAULT_CURSOR;
+            case DesignerMouseMotionListener.SE_RESIZE_CURSOR:
+                return Cursor.SE_RESIZE_CURSOR;
+            case DesignerMouseMotionListener.NE_RESIZE_CURSOR:
+                return Cursor.NE_RESIZE_CURSOR;
+            case DesignerMouseMotionListener.SW_RESIZE_CURSOR:
+                return Cursor.SW_RESIZE_CURSOR;
+            case DesignerMouseMotionListener.NW_RESIZE_CURSOR:
+                return Cursor.NW_RESIZE_CURSOR;
+            case DesignerMouseMotionListener.RESIZE_SPLIT_HORIZONTAL_CURSOR:
+                return Cursor.W_RESIZE_CURSOR;
+            case DesignerMouseMotionListener.RESIZE_SPLIT_VERTICAL_CURSOR:
+                return Cursor.S_RESIZE_CURSOR;
+            default:
+                return resizeType;
         }
-        return resizeType;
     }
 
     private void moveAndResizeSelectedWidget(final MouseEvent mouseEvent) {

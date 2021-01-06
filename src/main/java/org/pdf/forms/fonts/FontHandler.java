@@ -1,7 +1,6 @@
 package org.pdf.forms.fonts;
 
-import java.awt.Font;
-import java.awt.FontFormatException;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.pdf.forms.Configuration;
 import org.pdf.forms.utils.DesignerPropertiesFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +26,7 @@ public final class FontHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FontHandler.class);
 
-    public FontHandler(final Configuration configuration) {
+    public FontHandler(final DesignerPropertiesFile designerPropertiesFile) {
         final String javaFontDir = System.getProperty("java.home") + "/lib/fonts";
         final String[] fontDirectoriesWindows = {
                 "c:/windows/fonts",
@@ -55,7 +53,7 @@ public final class FontHandler {
         fontDirectories.forEach(this::registerDirectory);
 
         //TODO need to check if file has moved, and if so offer user chance to browse
-        DesignerPropertiesFile.getInstance(configuration.getConfigDirectory()).getCustomFonts().forEach((key, value) -> registerFont(new File(value)));
+        designerPropertiesFile.getCustomFonts().forEach((key, value) -> registerFont(new File(value)));
     }
 
     private void registerDirectory(final String fontDirectory) {
@@ -71,8 +69,8 @@ public final class FontHandler {
             }
 
             Arrays.stream(fontFiles).forEach(this::registerFont);
-        } catch (final Exception e) {
-            logger.info("Error registering directory", e);
+        } catch (Exception e) {
+            logger.info("Error registering directory. {}", e.getMessage());
         }
     }
 
@@ -86,8 +84,8 @@ public final class FontHandler {
             FONT_FILE_MAP.put(font, fontLocation);
 
             return font.getFontName();
-        } catch (final FontFormatException | IOException e) {
-            logger.warn("Unable reading font in FontHandler {}", file.getAbsolutePath(), e);
+        } catch (FontFormatException | IOException e) {
+            logger.warn("Unable reading font in FontHandler. {}", e.getMessage());
         }
 
         return null;

@@ -158,9 +158,7 @@ public class JavaScriptEditorPanel extends JPanel implements Dockable {
             handleWidgets(widgets);
         }
 
-        for (final String event : eventsAndValues.keySet()) {
-            eventBox.addItem(event);
-        }
+        eventsAndValues.keySet().forEach(event -> eventBox.addItem(event));
     }
 
     private void saveJavaScriptInWidgets() {

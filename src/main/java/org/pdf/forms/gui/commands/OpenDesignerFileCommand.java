@@ -1,7 +1,7 @@
 package org.pdf.forms.gui.commands;
 
-import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toUnmodifiableList;
+import static java.util.stream.Collectors.toUnmodifiableMap;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
 import java.awt.*;
@@ -16,7 +16,6 @@ import java.util.Set;
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.pdf.forms.Configuration;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
@@ -40,19 +39,19 @@ public class OpenDesignerFileCommand implements Command {
     private final String version;
     private final JMenuItem[] recentDesignerDocuments;
     private final WidgetFactory widgetFactory;
-    private final Configuration configuration;
+    private DesignerPropertiesFile designerPropertiesFile;
 
     public OpenDesignerFileCommand(
             final IMainFrame mainFrame,
             final String version,
             final WidgetFactory widgetFactory,
-            final Configuration configuration) {
+            final DesignerPropertiesFile designerPropertiesFile) {
         this.mainFrame = mainFrame;
         this.version = version;
         this.widgetFactory = widgetFactory;
-        this.configuration = configuration;
+        this.designerPropertiesFile = designerPropertiesFile;
 
-        final int noOfRecentDocs = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory()).getNumberRecentDocumentsToDisplay();
+        final int noOfRecentDocs = designerPropertiesFile.getNumberRecentDocumentsToDisplay();
         this.recentDesignerDocuments = new JMenuItem[noOfRecentDocs];
     }
 
@@ -86,9 +85,8 @@ public class OpenDesignerFileCommand implements Command {
         mainFrame.setTotalNoOfDisplayedPages(mainFrame.getTotalNoOfPages());
         mainFrame.setTitle(mainFrame.getCurrentDesignerFileName() + " - PDF Forms Designer Version " + version);
 
-        final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory());
-        properties.addRecentDesignerDocument(designerFileToOpen);
-        updateRecentDocuments(properties.getRecentDesignerDocuments());
+        designerPropertiesFile.addRecentDesignerDocument(designerFileToOpen);
+        updateRecentDocuments(designerPropertiesFile.getRecentDesignerDocuments());
     }
 
     private void readDesignerFile(final String designerFileToOpen) {
@@ -137,7 +135,7 @@ public class OpenDesignerFileCommand implements Command {
                 }
                 newPage.setWidgets(widgets);
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Error opening designer file {}", designerFileToOpen, e);
         }
     }
@@ -174,9 +172,9 @@ public class OpenDesignerFileCommand implements Command {
                 .collect(toUnmodifiableSet());
 
         return pdfFiles.stream()
-                .collect(toMap(
+                .collect(toUnmodifiableMap(
                         pdfFile -> pdfFile,
-                        pdfFile -> pdfFileName(pdfFile)
+                        this::pdfFileName
                 ));
     }
 

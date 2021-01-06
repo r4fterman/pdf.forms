@@ -1,13 +1,11 @@
 package org.pdf.forms.gui.designer.captionchanger;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
+import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
+import java.awt.*;
+
+import javax.swing.*;
 
 import org.jpedal.utils.Strip;
 import org.pdf.forms.gui.designer.IDesigner;
@@ -22,7 +20,7 @@ public class CaptionChanger {
     private static final String HTML_LINE_BREAK = "<br/>";
     private static final String STRING_LINE_BREAK = "\n";
 
-    private JTextPane textArea;
+    private JTextPane captionTextArea;
     private JScrollPane scroll;
 
     private IWidget selectedWidget;
@@ -40,21 +38,21 @@ public class CaptionChanger {
         final String captionText = captionComponent.getText();
         alignment = getAlignment(captionText);
 
-        textArea = createTextArea(captionText);
-        textArea.setFont(captionComponent.getFont());
+        captionTextArea = createTextArea(captionText);
+        captionTextArea.setFont(captionComponent.getFont());
 
         final Point captionLocation = selectedWidget.getAbsoluteLocationsOfCaption();
         final Rectangle captionBounds = captionComponent.getBounds();
         if (captionText.contains("<br")) {
-            this.scroll = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            this.scroll = new JScrollPane(captionTextArea, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_AS_NEEDED);
             setBounds(scroll, captionLocation, captionBounds);
             designerPanel.add(scroll);
         } else {
-            setBounds(textArea, captionLocation, captionBounds);
-            designerPanel.add(textArea);
+            setBounds(captionTextArea, captionLocation, captionBounds);
+            designerPanel.add(captionTextArea);
         }
 
-        textArea.requestFocus();
+        captionTextArea.requestFocus();
     }
 
     String getAlignment(final String captionText) {
@@ -77,7 +75,7 @@ public class CaptionChanger {
     }
 
     public void closeCaptionChanger() {
-        if (textArea == null || !textArea.isVisible()) {
+        if (captionTextArea == null || !captionTextArea.isVisible()) {
             return;
         }
 
@@ -87,7 +85,7 @@ public class CaptionChanger {
     }
 
     private void setCaptionText() {
-        final String captionText = textArea.getText().replaceAll(STRING_LINE_BREAK, HTML_LINE_BREAK);
+        final String captionText = captionTextArea.getText().replace(STRING_LINE_BREAK, HTML_LINE_BREAK);
 
         final StringBuilder builder = new StringBuilder("<html>");
         if (alignment == null) {
@@ -102,17 +100,15 @@ public class CaptionChanger {
 
         final Document properties = selectedWidget.getProperties();
         final Element captionProperties =
-                XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties"))
-                        .get(0);
+                XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties")).get(0);
 
-        final Element textElement = XMLUtils.getPropertyElement(captionProperties, "Text").get();
-
-        textElement.getAttributeNode("value").setValue(text);
+        XMLUtils.getPropertyElement(captionProperties, "Text")
+                .ifPresent(textElement -> textElement.getAttributeNode("value").setValue(text));
 
         selectedWidget.setCaptionProperties(captionProperties);
 
-        textArea.setText("");
-        textArea.setVisible(false);
+        captionTextArea.setText("");
+        captionTextArea.setVisible(false);
         if (scroll != null) {
             scroll.setVisible(false);
         }
@@ -143,8 +139,8 @@ public class CaptionChanger {
 
     private String prepareTextForEditing(final String text) {
         final String textWithEditingLineBreaks = text
-                .replaceAll("<br>", HTML_LINE_BREAK)
-                .replaceAll(HTML_LINE_BREAK, STRING_LINE_BREAK);
+                .replace("<br>", HTML_LINE_BREAK)
+                .replace(HTML_LINE_BREAK, STRING_LINE_BREAK);
 
         return Strip.stripXML(textWithEditingLineBreaks).toString();
 

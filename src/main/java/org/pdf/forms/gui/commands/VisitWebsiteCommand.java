@@ -23,7 +23,7 @@ public class VisitWebsiteCommand implements Command {
                 final URI uri = URI.create(httpAddress);
                 desktop.browse(uri);
                 return true;
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 LOGGER.error("Error opening web browser for address {}", httpAddress, e);
             }
         }

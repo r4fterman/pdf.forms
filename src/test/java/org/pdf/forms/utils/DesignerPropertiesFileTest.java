@@ -13,25 +13,16 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.w3c.dom.Document;
 
 class DesignerPropertiesFileTest {
 
-    private DesignerPropertiesFile designerPropertiesFile;
-
-    @AfterEach
-    void tearDown() {
-        if (designerPropertiesFile != null) {
-            designerPropertiesFile.destroy();
-        }
-    }
-
     @Test
     void getRecentDesDocuments_from_non_existing_properties_file_should_return_list_with_null_entries(@TempDir final Path configDir) {
-        designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir.toFile());
 
         final String[] recentDesFiles = designerPropertiesFile.getRecentDesignerDocuments();
 
@@ -50,7 +41,7 @@ class DesignerPropertiesFileTest {
         assertThat(url, is(notNullValue()));
 
         final File configDir = new File(url.toURI()).getParentFile();
-        designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir);
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir);
 
         final String[] recentDesFiles = designerPropertiesFile.getRecentDesignerDocuments();
 
@@ -65,7 +56,7 @@ class DesignerPropertiesFileTest {
 
     @Test
     void getRecentPdfDocuments_from_non_existing_properties_file_should_return_list_with_null_entries(@TempDir final Path configDir) {
-        designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir.toFile());
 
         final String[] recentPdfFiles = designerPropertiesFile.getRecentPDFDocuments();
 
@@ -82,7 +73,7 @@ class DesignerPropertiesFileTest {
 
     @Test
     void addRecentDocument_to_DES_list_should_be_added_on_top(@TempDir final Path configDir) {
-        designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir.toFile());
 
         designerPropertiesFile.addRecentDesignerDocument("/usr/local/example1.des");
         designerPropertiesFile.addRecentDesignerDocument("/usr/local/example2.des");
@@ -100,7 +91,7 @@ class DesignerPropertiesFileTest {
 
     @Test
     void addRecentDocument_to_PDF_list_should_be_added_on_top(@TempDir final Path configDir) {
-        designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir.toFile());
 
         designerPropertiesFile.addRecentPDFDocument("/usr/local/example1.pdf");
         designerPropertiesFile.addRecentPDFDocument("/usr/local/example2.pdf");
@@ -120,7 +111,7 @@ class DesignerPropertiesFileTest {
 
     @Test
     void getCustomFonts_from_non_existing_properties_file_should_return_empty_map(@TempDir final Path configDir) {
-        designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir.toFile());
 
         final Map<String, String> customFonts = designerPropertiesFile.getCustomFonts();
         assertThat(customFonts, is(anEmptyMap()));
@@ -132,7 +123,7 @@ class DesignerPropertiesFileTest {
         assertThat(url, is(notNullValue()));
 
         final File configDir = new File(url.toURI()).getParentFile();
-        designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir);
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir);
 
         final Map<String, String> customFonts = designerPropertiesFile.getCustomFonts();
         assertThat(customFonts, is(aMapWithSize(2)));
@@ -142,7 +133,7 @@ class DesignerPropertiesFileTest {
 
     @Test
     void addCustomFont_should_store_font_name_and_path(@TempDir final Path configDir) {
-        designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir.toFile());
 
         designerPropertiesFile.addCustomFont("Courier", "/path/to/font/courier");
         designerPropertiesFile.addCustomFont("TimesNewRoman", "/path/to/font/timesnewroman");
@@ -154,10 +145,11 @@ class DesignerPropertiesFileTest {
     }
 
     @Test
-    void checkAllElementsPresent(@TempDir final Path configDir) throws Exception {
-        designerPropertiesFile = DesignerPropertiesFile.getInstance(configDir.toFile());
+    void checkForModelUpdate_should_return_false_for_initialized_document(@TempDir final Path configDir) {
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir.toFile());
 
-        assertThat(designerPropertiesFile.checkAllElementsPresent(), is(true));
+        final Document document = designerPropertiesFile.getDocument();
+        assertThat(designerPropertiesFile.checkForModelUpdate(document), is(false));
     }
 
 }

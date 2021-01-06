@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 
 import javax.swing.*;
 
@@ -24,6 +24,8 @@ import org.pdf.forms.gui.designer.gui.Rule;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Element;
+
+import com.google.common.primitives.Doubles;
 
 public class BorderPropertiesPanel extends JPanel {
 
@@ -236,33 +238,36 @@ public class BorderPropertiesPanel extends JPanel {
         borderWidthBox.setEnabled(borderEnabled);
         borderColorButton.setEnabled(borderEnabled);
 
-        final Set<IWidget> widgets = widgetsAndProperties.keySet();
-        for (final IWidget widget: widgets) {
-            final Element borderProperties = widgetsAndProperties.get(widget);
+        widgetsAndProperties.forEach((widget, borderProperties) -> {
 
-            if (style != null) {
-                setProperty(borderProperties, "Border Style", style);
-            }
+            Optional.ofNullable(style)
+                    .ifPresent(s -> setProperty(borderProperties, "Border Style", s));
 
-            final Color color = borderColorButton.getBackground();
-            if (color != null) {
-                setProperty(borderProperties, "Border Color", color.getRGB() + "");
-            }
+            Optional.ofNullable(borderColorButton.getBackground())
+                    .ifPresent(color -> setProperty(borderProperties, "Border Color", String.valueOf(color.getRGB())));
 
-            if (!borderWidthBox.getText().equals("mixed")) {
-                final String widthText = borderWidthBox.getText().replace("cm", "");
-
-                final double customWidth = Double.parseDouble(widthText);
-                borderWidthBox.setText(customWidth + " cm");
-
-                final double width = customWidth * UNITS;
-                setProperty(borderProperties, "Border Width", String.valueOf(Math.round(width)));
-            }
+            getBorderWidthValue()
+                    .ifPresent(width -> setProperty(borderProperties,
+                            "Border Width",
+                            String.valueOf(Math.round(width))));
 
             widget.setBorderAndBackgroundProperties(borderProperties);
-        }
+        });
 
         designerPanel.repaint();
+    }
+
+    private Optional<Double> getBorderWidthValue() {
+        if (borderWidthBox.getText().equals("mixed")) {
+            return Optional.empty();
+        }
+
+        final String widthText = borderWidthBox.getText().replace("cm", "");
+        return Optional.ofNullable(Doubles.tryParse(widthText))
+                .map(customWidth -> {
+                    borderWidthBox.setText(customWidth + " cm");
+                    return customWidth * UNITS;
+                });
     }
 
     public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {

@@ -9,7 +9,6 @@ import javax.swing.*;
 
 import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
-import org.pdf.forms.Configuration;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.PDFImportChooser;
@@ -25,7 +24,7 @@ public class ImportPdfCommand implements Command {
     private final IMainFrame mainFrame;
     private final String version;
     private final WidgetFactory widgetFactory;
-    private final Configuration configuration;
+    private final DesignerPropertiesFile designerPropertiesFile;
 
     private final JMenuItem[] recentDesignerDocuments;
 
@@ -33,14 +32,13 @@ public class ImportPdfCommand implements Command {
             final IMainFrame mainFrame,
             final String version,
             final WidgetFactory widgetFactory,
-            final Configuration configuration) {
+            final DesignerPropertiesFile designerPropertiesFile) {
         this.mainFrame = mainFrame;
         this.version = version;
         this.widgetFactory = widgetFactory;
-        this.configuration = configuration;
+        this.designerPropertiesFile = designerPropertiesFile;
 
-        final int numberOfRecentDocs = DesignerPropertiesFile.getInstance(configuration.getConfigDirectory())
-                .getNumberRecentDocumentsToDisplay();
+        final int numberOfRecentDocs = designerPropertiesFile.getNumberRecentDocumentsToDisplay();
         this.recentDesignerDocuments = new JMenuItem[numberOfRecentDocs];
     }
 
@@ -92,11 +90,9 @@ public class ImportPdfCommand implements Command {
                     pdfDecoder);
             worker.start();
 
-            final DesignerPropertiesFile properties = DesignerPropertiesFile.getInstance(configuration
-                    .getConfigDirectory());
-            properties.addRecentPDFDocument(pdfPath);
-            updateRecentDocuments(properties.getRecentPDFDocuments());
-        } catch (final PdfException e) {
+            designerPropertiesFile.addRecentPDFDocument(pdfPath);
+            updateRecentDocuments(designerPropertiesFile.getRecentPDFDocuments());
+        } catch (PdfException e) {
             logger.error("Error importing PDF file {}", pdfPath, e);
         }
     }
@@ -122,19 +118,27 @@ public class ImportPdfCommand implements Command {
             return;
         }
 
-        final JMenuItem[] recentDocuments = recentDesignerDocuments;
         for (int i = 0; i < recentDocs.length; i++) {
-            if (recentDocs[i] != null) {
-                final String shortenedFileName = FileUtil.getShortenedFileName(recentDocs[i], File.separator);
-                if (recentDocuments[i] == null) {
-                    recentDocuments[i] = new JMenuItem();
-                }
-                recentDocuments[i].setText((i + 1) + ": " + shortenedFileName);
-                recentDocuments[i].setVisible(!recentDocuments[i].getText().equals((i + 1) + ": "));
-
-                recentDocuments[i].setName(recentDocs[i]);
-            }
+            updateRecentDocuments(recentDocs[i], recentDesignerDocuments, i);
         }
+    }
+
+    private void updateRecentDocuments(
+            final String recentDoc,
+            final JMenuItem[] recentDocuments,
+            final int i) {
+        if (recentDoc == null) {
+            return;
+        }
+
+        final String shortenedFileName = FileUtil.getShortenedFileName(recentDoc, File.separator);
+        if (recentDocuments[i] == null) {
+            recentDocuments[i] = new JMenuItem();
+        }
+        final String label = (i + 1) + ": ";
+        recentDocuments[i].setText(label + shortenedFileName);
+        recentDocuments[i].setVisible(!recentDocuments[i].getText().equals(label));
+        recentDocuments[i].setName(recentDoc);
     }
 
     private void closePDF() {

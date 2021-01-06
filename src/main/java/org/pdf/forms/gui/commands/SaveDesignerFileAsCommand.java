@@ -1,11 +1,11 @@
 package org.pdf.forms.gui.commands;
 
-import java.awt.Component;
+import java.awt.*;
 import java.io.File;
 import java.util.Optional;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import javax.xml.XMLConstants;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -19,7 +19,7 @@ import org.w3c.dom.Document;
 
 class SaveDesignerFileAsCommand implements Command {
 
-    private Logger logger = LoggerFactory.getLogger(SaveDesignerFileAsCommand.class);
+    private final Logger logger = LoggerFactory.getLogger(SaveDesignerFileAsCommand.class);
 
     private final IMainFrame mainFrame;
     private final String version;
@@ -52,10 +52,15 @@ class SaveDesignerFileAsCommand implements Command {
             final File file) {
         final String fileToSave = file.getAbsolutePath();
         try {
-            final Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+            final Transformer transformer = transformerFactory.newTransformer();
             //initialize StreamResult with File object to save to file
             transformer.transform(new DOMSource(documentProperties), new StreamResult(fileToSave));
-        } catch (final TransformerException e) {
+        } catch (TransformerException e) {
             logger.error("Error writing xml to file {}", fileToSave, e);
         }
     }

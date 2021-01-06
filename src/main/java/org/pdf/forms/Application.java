@@ -11,6 +11,7 @@ import java.util.jar.Manifest;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.VLFrame;
 import org.pdf.forms.gui.windows.SplashWindow;
+import org.pdf.forms.utils.DesignerPropertiesFile;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public final class Application {
         try {
             configureMacOSXSupport();
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (final Exception e) {
+        } catch (Exception e) {
             logger.error("Error on application startup", e);
         }
 
@@ -60,9 +61,10 @@ public final class Application {
             final String version,
             final SplashWindow splashWindow) {
         final Configuration configuration = new Configuration();
-        final FontHandler fontHandler = new FontHandler(configuration);
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configuration.getConfigDirectory());
+        final FontHandler fontHandler = new FontHandler(designerPropertiesFile);
         final WidgetFactory widgetFactory = new WidgetFactory(fontHandler);
-        final VLFrame frame = new VLFrame(splashWindow, version, fontHandler, widgetFactory, configuration);
+        final VLFrame frame = new VLFrame(splashWindow, version, fontHandler, widgetFactory, configuration, designerPropertiesFile);
 
         // get local graphics environment
         final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -80,9 +82,6 @@ public final class Application {
         final String lcOSName = System.getProperty("os.name").toLowerCase();
         if (lcOSName.startsWith("mac os x")) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
-            // Does not work from java > 1.5
-            // System.setProperty("com.apple.mrj.application.apple.menu.about.name", "PDF Forms");
-            // use: -Xdock:name="PDF Forms" when starting this application
         }
     }
 
@@ -92,7 +91,7 @@ public final class Application {
             if (resources.hasMoreElements()) {
                 return Optional.of(new Manifest(resources.nextElement().openStream()));
             }
-        } catch (final IOException e) {
+        } catch (IOException e) {
             logger.error("Error reading {}", MANIFEST_MF, e);
         }
         return Optional.empty();

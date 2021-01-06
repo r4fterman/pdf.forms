@@ -1,6 +1,6 @@
 package org.pdf.forms.widgets.utils;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +11,7 @@ import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.properties.PropertyChanger;
 import org.pdf.forms.widgets.IWidget;
 
-public class WidgetAlignmentAndOrder {
+public final class WidgetAlignmentAndOrder {
 
     private static final String ALIGN_LEFT = "Align Left";
     private static final String ALIGN_RIGHT = "Align Right";
@@ -274,5 +274,9 @@ public class WidgetAlignmentAndOrder {
         }
 
         return averageCenterPoint / widgets.size();
+    }
+
+    private WidgetAlignmentAndOrder() {
+        // do nothing
     }
 }

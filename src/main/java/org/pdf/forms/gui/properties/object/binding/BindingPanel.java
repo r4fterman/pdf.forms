@@ -9,7 +9,6 @@ import javax.swing.*;
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Element;
@@ -17,17 +16,15 @@ import org.w3c.dom.Element;
 public class BindingPanel extends JPanel {
 
     private Map<IWidget, Element> widgetsAndProperties;
-    private IDesigner designerPanel;
+    private final IMainFrame mainFrame;
 
     private JTextField arrayField;
     private JTextField nameField;
 
-    public BindingPanel() {
-        initComponents();
-    }
+    public BindingPanel(final IMainFrame mainFrame) {
+        this.mainFrame = mainFrame;
 
-    public void setDesignerPanel(final IDesigner designerPanel) {
-        this.designerPanel = designerPanel;
+        initComponents();
     }
 
     private void initComponents() {
@@ -81,51 +78,55 @@ public class BindingPanel extends JPanel {
         }
 
         final String name = nameField.getText();
-        for (final IWidget widget: widgetsAndProperties.keySet()) {
-            final IMainFrame mainFrame = designerPanel.getMainFrame();
-            final Element widgetProperties = widgetsAndProperties.get(widget);
-            if (name != null && !name.equals("mixed")) {
-                final String oldName = widget.getWidgetName();
-                if (!oldName.equals(name)) {
-                    mainFrame.renameWidget(oldName, name, widget);
-                }
+        for (final Map.Entry<IWidget, Element> entry: widgetsAndProperties.entrySet()) {
+            final IWidget widget = entry.getKey();
+            final Element widgetProperties = entry.getValue();
 
-                XMLUtils.getPropertyElement(widgetProperties, "Name")
-                        .ifPresent(nameElement -> nameElement.getAttributeNode("value").setValue(name));
-
-                final int arrayNumber = mainFrame.getNextArrayNumberForName(name, widget);
-                XMLUtils.getPropertyElement(widgetProperties, "Array Number")
-                        .ifPresent(arrayNumberElement -> arrayNumberElement.getAttributeNode("value")
-                                .setValue(String.valueOf(arrayNumber)));
-            }
-
+            saveNameToModel(name, widget, widgetProperties);
             widget.setObjectProperties(widgetProperties);
 
             mainFrame.updateHierarchyPanelUI();
         }
     }
 
+    private void saveNameToModel(
+            final String name,
+            final IWidget widget,
+            final Element widgetProperties) {
+        if (name == null || name.equals("mixed")) {
+            return;
+        }
+
+        final String oldName = widget.getWidgetName();
+        if (!oldName.equals(name)) {
+            mainFrame.renameWidget(oldName, name, widget);
+        }
+
+        XMLUtils.getPropertyElement(widgetProperties, "Name")
+                .ifPresent(nameElement -> nameElement.getAttributeNode("value").setValue(name));
+
+        final int arrayNumber = mainFrame.getNextArrayNumberForName(name, widget);
+        XMLUtils.getPropertyElement(widgetProperties, "Array Number")
+                .ifPresent(arrayNumberElement -> arrayNumberElement.getAttributeNode("value")
+                        .setValue(String.valueOf(arrayNumber)));
+    }
+
     public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
         this.widgetsAndProperties = widgetsAndProperties;
 
-        if (widgetsAndProperties.size() == 1) {
-            nameField.setEnabled(true);
+        final boolean onlySingleWidgetSelected = widgetsAndProperties.size() == 1;
+        nameField.setEnabled(onlySingleWidgetSelected);
 
-            final IWidget widget = widgetsAndProperties.keySet().iterator().next();
-
-            final Element objectProperties = widgetsAndProperties.get(widget);
-
-            /* add binding properties */
+        if (onlySingleWidgetSelected) {
+            final Element objectProperties = widgetsAndProperties.entrySet().iterator().next().getValue();
             final Element valueProperties = (Element) objectProperties.getElementsByTagName("binding").item(0);
-
-            final String name = XMLUtils.getAttributeValueFromChildElement(valueProperties, "Name").orElse("");
+            final String name = XMLUtils.getAttributeValueFromChildElement(valueProperties, "Name")
+                    .orElse("");
             final String arrayNumber = XMLUtils.getAttributeValueFromChildElement(valueProperties, "Array Number")
                     .orElse("0");
 
             nameField.setText(name);
             arrayField.setText(arrayNumber);
-        } else {
-            nameField.setEnabled(false);
         }
     }
 

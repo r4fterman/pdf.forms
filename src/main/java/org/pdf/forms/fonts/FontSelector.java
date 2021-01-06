@@ -1,20 +1,13 @@
 package org.pdf.forms.fonts;
 
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
-import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.utils.DesignerPropertiesFile;
 
@@ -23,7 +16,7 @@ public class FontSelector extends javax.swing.JPanel {
     private final FontHandler fontHandler;
     private final IMainFrame mainFrame;
     private final JDialog parentDialog;
-    private final Configuration configuration;
+    private final DesignerPropertiesFile designerPropertiesFile;
 
     private final JList<String> fontsList;
 
@@ -31,11 +24,11 @@ public class FontSelector extends javax.swing.JPanel {
             final FontHandler fontHandler,
             final IMainFrame mainFrame,
             final JDialog parentDialog,
-            final Configuration configuration) {
+            final DesignerPropertiesFile designerPropertiesFile) {
         this.fontHandler = fontHandler;
         this.parentDialog = parentDialog;
         this.mainFrame = mainFrame;
-        this.configuration = configuration;
+        this.designerPropertiesFile = designerPropertiesFile;
         this.fontsList = new JList<>();
 
         initComponents();
@@ -69,8 +62,16 @@ public class FontSelector extends javax.swing.JPanel {
                                                 .add(scrollPane, GroupLayout.DEFAULT_SIZE, 794, Short.MAX_VALUE)
                                                 .addPreferredGap(LayoutStyle.RELATED)
                                                 .add(layout.createParallelGroup(GroupLayout.LEADING, false)
-                                                        .add(GroupLayout.TRAILING, okButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .add(GroupLayout.TRAILING, addFontButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                                        .add(GroupLayout.TRAILING,
+                                                                okButton,
+                                                                GroupLayout.DEFAULT_SIZE,
+                                                                GroupLayout.DEFAULT_SIZE,
+                                                                Short.MAX_VALUE)
+                                                        .add(GroupLayout.TRAILING,
+                                                                addFontButton,
+                                                                GroupLayout.DEFAULT_SIZE,
+                                                                GroupLayout.DEFAULT_SIZE,
+                                                                Short.MAX_VALUE))))
                                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -103,7 +104,7 @@ public class FontSelector extends javax.swing.JPanel {
 
         if (fileToOpen != null && state == JFileChooser.APPROVE_OPTION) {
             final String name = fontHandler.registerFont(fileToOpen);
-            DesignerPropertiesFile.getInstance(configuration.getConfigDirectory()).addCustomFont(name, fileToOpen.getAbsolutePath());
+            designerPropertiesFile.addCustomFont(name, fileToOpen.getAbsolutePath());
 
             populateFontsAvailable();
         }

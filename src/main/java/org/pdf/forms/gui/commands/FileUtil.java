@@ -4,6 +4,10 @@ public final class FileUtil {
 
     private static final int MAX_CHARS = 30;
 
+    private FileUtil() {
+        // do nothing
+    }
+
     public static String getShortenedFileName(
             final String fileNameToAdd,
             final String fileSeparator) {

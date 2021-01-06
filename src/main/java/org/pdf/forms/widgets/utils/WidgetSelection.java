@@ -12,6 +12,7 @@ import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
+import org.pdf.forms.utils.DesignerPropertiesFile;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.slf4j.Logger;
@@ -40,18 +41,21 @@ public class WidgetSelection {
             final String version,
             final FontHandler fontHandler,
             final WidgetFactory widgetFactory,
-            final Configuration configuration) {
+            final Configuration configuration,
+            final DesignerPropertiesFile designerPropertiesFile) {
         groupButton.setVisible(false);
         groupButton.setSize(WIDTH, HEIGHT);
         groupButton.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/Grouped.gif")));
         groupButton.setToolTipText("Group Selection");
 
         groupButton.addActionListener(e -> {
-            final Commands commands = new Commands(designerPanel.getMainFrame(),
+            final Commands commands = new Commands(
+                    designerPanel.getMainFrame(),
                     version,
                     fontHandler,
                     widgetFactory,
-                    configuration);
+                    configuration,
+                    designerPropertiesFile);
             commands.executeCommand(Commands.GROUP);
         });
 
@@ -66,7 +70,8 @@ public class WidgetSelection {
                     version,
                     fontHandler,
                     widgetFactory,
-                    configuration);
+                    configuration,
+                    designerPropertiesFile);
             commands.executeCommand(Commands.UNGROUP);
         });
 

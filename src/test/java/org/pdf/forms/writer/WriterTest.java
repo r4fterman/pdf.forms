@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,14 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.easymock.EasyMockSupport;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.IDesigner;
+import org.pdf.forms.utils.DesignerPropertiesFile;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
@@ -47,32 +46,25 @@ class WriterTest extends EasyMockSupport {
 
     private static final String DESIGNER_FILE = "/example.des";
 
-    private MockMainFrame mainFrame;
-    private FontHandler fontHandler;
-    private Writer writer;
-
-    @BeforeEach
-    void setUp() {
-        mainFrame = new MockMainFrame();
-        final Configuration configuration = new Configuration();
-        fontHandler = new FontHandler(configuration);
-        writer = new Writer(mainFrame, fontHandler);
-    }
-
     @Disabled(value = "Does not work on headless Travis CI")
     void write_should_persist_ui_document(@TempDir final Path path) throws Exception {
+        final MockMainFrame mainFrame = new MockMainFrame();
+
         final IDesigner designer = createMock(IDesigner.class);
         mainFrame.setDesigner(designer);
         designer.close();
+
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(path.toFile());
+        final FontHandler fontHandler = new FontHandler(designerPropertiesFile);
+        final WidgetFactory widgetFactory = new WidgetFactory(fontHandler);
+        final Writer writer = new Writer(mainFrame, fontHandler);
 
         replayAll();
         final File source = getFile();
         final File target = createTargetFile(path, source);
 
-        final WidgetFactory widgetFactory = new WidgetFactory(fontHandler);
 
-        final Configuration configuration = new Configuration();
-        new OpenDesignerFileCommand(mainFrame, "DEV-TEST", widgetFactory, configuration).openDesignerFile(target.getAbsolutePath());
+        new OpenDesignerFileCommand(mainFrame, "DEV-TEST", widgetFactory, designerPropertiesFile).openDesignerFile(target.getAbsolutePath());
 
         final File outputFile = new File(path.toFile(), "output.des");
         final org.w3c.dom.Document properties = XMLUtils.readDocument(source);

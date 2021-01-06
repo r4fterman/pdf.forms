@@ -6,12 +6,11 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.nio.file.Path;
 
-import javax.swing.JMenu;
+import javax.swing.*;
 
 import org.easymock.EasyMockSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.designer.IDesigner;
@@ -25,8 +24,7 @@ class MenuConfigurationFileTest extends EasyMockSupport {
         final IMainFrame mainFrame = createMock(IMainFrame.class);
 
         replayAll();
-        final Configuration configuration = new Configuration();
-        final MenuConfigurationFile menuConfigurationFile = new MenuConfigurationFile(cmdListener, designer, mainFrame, configDir.toFile(), configuration);
+        final MenuConfigurationFile menuConfigurationFile = new MenuConfigurationFile(cmdListener, designer, mainFrame, configDir.toFile(), configDir.toFile());
         final JMenu[] menus = menuConfigurationFile.getMenus();
         verifyAll();
 
