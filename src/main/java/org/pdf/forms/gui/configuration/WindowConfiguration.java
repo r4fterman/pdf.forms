@@ -8,9 +8,20 @@ import java.util.StringJoiner;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.pdf.forms.utils.configuration.WindowBuilder;
+import org.pdf.forms.utils.configuration.WindowConfigurationBuilder;
+
 @XmlRootElement(name = "window_configuration")
 @XmlType(propOrder = "window")
 public class WindowConfiguration {
+
+    public static final WindowConfiguration DEFAULT = new WindowConfigurationBuilder()
+            .addWindow(new WindowBuilder().withCommand("SCRIPT_EDITOR").withName("Script Editor").withVisible(true)
+                    .build())
+            .addWindow(new WindowBuilder().withCommand("HIERARCHY").withName("Hierarchy").withVisible(true).build())
+            .addWindow(new WindowBuilder().withCommand("LIBRARY").withName("Library").withVisible(true).build())
+            .addWindow(new WindowBuilder().withCommand("PROPERTIES").withName("Properties").withVisible(true).build())
+            .build();
 
     private List<Window> window;
 
