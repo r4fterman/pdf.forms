@@ -8,9 +8,20 @@ import java.util.StringJoiner;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.pdf.forms.utils.configuration.ItemBuilder;
+import org.pdf.forms.utils.configuration.MenuBuilder;
+import org.pdf.forms.utils.configuration.MenuConfigurationBuilder;
+
 @XmlRootElement(name = "menu_configuration")
 @XmlType(propOrder = "menu")
 public class MenuConfiguration {
+
+    public static final MenuConfiguration DEFAULT = new MenuConfigurationBuilder()
+            .addMenu(new MenuBuilder()
+                    .addItem(new ItemBuilder().withCommand("").withName("").withVisible(true).build())
+                    .build()
+            )
+            .build();
 
     private List<Menu> menu;
 

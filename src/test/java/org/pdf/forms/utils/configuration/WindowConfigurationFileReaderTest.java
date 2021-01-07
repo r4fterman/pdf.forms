@@ -33,25 +33,25 @@ class WindowConfigurationFileReaderTest {
         assertProperties(windows.get(3));
     }
 
-    private void assertScriptEditor(Window window) {
+    private void assertScriptEditor(final Window window) {
         assertThat(window.getCommand(), is("SCRIPT_EDITOR"));
         assertThat(window.getName(), is("Script Editor"));
         assertThat(window.isVisible(), is(true));
     }
 
-    private void assertHierarchy(Window window) {
+    private void assertHierarchy(final Window window) {
         assertThat(window.getCommand(), is("HIERARCHY"));
         assertThat(window.getName(), is("Hierarchy"));
         assertThat(window.isVisible(), is(true));
     }
 
-    private void assertLibrary(Window window) {
+    private void assertLibrary(final Window window) {
         assertThat(window.getCommand(), is("LIBRARY"));
         assertThat(window.getName(), is("Library"));
         assertThat(window.isVisible(), is(true));
     }
 
-    private void assertProperties(Window window) {
+    private void assertProperties(final Window window) {
         assertThat(window.getCommand(), is("PROPERTIES"));
         assertThat(window.getName(), is("Properties"));
         assertThat(window.isVisible(), is(true));

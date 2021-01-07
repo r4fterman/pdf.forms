@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType
 public class Menu {
 
     private List<Item> item;
+    private boolean visible;
 
     public Menu() {
         this.item = new ArrayList<>();
@@ -22,6 +24,15 @@ public class Menu {
 
     public void setItem(final List<Item> item) {
         this.item = item;
+    }
+
+    @XmlAttribute
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(final boolean visible) {
+        this.visible = visible;
     }
 
     @Override
