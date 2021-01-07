@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
-mvn clean install
+JAVA_OPTS="-Xmx1G"
 
-java -jar target/pdfforms.jar
+MAC=
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  MAC="-Xdock:name=\"PDF Forms Designer\""
+fi
+
+# execute the jar
+java $JAVA_OPTS "$MAC" -jar target/pdf-forms-designer.jar
