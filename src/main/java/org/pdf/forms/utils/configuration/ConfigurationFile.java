@@ -75,5 +75,9 @@ public abstract class ConfigurationFile {
         return document;
     }
 
+    public File getConfigFile() {
+        return configFile;
+    }
+
     protected abstract void writeToDefaultConfiguration(Document document);
 }
