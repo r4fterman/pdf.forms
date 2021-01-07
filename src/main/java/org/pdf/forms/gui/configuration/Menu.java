@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlType;
 public class Menu {
 
     private List<Item> item;
+
+    private String name;
     private boolean visible;
 
     public Menu() {
@@ -33,6 +35,15 @@ public class Menu {
 
     public void setVisible(final boolean visible) {
         this.visible = visible;
+    }
+
+    @XmlAttribute
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     @Override

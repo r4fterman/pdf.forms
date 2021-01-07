@@ -29,12 +29,14 @@ class MenuConfigurationFileReaderTest {
         assertThat(menu, hasSize(5));
 
         final Menu menu0 = menu.get(0);
+        assertThat(menu0.getName(), is("File"));
         assertThat(menu0.isVisible(), is(true));
 
         final List<Item> items0 = menu0.getItem();
         assertThat(items0, hasSize(16));
 
         final Menu menu4 = menu.get(4);
+        assertThat(menu4.getName(), is("Help"));
         assertThat(menu4.isVisible(), is(true));
 
         final List<Item> items4 = menu4.getItem();
