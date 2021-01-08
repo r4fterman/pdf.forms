@@ -119,7 +119,7 @@ public class Commands {
                 entry(SAVE_FILE_AS, new SaveDesignerFileAsCommand(mainFrame, version)),
                 entry(PUBLISH, new PublishPdfCommand(mainFrame, fontHandler)),
                 entry(FONT_MANAGEMENT, new FontManagementCommand(mainFrame, fontHandler, designerPropertiesFile)),
-                entry(EXIT, () -> System.exit(0)),
+                entry(EXIT, new ExitCommand(mainFrame)),
                 entry(ZOOM_IN, new ZoomInCommand(mainFrame)),
                 entry(ZOOM_OUT, new ZoomOutCommand(mainFrame)),
                 entry(ZOOM, new ZoomCommand(mainFrame)),

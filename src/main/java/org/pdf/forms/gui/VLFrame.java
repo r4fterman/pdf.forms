@@ -24,6 +24,7 @@ import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.commands.FileUtil;
 import org.pdf.forms.gui.commands.ImportPdfCommand;
 import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
+import org.pdf.forms.gui.configuration.MenuConfiguration;
 import org.pdf.forms.gui.designer.Designer;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.DesignerPanel;
@@ -31,6 +32,7 @@ import org.pdf.forms.gui.designer.gui.Rule;
 import org.pdf.forms.gui.editor.JavaScriptEditorPanel;
 import org.pdf.forms.gui.hierarchy.HierarchyPanel;
 import org.pdf.forms.gui.library.LibraryPanel;
+import org.pdf.forms.gui.menu.MenubarCreator;
 import org.pdf.forms.gui.properties.PropertiesPanel;
 import org.pdf.forms.gui.properties.PropertyChanger;
 import org.pdf.forms.gui.toolbars.DocumentToolBar;
@@ -136,7 +138,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         commands.executeCommand(Commands.INSERT_PAGE);
 
         splashWindow.setProgress(7, "Set docking panes");
-        setupMenuBar();
+        setupMenuBar(commandListener);
         setupDockingPanes();
         setTitle(currentDesignerFileName + " - PDF Forms Designer Version " + version);
     }
@@ -443,18 +445,14 @@ public class VLFrame extends JFrame implements IMainFrame {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    private void setupMenuBar() {
-        final JMenuBar menubar = new JMenuBar();
-
-        final JMenu[] menus = menuConfigurationFile.getMenus();
-        for (final JMenu menu: menus) {
-            menubar.add(menu);
-        }
+    private void setupMenuBar(final CommandListener commandListener) {
+        final MenuConfiguration menuConfiguration = menuConfigurationFile.getMenuConfiguration();
+        final MenubarCreator menubarCreator = new MenubarCreator(menuConfiguration.getMenu(), commandListener);
 
         addRecentDesignerFilesAsMenuEntries(menuConfigurationFile.getRecentDesignerFilesMenu());
         addRecentPDFFilesAsMenuEntries(menuConfigurationFile.getRecentImportedFilesMenu());
 
-        setJMenuBar(menubar);
+        setJMenuBar(menubarCreator.getMenuBar());
     }
 
     private void addRecentDesignerFilesAsMenuEntries(final JMenu file) {

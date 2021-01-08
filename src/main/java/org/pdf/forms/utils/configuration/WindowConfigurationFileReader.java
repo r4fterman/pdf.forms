@@ -7,8 +7,12 @@ import java.nio.file.Files;
 import javax.xml.bind.JAXBException;
 
 import org.pdf.forms.gui.configuration.WindowConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WindowConfigurationFileReader {
+
+    private final Logger logger = LoggerFactory.getLogger(WindowConfigurationFileReader.class);
 
     private final File windowConfigurationFile;
 
@@ -20,7 +24,8 @@ public class WindowConfigurationFileReader {
         try {
             return parseFile(windowConfigurationFile);
         } catch (IOException | JAXBException e) {
-            throw new RuntimeException("Cannot parse menu configuration.", e);
+            logger.error("Unable to read window configuration file.", e);
+            return WindowConfiguration.DEFAULT;
         }
     }
 

@@ -7,8 +7,12 @@ import java.nio.file.Files;
 import javax.xml.bind.JAXBException;
 
 import org.pdf.forms.gui.configuration.MenuConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MenuConfigurationFileReader {
+
+    private final Logger logger = LoggerFactory.getLogger(MenuConfigurationFileReader.class);
 
     private final File menuConfigurationFile;
 
@@ -20,7 +24,8 @@ public class MenuConfigurationFileReader {
         try {
             return parseFile(menuConfigurationFile);
         } catch (IOException | JAXBException e) {
-            throw new RuntimeException("Cannot parse menu configuration.", e);
+            logger.error("Cannot read menu configuration file.", e);
+            return MenuConfiguration.DEFAULT;
         }
     }
 

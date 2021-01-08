@@ -13,6 +13,7 @@ import org.jpedal.examples.simpleviewer.gui.swing.SwingMenuItem;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.commands.Commands;
+import org.pdf.forms.gui.configuration.MenuConfiguration;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetAlignmentAndOrder;
@@ -31,6 +32,7 @@ public class MenuConfigurationFile extends ConfigurationFile {
     private final CommandListener commandListener;
     private final IDesigner designer;
     private final IMainFrame mainFrame;
+    private final MenuConfiguration menuConfiguration;
     private final JMenu[] menus;
 
     private JMenu recentDesignerFiles;
@@ -47,8 +49,13 @@ public class MenuConfigurationFile extends ConfigurationFile {
         this.commandListener = commandListener;
         this.designer = designer;
         this.mainFrame = mainFrame;
+        this.menuConfiguration = new MenuConfigurationFileReader(new File(configDir, "menus.xml")).getMenuConfiguration();
 
         menus = generateMenus(getDocument());
+    }
+
+    public MenuConfiguration getMenuConfiguration() {
+        return menuConfiguration;
     }
 
     private JMenu[] generateMenus(final Document document) {

@@ -6,8 +6,12 @@ import java.awt.event.ActionListener;
 import org.jpedal.examples.simpleviewer.gui.generic.GUIButton;
 import org.jpedal.examples.simpleviewer.gui.swing.SwingCombo;
 import org.jpedal.examples.simpleviewer.gui.swing.SwingMenuItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CommandListener implements ActionListener {
+
+    private final Logger logger = LoggerFactory.getLogger(CommandListener.class);
 
     private final Commands commands;
 
@@ -18,10 +22,12 @@ public class CommandListener implements ActionListener {
     @Override
     public void actionPerformed(final ActionEvent event) {
         final int id = getId(event.getSource());
+        logger.info("Command ID: {}", id);
         commands.executeCommand(id);
     }
 
     private int getId(final Object source) {
+        logger.info("Action event: {}", source.getClass().getCanonicalName());
         if (source instanceof GUIButton) {
             return ((GUIButton) source).getID();
         }
@@ -31,6 +37,7 @@ public class CommandListener implements ActionListener {
         if (source instanceof SwingCombo) {
             return ((SwingCombo) source).getID();
         }
+        logger.warn("Unknown event source: {}", source.getClass().getCanonicalName());
         return Commands.NONE;
     }
 }
