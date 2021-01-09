@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 import javax.swing.*;
@@ -19,39 +18,27 @@ import org.pdf.forms.widgets.utils.WidgetAlignmentAndOrder;
 
 public class MenubarCreator {
 
+    private final List<Integer> checkboxMenuItemCommands = List.of(
+            Commands.TOOLBARS,
+            Commands.SCRIPT_EDITOR,
+            Commands.HIERARCHY,
+            Commands.LIBRARY,
+            Commands.PROPERTIES,
+            Commands.LAYOUT,
+            Commands.BORDER,
+            Commands.OBJECT,
+            Commands.FONT,
+            Commands.PARAGRAPH
+    );
+
     private final Map<Integer, Function<Item, JMenuItem>> commandToMenuItemMapper = Map.ofEntries(
-            Map.entry(Commands.NEW, this::createMenuItem),
-            Map.entry(Commands.OPEN, this::createMenuItem),
-            Map.entry(Commands.INSERT_PAGE, this::createMenuItem),
-            Map.entry(Commands.REMOVE_PAGE, this::createMenuItem),
-            Map.entry(Commands.RECENT_OPEN, this::createMenu),
-            Map.entry(Commands.CLOSE, this::createMenuItem),
-            Map.entry(Commands.IMPORT, this::createMenuItem),
-            Map.entry(Commands.SAVE_FILE, this::createMenuItem),
-            Map.entry(Commands.SAVE_FILE_AS, this::createMenuItem),
-            Map.entry(Commands.PUBLISH, this::createMenuItem),
-            Map.entry(Commands.FONT_MANAGEMENT, this::createMenuItem),
-            Map.entry(Commands.RECENT_IMPORT, this::createMenu),
-            Map.entry(Commands.EXIT, this::createMenuItem),
-            Map.entry(Commands.WEBSITE, this::createMenuItem),
-            Map.entry(Commands.ABOUT, this::createMenuItem),
             Map.entry(Commands.ALIGN, this::createAlignmentMenu),
             Map.entry(Commands.GROUP, this::createGroupMenuItem),
             Map.entry(Commands.UNGROUP, this::createUngroupMenuItem),
             Map.entry(Commands.BRING_TO_FRONT, this::createBringToFrontMenuItem),
             Map.entry(Commands.SEND_TO_BACK, this::createSendToBackMenuItem),
             Map.entry(Commands.BRING_FORWARDS, this::createBringForwardsMenuItem),
-            Map.entry(Commands.SEND_BACKWARDS, this::createSendBackwardsMenuItem),
-            Map.entry(Commands.TOOLBARS, this::createSelectedCheckboxMenuItem),
-            Map.entry(Commands.SCRIPT_EDITOR, this::createSelectedCheckboxMenuItem),
-            Map.entry(Commands.HIERARCHY, this::createSelectedCheckboxMenuItem),
-            Map.entry(Commands.LIBRARY, this::createSelectedCheckboxMenuItem),
-            Map.entry(Commands.PROPERTIES, this::createSelectedCheckboxMenuItem),
-            Map.entry(Commands.LAYOUT, this::createSelectedCheckboxMenuItem),
-            Map.entry(Commands.BORDER, this::createSelectedCheckboxMenuItem),
-            Map.entry(Commands.OBJECT, this::createSelectedCheckboxMenuItem),
-            Map.entry(Commands.FONT, this::createSelectedCheckboxMenuItem),
-            Map.entry(Commands.PARAGRAPH, this::createSelectedCheckboxMenuItem)
+            Map.entry(Commands.SEND_BACKWARDS, this::createSendBackwardsMenuItem)
     );
 
     private final List<String> separators = List.of(
@@ -87,21 +74,26 @@ public class MenubarCreator {
         menu.getItem().stream()
                 .filter(Item::isVisible)
                 .map(this::createJMenuItem)
-                .flatMap(Optional::stream)
                 .forEach(jMenu::add);
 
         return jMenu;
     }
 
-    private Optional<Component> createJMenuItem(final Item item) {
+    private Component createJMenuItem(final Item item) {
         if (isSeparator(item.getName())) {
-            final JSeparator separator = new JSeparator();
-            return Optional.of(separator);
+            return new JSeparator();
         }
 
         final int cmd = Commands.fromValue(item.getCommand());
-        return Optional.ofNullable(commandToMenuItemMapper.get(cmd))
-                .map(f -> f.apply(item));
+        return getToMenuItemCreationFunction(cmd)
+                .apply(item);
+    }
+
+    private Function<Item, JMenuItem> getToMenuItemCreationFunction(final int cmd) {
+        if (checkboxMenuItemCommands.contains(cmd)) {
+            return this::createSelectedCheckboxMenuItem;
+        }
+        return commandToMenuItemMapper.getOrDefault(cmd, this::createMenuItem);
     }
 
     private JMenuItem createMenuItem(final Item item) {

@@ -30,6 +30,12 @@ public class Commands {
     public static final int REMOVE_PAGE = 13;
 
     public static final int ALIGN = 14;
+    public static final int ALIGN_LEFT = 141;
+    public static final int ALIGN_RIGHT = 142;
+    public static final int ALIGN_TOP = 143;
+    public static final int ALIGN_BOTTOM = 144;
+    public static final int ALIGN_VERTICALLY = 145;
+    public static final int ALIGN_HORIZONTALLY = 146;
     public static final int GROUP = 15;
     public static final int UNGROUP = 16;
     public static final int BRING_TO_FRONT = 17;
@@ -72,6 +78,12 @@ public class Commands {
             entry("INSERT_PAGE", INSERT_PAGE),
             entry("REMOVE_PAGE", REMOVE_PAGE),
             entry("ALIGN", ALIGN),
+            entry("ALIGN_LEFT", ALIGN_LEFT),
+            entry("ALIGN_RIGHT", ALIGN_RIGHT),
+            entry("ALIGN_TOP", ALIGN_TOP),
+            entry("ALIGN_BOTTOM", ALIGN_BOTTOM),
+            entry("ALIGN_VERTICALLY", ALIGN_VERTICALLY),
+            entry("ALIGN_HORIZONTALLY", ALIGN_HORIZONTALLY),
             entry("GROUP", GROUP),
             entry("UNGROUP", UNGROUP),
             entry("BRING_TO_FRONT", BRING_TO_FRONT),
@@ -126,6 +138,16 @@ public class Commands {
                 entry(INSERT_PAGE, new InsertPageCommand(mainFrame)),
                 entry(REMOVE_PAGE, new RemovePageCommand(mainFrame)),
                 entry(ADD_SELECTION_TO_LIBRARY, new AddSelectionToLibraryCommand(mainFrame, configuration.getConfigDirectory())),
+                entry(ALIGN_LEFT, new AlignLeftCommand(mainFrame)),
+                entry(ALIGN_RIGHT, new AlignRightCommand(mainFrame)),
+                entry(ALIGN_TOP, new AlignTopCommand(mainFrame)),
+                entry(ALIGN_BOTTOM, new AlignBottomCommand(mainFrame)),
+                entry(ALIGN_VERTICALLY, new AlignVerticallyCommand(mainFrame)),
+                entry(ALIGN_HORIZONTALLY, new AlignHorizontallyCommand(mainFrame)),
+                entry(BRING_TO_FRONT, new BringToFrontCommand(mainFrame)),
+                entry(SEND_TO_BACK, new SendToBackCommand(mainFrame)),
+                entry(BRING_FORWARDS, new BringForwardCommand(mainFrame)),
+                entry(SEND_BACKWARDS, new SendBackwardCommand(mainFrame)),
                 entry(GROUP, new GroupCommand(mainFrame)),
                 entry(UNGROUP, new UnGroupCommand(mainFrame)),
                 entry(WEBSITE, new VisitWebsiteCommand()),

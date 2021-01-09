@@ -22,12 +22,12 @@ public class CommandListener implements ActionListener {
     @Override
     public void actionPerformed(final ActionEvent event) {
         final int id = getId(event.getSource());
-        logger.info("Command ID: {}", id);
+        logger.debug("Action ID: {}", id);
         commands.executeCommand(id);
     }
 
     private int getId(final Object source) {
-        logger.info("Action event: {}", source.getClass().getCanonicalName());
+        logger.debug("Action event: {}", source.getClass().getCanonicalName());
         if (source instanceof GUIButton) {
             return ((GUIButton) source).getID();
         }
