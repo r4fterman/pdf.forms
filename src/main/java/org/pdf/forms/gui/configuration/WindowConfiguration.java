@@ -15,12 +15,17 @@ import org.pdf.forms.utils.configuration.WindowConfigurationBuilder;
 @XmlType(propOrder = "window")
 public class WindowConfiguration {
 
+    private static final String SCRIPT_EDITOR = "SCRIPT_EDITOR";
+    private static final String HIERARCHY = "HIERARCHY";
+    private static final String LIBRARY = "LIBRARY";
+    private static final String PROPERTIES = "PROPERTIES";
+
     public static final WindowConfiguration DEFAULT = new WindowConfigurationBuilder()
-            .addWindow(new WindowBuilder().withCommand("SCRIPT_EDITOR").withName("Script Editor").withVisible(true)
+            .addWindow(new WindowBuilder().withCommand(SCRIPT_EDITOR).withName("Script Editor").withVisible(true)
                     .build())
-            .addWindow(new WindowBuilder().withCommand("HIERARCHY").withName("Hierarchy").withVisible(true).build())
-            .addWindow(new WindowBuilder().withCommand("LIBRARY").withName("Library").withVisible(true).build())
-            .addWindow(new WindowBuilder().withCommand("PROPERTIES").withName("Properties").withVisible(true).build())
+            .addWindow(new WindowBuilder().withCommand(HIERARCHY).withName("Hierarchy").withVisible(true).build())
+            .addWindow(new WindowBuilder().withCommand(LIBRARY).withName("Library").withVisible(true).build())
+            .addWindow(new WindowBuilder().withCommand(PROPERTIES).withName("Properties").withVisible(true).build())
             .build();
 
     private List<Window> window;
@@ -35,6 +40,28 @@ public class WindowConfiguration {
 
     public void setWindow(final List<Window> window) {
         this.window = window;
+    }
+
+    public boolean isScriptEditorVisible() {
+        return isWindowCommandVisible(SCRIPT_EDITOR);
+    }
+
+    public boolean isHierarchyVisible() {
+        return isWindowCommandVisible(HIERARCHY);
+    }
+
+    public boolean isLibraryVisible() {
+        return isWindowCommandVisible(LIBRARY);
+    }
+
+    public boolean isPropertiesVisible() {
+        return isWindowCommandVisible(PROPERTIES);
+    }
+
+    private boolean isWindowCommandVisible(final String command) {
+        return window.stream()
+                .filter(Window::isVisible)
+                .anyMatch(w -> w.getCommand().equals(command));
     }
 
     @Override

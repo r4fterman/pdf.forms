@@ -25,6 +25,7 @@ import org.pdf.forms.gui.commands.FileUtil;
 import org.pdf.forms.gui.commands.ImportPdfCommand;
 import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.configuration.MenuConfiguration;
+import org.pdf.forms.gui.configuration.WindowConfiguration;
 import org.pdf.forms.gui.designer.Designer;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.DesignerPanel;
@@ -512,25 +513,27 @@ public class VLFrame extends JFrame implements IMainFrame {
         desk.addDockable(designerPanel);
         dockableNames.put("Designer", designerPanel);
 
-        if (windowConfigurationFile.isWindowVisible(WindowConfigurationFile.SCRIPT_EDITOR)) {
+        final WindowConfiguration windowConfiguration = windowConfigurationFile.getWindowConfiguration();
+
+        if (windowConfiguration.isScriptEditorVisible()) {
             desk.split(designerPanel, javaScriptEditor, DockingConstants.SPLIT_TOP);
             desk.setDockableHeight(javaScriptEditor, .22);
             dockableNames.put("Script Editor", javaScriptEditor);
         }
 
-        if (windowConfigurationFile.isWindowVisible(WindowConfigurationFile.HIERARCHY)) {
+        if (windowConfiguration.isHierarchyVisible()) {
             desk.split(designerPanel, hierarchyPanel, DockingConstants.SPLIT_LEFT);
             desk.setDockableWidth(hierarchyPanel, .15);
             dockableNames.put("Hierarchy", hierarchyPanel);
         }
 
-        if (windowConfigurationFile.isWindowVisible(WindowConfigurationFile.LIBRARY)) {
+        if (windowConfiguration.isLibraryVisible()) {
             desk.split(designerPanel, libraryPanel, DockingConstants.SPLIT_RIGHT);
             desk.setDockableWidth(libraryPanel, .32);
             dockableNames.put("Library", libraryPanel);
         }
 
-        if (windowConfigurationFile.isWindowVisible(WindowConfigurationFile.PROPERTIES)) {
+        if (windowConfiguration.isPropertiesVisible()) {
             desk.split(libraryPanel, propertiesPanel, DockingConstants.SPLIT_BOTTOM);
             desk.setDockableHeight(propertiesPanel, .74);
             propertiesPanel.addDockables(desk);
@@ -616,14 +619,13 @@ public class VLFrame extends JFrame implements IMainFrame {
             final List<IWidget> widgetsOnPage = page.getWidgets();
             for (final IWidget widgetOnPage: widgetsOnPage) {
                 final String widgetName = widgetOnPage.getWidgetName();
+                // another widget of this name already exists, and this is the first
+                // we've heard of it
                 if (name.equals(widgetName) && !widgetOnPage.equals(widget)) {
-                    /*
-                     * another widget of this name already exists, and this is the first
-                     * we've heard of it
-                     */
-
-                    widgetArrays.addWidgetToArray(name, widgetOnPage); // add the original widget
-                    widgetArrays.addWidgetToArray(name, widget); // add the new widget
+                    // add the original widget
+                    widgetArrays.addWidgetToArray(name, widgetOnPage);
+                    // add the new widget
+                    widgetArrays.addWidgetToArray(name, widget);
 
                     return widgetArrays.getNextArrayIndex(name);
                 }

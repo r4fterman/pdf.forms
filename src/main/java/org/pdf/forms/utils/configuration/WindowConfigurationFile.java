@@ -5,7 +5,6 @@ import java.io.File;
 import org.pdf.forms.gui.configuration.WindowConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 public class WindowConfigurationFile extends ConfigurationFile {
 
@@ -29,23 +28,7 @@ public class WindowConfigurationFile extends ConfigurationFile {
     }
 
     public boolean isWindowVisible(final String windowCommand) {
-        final Element windowConfigurationElement = getDocument().getDocumentElement();
-        final NodeList windowElements = windowConfigurationElement.getElementsByTagName("window");
-
-        for (int i = 0; i < windowElements.getLength(); i++) {
-            final Element element = (Element) windowElements.item(i);
-            final String command = element.getAttribute("command");
-            if (command.equals(windowCommand)) {
-                return isElementVisible(element);
-            }
-        }
-
-        return false;
-    }
-
-    private boolean isElementVisible(final Element element) {
-        final String visible = element.getAttribute("visible");
-        return visible.equalsIgnoreCase("true");
+        return windowConfiguration.isWindowCommandVisible(windowCommand);
     }
 
     @Override
