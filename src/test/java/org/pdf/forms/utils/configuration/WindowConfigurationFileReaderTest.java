@@ -10,20 +10,32 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.gui.configuration.Window;
 import org.pdf.forms.gui.configuration.WindowConfiguration;
 
 class WindowConfigurationFileReaderTest {
 
-    @Test
-    void read_window_configuration_from_file() throws Exception {
+    private static final String WINDOW_CONFIGURATION_DISABLED = ""
+            + "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>"
+            + "<window_configuration>"
+            + "<window command=\"SCRIPT_EDITOR\" name=\"Script Editor\" visible=\"false\"/>"
+            + "<window command=\"HIERARCHY\" name=\"Hierarchy\" visible=\"false\"/>"
+            + "<window command=\"LIBRARY\" name=\"Library\" visible=\"false\"/>"
+            + "<window command=\"PROPERTIES\" name=\"Properties\" visible=\"false\"/>"
+            + "</window_configuration>";
+
+    private WindowConfiguration windowConfiguration;
+
+    @BeforeEach
+    void setUp() throws Exception {
         final WindowConfigurationFileReader reader = new WindowConfigurationFileReader(getFile("/default_windows.xml"));
+        this.windowConfiguration = reader.getWindowConfiguration();
+    }
 
-        final WindowConfiguration windowConfiguration = reader.getWindowConfiguration();
-
-        assertThat(windowConfiguration, is(notNullValue()));
-
+    @Test
+    void read_window_configuration_from_file() {
         final List<Window> windows = windowConfiguration.getWindow();
         assertThat(windows, hasSize(4));
 
@@ -31,6 +43,58 @@ class WindowConfigurationFileReaderTest {
         assertHierarchy(windows.get(1));
         assertLibrary(windows.get(2));
         assertProperties(windows.get(3));
+    }
+
+    @Test
+    void isScriptEditorVisible_should_return_true_from_file() {
+        assertThat(windowConfiguration.isScriptEditorVisible(), is(true));
+    }
+
+    @Test
+    void isHierarchyVisible_should_return_true_from_file() {
+        assertThat(windowConfiguration.isHierarchyVisible(), is(true));
+    }
+
+    @Test
+    void isLibraryVisible_should_return_true_from_file() {
+        assertThat(windowConfiguration.isLibraryVisible(), is(true));
+    }
+
+    @Test
+    void isPropertiesVisible_should_return_true_from_file() {
+        assertThat(windowConfiguration.isPropertiesVisible(), is(true));
+    }
+
+    @Test
+    void isScriptEditorVisible_should_return_false_from_content() {
+        final WindowConfiguration windowConfiguration = new WindowConfigurationFileReader(WINDOW_CONFIGURATION_DISABLED)
+                .getWindowConfiguration();
+
+        assertThat(windowConfiguration.isScriptEditorVisible(), is(false));
+    }
+
+    @Test
+    void isHierarchyVisible_should_return_false_from_content() {
+        final WindowConfiguration windowConfiguration = new WindowConfigurationFileReader(WINDOW_CONFIGURATION_DISABLED)
+                .getWindowConfiguration();
+
+        assertThat(windowConfiguration.isHierarchyVisible(), is(false));
+    }
+
+    @Test
+    void isLibraryVisible_should_return_false_from_content() {
+        final WindowConfiguration windowConfiguration = new WindowConfigurationFileReader(WINDOW_CONFIGURATION_DISABLED)
+                .getWindowConfiguration();
+
+        assertThat(windowConfiguration.isLibraryVisible(), is(false));
+    }
+
+    @Test
+    void isPropertiesVisible_should_return_false_from_content() {
+        final WindowConfiguration windowConfiguration = new WindowConfigurationFileReader(WINDOW_CONFIGURATION_DISABLED)
+                .getWindowConfiguration();
+
+        assertThat(windowConfiguration.isPropertiesVisible(), is(false));
     }
 
     private void assertScriptEditor(final Window window) {

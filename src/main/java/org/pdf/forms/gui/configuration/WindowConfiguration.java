@@ -58,7 +58,7 @@ public class WindowConfiguration {
         return isWindowCommandVisible(PROPERTIES);
     }
 
-    private boolean isWindowCommandVisible(final String command) {
+    public boolean isWindowCommandVisible(final String command) {
         return window.stream()
                 .filter(Window::isVisible)
                 .anyMatch(w -> w.getCommand().equals(command));

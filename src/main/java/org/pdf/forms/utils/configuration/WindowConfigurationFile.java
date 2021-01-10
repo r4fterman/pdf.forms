@@ -27,10 +27,6 @@ public class WindowConfigurationFile extends ConfigurationFile {
         return windowConfiguration;
     }
 
-    public boolean isWindowVisible(final String windowCommand) {
-        return windowConfiguration.isWindowCommandVisible(windowCommand);
-    }
-
     @Override
     protected void writeToDefaultConfiguration(final Document document) {
         final Element windowConfigurationElement = document.createElement("window_configuration");

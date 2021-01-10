@@ -14,25 +14,38 @@ public class WindowConfigurationFileReader {
 
     private final Logger logger = LoggerFactory.getLogger(WindowConfigurationFileReader.class);
 
-    private final File windowConfigurationFile;
+    private final WindowConfiguration windowConfiguration;
 
     public WindowConfigurationFileReader(final File windowConfigurationFile) {
-        this.windowConfigurationFile = windowConfigurationFile;
+        this.windowConfiguration = parseFile(windowConfigurationFile);
+    }
+
+    WindowConfigurationFileReader(final String windowConfigurationContent) {
+        this.windowConfiguration = readContent(windowConfigurationContent);
     }
 
     public WindowConfiguration getWindowConfiguration() {
-        try {
-            return parseFile(windowConfigurationFile);
-        } catch (IOException | JAXBException e) {
-            logger.error("Unable to read window configuration file.", e);
-            return WindowConfiguration.DEFAULT;
-        }
+        return windowConfiguration;
     }
 
-    private WindowConfiguration parseFile(final File menuConfigurationFile) throws IOException, JAXBException {
-        final String content = Files.readString(menuConfigurationFile.toPath());
+    private WindowConfiguration parseFile(final File windowConfigurationFile) {
+        try {
+            final String content = Files.readString(windowConfigurationFile.toPath());
+            return readContent(content);
+        } catch (final IOException e) {
+            logger.warn("Unable to read window configuration file.", e);
+        }
+        return WindowConfiguration.DEFAULT;
 
-        final XmlJavaObjectMapper<WindowConfiguration> mapper = new XmlJavaObjectMapper<>(WindowConfiguration.class);
-        return mapper.convertXmlIntoObject(content);
+    }
+
+    private WindowConfiguration readContent(final String content) {
+        try {
+            final XmlJavaObjectMapper<WindowConfiguration> mapper = new XmlJavaObjectMapper<>(WindowConfiguration.class);
+            return mapper.convertXmlIntoObject(content);
+        } catch (final JAXBException e) {
+            logger.warn("Unable to read window configuration content.", e);
+        }
+        return WindowConfiguration.DEFAULT;
     }
 }

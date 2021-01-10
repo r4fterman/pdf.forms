@@ -29,25 +29,6 @@ class WindowConfigurationFileTest {
             + "</window_configuration>";
 
     @Test
-    void isWindowVisible_should_return_true_on_new_created_properties_file_for_known_command(@TempDir final Path configDir) {
-        final WindowConfigurationFile windowConfigurationFile = new WindowConfigurationFile(configDir.toFile(),
-                configDir.toFile());
-
-        assertThat(windowConfigurationFile.isWindowVisible(WindowConfigurationFile.SCRIPT_EDITOR), is(true));
-        assertThat(windowConfigurationFile.isWindowVisible(WindowConfigurationFile.PROPERTIES), is(true));
-        assertThat(windowConfigurationFile.isWindowVisible(WindowConfigurationFile.LIBRARY), is(true));
-        assertThat(windowConfigurationFile.isWindowVisible(WindowConfigurationFile.HIERARCHY), is(true));
-    }
-
-    @Test
-    void isWindowVisible_should_return_false_on_new_created_properties_file_for_unknown_command(@TempDir final Path configDir) {
-        final WindowConfigurationFile windowConfigurationFile = new WindowConfigurationFile(configDir.toFile(),
-                configDir.toFile());
-
-        assertThat(windowConfigurationFile.isWindowVisible("unknown"), is(false));
-    }
-
-    @Test
     void writeDefaultConfiguration(@TempDir final Path configDir) throws Exception {
         final WindowConfigurationFile windowConfigurationFile = new WindowConfigurationFile(configDir.toFile(),
                 configDir.toFile());

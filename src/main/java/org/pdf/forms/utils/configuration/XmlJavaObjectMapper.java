@@ -17,7 +17,7 @@ class XmlJavaObjectMapper<T> {
     T convertXmlIntoObject(final String xmlValue) throws JAXBException {
         final JAXBContext context = JAXBContext.newInstance(typeOfT);
         final Unmarshaller unmarshaller = context.createUnmarshaller();
-        final Object object = unmarshaller.unmarshal(new StringReader(xmlValue));
-        return (T) object;
+        return (T) unmarshaller.unmarshal(new StringReader(xmlValue));
     }
+
 }
