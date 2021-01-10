@@ -199,7 +199,7 @@ public class Writer {
             final PdfDocumentLayout pdfDocumentLayout) throws DocumentException, IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        //TODO: use PdfCopy instead
+        //todo: use PdfCopy instead
         final PdfCopyFields pdfCopyFields = new PdfCopyFields(baos);
 
         for (int i = 0; i < pages.size(); i++) {

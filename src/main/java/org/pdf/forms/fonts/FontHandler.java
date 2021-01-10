@@ -52,7 +52,7 @@ public final class FontHandler {
 
         fontDirectories.forEach(this::registerDirectory);
 
-        //TODO need to check if file has moved, and if so offer user chance to browse
+        //todo: need to check if file has moved, and if so offer user chance to browse
         designerPropertiesFile.getCustomFonts().forEach((key, value) -> registerFont(new File(value)));
     }
 
@@ -75,7 +75,7 @@ public final class FontHandler {
     }
 
     String registerFont(final File file) {
-        // TODO adapt this method to handle a duff file, behave nicely, and tell
+        //todo: adapt this method to handle a duff file, behave nicely, and tell
         try {
             final String fontLocation = file.getPath();
             final FileInputStream fontStream = new FileInputStream(fontLocation);

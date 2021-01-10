@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import javax.swing.*;
-
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.properties.PropertyChanger;
 import org.pdf.forms.widgets.IWidget;
@@ -71,7 +69,8 @@ public final class WidgetAlignmentAndOrder {
         final Set<IWidget> selectedWidgets = designerPanel.getSelectedWidgets();
 
         ALIGNMENT_MAP
-                .getOrDefault(type, selected -> changeOrderOfSelectedWidgets(type, designerPanel.getWidgets(), selected))
+                .getOrDefault(type,
+                        selected -> changeOrderOfSelectedWidgets(type, designerPanel.getWidgets(), selected))
                 .accept(selectedWidgets);
 
         PropertyChanger.updateSizeAndPosition(selectedWidgets);
@@ -168,53 +167,53 @@ public final class WidgetAlignmentAndOrder {
 
     private static void alignHorizontally(final Set<IWidget> selectedWidgets) {
         final int averageCenterPoint = calculateAverageXCenterPoint(selectedWidgets);
-        for (final IWidget widget : selectedWidgets) {
+        for (final IWidget widget: selectedWidgets) {
             widget.setX(averageCenterPoint - widget.getBounds().width / 2);
         }
     }
 
     private static void alignVertically(final Set<IWidget> selectedWidgets) {
         final int averageCenterPoint = calculateAverageYCenterPoint(selectedWidgets);
-        for (final IWidget widget : selectedWidgets) {
+        for (final IWidget widget: selectedWidgets) {
             widget.setY(averageCenterPoint - widget.getBounds().height / 2);
         }
     }
 
     private static void alignBottom(final Set<IWidget> selectedWidgets) {
         final int bottomPoint = calculateBottomPoint(selectedWidgets);
-        for (final IWidget widget : selectedWidgets) {
+        for (final IWidget widget: selectedWidgets) {
             widget.setY(bottomPoint - widget.getBounds().height);
         }
     }
 
     private static void alignTop(final Set<IWidget> selectedWidgets) {
         final int topPoint = calculateTopPoint(selectedWidgets);
-        for (final IWidget widget : selectedWidgets) {
+        for (final IWidget widget: selectedWidgets) {
             widget.setY(topPoint);
         }
     }
 
     private static void alignRight(final Set<IWidget> selectedWidgets) {
         final int rightPoint = calculateRightPoint(selectedWidgets);
-        for (final IWidget widget : selectedWidgets) {
+        for (final IWidget widget: selectedWidgets) {
             widget.setX(rightPoint - widget.getBounds().width);
         }
     }
 
     private static void alignLeft(final Set<IWidget> selectedWidgets) {
         final int leftPoint = calculateLeftPoint(selectedWidgets);
-        for (final IWidget widget : selectedWidgets) {
+        for (final IWidget widget: selectedWidgets) {
             widget.setX(leftPoint);
         }
     }
 
     private static int calculateBottomPoint(final Set<IWidget> widgets) {
-        if (widgets.isEmpty()){
+        if (widgets.isEmpty()) {
             return 0;
         }
 
         int bottomPoint = 0;
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             final Rectangle bounds = widget.getBounds();
 
             final int point = bounds.y + bounds.height;
@@ -226,12 +225,12 @@ public final class WidgetAlignmentAndOrder {
     }
 
     private static int calculateTopPoint(final Set<IWidget> widgets) {
-        if (widgets.isEmpty()){
+        if (widgets.isEmpty()) {
             return 0;
         }
 
         int topPoint = 0;
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             final Rectangle bounds = widget.getBounds();
 
             final int point = bounds.y;
@@ -243,12 +242,12 @@ public final class WidgetAlignmentAndOrder {
     }
 
     private static int calculateRightPoint(final Set<IWidget> widgets) {
-        if (widgets.isEmpty()){
+        if (widgets.isEmpty()) {
             return 0;
         }
 
         int rightPoint = 0;
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             final Rectangle bounds = widget.getBounds();
 
             final int point = bounds.x + bounds.width;
@@ -260,12 +259,12 @@ public final class WidgetAlignmentAndOrder {
     }
 
     private static int calculateLeftPoint(final Set<IWidget> widgets) {
-        if (widgets.isEmpty()){
+        if (widgets.isEmpty()) {
             return 0;
         }
 
         int leftPoint = 0;
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             final Rectangle bounds = widget.getBounds();
 
             final int point = bounds.x;
@@ -277,12 +276,12 @@ public final class WidgetAlignmentAndOrder {
     }
 
     private static int calculateAverageXCenterPoint(final Set<IWidget> widgets) {
-        if (widgets.isEmpty()){
+        if (widgets.isEmpty()) {
             return 0;
         }
 
         int averageCenterPoint = 0;
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             final Rectangle bounds = widget.getBounds();
             averageCenterPoint += bounds.x + bounds.width / 2;
         }
@@ -291,12 +290,12 @@ public final class WidgetAlignmentAndOrder {
     }
 
     private static int calculateAverageYCenterPoint(final Set<IWidget> widgets) {
-        if (widgets.isEmpty()){
+        if (widgets.isEmpty()) {
             return 0;
         }
 
         int averageCenterPoint = 0;
-        for (final IWidget widget : widgets) {
+        for (final IWidget widget: widgets) {
             final Rectangle bounds = widget.getBounds();
             averageCenterPoint += bounds.y + bounds.height / 2;
         }

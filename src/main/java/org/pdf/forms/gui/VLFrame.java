@@ -342,6 +342,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         libraryPanel.setState(state);
         designerPanel.setState(state);
         javaScriptEditor.setState(state);
+        //todo: apply state change to menubar
         menuConfigurationFile.setState(state);
         documentToolBar.setSaveState(state);
 
@@ -448,8 +449,8 @@ public class VLFrame extends JFrame implements IMainFrame {
         final MenuConfiguration menuConfiguration = menuConfigurationFile.getMenuConfiguration();
         final MenubarCreator menubarCreator = new MenubarCreator(menuConfiguration.getMenu(), commandListener);
 
-        // TODO: addRecentDesignerFilesAsMenuEntries;
-        // TODO: addRecentPDFFilesAsMenuEntries;
+        //todo: addRecentDesignerFilesAsMenuEntries;
+        //todo: addRecentPDFFilesAsMenuEntries;
 
         setJMenuBar(menubarCreator.getMenuBar());
     }

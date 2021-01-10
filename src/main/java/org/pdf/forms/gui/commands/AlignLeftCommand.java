@@ -41,7 +41,7 @@ public class AlignLeftCommand implements Command {
     }
 
     private int calculateLeftPoint(final Set<IWidget> widgets) {
-        if (widgets.isEmpty()){
+        if (widgets.isEmpty()) {
             return 0;
         }
 

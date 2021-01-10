@@ -211,11 +211,11 @@ public class BorderPropertiesPanel extends JPanel {
     }
 
     private void fillColorClicked(final ActionEvent evt) {
-        // TODO add your handling code here:
+        //todo: add your handling code here:
     }
 
     private void updateFillStyle(final ActionEvent evt) {
-        // TODO add your handling code here:
+        //todo: add your handling code here:
     }
 
     private void borderColorButtonClicked(final ActionEvent evt) {
@@ -283,7 +283,7 @@ public class BorderPropertiesPanel extends JPanel {
         setButtonBackgroundColor(borderColorToUse, borderColorButton);
 
         final String backgroundStyleToUse = getBackgroundStyle(widgetsAndProperties.values());
-        // TODO: apply background style
+        //todo: apply background style
 
         final String backgroundColorToUse = getBackgroundColor(widgetsAndProperties.values());
         setComboBoxValue(backgroundColorToUse, backgroundFillBox);

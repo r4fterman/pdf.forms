@@ -111,7 +111,7 @@ public final class WidgetParser {
         if (isPushButton) {
             addPushButton(pageHeight, cropHeight, cropX, cropY, widgetsOnPage, formObject);
             // } else if (isRadio) {
-            // TODO: radio button
+            //todo: radio button
         } else {
             //checkBox
             addCheckBox(formObject,

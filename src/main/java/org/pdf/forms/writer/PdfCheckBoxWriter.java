@@ -56,7 +56,7 @@ public class PdfCheckBoxWriter implements PdfComponentWriter {
 
         final PdfCheckBox value = (PdfCheckBox) widget.getValueComponent();
 
-        // todo make it possible to change the size and style of the check box
+        //todo: make it possible to change the size and style of the check box
         // http://forum.java.sun.com/thread.jspa?forumID=57&threadID=641479
         final java.awt.Rectangle valueBounds = new java.awt.Rectangle(13, 13);
 

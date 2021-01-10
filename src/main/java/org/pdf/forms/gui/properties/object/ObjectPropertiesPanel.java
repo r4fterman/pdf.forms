@@ -44,7 +44,7 @@ public class ObjectPropertiesPanel extends JPanel {
         if (type == IWidget.NONE) {
             final Page page = (Page) widgets.iterator().next();
 
-            //TODO make it so you can change a PDF size too
+            //todo: make it so you can change a PDF size too
             if (page.getPdfFileLocation() == null) {
                 // its a simple page and not a PDF page so we can change its size
                 final PagePanel pagePanel = new PagePanel(designerPanel);

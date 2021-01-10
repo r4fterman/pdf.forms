@@ -39,7 +39,7 @@ public class AlignTopCommand implements Command {
     }
 
     private int calculateTopPoint(final Set<IWidget> widgets) {
-        if (widgets.isEmpty()){
+        if (widgets.isEmpty()) {
             return 0;
         }
 

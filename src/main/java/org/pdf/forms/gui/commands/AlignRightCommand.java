@@ -40,7 +40,7 @@ public class AlignRightCommand implements Command {
     }
 
     private int calculateRightPoint(final Set<IWidget> widgets) {
-        if (widgets.isEmpty()){
+        if (widgets.isEmpty()) {
             return 0;
         }
 

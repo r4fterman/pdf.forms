@@ -1,8 +1,5 @@
 package org.pdf.forms.widgets;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.util.Collections;
@@ -11,9 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.text.StringEscapeUtils;
 import org.jpedal.objects.acroforms.creation.JPedalBorderFactory;
-import org.jpedal.utils.Strip;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
 import org.pdf.forms.utils.XMLUtils;
