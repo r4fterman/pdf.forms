@@ -39,6 +39,10 @@ public class AlignTopCommand implements Command {
     }
 
     private int calculateTopPoint(final Set<IWidget> widgets) {
+        if (widgets.isEmpty()){
+            return 0;
+        }
+
         int topPoint = 0;
         for (final IWidget widget: widgets) {
             final Rectangle bounds = widget.getBounds();

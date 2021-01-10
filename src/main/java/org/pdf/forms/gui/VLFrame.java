@@ -119,7 +119,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         final CommandListener commandListener = new CommandListener(commands);
 
         splashWindow.setProgress(2, "Initializing window");
-        toolbarContainer = initializeWindow(commandListener, horizontalRuler, verticalRuler, fontHandler);
+        toolbarContainer = initializeWindow(horizontalRuler, verticalRuler, fontHandler);
 
         splashWindow.setProgress(3, "Setting up designer panel");
         initializeJavaScriptPanel();
@@ -187,7 +187,6 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     private ToolBarContainer initializeWindow(
-            final CommandListener commandListener,
             final Rule horizontalRuler,
             final Rule verticalRuler,
             final FontHandler fontHandler) {
@@ -217,7 +216,7 @@ public class VLFrame extends JFrame implements IMainFrame {
 
         final File configDir = new File(configuration.getConfigDirectory(), "configuration");
 
-        menuConfigurationFile = new MenuConfigurationFile(commandListener, designer, this, configDir, configuration.getConfigDirectory());
+        menuConfigurationFile = new MenuConfigurationFile(configDir, configuration.getConfigDirectory());
         windowConfigurationFile = new WindowConfigurationFile(configDir, configuration.getConfigDirectory());
 
         formsDocument = new FormsDocument(version);
@@ -449,8 +448,8 @@ public class VLFrame extends JFrame implements IMainFrame {
         final MenuConfiguration menuConfiguration = menuConfigurationFile.getMenuConfiguration();
         final MenubarCreator menubarCreator = new MenubarCreator(menuConfiguration.getMenu(), commandListener);
 
-        addRecentDesignerFilesAsMenuEntries(menuConfigurationFile.getRecentDesignerFilesMenu());
-        addRecentPDFFilesAsMenuEntries(menuConfigurationFile.getRecentImportedFilesMenu());
+        // TODO: addRecentDesignerFilesAsMenuEntries;
+        // TODO: addRecentPDFFilesAsMenuEntries;
 
         setJMenuBar(menubarCreator.getMenuBar());
     }

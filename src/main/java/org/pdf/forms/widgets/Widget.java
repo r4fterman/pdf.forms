@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.jpedal.objects.acroforms.creation.JPedalBorderFactory;
 import org.jpedal.utils.Strip;
 import org.pdf.forms.fonts.FontHandler;
@@ -400,11 +401,11 @@ public class Widget {
             final Element captionPropertiesElement,
             final IPdfComponent component) {
         final Optional<String> horizontalAlignment = XMLUtils.getAttributeValueFromChildElement(captionPropertiesElement, "Horizontal Alignment");
-        final Optional<String> verticallAlignment = XMLUtils.getAttributeValueFromChildElement(captionPropertiesElement, "Vertical Alignment");
+        final Optional<String> verticalAlignment = XMLUtils.getAttributeValueFromChildElement(captionPropertiesElement, "Vertical Alignment");
 
         if (component instanceof PdfCaption) {
             String text = component.getText();
-            text = Strip.stripXML(text).toString();
+            text = StringEscapeUtils.escapeXml11(text);
             text = "<html><p align=" + horizontalAlignment + ">" + text;
             component.setText(text);
         }
@@ -428,8 +429,8 @@ public class Widget {
             }
         }
 
-        if (verticallAlignment.isPresent()) {
-            final String alignment = verticallAlignment.get();
+        if (verticalAlignment.isPresent()) {
+            final String alignment = verticalAlignment.get();
             switch (alignment) {
                 case "center":
                     component.setVerticalAlignment(SwingConstants.CENTER);

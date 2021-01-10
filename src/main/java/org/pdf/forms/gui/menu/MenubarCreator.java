@@ -2,23 +2,24 @@ package org.pdf.forms.gui.menu;
 
 import java.awt.*;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.swing.*;
 
-import org.jpedal.examples.simpleviewer.gui.swing.SwingMenuItem;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.commands.Commands;
+import org.pdf.forms.gui.components.CheckBoxMenuItemWithID;
+import org.pdf.forms.gui.components.MenuItemWithID;
 import org.pdf.forms.gui.configuration.Item;
 import org.pdf.forms.gui.configuration.Menu;
 import org.pdf.forms.widgets.utils.WidgetAlignmentAndOrder;
 
 public class MenubarCreator {
 
-    private final List<Integer> checkboxMenuItemCommands = List.of(
+    private static final List<Integer> CHECKBOX_MENU_ITEM_COMMANDS = List.of(
             Commands.TOOLBARS,
             Commands.SCRIPT_EDITOR,
             Commands.HIERARCHY,
@@ -57,6 +58,10 @@ public class MenubarCreator {
         this.menubar = createMenubar(menus);
     }
 
+    public JMenuBar getMenuBar() {
+        return menubar;
+    }
+
     private JMenuBar createMenubar(final List<Menu> menus) {
         final JMenuBar jMenuBar = new JMenuBar();
 
@@ -66,6 +71,24 @@ public class MenubarCreator {
                 .forEach(jMenuBar::add);
 
         return jMenuBar;
+    }
+
+    private JMenu createAlignmentMenu(final Item item) {
+        final JMenu alignMenu = createMenu(item);
+
+        Stream.of(
+                WidgetAlignmentAndOrder.ALIGN_LEFT,
+                WidgetAlignmentAndOrder.ALIGN_RIGHT,
+                WidgetAlignmentAndOrder.ALIGN_TOP,
+                WidgetAlignmentAndOrder.ALIGN_BOTTOM,
+                "Separator",
+                WidgetAlignmentAndOrder.ALIGN_HORIZONTALLY,
+                WidgetAlignmentAndOrder.ALIGN_VERTICALLY
+        )
+                .map(this::createAlignAndOrderMenuItem)
+                .forEach(alignMenu::add);
+
+        return alignMenu;
     }
 
     private JMenu createJMenu(final Menu menu) {
@@ -85,98 +108,89 @@ public class MenubarCreator {
         }
 
         final int cmd = Commands.fromValue(item.getCommand());
-        return getToMenuItemCreationFunction(cmd)
+        return getMenuItemCreationFunction(cmd)
                 .apply(item);
     }
 
-    private Function<Item, JMenuItem> getToMenuItemCreationFunction(final int cmd) {
-        if (checkboxMenuItemCommands.contains(cmd)) {
+    private Function<Item, JMenuItem> getMenuItemCreationFunction(final int cmd) {
+        if (CHECKBOX_MENU_ITEM_COMMANDS.contains(cmd)) {
             return this::createSelectedCheckboxMenuItem;
         }
         return commandToMenuItemMapper.getOrDefault(cmd, this::createMenuItem);
     }
 
     private JMenuItem createMenuItem(final Item item) {
-        final SwingMenuItem menuItem = new SwingMenuItem(item.getName());
-        menuItem.setID(Commands.fromValue(item.getCommand()));
+        final int id = Commands.fromValue(item.getCommand());
+        final MenuItemWithID menuItem = new MenuItemWithID(item.getName(), id);
         menuItem.addActionListener(commandListener);
         return menuItem;
     }
 
     private JMenuItem createGroupMenuItem(final Item item) {
-        final ImageIcon icon = createButtonImageIcon("/org/pdf/forms/res/Grouped.gif");
+        final ImageIcon icon = createImageIcon("/org/pdf/forms/res/Grouped.gif");
         return createMenuItemWithIcon(item, icon);
     }
 
     private JMenuItem createUngroupMenuItem(final Item item) {
-        final ImageIcon icon = createButtonImageIcon("/org/pdf/forms/res/Ungrouped.gif");
+        final ImageIcon icon = createImageIcon("/org/pdf/forms/res/Ungrouped.gif");
         return createMenuItemWithIcon(item, icon);
     }
 
     private JMenuItem createBringToFrontMenuItem(final Item item) {
-        final ImageIcon icon = createButtonImageIcon("/org/pdf/forms/res/Bring to Front.gif");
-        return createAlignAndOrderMenuItem(item.getName(), icon);
+        final ImageIcon icon = createImageIcon("/org/pdf/forms/res/Bring to Front.gif");
+        return createMenuItemWithIcon(item.getName(), Commands.BRING_TO_FRONT, icon);
     }
 
     private JMenuItem createSendToBackMenuItem(final Item item) {
-        final ImageIcon icon = createButtonImageIcon("/org/pdf/forms/res/Send to Back.gif");
-        return createAlignAndOrderMenuItem(item.getName(), icon);
+        final ImageIcon icon = createImageIcon("/org/pdf/forms/res/Send to Back.gif");
+        return createMenuItemWithIcon(item.getName(), Commands.SEND_TO_BACK, icon);
     }
 
     private JMenuItem createBringForwardsMenuItem(final Item item) {
-        final ImageIcon icon = createButtonImageIcon("/org/pdf/forms/res/Bring Forwards.gif");
-        return createAlignAndOrderMenuItem(item.getName(), icon);
+        final ImageIcon icon = createImageIcon("/org/pdf/forms/res/Bring Forwards.gif");
+        return createMenuItemWithIcon(item.getName(), Commands.BRING_FORWARDS, icon);
     }
 
     private JMenuItem createSendBackwardsMenuItem(final Item item) {
-        final ImageIcon icon = createButtonImageIcon("/org/pdf/forms/res/Send Backwards.gif");
-        return createAlignAndOrderMenuItem(item.getName(), icon);
+        final ImageIcon icon = createImageIcon("/org/pdf/forms/res/Send Backwards.gif");
+        return createMenuItemWithIcon(item.getName(), Commands.SEND_BACKWARDS, icon);
     }
 
     private JMenuItem createSelectedCheckboxMenuItem(final Item item) {
-        final JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(item.getName(), true);
+        final int id = Commands.fromValue(item.getCommand());
+        final CheckBoxMenuItemWithID menuItem = new CheckBoxMenuItemWithID(item.getName(), true, id);
         menuItem.addActionListener(commandListener);
         return menuItem;
     }
 
-    private JMenuItem createMenuItemWithIcon(
-            final Item item,
-            final ImageIcon icon) {
-        final SwingMenuItem menuItem = new SwingMenuItem(item.getName());
-        menuItem.setID(Commands.fromValue(item.getCommand()));
-        menuItem.setIcon(icon);
-        menuItem.addActionListener(commandListener);
-        return menuItem;
+    private Component createAlignAndOrderMenuItem(final String alignment) {
+        if (isSeparator(alignment)) {
+            return new JSeparator();
+        }
 
+        final String iconPath = WidgetAlignmentAndOrder.getIconPath(alignment);
+        return createMenuItemWithIcon(
+                alignment,
+                Commands.fromValue(alignment),
+                createImageIcon(iconPath));
     }
 
     private JMenu createMenu(final Item item) {
         return new JMenu(item.getName());
     }
 
-    private JMenu createAlignmentMenu(final Item item) {
-        final JMenu alignMenu = createMenu(item);
-
-        Arrays.stream(WidgetAlignmentAndOrder.getAlignButtons())
-                .filter(buttonImagePath -> !isSeparator(buttonImagePath))
-                .map(buttonImagePath -> {
-                    final List<String> pathSegments = Arrays.asList(buttonImagePath.split("/"));
-                    final String fileNameWithExtension = pathSegments.get(pathSegments.size() - 1);
-                    final String fileName = removeFileExtension(fileNameWithExtension);
-
-                    final ImageIcon icon = createButtonImageIcon(buttonImagePath);
-                    return createAlignAndOrderMenuItem(fileName, icon);
-                })
-                .forEach(alignMenu::add);
-
-        return alignMenu;
+    private JMenuItem createMenuItemWithIcon(
+            final Item item,
+            final ImageIcon icon) {
+        final int id = Commands.fromValue(item.getCommand());
+        return createMenuItemWithIcon(item.getName(), id, icon);
     }
 
-    private JMenuItem createAlignAndOrderMenuItem(
+    private JMenuItem createMenuItemWithIcon(
             final String name,
+            final int commandId,
             final ImageIcon icon) {
-        final SwingMenuItem menuItem = new SwingMenuItem(name);
-        menuItem.setIcon(icon);
+        final MenuItemWithID menuItem = new MenuItemWithID(name, icon, commandId);
         menuItem.addActionListener(commandListener);
         return menuItem;
     }
@@ -185,20 +199,8 @@ public class MenubarCreator {
         return separators.contains(value);
     }
 
-    public JMenuBar getMenuBar() {
-        return menubar;
-    }
-
-    private ImageIcon createButtonImageIcon(final String buttonImagePath) {
-        final URL url = MenubarCreator.class.getResource(buttonImagePath);
+    private ImageIcon createImageIcon(final String imagePath) {
+        final URL url = MenubarCreator.class.getResource(imagePath);
         return new ImageIcon(url);
-    }
-
-    private String removeFileExtension(final String fileNameWithExtension) {
-        final int index = fileNameWithExtension.lastIndexOf(".");
-        if (index < 0) {
-            return fileNameWithExtension;
-        }
-        return fileNameWithExtension.substring(0, index);
     }
 }

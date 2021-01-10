@@ -9,7 +9,6 @@ import javax.swing.*;
 import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 import org.jpedal.objects.PdfPageData;
-import org.jpedal.utils.SwingWorker;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.PDFImportChooser;
@@ -49,19 +48,11 @@ class PDFImportWorker extends SwingWorker {
     }
 
     @Override
-    public Object construct() {
+    protected Object doInBackground() {
         final ProgressMonitor progressDialog = createProgressMonitor();
 
         final List<Object[]> pages = new ArrayList<>();
-
-        final int currentLastPage;
-        if (importType == PDFImportChooser.IMPORT_NEW) {
-            currentLastPage = importNew(progressDialog, pages, mainFrame.getTotalNoOfPages());
-        } else if (importType == PDFImportChooser.IMPORT_EXISTING) {
-            currentLastPage = importExisting(progressDialog, pages, mainFrame.getTotalNoOfPages());
-        } else {
-            currentLastPage = 1;
-        }
+        final int currentLastPage = getCurrentLastPage(progressDialog, pages);
 
         EventQueue.invokeLater(() -> {
             for (final Object[] properties: pages) {
@@ -84,6 +75,20 @@ class PDFImportWorker extends SwingWorker {
         });
 
         return null;
+    }
+
+    private int getCurrentLastPage(
+            final ProgressMonitor progressDialog,
+            final List<Object[]> pages) {
+        final int currentLastPage;
+        if (importType == PDFImportChooser.IMPORT_NEW) {
+            currentLastPage = importNew(progressDialog, pages, mainFrame.getTotalNoOfPages());
+        } else if (importType == PDFImportChooser.IMPORT_EXISTING) {
+            currentLastPage = importExisting(progressDialog, pages, mainFrame.getTotalNoOfPages());
+        } else {
+            currentLastPage = 1;
+        }
+        return currentLastPage;
     }
 
     private int importNew(
@@ -200,7 +205,7 @@ class PDFImportWorker extends SwingWorker {
         try {
             final PdfDecoder decoder = getDecoder(pdfPath);
             decoder.decodePage(pdfPageNumber);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Error decoding PDF page {} of file {}", pdfPageNumber, pdfPath, e);
         }
 

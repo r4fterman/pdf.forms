@@ -39,6 +39,10 @@ public class AlignHorizontallyCommand implements Command {
     }
 
     private int calculateAverageXCenterPoint(final Set<IWidget> widgets) {
+        if (widgets.isEmpty()){
+            return 0;
+        }
+
         int averageCenterPoint = 0;
         for (final IWidget widget: widgets) {
             final Rectangle bounds = widget.getBounds();

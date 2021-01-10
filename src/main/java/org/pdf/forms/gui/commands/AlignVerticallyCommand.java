@@ -39,6 +39,10 @@ public class AlignVerticallyCommand implements Command {
     }
 
     private static int calculateAverageYCenterPoint(final Set<IWidget> widgets) {
+        if (widgets.isEmpty()) {
+            return 0;
+        }
+
         int averageCenterPoint = 0;
         for (final IWidget widget: widgets) {
             final Rectangle bounds = widget.getBounds();

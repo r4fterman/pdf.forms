@@ -8,6 +8,7 @@ import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.pdf.forms.widgets.utils.WidgetAlignmentAndOrder;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 
 public class Commands {
@@ -78,12 +79,12 @@ public class Commands {
             entry("INSERT_PAGE", INSERT_PAGE),
             entry("REMOVE_PAGE", REMOVE_PAGE),
             entry("ALIGN", ALIGN),
-            entry("ALIGN_LEFT", ALIGN_LEFT),
-            entry("ALIGN_RIGHT", ALIGN_RIGHT),
-            entry("ALIGN_TOP", ALIGN_TOP),
-            entry("ALIGN_BOTTOM", ALIGN_BOTTOM),
-            entry("ALIGN_VERTICALLY", ALIGN_VERTICALLY),
-            entry("ALIGN_HORIZONTALLY", ALIGN_HORIZONTALLY),
+            entry(WidgetAlignmentAndOrder.ALIGN_LEFT, ALIGN_LEFT),
+            entry(WidgetAlignmentAndOrder.ALIGN_RIGHT, ALIGN_RIGHT),
+            entry(WidgetAlignmentAndOrder.ALIGN_TOP, ALIGN_TOP),
+            entry(WidgetAlignmentAndOrder.ALIGN_BOTTOM, ALIGN_BOTTOM),
+            entry(WidgetAlignmentAndOrder.ALIGN_VERTICALLY, ALIGN_VERTICALLY),
+            entry(WidgetAlignmentAndOrder.ALIGN_HORIZONTALLY, ALIGN_HORIZONTALLY),
             entry("GROUP", GROUP),
             entry("UNGROUP", UNGROUP),
             entry("BRING_TO_FRONT", BRING_TO_FRONT),

@@ -41,6 +41,10 @@ public class AlignLeftCommand implements Command {
     }
 
     private int calculateLeftPoint(final Set<IWidget> widgets) {
+        if (widgets.isEmpty()){
+            return 0;
+        }
+
         int leftPoint = 0;
         for (final IWidget widget: widgets) {
             final Rectangle bounds = widget.getBounds();

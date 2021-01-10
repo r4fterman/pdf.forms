@@ -7,18 +7,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import javax.swing.*;
+
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.properties.PropertyChanger;
 import org.pdf.forms.widgets.IWidget;
 
 public final class WidgetAlignmentAndOrder {
 
-    private static final String ALIGN_LEFT = "Align Left";
-    private static final String ALIGN_RIGHT = "Align Right";
-    private static final String ALIGN_TOP = "Align Top";
-    private static final String ALIGN_BOTTOM = "Align Bottom";
-    private static final String ALIGN_VERTICALLY = "Align Verticaly";
-    private static final String ALIGN_HORIZONTALLY = "Align Horizontaly";
+    public static final String ALIGN_LEFT = "Align Left";
+    public static final String ALIGN_RIGHT = "Align Right";
+    public static final String ALIGN_TOP = "Align Top";
+    public static final String ALIGN_BOTTOM = "Align Bottom";
+    public static final String ALIGN_VERTICALLY = "Align Verticaly";
+    public static final String ALIGN_HORIZONTALLY = "Align Horizontaly";
     public static final String BRING_TO_FRONT = "Bring to Front";
     public static final String SEND_TO_BACK = "Send to Back";
     public static final String BRING_FORWARDS = "Bring Forwards";
@@ -26,15 +28,13 @@ public final class WidgetAlignmentAndOrder {
 
     private static final String RES_ROOT = "/org/pdf/forms/res/";
 
-    private static final List<String> ALIGN_BUTTONS = List.of(
-            RES_ROOT + ALIGN_LEFT + ".gif",
-            RES_ROOT + ALIGN_RIGHT + ".gif",
-            RES_ROOT + ALIGN_TOP + ".gif",
-            RES_ROOT + ALIGN_BOTTOM + ".gif",
-            "Seperator",
-            RES_ROOT + ALIGN_VERTICALLY + ".gif",
-            RES_ROOT + ALIGN_HORIZONTALLY + ".gif",
-            "Seperator"
+    private static final Map<String, String> ALIGN_BUTTONS_TO_ICONS = Map.of(
+            ALIGN_LEFT, RES_ROOT + ALIGN_LEFT + ".gif",
+            ALIGN_RIGHT, RES_ROOT + ALIGN_RIGHT + ".gif",
+            ALIGN_TOP, RES_ROOT + ALIGN_TOP + ".gif",
+            ALIGN_BOTTOM, RES_ROOT + ALIGN_BOTTOM + ".gif",
+            ALIGN_VERTICALLY, RES_ROOT + ALIGN_VERTICALLY + ".gif",
+            ALIGN_HORIZONTALLY, RES_ROOT + ALIGN_HORIZONTALLY + ".gif"
     );
 
     private static final List<String> ORDER_BUTTONS = List.of(
@@ -54,11 +54,15 @@ public final class WidgetAlignmentAndOrder {
     );
 
     public static String[] getAlignButtons() {
-        return ALIGN_BUTTONS.toArray(new String[0]);
+        return ALIGN_BUTTONS_TO_ICONS.values().toArray(new String[0]);
     }
 
     public static String[] getOrderButtons() {
         return ORDER_BUTTONS.toArray(new String[0]);
+    }
+
+    public static String getIconPath(final String alignment) {
+        return ALIGN_BUTTONS_TO_ICONS.getOrDefault(alignment, RES_ROOT);
     }
 
     public static void alignAndOrder(
@@ -205,6 +209,10 @@ public final class WidgetAlignmentAndOrder {
     }
 
     private static int calculateBottomPoint(final Set<IWidget> widgets) {
+        if (widgets.isEmpty()){
+            return 0;
+        }
+
         int bottomPoint = 0;
         for (final IWidget widget : widgets) {
             final Rectangle bounds = widget.getBounds();
@@ -218,6 +226,10 @@ public final class WidgetAlignmentAndOrder {
     }
 
     private static int calculateTopPoint(final Set<IWidget> widgets) {
+        if (widgets.isEmpty()){
+            return 0;
+        }
+
         int topPoint = 0;
         for (final IWidget widget : widgets) {
             final Rectangle bounds = widget.getBounds();
@@ -231,6 +243,10 @@ public final class WidgetAlignmentAndOrder {
     }
 
     private static int calculateRightPoint(final Set<IWidget> widgets) {
+        if (widgets.isEmpty()){
+            return 0;
+        }
+
         int rightPoint = 0;
         for (final IWidget widget : widgets) {
             final Rectangle bounds = widget.getBounds();
@@ -244,6 +260,10 @@ public final class WidgetAlignmentAndOrder {
     }
 
     private static int calculateLeftPoint(final Set<IWidget> widgets) {
+        if (widgets.isEmpty()){
+            return 0;
+        }
+
         int leftPoint = 0;
         for (final IWidget widget : widgets) {
             final Rectangle bounds = widget.getBounds();
@@ -257,6 +277,10 @@ public final class WidgetAlignmentAndOrder {
     }
 
     private static int calculateAverageXCenterPoint(final Set<IWidget> widgets) {
+        if (widgets.isEmpty()){
+            return 0;
+        }
+
         int averageCenterPoint = 0;
         for (final IWidget widget : widgets) {
             final Rectangle bounds = widget.getBounds();
@@ -267,6 +291,10 @@ public final class WidgetAlignmentAndOrder {
     }
 
     private static int calculateAverageYCenterPoint(final Set<IWidget> widgets) {
+        if (widgets.isEmpty()){
+            return 0;
+        }
+
         int averageCenterPoint = 0;
         for (final IWidget widget : widgets) {
             final Rectangle bounds = widget.getBounds();

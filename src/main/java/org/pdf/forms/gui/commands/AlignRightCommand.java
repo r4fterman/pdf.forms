@@ -40,6 +40,10 @@ public class AlignRightCommand implements Command {
     }
 
     private int calculateRightPoint(final Set<IWidget> widgets) {
+        if (widgets.isEmpty()){
+            return 0;
+        }
+
         int rightPoint = 0;
         for (final IWidget widget: widgets) {
             final Rectangle bounds = widget.getBounds();

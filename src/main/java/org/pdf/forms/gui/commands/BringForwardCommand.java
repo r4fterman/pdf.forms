@@ -46,7 +46,8 @@ public class BringForwardCommand implements Command {
             final List<IWidget> allWidgets,
             final int size,
             final Set<IWidget> selectedWidgets) {
-        final Set<IWidget> newSet = new HashSet<>(Set.copyOf(selectedWidgets));
+        final Set<IWidget> copiedSet = Set.copyOf(selectedWidgets);
+        final Set<IWidget> newSet = new HashSet<>(copiedSet);
 
         for (int i = 0; i < size; i++) {
             final IWidget widget = allWidgets.get(i);

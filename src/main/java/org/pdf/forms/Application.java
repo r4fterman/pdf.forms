@@ -1,12 +1,12 @@
 package org.pdf.forms;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Enumeration;
+import java.io.InputStream;
 import java.util.Optional;
 import java.util.jar.Manifest;
+
+import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.VLFrame;
@@ -46,7 +46,7 @@ public final class Application {
         try {
             configureMacOSXSupport();
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Error on application startup", e);
         }
 
@@ -61,10 +61,16 @@ public final class Application {
             final String version,
             final SplashWindow splashWindow) {
         final Configuration configuration = new Configuration();
-        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configuration.getConfigDirectory());
+        final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configuration
+                .getConfigDirectory());
         final FontHandler fontHandler = new FontHandler(designerPropertiesFile);
         final WidgetFactory widgetFactory = new WidgetFactory(fontHandler);
-        final VLFrame frame = new VLFrame(splashWindow, version, fontHandler, widgetFactory, configuration, designerPropertiesFile);
+        final VLFrame frame = new VLFrame(splashWindow,
+                version,
+                fontHandler,
+                widgetFactory,
+                configuration,
+                designerPropertiesFile);
 
         // get local graphics environment
         final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -87,11 +93,14 @@ public final class Application {
 
     private Optional<Manifest> readManifest() {
         try {
-            final Enumeration<URL> resources = getClass().getClassLoader().getResources(MANIFEST_MF);
-            if (resources.hasMoreElements()) {
-                return Optional.of(new Manifest(resources.nextElement().openStream()));
+            final Optional<InputStream> stream = Optional.ofNullable(getClass().getClassLoader()
+                    .getResourceAsStream(MANIFEST_MF));
+            if (stream.isPresent()) {
+                return Optional.of(new Manifest(stream.get()));
+            } else {
+                logger.warn("File {} not found. Use default application version.", MANIFEST_MF);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Error reading {}", MANIFEST_MF, e);
         }
         return Optional.empty();

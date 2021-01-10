@@ -7,7 +7,7 @@ import java.awt.*;
 
 import javax.swing.*;
 
-import org.jpedal.utils.Strip;
+import org.apache.commons.text.StringEscapeUtils;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
@@ -85,7 +85,9 @@ public class CaptionChanger {
     }
 
     private void setCaptionText() {
-        final String captionText = captionTextArea.getText().replace(STRING_LINE_BREAK, HTML_LINE_BREAK);
+        final String userEnteredText = captionTextArea.getText();
+        final String sanitizedXml = StringEscapeUtils.escapeXml11(userEnteredText);
+        final String captionText = sanitizedXml.replace(STRING_LINE_BREAK, HTML_LINE_BREAK);
 
         final StringBuilder builder = new StringBuilder("<html>");
         if (alignment == null) {
@@ -96,6 +98,7 @@ public class CaptionChanger {
                     .append(captionText)
                     .append("</p>");
         }
+        builder.append("</html>");
         final String text = builder.toString();
 
         final Document properties = selectedWidget.getProperties();
@@ -142,8 +145,8 @@ public class CaptionChanger {
                 .replace("<br>", HTML_LINE_BREAK)
                 .replace(HTML_LINE_BREAK, STRING_LINE_BREAK);
 
-        return Strip.stripXML(textWithEditingLineBreaks).toString();
-
+        // &lt; --> <
+        return StringEscapeUtils.unescapeXml(textWithEditingLineBreaks);
     }
 }
 

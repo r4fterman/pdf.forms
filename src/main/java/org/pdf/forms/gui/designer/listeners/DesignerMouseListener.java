@@ -99,18 +99,16 @@ public class DesignerMouseListener implements MouseListener {
         // set up the widget to be moved or resized
         final Rectangle selectionBoxBounds = widgetSelection.getSelectionBoxBounds();
         for (final IWidget widget: widgetSelection.getFlattenedWidgets(selectedWidgets)) {
-            widget.setResizeHeightRatio(widget.getBoxSize().getHeight() / (selectionBoxBounds.getHeight()));
-            widget.setResizeWidthRatio(widget.getBoxSize().getWidth() / (selectionBoxBounds.getWidth()));
+            widget.setResizeHeightRatio(widget.getBoxSize().getHeight() / selectionBoxBounds.getHeight());
+            widget.setResizeWidthRatio(widget.getBoxSize().getWidth() / selectionBoxBounds.getWidth());
 
             final double resizeHeightRatio =
-                    (widget.getY()
-                             - (selectionBoxBounds.getY() + WidgetSelection.BOX_MARGIN))
+                    (widget.getY() - (selectionBoxBounds.getY() + WidgetSelection.BOX_MARGIN))
                             / selectionBoxBounds.getHeight();
             widget.setResizeFromTopRatio(resizeHeightRatio);
 
             final double resizeWidthRation =
-                    (widget.getX()
-                             - (selectionBoxBounds.getX() + WidgetSelection.BOX_MARGIN))
+                    (widget.getX() - (selectionBoxBounds.getX() + WidgetSelection.BOX_MARGIN))
                             / selectionBoxBounds.getWidth();
             widget.setResizeFromLeftRatio(resizeWidthRation);
 
