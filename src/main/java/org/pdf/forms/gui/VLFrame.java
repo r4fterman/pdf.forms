@@ -217,8 +217,8 @@ public class VLFrame extends JFrame implements IMainFrame {
 
         final File configDir = new File(configuration.getConfigDirectory(), "configuration");
 
-        menuConfigurationFile = new MenuConfigurationFile(configDir, configuration.getConfigDirectory());
-        windowConfigurationFile = new WindowConfigurationFile(configDir, configuration.getConfigDirectory());
+        menuConfigurationFile = new MenuConfigurationFile(configDir);
+        windowConfigurationFile = new WindowConfigurationFile(configDir);
 
         formsDocument = new FormsDocument(version);
 

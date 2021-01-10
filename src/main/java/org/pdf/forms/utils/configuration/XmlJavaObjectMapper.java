@@ -1,9 +1,11 @@
 package org.pdf.forms.utils.configuration;
 
 import java.io.StringReader;
+import java.io.StringWriter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 class XmlJavaObjectMapper<T> {
@@ -20,4 +22,11 @@ class XmlJavaObjectMapper<T> {
         return (T) unmarshaller.unmarshal(new StringReader(xmlValue));
     }
 
+    String convertObjectIntoXml(final T value) throws JAXBException {
+        final JAXBContext context = JAXBContext.newInstance(typeOfT);
+        final Marshaller marshaller = context.createMarshaller();
+        final StringWriter writer = new StringWriter();
+        marshaller.marshal(value, writer);
+        return writer.toString();
+    }
 }
