@@ -8,11 +8,11 @@ import java.util.StringJoiner;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType
-public class Pagedata {
+public class PageData {
 
     private List<Property> property;
 
-    public Pagedata() {
+    public PageData() {
         this.property = new ArrayList<>();
     }
 
@@ -26,8 +26,8 @@ public class Pagedata {
 
     @Override
     public boolean equals(final Object o) {
-        if (o instanceof Pagedata) {
-            final Pagedata pagedata = (Pagedata) o;
+        if (o instanceof PageData) {
+            final PageData pagedata = (PageData) o;
             return Objects.equals(property, pagedata.property);
         }
         return false;
@@ -40,7 +40,7 @@ public class Pagedata {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", Pagedata.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", PageData.class.getSimpleName() + "[", "]")
                 .add("properties=" + property)
                 .toString();
     }

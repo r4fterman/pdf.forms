@@ -12,6 +12,17 @@ public class Font {
     private String name;
     private String path;
 
+    public Font() {
+        // need default constructor for JAXB
+    }
+
+    public Font(
+            final String name,
+            final String path) {
+        this.name = name;
+        this.path = path;
+    }
+
     @XmlAttribute
     public String getName() {
         return name;

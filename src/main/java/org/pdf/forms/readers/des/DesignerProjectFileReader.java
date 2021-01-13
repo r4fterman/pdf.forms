@@ -6,7 +6,7 @@ import java.nio.file.Files;
 
 import javax.xml.bind.JAXBException;
 
-import org.pdf.forms.model.des.Document;
+import org.pdf.forms.model.des.DesDocument;
 import org.pdf.forms.readers.XmlJavaObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,19 +21,19 @@ public class DesignerProjectFileReader {
         this.desFile = desFile;
     }
 
-    public Document getDesDocument() {
+    public DesDocument getDesDocument() {
         try {
             return parseFile(desFile);
         } catch (IOException | JAXBException e) {
-            logger.error("Cannot read des file.", e);
-            return Document.DEFAULT;
+            logger.error("Cannot read des file {}. Use default value.", e.getMessage());
+            return new DesDocument();
         }
     }
 
-    private Document parseFile(final File desFile) throws IOException, JAXBException {
+    private DesDocument parseFile(final File desFile) throws IOException, JAXBException {
         final String content = Files.readString(desFile.toPath());
 
-        final XmlJavaObjectMapper<Document> mapper = new XmlJavaObjectMapper<>(Document.class);
+        final XmlJavaObjectMapper<DesDocument> mapper = new XmlJavaObjectMapper<>(DesDocument.class);
         return mapper.convertXmlIntoObject(content);
     }
 }

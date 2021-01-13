@@ -25,7 +25,7 @@ public class MenuConfigurationFileReader {
         try {
             return parseFile(menuConfigurationFile);
         } catch (IOException | JAXBException e) {
-            logger.error("Cannot read menu configuration file.", e);
+            logger.error("Cannot read menu configuration file {}. Use default value.", e.getMessage());
             return MenuConfiguration.DEFAULT;
         }
     }

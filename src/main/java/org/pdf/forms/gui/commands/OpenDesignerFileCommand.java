@@ -51,7 +51,7 @@ public class OpenDesignerFileCommand implements Command {
         this.widgetFactory = widgetFactory;
         this.designerPropertiesFile = designerPropertiesFile;
 
-        final int noOfRecentDocs = designerPropertiesFile.getNumberRecentDocumentsToDisplay();
+        final int noOfRecentDocs = DesignerPropertiesFile.NO_OF_RECENT_DOCS;
         this.recentDesignerDocuments = new JMenuItem[noOfRecentDocs];
     }
 
@@ -215,22 +215,22 @@ public class OpenDesignerFileCommand implements Command {
         return "checkboxgroups";
     }
 
-    private void updateRecentDocuments(final String[] recentDocs) {
-        if (recentDocs.length == 0) {
+    private void updateRecentDocuments(final List<String> recentDocs) {
+        if (recentDocs.isEmpty()) {
             return;
         }
 
         final JMenuItem[] recentDocuments = recentDesignerDocuments;
 
-        for (int i = 0; i < recentDocs.length; i++) {
-            if (recentDocs[i] != null) {
-                final String shortenedFileName = FileUtil.getShortenedFileName(recentDocs[i], File.separator);
+        for (int i = 0; i < recentDocs.size(); i++) {
+            if (recentDocs.get(i) != null) {
+                final String shortenedFileName = FileUtil.getShortenedFileName(recentDocs.get(i), File.separator);
                 if (recentDocuments[i] == null) {
                     recentDocuments[i] = new JMenuItem();
                 }
                 recentDocuments[i].setText(i + 1 + ": " + shortenedFileName);
                 recentDocuments[i].setVisible(!recentDocuments[i].getText().equals(i + 1 + ": "));
-                recentDocuments[i].setName(recentDocs[i]);
+                recentDocuments[i].setName(recentDocs.get(i));
             }
         }
     }

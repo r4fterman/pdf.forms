@@ -16,6 +16,11 @@ public class BorderProperties {
     @XmlElement(name = "backgroundfill")
     private BackgroundFill backgroundFill;
 
+    public BorderProperties() {
+        this.borders = new Borders();
+        this.backgroundFill = new BackgroundFill();
+    }
+
     public Borders getBorders() {
         return borders;
     }

@@ -17,6 +17,11 @@ public class FontProperties {
     @XmlElement(name = "font_value")
     private FontValue fontValue;
 
+    public FontProperties() {
+        this.fontCaption = new FontCaption();
+        this.fontValue = new FontValue();
+    }
+
     public FontCaption getFontCaption() {
         return fontCaption;
     }

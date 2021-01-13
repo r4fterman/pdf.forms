@@ -9,6 +9,14 @@ public class File {
 
     private String name;
 
+    public File() {
+        // need default constructor for JAXB
+    }
+
+    public File(final String name) {
+        this.name = name;
+    }
+
     @XmlAttribute
     public String getName() {
         return name;

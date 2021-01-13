@@ -34,10 +34,9 @@ public class WindowConfigurationFileReader {
             final String content = Files.readString(windowConfigurationFile.toPath());
             return readContent(content);
         } catch (final IOException e) {
-            logger.warn("Unable to read window configuration file.", e);
+            logger.warn("Unable to read window configuration file {}. Use default value.", e.getMessage());
         }
         return WindowConfiguration.DEFAULT;
-
     }
 
     private WindowConfiguration readContent(final String content) {

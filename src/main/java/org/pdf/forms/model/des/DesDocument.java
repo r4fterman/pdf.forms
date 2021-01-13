@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
-public class Document {
-
-    public static final Document DEFAULT = new Document();
+@XmlRootElement(name = "document")
+public class DesDocument {
 
     private Property property;
     private JavaScriptContent javascript;
     private List<Page> page;
 
-    public Document() {
+    public DesDocument() {
+        this.property = new Property();
+        this.javascript = new JavaScriptContent();
         this.page = new ArrayList<>();
     }
 
@@ -49,11 +49,11 @@ public class Document {
 
     @Override
     public boolean equals(final Object o) {
-        if (o instanceof Document) {
-            final Document document = (Document) o;
-            return Objects.equals(property, document.property)
-                    && Objects.equals(javascript, document.javascript)
-                    && Objects.equals(page, document.page);
+        if (o instanceof DesDocument) {
+            final DesDocument desDocument = (DesDocument) o;
+            return Objects.equals(property, desDocument.property)
+                    && Objects.equals(javascript, desDocument.javascript)
+                    && Objects.equals(page, desDocument.page);
         }
         return false;
     }
@@ -65,7 +65,7 @@ public class Document {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", Document.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", DesDocument.class.getSimpleName() + "[", "]")
                 .add("property=" + property)
                 .add("javaScriptContent=" + javascript)
                 .add("pages=" + page)

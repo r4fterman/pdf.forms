@@ -14,7 +14,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.pdf.forms.model.des.Document;
+import org.pdf.forms.model.des.DesDocument;
 import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.model.des.Page;
 import org.pdf.forms.model.des.Property;
@@ -24,11 +24,11 @@ class DesignerProjectFileReaderTest {
 
     @Test
     void read_des_document_from_file() throws Exception {
-        final Document document = new DesignerProjectFileReader(getFile("/example.des")).getDesDocument();
+        final DesDocument desDocument = new DesignerProjectFileReader(getFile("/example.des")).getDesDocument();
 
-        assertJavaScriptContent(document.getJavaScript());
-        assertDocumentProperty(document.getProperty());
-        assertPages(document.getPage());
+        assertJavaScriptContent(desDocument.getJavaScript());
+        assertDocumentProperty(desDocument.getProperty());
+        assertPages(desDocument.getPage());
     }
 
     private void assertJavaScriptContent(final JavaScriptContent javaScriptContent) {
@@ -59,9 +59,9 @@ class DesignerProjectFileReaderTest {
         assertThat(page.getProperty().get(0).getName(), is("pagetype"));
         assertThat(page.getProperty().get(0).getValue(), is("simplepage"));
 
-        assertThat(page.getPagedata().getProperty(), hasSize(2));
-        assertThat(page.getPagedata().getProperty().get(0).getName(), is("width"));
-        assertThat(page.getPagedata().getProperty().get(0).getValue(), is("595"));
+        assertThat(page.getPageData().getProperty(), hasSize(2));
+        assertThat(page.getPageData().getProperty().get(0).getName(), is("width"));
+        assertThat(page.getPageData().getProperty().get(0).getValue(), is("595"));
 
         assertThat(page.getRadioButtonGroups().getProperty(), hasSize(1));
         assertThat(page.getRadioButtonGroups().getProperty().get(0).getName(), is("buttongroupname"));
@@ -80,9 +80,9 @@ class DesignerProjectFileReaderTest {
         assertThat(page.getProperty().get(0).getName(), is("pagetype"));
         assertThat(page.getProperty().get(0).getValue(), is("simplepage"));
 
-        assertThat(page.getPagedata().getProperty(), hasSize(2));
-        assertThat(page.getPagedata().getProperty().get(0).getName(), is("width"));
-        assertThat(page.getPagedata().getProperty().get(0).getValue(), is("595"));
+        assertThat(page.getPageData().getProperty(), hasSize(2));
+        assertThat(page.getPageData().getProperty().get(0).getName(), is("width"));
+        assertThat(page.getPageData().getProperty().get(0).getValue(), is("595"));
 
         assertThat(page.getCheckBoxGroups().getProperty(), is(empty()));
         assertThat(page.getRadioButtonGroups().getProperty(), is(empty()));
@@ -93,7 +93,7 @@ class DesignerProjectFileReaderTest {
     private void assertWidget(final Widget widget) {
         assertThat(widget.getProperty(), hasSize(2));
         assertThat(widget.getProperties().getFont().getFontCaption().getProperty(), hasSize(6));
-        assertThat(widget.getProperties().getFont().getFontValue(), is(nullValue()));
+        assertThat(widget.getProperties().getFont().getFontValue().getProperty(), is(empty()));
 
         assertThat(widget.getProperties().getObject().getField().getProperty(), hasSize(3));
         assertThat(widget.getProperties().getObject().getValue().getProperty(), hasSize(2));
@@ -107,7 +107,7 @@ class DesignerProjectFileReaderTest {
         assertThat(widget.getProperties().getBorder().getBackgroundFill().getProperty(), hasSize(2));
 
         assertThat(widget.getProperties().getParagraph().getParagraphCaption().getProperty(), hasSize(2));
-        assertThat(widget.getProperties().getParagraph().getParagraphValue(), is(nullValue()));
+        assertThat(widget.getProperties().getParagraph().getParagraphValue().getProperty(), is(empty()));
 
         assertThat(widget.getProperties().getCaptionProperties().getProperty(), hasSize(2));
 

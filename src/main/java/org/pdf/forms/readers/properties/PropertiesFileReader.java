@@ -25,8 +25,8 @@ public class PropertiesFileReader {
         try {
             return parseFile(propertiesFile);
         } catch (IOException | JAXBException e) {
-            logger.error("Cannot read properties file.", e);
-            return CustomProperties.DEFAULT;
+            logger.error("Cannot read properties file: {}. Use default value.", e.getMessage());
+            return new CustomProperties();
         }
     }
 

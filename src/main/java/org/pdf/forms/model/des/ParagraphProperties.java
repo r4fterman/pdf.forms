@@ -17,6 +17,10 @@ public class ParagraphProperties {
     @XmlElement(name = "paragraph_value")
     private ParagraphValue paragraphValue;
 
+    public ParagraphProperties() {
+        this.paragraphCaption = new ParagraphCaption();
+        this.paragraphValue = new ParagraphValue();
+    }
     public ParagraphCaption getParagraphCaption() {
         return paragraphCaption;
     }

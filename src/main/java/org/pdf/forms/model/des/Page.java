@@ -15,7 +15,8 @@ import javax.xml.bind.annotation.XmlType;
 public class Page {
 
     private List<Property> property;
-    private Pagedata pagedata;
+    @XmlElement(name = "pagedata")
+    private PageData pageData;
     private List<Widget> widget;
     @XmlElement(name = "radiobuttongroups")
     private RadioButtonGroups radioButtonGroups;
@@ -24,7 +25,10 @@ public class Page {
 
     public Page() {
         this.property = new ArrayList<>();
+        this.pageData = new PageData();
         this.widget = new ArrayList<>();
+        this.radioButtonGroups = new RadioButtonGroups();
+        this.checkBoxGroups = new CheckBoxGroups();
     }
 
     public List<Property> getProperty() {
@@ -35,12 +39,12 @@ public class Page {
         this.property = property;
     }
 
-    public Pagedata getPagedata() {
-        return pagedata;
+    public PageData getPageData() {
+        return pageData;
     }
 
-    public void setPagedata(final Pagedata pagedata) {
-        this.pagedata = pagedata;
+    public void setPageData(final PageData pageData) {
+        this.pageData = pageData;
     }
 
     public List<Widget> getWidget() {
@@ -72,7 +76,7 @@ public class Page {
         if (o instanceof Page) {
             final Page page = (Page) o;
             return Objects.equals(property, page.property)
-                    && Objects.equals(pagedata, page.pagedata)
+                    && Objects.equals(pageData, page.pageData)
                     && Objects.equals(widget, page.widget)
                     && Objects.equals(radioButtonGroups, page.radioButtonGroups)
                     && Objects.equals(checkBoxGroups, page.checkBoxGroups);
@@ -82,14 +86,14 @@ public class Page {
 
     @Override
     public int hashCode() {
-        return Objects.hash(property, pagedata, widget, radioButtonGroups, checkBoxGroups);
+        return Objects.hash(property, pageData, widget, radioButtonGroups, checkBoxGroups);
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", Page.class.getSimpleName() + "[", "]")
                 .add("properties=" + property)
-                .add("pagedata=" + pagedata)
+                .add("pagedata=" + pageData)
                 .add("widgets=" + widget)
                 .add("radioButtonGroups=" + radioButtonGroups)
                 .add("checkBoxGroups=" + checkBoxGroups)

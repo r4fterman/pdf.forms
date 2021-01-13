@@ -17,6 +17,12 @@ public class LayoutProperties {
     private Margins margins;
     private Caption caption;
 
+    public LayoutProperties() {
+        this.sizeAndPosition = new SizeAndPosition();
+        this.margins = new Margins();
+        this.caption = new Caption();
+    }
+
     public SizeAndPosition getSizeAndPosition() {
         return sizeAndPosition;
     }

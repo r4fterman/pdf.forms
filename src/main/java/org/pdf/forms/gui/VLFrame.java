@@ -457,14 +457,14 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     private void addRecentDesignerFilesAsMenuEntries(final JMenu file) {
-        final String[] recentDocs = designerPropertiesFile.getRecentDesignerDocuments();
-        if (recentDocs.length == 0) {
+        final List<String> recentDocs = designerPropertiesFile.getRecentDesignerDocuments();
+        if (recentDocs.isEmpty()) {
             return;
         }
 
-        final int numberOfRecentDocs = designerPropertiesFile.getNumberRecentDocumentsToDisplay();
+        final int numberOfRecentDocs = DesignerPropertiesFile.NO_OF_RECENT_DOCS;
         for (int i = 0; i < numberOfRecentDocs; i++) {
-            final JMenuItem menuItem = addDocumentToMenuEntry(recentDocs[i], i);
+            final JMenuItem menuItem = addDocumentToMenuEntry(recentDocs.get(i), i);
             file.add(menuItem);
 
             menuItem.addActionListener(e -> {
@@ -479,11 +479,11 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     private void addRecentPDFFilesAsMenuEntries(final JMenu file) {
-        final String[] recentDocs = designerPropertiesFile.getRecentPDFDocuments();
+        final List<String> recentDocs = designerPropertiesFile.getRecentPDFDocuments();
 
-        final int numberOfRecentDocs = designerPropertiesFile.getNumberRecentDocumentsToDisplay();
+        final int numberOfRecentDocs = DesignerPropertiesFile.NO_OF_RECENT_DOCS;
         for (int i = 0; i < numberOfRecentDocs; i++) {
-            final JMenuItem menuItem = addDocumentToMenuEntry(recentDocs[i], i);
+            final JMenuItem menuItem = addDocumentToMenuEntry(recentDocs.get(i), i);
             file.add(menuItem);
 
             menuItem.addActionListener(e -> {

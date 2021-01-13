@@ -20,6 +20,15 @@ public class Properties {
     @XmlElement(name = "caption_properties")
     private CaptionProperties captionProperties;
 
+    public Properties() {
+        this.font = new FontProperties();
+        this.object = new ObjectProperties();
+        this.layout = new LayoutProperties();
+        this.border = new BorderProperties();
+        this.paragraph = new ParagraphProperties();
+        this.captionProperties = new CaptionProperties();
+    }
+
     public FontProperties getFont() {
         return font;
     }

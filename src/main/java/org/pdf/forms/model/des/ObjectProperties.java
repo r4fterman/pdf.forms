@@ -12,6 +12,12 @@ public class ObjectProperties {
     private ValueProperties value;
     private BindingProperties binding;
 
+    public ObjectProperties() {
+        this.field = new FieldProperties();
+        this.value = new ValueProperties();
+        this.binding = new BindingProperties();
+    }
+
     public FieldProperties getField() {
         return field;
     }

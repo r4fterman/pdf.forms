@@ -7,6 +7,7 @@ import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -15,10 +16,13 @@ public class Widget {
 
     private List<Property> property;
     private Properties properties;
-    private JavaScriptContent javascript;
+    @XmlElement(name = "javascript")
+    private JavaScriptContent javaScript;
 
     public Widget() {
         this.property = new ArrayList<>();
+        this.properties = new Properties();
+        this.javaScript = new JavaScriptContent();
     }
 
     public List<Property> getProperty() {
@@ -38,11 +42,11 @@ public class Widget {
     }
 
     public JavaScriptContent getJavaScript() {
-        return javascript;
+        return javaScript;
     }
 
-    public void setJavascript(final JavaScriptContent javascript) {
-        this.javascript = javascript;
+    public void setJavaScript(final JavaScriptContent javaScript) {
+        this.javaScript = javaScript;
     }
 
     @Override
@@ -51,14 +55,14 @@ public class Widget {
             final Widget widget = (Widget) o;
             return Objects.equals(property, widget.property)
                     && Objects.equals(properties, widget.properties)
-                    && Objects.equals(javascript, widget.javascript);
+                    && Objects.equals(javaScript, widget.javaScript);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(property, properties, javascript);
+        return Objects.hash(property, properties, javaScript);
     }
 
     @Override
@@ -66,7 +70,7 @@ public class Widget {
         return new StringJoiner(", ", Widget.class.getSimpleName() + "[", "]")
                 .add("property=" + property)
                 .add("properties=" + properties)
-                .add("javascript=" + javascript)
+                .add("javascript=" + javaScript)
                 .toString();
     }
 }

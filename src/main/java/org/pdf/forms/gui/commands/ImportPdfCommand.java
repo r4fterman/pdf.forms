@@ -38,7 +38,7 @@ public class ImportPdfCommand implements Command {
         this.widgetFactory = widgetFactory;
         this.designerPropertiesFile = designerPropertiesFile;
 
-        final int numberOfRecentDocs = designerPropertiesFile.getNumberRecentDocumentsToDisplay();
+        final int numberOfRecentDocs = DesignerPropertiesFile.NO_OF_RECENT_DOCS;
         this.recentDesignerDocuments = new JMenuItem[numberOfRecentDocs];
     }
 
@@ -113,13 +113,13 @@ public class ImportPdfCommand implements Command {
         return decoder;
     }
 
-    private void updateRecentDocuments(final String[] recentDocs) {
-        if (recentDocs == null) {
+    private void updateRecentDocuments(final java.util.List<String> recentDocs) {
+        if (recentDocs.isEmpty()) {
             return;
         }
 
-        for (int i = 0; i < recentDocs.length; i++) {
-            updateRecentDocuments(recentDocs[i], recentDesignerDocuments, i);
+        for (int i = 0; i < recentDocs.size(); i++) {
+            updateRecentDocuments(recentDocs.get(i), recentDesignerDocuments, i);
         }
     }
 

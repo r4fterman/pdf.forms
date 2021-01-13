@@ -12,14 +12,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "properties")
 public class CustomProperties {
 
-    public static final CustomProperties DEFAULT = new CustomProperties();
-
     @XmlElement(name = "recentdesfiles")
     private RecentDesFiles recentDesFiles;
     @XmlElement(name = "recentpdffiles")
     private RecentPdfFiles recentPdfFiles;
     @XmlElement(name = "customfonts")
     private CustomFonts customFonts;
+
+    public CustomProperties() {
+        this.recentDesFiles = new RecentDesFiles();
+        this.recentPdfFiles = new RecentPdfFiles();
+        this.customFonts = new CustomFonts();
+    }
 
     public RecentDesFiles getRecentDesFiles() {
         return recentDesFiles;
