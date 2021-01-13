@@ -10,13 +10,13 @@ import org.pdf.forms.model.des.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DesFileReader {
+public class DesignerProjectFileReader {
 
-    private final Logger logger = LoggerFactory.getLogger(DesFileReader.class);
+    private final Logger logger = LoggerFactory.getLogger(DesignerProjectFileReader.class);
 
     private final File desFile;
 
-    public DesFileReader(final File desFile) {
+    public DesignerProjectFileReader(final File desFile) {
         this.desFile = desFile;
     }
 

@@ -20,11 +20,11 @@ import org.pdf.forms.model.des.Page;
 import org.pdf.forms.model.des.Property;
 import org.pdf.forms.model.des.Widget;
 
-class DesFileReaderTest {
+class DesignerProjectFileReaderTest {
 
     @Test
     void read_des_document_from_file() throws Exception {
-        final Document document = new DesFileReader(getFile("/example.des")).getDesDocument();
+        final Document document = new DesignerProjectFileReader(getFile("/example.des")).getDesDocument();
 
         assertJavaScriptContent(document.getJavaScript());
         assertDocumentProperty(document.getProperty());
@@ -120,7 +120,7 @@ class DesFileReaderTest {
     }
 
     private File getFile(final String fileName) throws URISyntaxException {
-        final URL url = DesFileReaderTest.class.getResource(fileName);
+        final URL url = DesignerProjectFileReaderTest.class.getResource(fileName);
         assertThat("File not found: " + fileName, url, is(notNullValue()));
 
         return new File(url.toURI());
