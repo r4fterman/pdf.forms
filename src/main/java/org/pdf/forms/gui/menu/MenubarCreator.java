@@ -13,8 +13,8 @@ import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.components.CheckBoxMenuItemWithID;
 import org.pdf.forms.gui.components.MenuItemWithID;
-import org.pdf.forms.gui.configuration.Item;
-import org.pdf.forms.gui.configuration.Menu;
+import org.pdf.forms.model.configuration.Item;
+import org.pdf.forms.model.configuration.Menu;
 import org.pdf.forms.widgets.utils.WidgetAlignmentAndOrder;
 
 public class MenubarCreator {

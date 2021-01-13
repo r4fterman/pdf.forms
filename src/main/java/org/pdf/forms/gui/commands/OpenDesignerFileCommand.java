@@ -91,8 +91,7 @@ public class OpenDesignerFileCommand implements Command {
 
     private void readDesignerFile(final String designerFileToOpen) {
         try {
-            final String fileName = mainFrame.getCurrentDesignerFileName();
-            final Element root = readDesignerDocument(fileName);
+            final Element root = readDesignerDocument(designerFileToOpen);
 
             mainFrame.setFormsDocument(new FormsDocument(root));
 
