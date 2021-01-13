@@ -3,12 +3,18 @@ package org.pdf.forms.model.des;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "font")
 public class FontProperties {
 
+    @XmlElement(name = "font_caption")
     private FontCaption fontCaption;
+    @XmlElement(name = "font_value")
     private FontValue fontValue;
 
     public FontCaption getFontCaption() {

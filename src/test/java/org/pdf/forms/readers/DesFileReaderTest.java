@@ -18,6 +18,7 @@ import org.pdf.forms.model.des.Document;
 import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.model.des.Page;
 import org.pdf.forms.model.des.Property;
+import org.pdf.forms.model.des.Widget;
 
 class DesFileReaderTest {
 
@@ -31,7 +32,6 @@ class DesFileReaderTest {
     }
 
     private void assertJavaScriptContent(final JavaScriptContent javaScriptContent) {
-        assertThat(javaScriptContent, is(notNullValue()));
         assertThat(javaScriptContent.getInitialize(), is(emptyString()));
 
         assertThat(javaScriptContent.getChange(), is(nullValue()));
@@ -70,6 +70,9 @@ class DesFileReaderTest {
         assertThat(page.getCheckBoxGroups().getProperty(), hasSize(18));
         assertThat(page.getCheckBoxGroups().getProperty().get(17).getName(), is("buttongroupname"));
         assertThat(page.getCheckBoxGroups().getProperty().get(17).getValue(), is("CheckBox Group18"));
+
+        assertThat(page.getWidget(), hasSize(48));
+        assertWidget(page.getWidget().get(7));
     }
 
     private void assertPage1(final Page page) {
@@ -83,6 +86,37 @@ class DesFileReaderTest {
 
         assertThat(page.getCheckBoxGroups().getProperty(), is(empty()));
         assertThat(page.getRadioButtonGroups().getProperty(), is(empty()));
+
+        assertThat(page.getWidget(), hasSize(41));
+    }
+
+    private void assertWidget(final Widget widget) {
+        assertThat(widget.getProperty(), hasSize(2));
+        assertThat(widget.getProperties().getFont().getFontCaption().getProperty(), hasSize(6));
+        assertThat(widget.getProperties().getFont().getFontValue(), is(nullValue()));
+
+        assertThat(widget.getProperties().getObject().getField().getProperty(), hasSize(3));
+        assertThat(widget.getProperties().getObject().getValue().getProperty(), hasSize(2));
+        assertThat(widget.getProperties().getObject().getBinding().getProperty(), hasSize(2));
+
+        assertThat(widget.getProperties().getLayout().getSizeAndPosition().getProperty(), hasSize(8));
+        assertThat(widget.getProperties().getLayout().getMargins().getProperty(), hasSize(4));
+        assertThat(widget.getProperties().getLayout().getCaption().getProperty(), hasSize(2));
+
+        assertThat(widget.getProperties().getBorder().getBorders().getProperty(), hasSize(3));
+        assertThat(widget.getProperties().getBorder().getBackgroundFill().getProperty(), hasSize(2));
+
+        assertThat(widget.getProperties().getParagraph().getParagraphCaption().getProperty(), hasSize(2));
+        assertThat(widget.getProperties().getParagraph().getParagraphValue(), is(nullValue()));
+
+        assertThat(widget.getProperties().getCaptionProperties().getProperty(), hasSize(2));
+
+        assertThat(widget.getJavaScript().getKeystroke(), is(nullValue()));
+        assertThat(widget.getJavaScript().getMouseEnter(), is(emptyString()));
+        assertThat(widget.getJavaScript().getMouseExit(), is(emptyString()));
+        assertThat(widget.getJavaScript().getChange(), is(emptyString()));
+        assertThat(widget.getJavaScript().getMouseUp(), is(emptyString()));
+        assertThat(widget.getJavaScript().getMouseDown(), is(emptyString()));
     }
 
     private File getFile(final String fileName) throws URISyntaxException {

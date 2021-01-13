@@ -16,7 +16,7 @@ public class Page {
 
     private List<Property> property;
     private Pagedata pagedata;
-    private List<Widget> widgets;
+    private List<Widget> widget;
     @XmlElement(name = "radiobuttongroups")
     private RadioButtonGroups radioButtonGroups;
     @XmlElement(name = "checkboxgroups")
@@ -24,7 +24,7 @@ public class Page {
 
     public Page() {
         this.property = new ArrayList<>();
-        this.widgets = new ArrayList<>();
+        this.widget = new ArrayList<>();
     }
 
     public List<Property> getProperty() {
@@ -43,12 +43,12 @@ public class Page {
         this.pagedata = pagedata;
     }
 
-    public List<Widget> getWidgets() {
-        return widgets;
+    public List<Widget> getWidget() {
+        return widget;
     }
 
-    public void setWidgets(final List<Widget> widgets) {
-        this.widgets = widgets;
+    public void setWidget(final List<Widget> widget) {
+        this.widget = widget;
     }
 
     public RadioButtonGroups getRadioButtonGroups() {
@@ -73,7 +73,7 @@ public class Page {
             final Page page = (Page) o;
             return Objects.equals(property, page.property)
                     && Objects.equals(pagedata, page.pagedata)
-                    && Objects.equals(widgets, page.widgets)
+                    && Objects.equals(widget, page.widget)
                     && Objects.equals(radioButtonGroups, page.radioButtonGroups)
                     && Objects.equals(checkBoxGroups, page.checkBoxGroups);
         }
@@ -82,7 +82,7 @@ public class Page {
 
     @Override
     public int hashCode() {
-        return Objects.hash(property, pagedata, widgets, radioButtonGroups, checkBoxGroups);
+        return Objects.hash(property, pagedata, widget, radioButtonGroups, checkBoxGroups);
     }
 
     @Override
@@ -90,9 +90,10 @@ public class Page {
         return new StringJoiner(", ", Page.class.getSimpleName() + "[", "]")
                 .add("properties=" + property)
                 .add("pagedata=" + pagedata)
-                .add("widgets=" + widgets)
+                .add("widgets=" + widget)
                 .add("radioButtonGroups=" + radioButtonGroups)
                 .add("checkBoxGroups=" + checkBoxGroups)
                 .toString();
     }
 }
+

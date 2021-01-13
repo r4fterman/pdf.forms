@@ -3,8 +3,12 @@ package org.pdf.forms.model.des;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
 public class Properties {
 
@@ -13,6 +17,7 @@ public class Properties {
     private LayoutProperties layout;
     private BorderProperties border;
     private ParagraphProperties paragraph;
+    @XmlElement(name = "caption_properties")
     private CaptionProperties captionProperties;
 
     public FontProperties getFont() {

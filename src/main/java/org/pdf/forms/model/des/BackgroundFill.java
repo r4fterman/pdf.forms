@@ -1,14 +1,13 @@
 package org.pdf.forms.model.des;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType
+@XmlType(name = "backgroundfill")
 public class BackgroundFill {
 
     private List<Property> property;
