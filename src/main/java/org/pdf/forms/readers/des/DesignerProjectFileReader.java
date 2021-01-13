@@ -1,4 +1,4 @@
-package org.pdf.forms.readers;
+package org.pdf.forms.readers.des;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import javax.xml.bind.JAXBException;
 
 import org.pdf.forms.model.des.Document;
+import org.pdf.forms.readers.XmlJavaObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

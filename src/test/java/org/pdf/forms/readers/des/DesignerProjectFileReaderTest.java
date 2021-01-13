@@ -1,4 +1,4 @@
-package org.pdf.forms.readers;
+package org.pdf.forms.readers.des;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
