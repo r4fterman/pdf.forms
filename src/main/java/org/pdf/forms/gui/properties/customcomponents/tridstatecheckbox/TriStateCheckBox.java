@@ -30,15 +30,16 @@ import javax.swing.plaf.ActionMapUIResource;
  * "released".
  * 5. You have to grab focus when the next state is entered,
  * otherwise clicking on the component won't get the focus.
- * 6. You have to make a TristateDecorator as a button model that
+ * 6. You have to make a #TristateDecorator as a button model that
  * wraps the original button model and does state management.
  */
-public class TristateCheckBox extends JCheckBox {
+public class TriStateCheckBox extends JCheckBox {
 
     /**
      * This is a type-safe enumerated type.
      */
     public static class State {
+        //todo: convert this class into a enum
     }
 
     public static final State NOT_SELECTED = new State() {
@@ -60,21 +61,21 @@ public class TristateCheckBox extends JCheckBox {
         }
     };
 
-    private final TristateDecorator model;
+    private final TriStateDecorator decorator;
 
-    public TristateCheckBox(
+    public TriStateCheckBox(
             final String text,
             final Icon icon,
             final State initial,
-            final TristateCheckBoxParent parent) {
+            final TriStateCheckBoxParent parent) {
         super(text, icon);
         super.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(final MouseEvent e) {
                 grabFocus();
-                model.nextState();
+                decorator.nextState();
 
-                parent.checkboxClicked(e);
+                parent.checkBoxClicked(e);
             }
         });
 
@@ -83,32 +84,32 @@ public class TristateCheckBox extends JCheckBox {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 grabFocus();
-                model.nextState();
+                decorator.nextState();
             }
         });
         map.put("released", null);
         SwingUtilities.replaceUIActionMap(this, map);
 
         // set the model to the adapted model
-        model = new TristateDecorator(getModel());
-        setModel(model);
+        decorator = new TriStateDecorator(getModel());
+        setModel(decorator);
         setState(initial);
     }
 
-    public TristateCheckBox(
+    public TriStateCheckBox(
             final String text,
             final State initial,
-            final TristateCheckBoxParent parent) {
+            final TriStateCheckBoxParent parent) {
         this(text, null, initial, parent);
     }
 
-    public TristateCheckBox(
+    public TriStateCheckBox(
             final String text,
-            final TristateCheckBoxParent parent) {
+            final TriStateCheckBoxParent parent) {
         this(text, DONT_CARE, parent);
     }
 
-    public TristateCheckBox(final TristateCheckBoxParent parent) {
+    public TriStateCheckBox(final TriStateCheckBoxParent parent) {
         this(null, parent);
     }
 
@@ -124,7 +125,7 @@ public class TristateCheckBox extends JCheckBox {
      * DONT_CARE.  If state == null, it is treated as DONT_CARE.
      */
     public void setState(final State state) {
-        model.setState(state);
+        decorator.setState(state);
     }
 
     /**
@@ -132,7 +133,7 @@ public class TristateCheckBox extends JCheckBox {
      * selection status of the model.
      */
     public State getState() {
-        return model.getState();
+        return decorator.getState();
     }
 
     @Override
@@ -150,10 +151,10 @@ public class TristateCheckBox extends JCheckBox {
      * Decorator, because we are extending functionality and
      * "decorating" the original model with a more powerful model.
      */
-    private final class TristateDecorator implements ButtonModel {
+    private final class TriStateDecorator implements ButtonModel {
         private final ButtonModel other;
 
-        private TristateDecorator(final ButtonModel other) {
+        private TriStateDecorator(final ButtonModel other) {
             this.other = other;
         }
 

@@ -12,7 +12,7 @@ import javax.swing.*;
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBox;
+import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TriStateCheckBox;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Element;
@@ -80,9 +80,9 @@ public class ListFieldPanel extends JPanel {
 
         final JComboBox<String> presenceBox = new JComboBox<>(PRESENCES);
 
-        allowCustomTextEntryBox = new TristateCheckBox(
+        allowCustomTextEntryBox = new TriStateCheckBox(
                 "Allow Custom Text Entry",
-                TristateCheckBox.NOT_SELECTED,
+                TriStateCheckBox.NOT_SELECTED,
                 this::saveAllowedCustomText);
         allowCustomTextEntryBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         allowCustomTextEntryBox.setMargin(new Insets(0, 0, 0, 0));
@@ -273,12 +273,12 @@ public class ListFieldPanel extends JPanel {
     }
 
     private void saveAllowedCustomText(final MouseEvent mouseEvent) {
-        final TristateCheckBox.State state = (((TristateCheckBox) allowCustomTextEntryBox).getState());
-        if (state == TristateCheckBox.DONT_CARE) {
+        final TriStateCheckBox.State state = (((TriStateCheckBox) allowCustomTextEntryBox).getState());
+        if (state == TriStateCheckBox.DONT_CARE) {
             return;
         }
 
-        final boolean value = state == TristateCheckBox.SELECTED;
+        final boolean value = state == TriStateCheckBox.SELECTED;
         for (final Element propertiesElement: widgetsAndProperties.values()) {
             final List<Element> objectProperties = XMLUtils.getElementsFromNodeList(propertiesElement.getChildNodes());
             final List<Element> fieldProperties = XMLUtils.getElementsFromNodeList(objectProperties.get(0)
