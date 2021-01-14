@@ -20,7 +20,7 @@ import java.util.Map;
 import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
-import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBox;
+import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TriStateCheckBox;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.w3c.dom.Attr;
@@ -47,14 +47,14 @@ public class TextFieldFieldPanel extends JPanel {
     }
 
     private void initComponents() {
-        allowMultipleLinesBox = new TristateCheckBox(
+        allowMultipleLinesBox = new TriStateCheckBox(
                 "Allow Multiple Line",
-                TristateCheckBox.NOT_SELECTED,
+                TriStateCheckBox.NOT_SELECTED,
                 this::saveAllowedMultipleLines);
         allowMultipleLinesBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         allowMultipleLinesBox.setMargin(new Insets(0, 0, 0, 0));
 
-        limitLengthBox = new TristateCheckBox("Limit Length", TristateCheckBox.NOT_SELECTED, this::saveLimitLength);
+        limitLengthBox = new TriStateCheckBox("Limit Length", TriStateCheckBox.NOT_SELECTED, this::saveLimitLength);
         limitLengthBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         limitLengthBox.setMargin(new Insets(0, 0, 0, 0));
 
@@ -153,12 +153,12 @@ public class TextFieldFieldPanel extends JPanel {
     public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
         this.widgetsAndProperties = widgetsAndProperties;
 
-        final TristateCheckBox.State allowMultipleLinesToUse = getAllowedMultipleLinesToUse(widgetsAndProperties
+        final TriStateCheckBox.State allowMultipleLinesToUse = getAllowedMultipleLinesToUse(widgetsAndProperties
                 .values());
-        ((TristateCheckBox) allowMultipleLinesBox).setState(allowMultipleLinesToUse);
+        ((TriStateCheckBox) allowMultipleLinesBox).setState(allowMultipleLinesToUse);
 
-        final TristateCheckBox.State limitLengthToUse = getLimitLengthToUse(widgetsAndProperties.values());
-        ((TristateCheckBox) limitLengthBox).setState(limitLengthToUse);
+        final TriStateCheckBox.State limitLengthToUse = getLimitLengthToUse(widgetsAndProperties.values());
+        ((TriStateCheckBox) limitLengthBox).setState(limitLengthToUse);
 
         final String maxCharsToUse = getMaxCharsToUse(widgetsAndProperties.values());
         maxCharsBox.setText(maxCharsToUse);
@@ -174,7 +174,7 @@ public class TextFieldFieldPanel extends JPanel {
         }
     }
 
-    private TristateCheckBox.State getAllowedMultipleLinesToUse(final Collection<Element> widgetElements) {
+    private TriStateCheckBox.State getAllowedMultipleLinesToUse(final Collection<Element> widgetElements) {
         final List<Boolean> allowMultipleLinesValues = widgetElements.stream()
                 .map(element -> {
                     final Element fieldProperties = (Element) element.getElementsByTagName("field")
@@ -190,7 +190,7 @@ public class TextFieldFieldPanel extends JPanel {
         return getTriStateValue(allowMultipleLinesValues);
     }
 
-    private TristateCheckBox.State getLimitLengthToUse(final Collection<Element> widgetElements) {
+    private TriStateCheckBox.State getLimitLengthToUse(final Collection<Element> widgetElements) {
         final List<Boolean> limitLengthValues = widgetElements.stream()
                 .map(element -> {
                     final Element fieldProperties = (Element) element.getElementsByTagName("field")
@@ -205,17 +205,17 @@ public class TextFieldFieldPanel extends JPanel {
         return getTriStateValue(limitLengthValues);
     }
 
-    private TristateCheckBox.State getTriStateValue(final List<Boolean> valueList) {
+    private TriStateCheckBox.State getTriStateValue(final List<Boolean> valueList) {
         final boolean listContainsOnlyEqualValues = Collections
                 .frequency(valueList, valueList.get(0)) == valueList.size();
 
         if (listContainsOnlyEqualValues) {
             if (Boolean.TRUE.equals(valueList.get(0))) {
-                return TristateCheckBox.SELECTED;
+                return TriStateCheckBox.SELECTED;
             }
-            return TristateCheckBox.NOT_SELECTED;
+            return TriStateCheckBox.NOT_SELECTED;
         }
-        return TristateCheckBox.DONT_CARE;
+        return TriStateCheckBox.DONT_CARE;
     }
 
     private String getMaxCharsToUse(final Collection<Element> widgetElements) {
@@ -236,7 +236,7 @@ public class TextFieldFieldPanel extends JPanel {
     }
 
     private void saveLimitLength(final MouseEvent event) {
-        final TristateCheckBox.State state = (((TristateCheckBox) limitLengthBox).getState());
+        final TriStateCheckBox.State state = (((TriStateCheckBox) limitLengthBox).getState());
 
         for (final Element propertiesElement: widgetsAndProperties.values()) {
             final List<Element> objectProperties = XMLUtils.getElementsFromNodeList(propertiesElement.getChildNodes());
@@ -249,7 +249,7 @@ public class TextFieldFieldPanel extends JPanel {
     }
 
     private void saveAllowedMultipleLines(final MouseEvent event) {
-        final TristateCheckBox.State state = (((TristateCheckBox) allowMultipleLinesBox).getState());
+        final TriStateCheckBox.State state = (((TriStateCheckBox) allowMultipleLinesBox).getState());
 
         for (final Element propertiesElement: widgetsAndProperties.values()) {
             final List<Element> objectProperties = XMLUtils.getElementsFromNodeList(propertiesElement.getChildNodes());
@@ -262,14 +262,14 @@ public class TextFieldFieldPanel extends JPanel {
     }
 
     private void saveTriStateValue(
-            final TristateCheckBox.State state,
+            final TriStateCheckBox.State state,
             final Element element) {
-        if (state == TristateCheckBox.DONT_CARE) {
+        if (state == TriStateCheckBox.DONT_CARE) {
             return;
         }
 
         final Attr valueNode = element.getAttributeNode("value");
-        if (state == TristateCheckBox.SELECTED) {
+        if (state == TriStateCheckBox.SELECTED) {
              valueNode.setValue("true");
         } else {
             valueNode.setValue("false");

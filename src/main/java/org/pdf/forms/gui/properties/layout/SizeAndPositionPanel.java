@@ -5,7 +5,7 @@ import static org.jdesktop.layout.GroupLayout.DEFAULT_SIZE;
 import static org.jdesktop.layout.GroupLayout.LEADING;
 import static org.jdesktop.layout.GroupLayout.PREFERRED_SIZE;
 import static org.jdesktop.layout.LayoutStyle.RELATED;
-import static org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBox.NOT_SELECTED;
+import static org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TriStateCheckBox.NOT_SELECTED;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -27,7 +27,7 @@ import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.Rule;
 import org.pdf.forms.gui.properties.PropertyChanger;
-import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TristateCheckBox;
+import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TriStateCheckBox;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.slf4j.Logger;
@@ -59,10 +59,10 @@ public class SizeAndPositionPanel extends JPanel {
 
     private JTextField xBox;
     private JTextField widthBox;
-    private TristateCheckBox xExpandToFitBox;
+    private TriStateCheckBox xExpandToFitBox;
     private JTextField heightBox;
     private JTextField yBox;
-    private TristateCheckBox yExpandToFitBox;
+    private TriStateCheckBox yExpandToFitBox;
     private JComboBox<String> anchorLocationBox;
 
     private JToggleButton rotate0Degree;
@@ -100,7 +100,7 @@ public class SizeAndPositionPanel extends JPanel {
             }
         });
 
-        xExpandToFitBox = new TristateCheckBox(EXPAND_TO_FIT, NOT_SELECTED, this::checkboxClicked);
+        xExpandToFitBox = new TriStateCheckBox(EXPAND_TO_FIT, NOT_SELECTED, this::checkboxClicked);
         //xExpandToFitBox.setText(EXPAND_TO_FIT);
         xExpandToFitBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         xExpandToFitBox.setEnabled(false);
@@ -126,7 +126,7 @@ public class SizeAndPositionPanel extends JPanel {
             }
         });
 
-        yExpandToFitBox = new TristateCheckBox(EXPAND_TO_FIT, NOT_SELECTED, this::checkboxClicked);
+        yExpandToFitBox = new TriStateCheckBox(EXPAND_TO_FIT, NOT_SELECTED, this::checkboxClicked);
         //yExpandToFitBox.setText(EXPAND_TO_FIT);
         yExpandToFitBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         yExpandToFitBox.setEnabled(false);
@@ -577,23 +577,23 @@ public class SizeAndPositionPanel extends JPanel {
     }
 
     private void checkboxClicked(final MouseEvent mouseEvent) {
-        final TristateCheckBox.State xExpandState = xExpandToFitBox.getState();
-        final TristateCheckBox.State yExpandState = yExpandToFitBox.getState();
+        final TriStateCheckBox.State xExpandState = xExpandToFitBox.getState();
+        final TriStateCheckBox.State yExpandState = yExpandToFitBox.getState();
 
         widgetsAndProperties.forEach((key, widgetProperties) -> {
             final List<Element> layoutProperties = XMLUtils.getElementsFromNodeList(widgetProperties.getChildNodes());
             final List<Element> sizeAndPosition = XMLUtils.getElementsFromNodeList(layoutProperties.get(0)
                     .getChildNodes());
 
-            if (xExpandState != TristateCheckBox.DONT_CARE) {
+            if (xExpandState != TriStateCheckBox.DONT_CARE) {
                 final Element xExpand = sizeAndPosition.get(4);
-                final String value = String.valueOf(xExpandState == TristateCheckBox.SELECTED);
+                final String value = String.valueOf(xExpandState == TriStateCheckBox.SELECTED);
                 xExpand.getAttributeNode("value").setValue(value);
             }
 
-            if (yExpandState != TristateCheckBox.DONT_CARE) {
+            if (yExpandState != TriStateCheckBox.DONT_CARE) {
                 final Element yExpand = sizeAndPosition.get(5);
-                final String value = String.valueOf(yExpandState == TristateCheckBox.SELECTED);
+                final String value = String.valueOf(yExpandState == TriStateCheckBox.SELECTED);
                 yExpand.getAttributeNode("value").setValue(value);
             }
         });
