@@ -18,7 +18,7 @@ import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.commands.ImportPdfCommand;
 import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.pdf.forms.readers.des.DesignerPropertiesFile;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;

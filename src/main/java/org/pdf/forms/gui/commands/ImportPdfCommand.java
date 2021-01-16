@@ -12,7 +12,7 @@ import org.jpedal.exception.PdfException;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.PDFImportChooser;
-import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.pdf.forms.readers.des.DesignerPropertiesFile;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

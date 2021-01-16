@@ -11,7 +11,7 @@ import javax.swing.*;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.VLFrame;
 import org.pdf.forms.gui.windows.SplashWindow;
-import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.pdf.forms.readers.des.DesignerPropertiesFile;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

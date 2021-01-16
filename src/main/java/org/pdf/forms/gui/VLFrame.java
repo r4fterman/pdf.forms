@@ -41,7 +41,7 @@ import org.pdf.forms.gui.toolbars.ReportToolbar;
 import org.pdf.forms.gui.toolbars.WidgetAlignmentAndOrderToolbar;
 import org.pdf.forms.gui.toolbars.WidgetPropertiesToolBar;
 import org.pdf.forms.gui.windows.SplashWindow;
-import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.pdf.forms.readers.des.DesignerPropertiesFile;
 import org.pdf.forms.readers.configuration.MenuConfigurationFile;
 import org.pdf.forms.readers.configuration.WindowConfigurationFile;
 import org.pdf.forms.widgets.IWidget;

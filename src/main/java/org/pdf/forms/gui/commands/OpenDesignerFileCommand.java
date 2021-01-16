@@ -20,7 +20,7 @@ import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.FileFinder;
-import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.pdf.forms.readers.des.DesignerPropertiesFile;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.ButtonGroup;
 import org.pdf.forms.widgets.GroupWidget;

@@ -7,7 +7,7 @@ import java.util.Map;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.pdf.forms.readers.des.DesignerPropertiesFile;
 import org.pdf.forms.widgets.utils.WidgetAlignmentAndOrder;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 
