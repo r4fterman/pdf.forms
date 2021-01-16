@@ -6,7 +6,7 @@ import java.io.File;
 import javax.swing.*;
 
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.CustomWidgetsFile;
+import org.pdf.forms.readers.custom.CustomWidgetsFile;
 
 class AddSelectionToLibraryCommand implements Command {
 

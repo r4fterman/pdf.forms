@@ -1,4 +1,4 @@
-package org.pdf.forms.utils;
+package org.pdf.forms.readers.custom;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +95,7 @@ public final class CustomWidgetsFile {
 
         try {
             writeDoc();
-        } catch (TransformerException e) {
+        } catch (final TransformerException e) {
             logger.error("Error writing custom widget file", e);
         }
     }
@@ -158,7 +159,7 @@ public final class CustomWidgetsFile {
             }
             attrs = element.getAttributes();
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Error generating properties file", e);
             return "";
         }
@@ -175,7 +176,7 @@ public final class CustomWidgetsFile {
             element.setAttribute("value", newValue);
 
             writeDoc();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Error setting value in properties file", e);
         }
     }
@@ -195,8 +196,8 @@ public final class CustomWidgetsFile {
     void updateElementInModel(
             final Document document,
             final String tagName) {
-        Element propertiesElement;
-        NodeList elements = document.getElementsByTagName("properties");
+        final Element propertiesElement;
+        final NodeList elements = document.getElementsByTagName("properties");
         if (elements.getLength() == 0) {
             propertiesElement = addPropertiesElement(document);
         } else {
