@@ -2,6 +2,7 @@ package org.pdf.forms.readers.custom;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 import java.nio.file.Path;
 import java.util.Set;
@@ -19,15 +20,15 @@ import org.pdf.forms.widgets.components.PdfCaption;
 class CustomWidgetsFileTest {
 
     @Test
-    void checkAllElementsPresent_should_return_true_for_new_created_properties_file(@TempDir final Path configDir) {
-        final CustomWidgetsFile customWidgetFile = CustomWidgetsFile.getInstance(configDir.toFile());
+    void read_content_from_file(@TempDir final Path configDir) {
+        final CustomWidgetsFile customWidgetFile = new CustomWidgetsFile(configDir.toFile());
 
-        assertThat(customWidgetFile.checkForModelUpdate(customWidgetFile.getDocument()), is(false));
+        assertThat(customWidgetFile.getCustomComponents(), is(notNullValue()));
     }
 
     @Test
     void isNameTaken_should_always_return_false_on_new_created_properties_file(@TempDir final Path configDir) {
-        final CustomWidgetsFile customWidgetFile = CustomWidgetsFile.getInstance(configDir.toFile());
+        final CustomWidgetsFile customWidgetFile = new CustomWidgetsFile(configDir.toFile());
 
         assertThat(customWidgetFile.isNameTaken("foo"), is(false));
     }
@@ -36,7 +37,7 @@ class CustomWidgetsFileTest {
     void addCustomWidget_should_add_widget_component(@TempDir final Path configDir) {
         final TextWidget textWidget = createCustomWidget(configDir);
 
-        final CustomWidgetsFile customWidgetFile = CustomWidgetsFile.getInstance(configDir.toFile());
+        final CustomWidgetsFile customWidgetFile = new CustomWidgetsFile(configDir.toFile());
         customWidgetFile.addCustomWidget("foo", Set.of(textWidget));
 
         assertThat(customWidgetFile.isNameTaken("foo"), is(true));
