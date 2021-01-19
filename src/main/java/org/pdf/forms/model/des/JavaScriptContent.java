@@ -1,7 +1,9 @@
 package org.pdf.forms.model.des;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
@@ -84,14 +86,14 @@ public class JavaScriptContent {
     }
 
     public Map<String, String> getEvents() {
-        return Map.of(
-                "mouseDown", getMouseDown(),
-                "mouseEnter", getMouseEnter(),
-                "mouseExit", getMouseExit(),
-                "mouseUp", getMouseUp(),
-                "change", getChange(),
-                "keystroke", getKeystroke()
-        );
+        final Map<String, String> events = new HashMap<>();
+        Optional.ofNullable(getMouseDown()).ifPresent(event -> events.put("mouseDown", event));
+        Optional.ofNullable(getMouseEnter()).ifPresent(event -> events.put("mouseEnter", event));
+        Optional.ofNullable(getMouseExit()).ifPresent(event -> events.put("mouseExit", event));
+        Optional.ofNullable(getMouseUp()).ifPresent(event -> events.put("mouseUp", event));
+        Optional.ofNullable(getChange()).ifPresent(event -> events.put("change", event));
+        Optional.ofNullable(getKeystroke()).ifPresent(event -> events.put("keystroke", event));
+        return Map.copyOf(events);
     }
 
     public void setEventValue(

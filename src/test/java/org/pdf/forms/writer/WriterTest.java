@@ -64,11 +64,11 @@ class WriterTest extends EasyMockSupport {
         final File source = getFile();
         final File target = createTargetFile(path, source);
 
-
-        new OpenDesignerFileCommand(mainFrame, new Version("DEV-TEST"), widgetFactory, designerPropertiesFile).openDesignerFile(target.getAbsolutePath());
+        new OpenDesignerFileCommand(mainFrame, new Version("DEV-TEST"), widgetFactory, designerPropertiesFile)
+                .openDesignerFile(target.getAbsolutePath());
 
         final File outputFile = new File(path.toFile(), "output.des");
-        final DesDocument designerDocument = new DesignerProjectFileReader(path.toFile()).getDesDocument();
+        final DesDocument designerDocument = new DesignerProjectFileReader(target).getDesDocument();
 
         final List<IWidget> page1Widgets = mainFrame.getFormsDocument().getPage(1).getWidgets();
         final List<IWidget> page2Widgets = mainFrame.getFormsDocument().getPage(2).getWidgets();

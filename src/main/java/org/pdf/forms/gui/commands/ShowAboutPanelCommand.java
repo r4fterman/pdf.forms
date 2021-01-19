@@ -1,15 +1,15 @@
 package org.pdf.forms.gui.commands;
 
-import java.awt.Component;
+import java.awt.*;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.AboutPanel;
 
 class ShowAboutPanelCommand implements Command {
 
-    private IMainFrame mainFrame;
+    private final IMainFrame mainFrame;
 
     ShowAboutPanelCommand(final IMainFrame mainFrame) {
         this.mainFrame = mainFrame;

@@ -168,8 +168,6 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
             case "Beveled":
                 baseField.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
                 break;
-            case "None":
-                return;
             default:
                 return;
         }

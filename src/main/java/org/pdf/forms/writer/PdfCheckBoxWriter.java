@@ -1,8 +1,6 @@
 package org.pdf.forms.writer;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.*;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -159,8 +157,6 @@ public class PdfCheckBoxWriter implements PdfComponentWriter {
             case "Beveled":
                 tf.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
                 break;
-            case "None":
-                return;
             default:
                 return;
         }

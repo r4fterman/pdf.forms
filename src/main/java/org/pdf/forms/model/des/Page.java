@@ -80,6 +80,18 @@ public class Page {
         return getProperty("pdfpagenumber");
     }
 
+    public Optional<String> getPageName() {
+        return getProperty("pagename");
+    }
+
+    public String getPageType() {
+        return getProperty("pagetype")
+                .orElseGet(() ->
+                        getPdfFileLocation()
+                        .map(location -> "pdfpage")
+                        .orElse("simplepage"));
+    }
+
     private Optional<String> getProperty(final String name) {
         return getProperty().stream()
                 .filter(p -> p.getName().equals(name))

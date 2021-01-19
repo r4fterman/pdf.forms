@@ -9,7 +9,7 @@ import org.pdf.forms.widgets.IWidget;
 
 class UnGroupCommand implements Command {
 
-    private IMainFrame mainFrame;
+    private final IMainFrame mainFrame;
 
     UnGroupCommand(final IMainFrame mainFrame) {
         this.mainFrame = mainFrame;

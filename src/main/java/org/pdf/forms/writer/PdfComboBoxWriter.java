@@ -1,8 +1,6 @@
 package org.pdf.forms.writer;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +31,7 @@ import com.itextpdf.text.pdf.TextField;
 
 public class PdfComboBoxWriter implements PdfComponentWriter {
 
-    private Logger logger = LoggerFactory.getLogger(PdfComboBoxWriter.class);
+    private final Logger logger = LoggerFactory.getLogger(PdfComboBoxWriter.class);
 
     private final Set<String> fontSubstitutions = new HashSet<>();
     private final FontHandler fontHandler;
@@ -180,8 +178,6 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
             case "Beveled":
                 tf.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
                 break;
-            case "None":
-                return;
             default:
                 return;
         }

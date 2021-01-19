@@ -98,7 +98,7 @@ public class Writer {
         final List<org.pdf.forms.model.des.Page> pages = designerDocument.getPage();
         final Optional<String> javaScript = getJavaScript(designerDocument.getJavaScript());
         final PdfDocumentLayout pdfDocumentLayout = getPdfDocumentLayout(pages);
-        if (pages.isEmpty()) {
+        if (pdfDocumentLayout.getPdfPages().isEmpty()) {
             logger.info("write: PDF page list is empty.");
             writeModelToPDF(fileToWriteTo, widgetsByPageNumber, pages, javaScript);
         } else {
@@ -128,19 +128,22 @@ public class Writer {
             addWidgets(writer, widgetsForFirstPage, document.getPageSize(), 0, globalPdfWriter);
 
             if (widgetsForFirstPage.isEmpty()) {
+                logger.info("Widgets for page 1 are empty.");
                 writer.setPageEmpty(false);
             }
 
             for (int pageNumber = 1; pageNumber < pages.size(); pageNumber++) {
                 final int currentPage = pageNumber + 1;
-                document.setPageSize(getPageSize(pages, currentPage));
+                final Rectangle pageSize = getPageSize(pages, currentPage);
+                document.setPageSize(pageSize);
 
                 document.newPage();
 
-                final List<IWidget> widgetForPage = widgetsByPageNumber.get(pageNumber);
-                addWidgets(writer, widgetForPage, document.getPageSize(), currentPage, globalPdfWriter);
+                final List<IWidget> widgetsForPage = widgetsByPageNumber.get(pageNumber);
+                addWidgets(writer, widgetsForPage, document.getPageSize(), currentPage, globalPdfWriter);
 
-                if (widgetForPage.isEmpty()) {
+                if (widgetsForPage.isEmpty()) {
+                    logger.info("Widget for page {} are empty.", currentPage);
                     writer.setPageEmpty(false);
                 }
             }
@@ -157,7 +160,7 @@ public class Writer {
             final File fileToWriteTo,
             final Map<Integer, List<IWidget>> widgetsByPageNumber,
             final List<org.pdf.forms.model.des.Page> pages,
-            final Optional<String> documentJavaScript,
+            final Optional<String> javaScript,
             final PdfDocumentLayout pdfDocumentLayout) {
         // we've got pages imported from other PDF's
         try (FileOutputStream fos = new FileOutputStream(fileToWriteTo)) {
@@ -194,7 +197,7 @@ public class Writer {
                 }
             }
 
-            documentJavaScript.ifPresent(stamper::addJavaScript);
+            javaScript.ifPresent(stamper::addJavaScript);
 
             stamper.close();
         } catch (IOException | DocumentException e) {

@@ -94,8 +94,6 @@ public class PdfButtonWriter implements PdfComponentWriter {
             case "Beveled":
                 baseField.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
                 break;
-            case "None":
-                return;
             default:
                 return;
         }

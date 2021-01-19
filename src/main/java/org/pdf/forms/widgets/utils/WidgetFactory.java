@@ -1,19 +1,13 @@
 package org.pdf.forms.widgets.utils;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 import org.pdf.forms.document.Page;
 import org.pdf.forms.fonts.FontHandler;
@@ -161,7 +155,8 @@ public class WidgetFactory {
             final Element root,
             final Rectangle bounds) {
         return factoryMethods.getOrDefault(widgetToAdd, (r, b) -> {
-            logger.warn("Manual exit because of impossible situation in WidgetFactory, trying to add widget type {}", widgetToAdd);
+            logger.warn("Manual exit because of impossible situation in WidgetFactory, trying to add widget type {}",
+                    widgetToAdd);
             return null;
         }).apply(root, bounds);
     }
@@ -182,7 +177,10 @@ public class WidgetFactory {
     private IWidget createTextField(
             final Element root,
             final Rectangle bounds) {
-        final SplitComponent tf = new SplitComponent("Text Field", new PdfTextField("Text Field", fontHandler), SplitComponent.CAPTION_LEFT, fontHandler);
+        final SplitComponent tf = new SplitComponent("Text Field",
+                new PdfTextField("Text Field", fontHandler),
+                SplitComponent.CAPTION_LEFT,
+                fontHandler);
 
         final JLabel label = getComponentAsLabel(tf, getSize(150, 20, bounds));
         if (root == null) {
@@ -223,7 +221,10 @@ public class WidgetFactory {
             final Rectangle bounds) {
         final PdfComboBox pdfComboBox = new PdfComboBox(fontHandler);
 
-        final SplitComponent combo = new SplitComponent("Drop-down list", pdfComboBox, SplitComponent.CAPTION_LEFT, fontHandler);
+        final SplitComponent combo = new SplitComponent("Drop-down list",
+                pdfComboBox,
+                SplitComponent.CAPTION_LEFT,
+                fontHandler);
         final JLabel label = getComponentAsLabel(combo, getSize(200, 20, bounds));
         if (root == null) {
             return new ComboBoxWidget(IWidget.COMBO_BOX, combo, label, fontHandler);
@@ -263,7 +264,10 @@ public class WidgetFactory {
         final PdfRadioButton pdfRadioButton = new PdfRadioButton();
         pdfRadioButton.setBackground(IDesigner.PAGE_COLOR);
 
-        final SplitComponent radioButton = new SplitComponent("Radio Button", pdfRadioButton, SplitComponent.CAPTION_RIGHT, fontHandler);
+        final SplitComponent radioButton = new SplitComponent("Radio Button",
+                pdfRadioButton,
+                SplitComponent.CAPTION_RIGHT,
+                fontHandler);
         final JLabel label = getComponentAsLabel(radioButton, getSize(200, 20, bounds));
         if (root == null) {
             return new RadioButtonWidget(IWidget.RADIO_BUTTON, radioButton, label, fontHandler);
@@ -280,12 +284,12 @@ public class WidgetFactory {
             return buttonGroup;
         }
 
-        ButtonGroup buttonGroup = page.getCheckBoxGroup(groupName);
-        if (buttonGroup == null) {
-            buttonGroup = new ButtonGroup(groupName);
-            page.getCheckBoxGroups().add(buttonGroup);
-        }
-        return buttonGroup;
+        return page.getCheckBoxGroup(groupName)
+                .orElseGet(() -> {
+                    final ButtonGroup buttonGroup = new ButtonGroup(groupName);
+                    page.getCheckBoxGroups().add(buttonGroup);
+                    return buttonGroup;
+                });
     }
 
     private Dimension getSize(
@@ -293,23 +297,35 @@ public class WidgetFactory {
             final int defaultHeight,
             final Rectangle bounds) {
         return Optional.ofNullable(bounds)
-                .map(b -> {
-                    final int width;
-                    if (bounds.width != 0) {
-                        width = bounds.width;
-                    } else {
-                        width = defaultWidth;
-                    }
-
-                    final int height;
-                    if (bounds.height != 0) {
-                        height = bounds.height;
-                    } else {
-                        height = defaultHeight;
-                    }
-                    return new Dimension(width, height);
-                })
+                .map(b -> convertToDimension(defaultWidth, defaultHeight, b))
                 .orElseGet(() -> new Dimension(defaultWidth, defaultHeight));
+    }
+
+    private Dimension convertToDimension(
+            final int defaultWidth,
+            final int defaultHeight,
+            final Rectangle bounds) {
+        final int width = getWidth(bounds, defaultWidth);
+        final int height = getHeight(bounds, defaultHeight);
+        return new Dimension(width, height);
+    }
+
+    private int getWidth(
+            final Rectangle bounds,
+            final int defaultWidth) {
+        if (bounds.width != 0) {
+            return bounds.width;
+        }
+        return defaultWidth;
+    }
+
+    private int getHeight(
+            final Rectangle bounds,
+            final int defaultHeight) {
+        if (bounds.height != 0) {
+            return bounds.height;
+        }
+        return defaultHeight;
     }
 
 }

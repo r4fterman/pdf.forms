@@ -186,8 +186,6 @@ public class PdfListBoxWriter implements PdfComponentWriter {
             case "Beveled":
                 baseField.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
                 break;
-            case "None":
-                return;
             default:
                 return;
         }
@@ -199,10 +197,10 @@ public class PdfListBoxWriter implements PdfComponentWriter {
     private Rectangle convertJavaCoordsToPdfCoords(
             final java.awt.Rectangle bounds,
             final Rectangle pageSize) {
-        final float javaX1 = bounds.x - IMainFrame.INSET;
-        final float javaY1 = bounds.y - IMainFrame.INSET;
+        final int javaX1 = bounds.x - IMainFrame.INSET;
+        final int javaY1 = bounds.y - IMainFrame.INSET;
 
-        final float javaX2 = javaX1 + bounds.width;
+        final int javaX2 = javaX1 + bounds.width;
 
         final float pdfY1 = pageSize.getHeight() - javaY1 - bounds.height;
         final float pdfY2 = pdfY1 + bounds.height;
