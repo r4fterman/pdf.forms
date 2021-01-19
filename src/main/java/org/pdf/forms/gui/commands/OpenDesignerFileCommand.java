@@ -20,7 +20,9 @@ import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.FileFinder;
-import org.pdf.forms.readers.des.DesignerPropertiesFile;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.des.DesignerProjectFileReader;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.ButtonGroup;
 import org.pdf.forms.widgets.GroupWidget;
@@ -36,14 +38,14 @@ public class OpenDesignerFileCommand implements Command {
     private final Logger logger = LoggerFactory.getLogger(OpenDesignerFileCommand.class);
 
     private final IMainFrame mainFrame;
-    private final String version;
+    private final Version version;
     private final JMenuItem[] recentDesignerDocuments;
     private final WidgetFactory widgetFactory;
-    private DesignerPropertiesFile designerPropertiesFile;
+    private final DesignerPropertiesFile designerPropertiesFile;
 
     public OpenDesignerFileCommand(
             final IMainFrame mainFrame,
-            final String version,
+            final Version version,
             final WidgetFactory widgetFactory,
             final DesignerPropertiesFile designerPropertiesFile) {
         this.mainFrame = mainFrame;
@@ -91,14 +93,14 @@ public class OpenDesignerFileCommand implements Command {
 
     private void readDesignerFile(final String designerFileToOpen) {
         try {
+            mainFrame.setFormsDocument(new FormsDocument(new DesignerProjectFileReader(new File(designerFileToOpen))
+                    .getDesDocument()));
+
             final Element root = readDesignerDocument(designerFileToOpen);
-
-            mainFrame.setFormsDocument(new FormsDocument(root));
-
             final List<Element> pages = XMLUtils.getElementsFromNodeList(root.getElementsByTagName("page"));
 
             final Map<String, String> changedFiles = getChangedPdfFileLocations(pages);
-            for (final Element page : pages) {
+            for (final Element page: pages) {
                 final Optional<String> pageType = XMLUtils.getAttributeValueFromChildElement(page, "pagetype");
                 final Optional<String> pageName = XMLUtils.getAttributeValueFromChildElement(page, "pagename");
 
@@ -129,20 +131,21 @@ public class OpenDesignerFileCommand implements Command {
                 addPage(mainFrame.getCurrentPage(), newPage);
 
                 final List<IWidget> widgets = getWidgetsFromXMLElement(page);
-                for (final IWidget widget : widgets) {
+                for (final IWidget widget: widgets) {
                     mainFrame.addWidgetToHierarchy(widget);
                 }
                 newPage.setWidgets(widgets);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Error opening designer file {}", designerFileToOpen, e);
         }
     }
 
     private Element readDesignerDocument(final String fileName) throws ParserConfigurationException, IOException, SAXException {
-        if (fileName.startsWith("http:") || fileName.startsWith("file:")) {
-            return XMLUtils.readDocumentFromUri(fileName).getDocumentElement();
-        }
+//        if (fileName.startsWith("http:") || fileName.startsWith("file:")) {
+        //todo: read from url
+        //return XMLUtils.readDocumentFromUri(fileName).getDocumentElement();
+//        }
         return XMLUtils.readDocument(new File(fileName)).getDocumentElement();
     }
 
@@ -241,7 +244,7 @@ public class OpenDesignerFileCommand implements Command {
                 .collect(toUnmodifiableList());
 
         final List<IWidget> widgets = new ArrayList<>();
-        for (final Element widgetElement : widgetsInPageList) {
+        for (final Element widgetElement: widgetsInPageList) {
             XMLUtils.getAttributeValueFromChildElement(widgetElement, "type")
                     .map(type -> IWidget.WIDGET_TYPES.getOrDefault(type.toLowerCase(), IWidget.NONE))
                     .map(widgetType -> createWidgetByType(widgetElement, widgetType))
@@ -256,7 +259,8 @@ public class OpenDesignerFileCommand implements Command {
         //todo: move to WidgetFactory
         if (widgetType == IWidget.GROUP) {
             final GroupWidget widget = new GroupWidget();
-            final List<IWidget> widgetsInGroup = getWidgetsFromXMLElement(XMLUtils.getElementsFromNodeList(widgetElement.getElementsByTagName("widgets")).get(0));
+            final List<IWidget> widgetsInGroup = getWidgetsFromXMLElement(XMLUtils
+                    .getElementsFromNodeList(widgetElement.getElementsByTagName("widgets")).get(0));
             widget.setWidgetsInGroup(widgetsInGroup);
             return widget;
         }

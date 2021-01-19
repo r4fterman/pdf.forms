@@ -11,13 +11,13 @@ import org.pdf.forms.readers.XmlJavaObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PropertiesFileReader {
+public class CustomPropertiesFileReader {
 
-    private final Logger logger = LoggerFactory.getLogger(PropertiesFileReader.class);
+    private final Logger logger = LoggerFactory.getLogger(CustomPropertiesFileReader.class);
 
     private final File propertiesFile;
 
-    public PropertiesFileReader(final File propertiesFile) {
+    public CustomPropertiesFileReader(final File propertiesFile) {
         this.propertiesFile = propertiesFile;
     }
 

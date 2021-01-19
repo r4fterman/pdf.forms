@@ -14,11 +14,11 @@ import java.util.Optional;
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.pdf.forms.Configuration;
 import org.pdf.forms.gui.commands.ImportPdfCommand;
 import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.readers.des.DesignerPropertiesFile;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
@@ -36,23 +36,20 @@ public class DefaultTransferHandler extends TransferHandler {
 
     private final IDesigner designerPanel;
     private final IMainFrame mainFrame;
-    private final String version;
+    private final Version version;
     private final WidgetFactory widgetFactory;
-    private final Configuration configuration;
     private final DesignerPropertiesFile designerPropertiesFile;
 
     DefaultTransferHandler(
             final IDesigner designerPanel,
             final IMainFrame mainFrame,
-            final String version,
+            final Version version,
             final WidgetFactory widgetFactory,
-            final Configuration configuration,
             final DesignerPropertiesFile designerPropertiesFile) {
         this.designerPanel = designerPanel;
         this.mainFrame = mainFrame;
         this.version = version;
         this.widgetFactory = widgetFactory;
-        this.configuration = configuration;
         this.designerPropertiesFile = designerPropertiesFile;
     }
 

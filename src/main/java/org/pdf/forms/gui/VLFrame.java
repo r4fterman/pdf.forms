@@ -24,8 +24,6 @@ import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.commands.FileUtil;
 import org.pdf.forms.gui.commands.ImportPdfCommand;
 import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
-import org.pdf.forms.model.configuration.MenuConfiguration;
-import org.pdf.forms.model.configuration.WindowConfiguration;
 import org.pdf.forms.gui.designer.Designer;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.DesignerPanel;
@@ -41,9 +39,12 @@ import org.pdf.forms.gui.toolbars.ReportToolbar;
 import org.pdf.forms.gui.toolbars.WidgetAlignmentAndOrderToolbar;
 import org.pdf.forms.gui.toolbars.WidgetPropertiesToolBar;
 import org.pdf.forms.gui.windows.SplashWindow;
-import org.pdf.forms.readers.des.DesignerPropertiesFile;
+import org.pdf.forms.model.configuration.MenuConfiguration;
+import org.pdf.forms.model.configuration.WindowConfiguration;
+import org.pdf.forms.model.des.Version;
 import org.pdf.forms.readers.configuration.MenuConfigurationFile;
 import org.pdf.forms.readers.configuration.WindowConfigurationFile;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetArrays;
 import org.pdf.forms.widgets.utils.WidgetFactory;
@@ -61,7 +62,7 @@ import com.vlsolutions.swing.toolbars.ToolBarPanel;
 
 public class VLFrame extends JFrame implements IMainFrame {
 
-    private final String version;
+    private final Version version;
     private final WidgetFactory widgetFactory;
     private final Configuration configuration;
     private final DesignerPropertiesFile designerPropertiesFile;
@@ -95,7 +96,7 @@ public class VLFrame extends JFrame implements IMainFrame {
 
     public VLFrame(
             final SplashWindow splashWindow,
-            final String version,
+            final Version version,
             final FontHandler fontHandler,
             final WidgetFactory widgetFactory,
             final Configuration configuration,
@@ -211,7 +212,6 @@ public class VLFrame extends JFrame implements IMainFrame {
                 this,
                 version,
                 this.widgetFactory,
-                configuration,
                 designerPropertiesFile);
         designer.setTransferHandler(dth);
 
@@ -359,7 +359,7 @@ public class VLFrame extends JFrame implements IMainFrame {
     public void addPageToHierarchyPanel(
             final int pdfPage,
             final Page newPage) {
-        hierarchyPanel.addPage(pdfPage, newPage);
+        hierarchyPanel.addPageToHierarchy(pdfPage, newPage);
     }
 
     @Override

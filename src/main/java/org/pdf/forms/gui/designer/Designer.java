@@ -20,7 +20,8 @@ import org.pdf.forms.gui.designer.gui.Rule;
 import org.pdf.forms.gui.designer.listeners.DesignerKeyListener;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseListener;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
-import org.pdf.forms.readers.des.DesignerPropertiesFile;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
@@ -62,7 +63,7 @@ public class Designer extends PdfDecoder implements IDesigner {
             final Rule horizontalRuler,
             final Rule verticalRuler,
             final IMainFrame mainFrame,
-            final String version,
+            final Version version,
             final FontHandler fontHandler,
             final WidgetFactory widgetFactory,
             final Configuration configuration,

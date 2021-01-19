@@ -7,7 +7,8 @@ import java.util.Map;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.readers.des.DesignerPropertiesFile;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.utils.WidgetAlignmentAndOrder;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 
@@ -118,7 +119,7 @@ public class Commands {
 
     public Commands(
             final IMainFrame mainFrame,
-            final String version,
+            final Version version,
             final FontHandler fontHandler,
             final WidgetFactory widgetFactory,
             final Configuration configuration,

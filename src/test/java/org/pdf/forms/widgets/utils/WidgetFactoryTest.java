@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.fonts.FontHandler;
-import org.pdf.forms.readers.des.DesignerPropertiesFile;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.CheckBoxWidget;
 import org.pdf.forms.widgets.ComboBoxWidget;
 import org.pdf.forms.widgets.IWidget;

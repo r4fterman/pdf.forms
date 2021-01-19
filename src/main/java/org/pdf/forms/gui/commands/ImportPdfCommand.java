@@ -12,7 +12,8 @@ import org.jpedal.exception.PdfException;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.PDFImportChooser;
-import org.pdf.forms.readers.des.DesignerPropertiesFile;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ public class ImportPdfCommand implements Command {
     private final Logger logger = LoggerFactory.getLogger(ImportPdfCommand.class);
 
     private final IMainFrame mainFrame;
-    private final String version;
+    private final Version version;
     private final WidgetFactory widgetFactory;
     private final DesignerPropertiesFile designerPropertiesFile;
 
@@ -30,7 +31,7 @@ public class ImportPdfCommand implements Command {
 
     public ImportPdfCommand(
             final IMainFrame mainFrame,
-            final String version,
+            final Version version,
             final WidgetFactory widgetFactory,
             final DesignerPropertiesFile designerPropertiesFile) {
         this.mainFrame = mainFrame;

@@ -12,6 +12,7 @@ import org.jpedal.objects.PdfPageData;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.PDFImportChooser;
+import org.pdf.forms.model.des.Version;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.pdf.forms.widgets.utils.WidgetParser;
@@ -23,7 +24,7 @@ class PDFImportWorker extends SwingWorker {
     private final Logger logger = LoggerFactory.getLogger(PDFImportWorker.class);
 
     private final IMainFrame mainFrame;
-    private final String version;
+    private final Version version;
     private final WidgetFactory widgetFactory;
     private final int importType;
     private final int pageCount;
@@ -32,7 +33,7 @@ class PDFImportWorker extends SwingWorker {
 
     PDFImportWorker(
             final IMainFrame mainFrame,
-            final String version,
+            final Version version,
             final WidgetFactory widgetFactory,
             final int importType,
             final int pageCount,
@@ -121,7 +122,7 @@ class PDFImportWorker extends SwingWorker {
         }
 
         mainFrame.setCurrentDesignerFileName("Untitled");
-        mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version);
+        mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version.getVersion());
         return currentLastPage;
     }
 

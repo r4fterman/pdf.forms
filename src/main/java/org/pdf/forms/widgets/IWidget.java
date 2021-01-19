@@ -1,10 +1,12 @@
 package org.pdf.forms.widgets;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.*;
+
+import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -155,4 +157,6 @@ public interface IWidget {
     void setAllProperties();
 
     int getArrayNumber();
+
+    JavaScriptContent getJavaScript();
 }

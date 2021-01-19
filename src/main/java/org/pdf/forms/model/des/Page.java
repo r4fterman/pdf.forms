@@ -3,6 +3,7 @@ package org.pdf.forms.model.des;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -69,6 +70,21 @@ public class Page {
 
     public void setCheckBoxGroups(final CheckBoxGroups checkBoxGroups) {
         this.checkBoxGroups = checkBoxGroups;
+    }
+
+    public Optional<String> getPdfFileLocation() {
+        return getProperty("pdffilelocation");
+    }
+
+    public Optional<String> getPdfPageNumber() {
+        return getProperty("pdfpagenumber");
+    }
+
+    private Optional<String> getProperty(final String name) {
+        return getProperty().stream()
+                .filter(p -> p.getName().equals(name))
+                .findFirst()
+                .map(Property::getValue);
     }
 
     @Override

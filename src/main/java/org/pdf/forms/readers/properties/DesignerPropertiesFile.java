@@ -1,4 +1,4 @@
-package org.pdf.forms.readers.des;
+package org.pdf.forms.readers.properties;
 
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.Collectors.toUnmodifiableMap;
@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 import org.pdf.forms.model.properties.CustomProperties;
 import org.pdf.forms.model.properties.Font;
-import org.pdf.forms.readers.properties.PropertiesFileReader;
 
 public class DesignerPropertiesFile {
 
@@ -20,7 +19,7 @@ public class DesignerPropertiesFile {
     private final CustomProperties customProperties;
 
     public DesignerPropertiesFile(final File directory) {
-        this.customProperties = new PropertiesFileReader(getFile(directory)).getCustomProperties();
+        this.customProperties = new CustomPropertiesFileReader(getFile(directory)).getCustomProperties();
     }
 
     public List<String> getRecentDesignerDocuments() {

@@ -15,11 +15,11 @@ import org.pdf.forms.model.properties.CustomProperties;
 import org.pdf.forms.model.properties.RecentDesFiles;
 import org.pdf.forms.model.properties.RecentPdfFiles;
 
-class PropertiesFileReaderTest {
+class CustomPropertiesFileReaderTest {
 
     @Test
     void read_properties_from_file() throws Exception {
-        final PropertiesFileReader reader = new PropertiesFileReader(getFile("/.properties.xml"));
+        final CustomPropertiesFileReader reader = new CustomPropertiesFileReader(getFile("/.properties.xml"));
 
         final CustomProperties properties = reader.getCustomProperties();
 
@@ -53,7 +53,7 @@ class PropertiesFileReaderTest {
     }
 
     private File getFile(final String fileName) throws URISyntaxException {
-        final URL url = PropertiesFileReaderTest.class.getResource(fileName);
+        final URL url = CustomPropertiesFileReaderTest.class.getResource(fileName);
         assertThat("File not found: " + fileName, url, is(notNullValue()));
 
         return new File(url.toURI());

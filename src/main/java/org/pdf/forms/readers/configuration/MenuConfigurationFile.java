@@ -23,14 +23,14 @@ public class MenuConfigurationFile {
 //    private final Map<String, JMenuItem> windowNames = new HashMap<>();
 
     private final Logger logger = LoggerFactory.getLogger(MenuConfigurationFile.class);
-    private final File menuConfigurationFile;
+    private final File configurationFile;
 
     public MenuConfigurationFile(final File directory) {
-        this.menuConfigurationFile = getFile(directory);
+        this.configurationFile = getFile(directory);
     }
 
     public MenuConfiguration getMenuConfiguration() {
-        return new MenuConfigurationFileReader(menuConfigurationFile)
+        return new MenuConfigurationFileReader(configurationFile)
                 .getMenuConfiguration();
     }
 
@@ -89,7 +89,7 @@ public class MenuConfigurationFile {
                     StandardOpenOption.WRITE,
                     StandardOpenOption.CREATE_NEW);
         } catch (final IOException | JAXBException e) {
-            logger.error("Unable to write configuration to file: {}", menuConfigurationFile);
+            logger.error("Unable to write configuration to file: {}", configurationFile);
         }
     }
 

@@ -23,6 +23,10 @@ public class DesDocument {
         this.page = new ArrayList<>();
     }
 
+    public DesDocument(final Version version) {
+        setProperty(new Property("version", version.getVersion()));
+    }
+
     public Property getProperty() {
         return property;
     }

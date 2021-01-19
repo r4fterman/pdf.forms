@@ -1,12 +1,23 @@
 package org.pdf.forms.model.des;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name = "javascript")
 public class JavaScriptContent {
+
+    private final Map<String, Consumer<String>> setEventFunctions = Map.of(
+            "mouseDown", this::setMouseDown,
+            "mouseEnter", this::setMouseEnter,
+            "mouseExit", this::setMouseExit,
+            "mouseUp", this::setMouseUp,
+            "change", this::setChange,
+            "keystroke", this::setKeystroke
+    );
 
     private String initialize;
     private String mouseEnter;
@@ -70,6 +81,23 @@ public class JavaScriptContent {
 
     public void setInitialize(final String initialize) {
         this.initialize = initialize;
+    }
+
+    public Map<String, String> getEvents() {
+        return Map.of(
+                "mouseDown", getMouseDown(),
+                "mouseEnter", getMouseEnter(),
+                "mouseExit", getMouseExit(),
+                "mouseUp", getMouseUp(),
+                "change", getChange(),
+                "keystroke", getKeystroke()
+        );
+    }
+
+    public void setEventValue(
+            final String eventName,
+            final String eventValue) {
+        setEventFunctions.get(eventName).accept(eventValue);
     }
 
     @Override

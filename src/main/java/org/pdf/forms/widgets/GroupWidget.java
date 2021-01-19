@@ -1,11 +1,13 @@
 package org.pdf.forms.widgets;
 
-import javax.swing.*;
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.utils.WidgetSelection;
@@ -117,6 +119,12 @@ public class GroupWidget implements IWidget {
     @Override
     public int getArrayNumber() {
         return 0;
+    }
+
+    @Override
+    public JavaScriptContent getJavaScript() {
+        //todo: must be added to model
+        return new JavaScriptContent();
     }
 
     @Override

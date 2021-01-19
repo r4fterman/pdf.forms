@@ -12,7 +12,8 @@ import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.commands.Commands;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
-import org.pdf.forms.readers.des.DesignerPropertiesFile;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class WidgetSelection {
 
     public WidgetSelection(
             final IDesigner designerPanel,
-            final String version,
+            final Version version,
             final FontHandler fontHandler,
             final WidgetFactory widgetFactory,
             final Configuration configuration,

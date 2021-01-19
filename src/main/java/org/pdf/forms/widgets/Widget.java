@@ -16,6 +16,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.jpedal.objects.acroforms.creation.JPedalBorderFactory;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
+import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.IPdfComponent;
 import org.pdf.forms.widgets.components.PdfCaption;
@@ -27,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class Widget {
+public class Widget implements IWidget {
 
     private final Logger logger = LoggerFactory.getLogger(Widget.class);
 
@@ -302,6 +303,12 @@ public class Widget {
 
     public int getArrayNumber() {
         return arrayNumber;
+    }
+
+    @Override
+    public JavaScriptContent getJavaScript() {
+        //todo: must be added to model
+        return new JavaScriptContent();
     }
 
     public Icon getIcon() {

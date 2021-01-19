@@ -144,7 +144,7 @@ public class DesignerPanel extends JTabbedPane implements Dockable, DesignNaviga
         }
 
         final Writer writer = new Writer(mainFrame, fontHandler);
-        writer.write(file, widgets.build(), documentProperties.getDocumentProperties());
+        writer.write(file, widgets.build(), documentProperties.getDesDocument());
 
         final Set<String> fontSubstitutions = writer.getFontSubstitutions();
         if (!fontSubstitutions.isEmpty()) {

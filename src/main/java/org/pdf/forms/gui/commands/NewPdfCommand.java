@@ -5,15 +5,16 @@ import java.util.Set;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.model.des.Version;
 
 class NewPdfCommand implements Command {
 
     private final IMainFrame mainFrame;
-    private final String version;
+    private final Version version;
 
     NewPdfCommand(
             final IMainFrame mainFrame,
-            final String version) {
+            final Version version) {
         this.mainFrame = mainFrame;
         this.version = version;
     }

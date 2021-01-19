@@ -1,9 +1,8 @@
 package org.pdf.forms.widgets;
 
-import java.awt.Color;
+import java.awt.*;
 
-import javax.swing.JComponent;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.utils.XMLUtils;
@@ -12,7 +11,7 @@ import org.pdf.forms.widgets.components.SplitComponent;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class TextFieldWidget extends Widget implements IWidget {
+public class TextFieldWidget extends Widget {
 
     private static int nextWidgetNumber = 1;
 

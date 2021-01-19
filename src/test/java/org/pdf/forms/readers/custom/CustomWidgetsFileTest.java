@@ -12,7 +12,7 @@ import javax.swing.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.pdf.forms.fonts.FontHandler;
-import org.pdf.forms.readers.des.DesignerPropertiesFile;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.TextWidget;
 import org.pdf.forms.widgets.components.PdfCaption;

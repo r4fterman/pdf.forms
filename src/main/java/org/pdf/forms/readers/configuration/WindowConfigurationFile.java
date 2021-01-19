@@ -14,11 +14,6 @@ import org.slf4j.LoggerFactory;
 
 public class WindowConfigurationFile {
 
-    public static final String PROPERTIES = "PROPERTIES";
-    public static final String LIBRARY = "LIBRARY";
-    public static final String HIERARCHY = "HIERARCHY";
-    public static final String SCRIPT_EDITOR = "SCRIPT_EDITOR";
-
     private final Logger logger = LoggerFactory.getLogger(WindowConfigurationFile.class);
     private final File directory;
 

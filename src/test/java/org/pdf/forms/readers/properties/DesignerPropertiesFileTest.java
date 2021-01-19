@@ -1,4 +1,4 @@
-package org.pdf.forms.readers.des;
+package org.pdf.forms.readers.properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;

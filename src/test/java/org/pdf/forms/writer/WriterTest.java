@@ -20,14 +20,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.easymock.EasyMockSupport;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.readers.des.DesignerPropertiesFile;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.DesDocument;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.des.DesignerProjectFileReader;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 
@@ -46,7 +47,7 @@ class WriterTest extends EasyMockSupport {
 
     private static final String DESIGNER_FILE = "/example.des";
 
-    @Disabled(value = "Does not work on headless Travis CI")
+    //todo: get this unit test working
     void write_should_persist_ui_document(@TempDir final Path path) throws Exception {
         final MockMainFrame mainFrame = new MockMainFrame();
 
@@ -64,10 +65,10 @@ class WriterTest extends EasyMockSupport {
         final File target = createTargetFile(path, source);
 
 
-        new OpenDesignerFileCommand(mainFrame, "DEV-TEST", widgetFactory, designerPropertiesFile).openDesignerFile(target.getAbsolutePath());
+        new OpenDesignerFileCommand(mainFrame, new Version("DEV-TEST"), widgetFactory, designerPropertiesFile).openDesignerFile(target.getAbsolutePath());
 
         final File outputFile = new File(path.toFile(), "output.des");
-        final org.w3c.dom.Document properties = XMLUtils.readDocument(source);
+        final DesDocument designerDocument = new DesignerProjectFileReader(path.toFile()).getDesDocument();
 
         final List<IWidget> page1Widgets = mainFrame.getFormsDocument().getPage(1).getWidgets();
         final List<IWidget> page2Widgets = mainFrame.getFormsDocument().getPage(2).getWidgets();
@@ -76,7 +77,7 @@ class WriterTest extends EasyMockSupport {
                 1, page2Widgets
         );
 
-        writer.write(outputFile, widgetsMap, properties);
+        writer.write(outputFile, widgetsMap, designerDocument);
         verifyAll();
 
         assertThat(outputFile.length(), is(15161L));

@@ -6,26 +6,23 @@ import static org.jdesktop.layout.GroupLayout.LEADING;
 import static org.jdesktop.layout.GroupLayout.PREFERRED_SIZE;
 import static org.jdesktop.layout.LayoutStyle.RELATED;
 
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.vlsolutions.swing.docking.DockKey;
-import com.vlsolutions.swing.docking.Dockable;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+
 import org.jdesktop.layout.GroupLayout;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
+
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
 
 public class JavaScriptEditorPanel extends JPanel implements Dockable {
 
@@ -121,8 +118,8 @@ public class JavaScriptEditorPanel extends JPanel implements Dockable {
 
     private void saveClicked(final ActionEvent evt) {
         if (widgets.size() == 1 && widgets.iterator().next() instanceof FormsDocument) {
-            final FormsDocument document = (FormsDocument) widgets.iterator().next();
-            saveJavaScript(document.getDocument());
+            final FormsDocument formsDocument = (FormsDocument) widgets.iterator().next();
+            saveJavaScript(formsDocument.getDesDocument().getJavaScript());
         } else {
             saveJavaScriptInWidgets();
         }
@@ -140,89 +137,71 @@ public class JavaScriptEditorPanel extends JPanel implements Dockable {
         eventsAndValues = new LinkedHashMap<>();
 
         if (widgets.size() == 1) {
-            final IWidget widget = widgets.iterator().next();
-            if (widget == null || widget instanceof Page) {
-                return;
-            }
-
-            if (widget instanceof FormsDocument) {
-                getDockKey().setName("Script Editor - Document");
-                final FormsDocument document = (FormsDocument) widget;
-                extractJavaScript(document.getDocument());
-            } else {
-                getDockKey().setName("Script Editor - " + widget.getWidgetName() + " Component");
-                handleWidgets(widgets);
-            }
+            setSingleWidgetScript(widgets.iterator().next());
         } else {
             getDockKey().setName("Script Editor - Multiple Components");
             handleWidgets(widgets);
+            eventsAndValues.keySet().forEach(event -> eventBox.addItem(event));
+        }
+    }
+
+    private void setSingleWidgetScript(final IWidget widget) {
+        if (widget == null || widget instanceof Page) {
+            return;
         }
 
+        if (widget instanceof FormsDocument) {
+            getDockKey().setName("Script Editor - Document");
+            final FormsDocument document = (FormsDocument) widget;
+            extractJavaScript(document.getDesDocument().getJavaScript());
+        } else {
+            getDockKey().setName("Script Editor - " + widget.getWidgetName() + " Component");
+            handleWidgets(widgets);
+        }
         eventsAndValues.keySet().forEach(event -> eventBox.addItem(event));
     }
 
     private void saveJavaScriptInWidgets() {
         widgets.stream()
-                .map(IWidget::getProperties)
+                .map(IWidget::getJavaScript)
                 .forEach(this::saveJavaScript);
     }
 
-    private void saveJavaScript(final Document document) {
-        final Element javaScriptPropertiesElement = XMLUtils.getElementsFromNodeList(document.getElementsByTagName("javascript")).get(0);
-        final Element currentElement = XMLUtils.getElementsFromNodeList(javaScriptPropertiesElement.getElementsByTagName((String) eventBox.getSelectedItem())).get(0);
+    private void saveJavaScript(final JavaScriptContent javaScriptContent) {
+        final String eventName = (String) eventBox.getSelectedItem();
+        final String eventValue = scriptBox.getText().trim();
 
-        final Text currentTextNode = (Text) currentElement.getChildNodes().item(0);
-        if (currentTextNode == null) {
-            final Text textNode = document.createTextNode(scriptBox.getText());
-            currentElement.appendChild(textNode);
-        } else {
-            currentTextNode.setNodeValue(scriptBox.getText());
-        }
+        javaScriptContent.setEventValue(eventName, eventValue);
     }
 
     private void handleWidgets(final Set<IWidget> widgets) {
-        for (final IWidget widget : widgets) {
-            final Document properties = widget.getProperties();
-            if (extractJavaScript(properties)) {
+        for (final IWidget widget: widgets) {
+            final JavaScriptContent javaScriptContent = widget.getJavaScript();
+            if (extractJavaScript(javaScriptContent)) {
                 break;
             }
         }
     }
 
-    private boolean extractJavaScript(final Document properties) {
-        final List<Element> elementsFromNodeList = XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("javascript"));
-        if (elementsFromNodeList.isEmpty()) {
+    private boolean extractJavaScript(final JavaScriptContent javaScriptContent) {
+        if (javaScriptContent.getInitialize().isEmpty()) {
             setState(false);
             return true;
         }
 
         setState(true);
 
-        final Element javaScriptPropertiesElement = elementsFromNodeList.get(0);
-        final List<Element> javaScriptProperties = XMLUtils.getElementsFromNodeList(javaScriptPropertiesElement.getChildNodes());
-        for (final Element element : javaScriptProperties) {
-            final NodeList childNodes = element.getChildNodes();
-            final String nodeValue = getNodeValue(childNodes);
-
-            final String event = element.getNodeName();
-            final String currentValue = eventsAndValues.get(event);
-            if (currentValue == null) {
-                eventsAndValues.put(event, nodeValue);
-            } else if (!currentValue.equals(nodeValue)) {
-                eventsAndValues.put(event, "mixed scripts in this event for the selected components");
+        final Map<String, String> events = javaScriptContent.getEvents();
+        final Set<Map.Entry<String, String>> entries = events.entrySet();
+        for (final Map.Entry<String, String> entry: entries) {
+            final String existingValue = eventsAndValues.getOrDefault(entry.getKey(), entry.getValue());
+            if (!existingValue.equals(entry.getValue())) {
+                eventsAndValues.put(entry.getKey(), "mixed scripts in this event for the selected components");
+            } else {
+                eventsAndValues.put(entry.getKey(), entry.getValue());
             }
         }
-
         return false;
-    }
-
-    private String getNodeValue(final NodeList childNodes) {
-        if (childNodes.getLength() == 0) {
-            return "";
-        }
-
-        final Text textNode = (Text) childNodes.item(0);
-        return textNode.getNodeValue();
     }
 
     public void setState(final boolean state) {

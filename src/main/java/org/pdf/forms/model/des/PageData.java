@@ -3,6 +3,7 @@ package org.pdf.forms.model.des;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlType;
@@ -22,6 +23,23 @@ public class PageData {
 
     public void setProperty(final List<Property> property) {
         this.property = property;
+    }
+
+    public Optional<Integer> getWidth() {
+        return getProperty("width")
+                .map(Integer::valueOf);
+    }
+
+    public Optional<Integer> getHeight() {
+        return getProperty("height")
+                .map(Integer::valueOf);
+    }
+
+    private Optional<String> getProperty(final String name) {
+        return getProperty().stream()
+                .filter(p -> p.getName().equals(name))
+                .findFirst()
+                .map(Property::getValue);
     }
 
     @Override
