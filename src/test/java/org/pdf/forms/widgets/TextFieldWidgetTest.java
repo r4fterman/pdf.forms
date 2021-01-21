@@ -1,7 +1,9 @@
 package org.pdf.forms.widgets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.io.File;
@@ -33,9 +35,9 @@ class TextFieldWidgetTest {
                 .getConfigDirectory());
         this.fontHandler = new FontHandler(designerPropertiesFile);
 
-        this.baseComponent = new SplitComponent("captionText", new PdfTextField("text", fontHandler),1,fontHandler);
+        this.baseComponent = new SplitComponent("captionText", new PdfTextField("text", fontHandler), 1, fontHandler);
         this.component = new JTextField();
-        component.setSize(1,1);
+        component.setSize(1, 1);
     }
 
     @Test
@@ -48,7 +50,8 @@ class TextFieldWidgetTest {
         assertThat(document, is(notNullValue()));
 
         final String serialize = XMLUtils.serialize(document);
-        assertThat(serialize.length(), is(2659));
+        assertThat(serialize.length(), is(greaterThanOrEqualTo(2659)));
+        assertThat(serialize.length(), is(lessThanOrEqualTo(2671)));
     }
 
     @Test

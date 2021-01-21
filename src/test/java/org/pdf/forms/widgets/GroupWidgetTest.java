@@ -27,5 +27,4 @@ class GroupWidgetTest {
         assertThat(serialize.length(), is(156));
         System.out.println(serialize);
     }
-
 }

@@ -1,7 +1,9 @@
 package org.pdf.forms.widgets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.io.File;
@@ -49,7 +51,8 @@ class ComboBoxWidgetTest {
         assertThat(document, is(notNullValue()));
 
         final String serializedComboBox = XMLUtils.serialize(document);
-        assertThat(serializedComboBox.length(), is(2550));
+        assertThat(serializedComboBox.length(), is(greaterThanOrEqualTo(2550)));
+        assertThat(serializedComboBox.length(), is(lessThanOrEqualTo(2562)));
     }
 
     @Test
