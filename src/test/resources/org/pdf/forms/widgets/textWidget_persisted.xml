@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<widget>
+    <property name="type" value="TEXT"/>
+    <property name="name" value="Text1"/>
+    <properties>
+        <font>
+            <font_caption>
+                <property name="Font Name" value=".Keyboard"/>
+                <property name="Font Size" value="11"/>
+                <property name="Font Style" value="0"/>
+                <property name="Underline" value="0"/>
+                <property name="Strikethrough" value="0"/>
+                <property name="Color" value="-16777216"/>
+            </font_caption>
+        </font>
+        <object>
+            <field>
+                <property name="Presence" value="Visible"/>
+            </field>
+        </object>
+        <layout>
+            <sizeandposition>
+                <property name="X" value=""/>
+                <property name="Width" value=""/>
+                <property name="Y" value=""/>
+                <property name="Height" value=""/>
+                <property name="Expand to fit" value="false"/>
+                <property name="Expand to fit" value="false"/>
+                <property name="Anchor" value="Top Left"/>
+                <property name="Rotation" value="0"/>
+            </sizeandposition>
+            <margins>
+                <property name="Left" value="2"/>
+                <property name="Right" value="4"/>
+                <property name="Top" value="2"/>
+                <property name="Bottom" value="4"/>
+            </margins>
+        </layout>
+        <border>
+            <borders>
+                <property name="Border Style" value="None"/>
+                <property name="Border Width" value="1"/>
+                <property name="Border Color" value="-16777216"/>
+            </borders>
+            <backgroundfill>
+                <property name="Style" value="Solid"/>
+                <property name="Fill Color" value="-1"/>
+            </backgroundfill>
+        </border>
+        <paragraph>
+            <paragraph_caption>
+                <property name="Horizontal Alignment" value="left"/>
+                <property name="Vertical Alignment" value="center"/>
+            </paragraph_caption>
+        </paragraph>
+        <caption_properties>
+            <property name="Text" value="Text"/>
+        </caption_properties>
+    </properties>
+</widget>

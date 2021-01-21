@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<widget>
+    <property name="type" value="TEXT_FIELD"/>
+    <property name="name" value="Text Field1"/>
+    <properties>
+        <font>
+            <font_caption>
+                <property name="Font Name" value=".Keyboard"/>
+                <property name="Font Size" value="11"/>
+                <property name="Font Style" value="0"/>
+                <property name="Underline" value="0"/>
+                <property name="Strikethrough" value="0"/>
+                <property name="Color" value="-16777216"/>
+            </font_caption>
+            <font_value>
+                <property name="Font Name" value=".Keyboard"/>
+                <property name="Font Size" value="11"/>
+                <property name="Font Style" value="0"/>
+                <property name="Underline" value="0"/>
+                <property name="Strikethrough" value="0"/>
+                <property name="Color" value="-16777216"/>
+            </font_value>
+        </font>
+        <object>
+            <field>
+                <property name="Appearance" value="Sunken Box"/>
+                <property name="Allow Multiple Lines" value="false"/>
+                <property name="Limit Length" value="false"/>
+                <property name="Max Chars" value=""/>
+                <property name="Presence" value="Visible"/>
+            </field>
+            <value>
+                <property name="Type" value="User Entered - Optional"/>
+                <property name="Default" value="Text Field"/>
+                <property name="Empty Message" value=""/>
+            </value>
+            <binding>
+                <property name="Name" value="Text Field1"/>
+                <property name="Array Number" value="0"/>
+            </binding>
+        </object>
+        <layout>
+            <sizeandposition>
+                <property name="X" value=""/>
+                <property name="Width" value=""/>
+                <property name="Y" value=""/>
+                <property name="Height" value=""/>
+                <property name="Expand to fit" value="false"/>
+                <property name="Expand to fit" value="false"/>
+                <property name="Anchor" value="Top Left"/>
+                <property name="Rotation" value="0"/>
+            </sizeandposition>
+            <margins>
+                <property name="Left" value="2"/>
+                <property name="Right" value="4"/>
+                <property name="Top" value="2"/>
+                <property name="Bottom" value="4"/>
+            </margins>
+            <caption>
+                <property name="Position" value="Left"/>
+                <property name="Reserve" value="4"/>
+            </caption>
+        </layout>
+        <border>
+            <borders>
+                <property name="Border Style" value="None"/>
+                <property name="Border Width" value="1"/>
+                <property name="Border Color" value="-16777216"/>
+            </borders>
+            <backgroundfill>
+                <property name="Style" value="Solid"/>
+                <property name="Fill Color" value="-1"/>
+            </backgroundfill>
+        </border>
+        <paragraph>
+            <paragraph_caption>
+                <property name="Horizontal Alignment" value="left"/>
+                <property name="Vertical Alignment" value="center"/>
+            </paragraph_caption>
+            <paragraph_value>
+                <property name="Horizontal Alignment" value="left"/>
+                <property name="Vertical Alignment" value="center"/>
+            </paragraph_value>
+        </paragraph>
+        <caption_properties>
+            <property name="Text" value="Text Field"/>
+            <property name="Divisor Location" value=""/>
+        </caption_properties>
+    </properties>
+    <javascript>
+        <mouseEnter/>
+        <mouseExit/>
+        <change/>
+        <mouseUp/>
+        <mouseDown/>
+        <keystroke/>
+    </javascript>
+</widget>
