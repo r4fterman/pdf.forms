@@ -30,10 +30,10 @@
         </object>
         <layout>
             <sizeandposition>
-                <property name="X" value=""/>
-                <property name="Width" value=""/>
-                <property name="Y" value=""/>
-                <property name="Height" value=""/>
+                <property name="X" value="1"/>
+                <property name="Width" value="1"/>
+                <property name="Y" value="1"/>
+                <property name="Height" value="1"/>
                 <property name="Expand to fit" value="false"/>
                 <property name="Expand to fit" value="false"/>
                 <property name="Anchor" value="Top Left"/>

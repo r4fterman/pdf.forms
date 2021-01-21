@@ -13,9 +13,9 @@ public class PdfButton extends JButton implements IPdfComponent {
     private static final float FONT_SIZE = 11f;
 
     public PdfButton(
-            final String string,
+            final String buttonText,
             final FontHandler fontHandler) {
-        super(string);
+        super(buttonText);
         setFont(fontHandler.getDefaultFont().deriveFont(FONT_SIZE));
 
         /* needed so the background color of the button can be set */
