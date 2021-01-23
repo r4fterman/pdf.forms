@@ -8,7 +8,7 @@ import java.util.StringJoiner;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType
-public class CheckBoxGroups {
+public class CheckBoxGroups implements ButtonGroups {
 
     private List<Property> property;
 
@@ -16,6 +16,7 @@ public class CheckBoxGroups {
         this.property = new ArrayList<>();
     }
 
+    @Override
     public List<Property> getProperty() {
         return property;
     }

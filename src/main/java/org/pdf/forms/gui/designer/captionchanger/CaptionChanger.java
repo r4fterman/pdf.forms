@@ -9,11 +9,8 @@ import javax.swing.*;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.components.PdfCaption;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public class CaptionChanger {
 
@@ -101,14 +98,7 @@ public class CaptionChanger {
         builder.append("</html>");
         final String text = builder.toString();
 
-        final Document properties = selectedWidget.getProperties();
-        final Element captionProperties =
-                XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties")).get(0);
-
-        XMLUtils.getPropertyElement(captionProperties, "Text")
-                .ifPresent(textElement -> textElement.getAttributeNode("value").setValue(text));
-
-        selectedWidget.setCaptionProperties(captionProperties);
+        selectedWidget.getWidgetModel().getProperties().getCaptionProperties().setTextValue(text);
 
         captionTextArea.setText("");
         captionTextArea.setVisible(false);

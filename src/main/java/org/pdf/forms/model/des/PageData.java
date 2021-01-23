@@ -26,20 +26,33 @@ public class PageData {
     }
 
     public Optional<Integer> getWidth() {
-        return getProperty("width")
+        return getPropertyValue("width")
                 .map(Integer::valueOf);
     }
 
     public Optional<Integer> getHeight() {
-        return getProperty("height")
+        return getPropertyValue("height")
                 .map(Integer::valueOf);
     }
 
-    private Optional<String> getProperty(final String name) {
-        return getProperty().stream()
-                .filter(p -> p.getName().equals(name))
-                .findFirst()
+    public Optional<String> getPdfFileLocation() {
+        return getPropertyValue("pdffilelocation");
+    }
+
+    public Optional<Integer> getPdfPageNumber() {
+        return getPropertyValue("pdfpagenumber")
+                .map(Integer::valueOf);
+    }
+
+    private Optional<String> getPropertyValue(final String propertyName) {
+        return getProperty(propertyName)
                 .map(Property::getValue);
+    }
+
+    private Optional<Property> getProperty(final String propertyName) {
+        return getProperty().stream()
+                .filter(p -> p.getName().equals(propertyName))
+                .findFirst();
     }
 
     @Override

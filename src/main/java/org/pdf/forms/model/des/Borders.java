@@ -26,21 +26,47 @@ public class Borders {
     }
 
     public Optional<String> getBorderStyle() {
-        return getProperty("Border Style");
+        return getPropertyValue("Border Style");
+    }
+
+    public void setBorderStyle(final String style) {
+        setPropertyValue("Border Style", style);
     }
 
     public Optional<String> getBorderWidth() {
-        return getProperty("Border Width");
+        return getPropertyValue("Border Width");
+    }
+
+    public void setBorderWidth(final String width) {
+        setPropertyValue("Border Width", width);
     }
 
     public Optional<String> getBorderColor() {
-        return getProperty("Border Color");
+        return getPropertyValue("Border Color");
     }
 
-    private Optional<String> getProperty(final String propertyName) {
+    public void setBorderColor(final String color) {
+        setPropertyValue("Border Color", color);
+    }
+
+    private Optional<String> getPropertyValue(final String propertyName) {
+        return getProperty(propertyName)
+                .map(Property::getValue);
+    }
+
+    private void setPropertyValue(
+            final String propertyName,
+            final String propertyValue) {
+        getProperty(propertyName)
+                .ifPresentOrElse(
+                        p -> p.setValue(propertyValue),
+                        () -> property.add(new Property(propertyName, propertyValue))
+                );
+    }
+
+    private Optional<Property> getProperty(final String propertyName) {
         return getProperty().stream()
                 .filter(p -> p.getName().equals(propertyName))
-                .map(Property::getValue)
                 .findFirst();
     }
 

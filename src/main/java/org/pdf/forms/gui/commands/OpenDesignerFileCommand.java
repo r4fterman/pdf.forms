@@ -1,37 +1,32 @@
 package org.pdf.forms.gui.commands;
 
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.Collectors.toUnmodifiableMap;
-import static java.util.stream.Collectors.toUnmodifiableSet;
 
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.*;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.FileFinder;
+import org.pdf.forms.model.des.CheckBoxGroups;
+import org.pdf.forms.model.des.DesDocument;
+import org.pdf.forms.model.des.PageData;
+import org.pdf.forms.model.des.RadioButtonGroups;
 import org.pdf.forms.model.des.Version;
 import org.pdf.forms.readers.des.DesignerProjectFileReader;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.ButtonGroup;
-import org.pdf.forms.widgets.GroupWidget;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 public class OpenDesignerFileCommand implements Command {
 
@@ -93,60 +88,53 @@ public class OpenDesignerFileCommand implements Command {
 
     private void readDesignerFile(final String designerFileToOpen) {
         try {
-            mainFrame.setFormsDocument(new FormsDocument(new DesignerProjectFileReader(new File(designerFileToOpen))
-                    .getDesDocument()));
+            final File desFile = new File(designerFileToOpen);
+            final DesDocument desDocument = new DesignerProjectFileReader(desFile).getDesDocument();
 
-            final Element root = readDesignerDocument(designerFileToOpen);
-            final List<Element> pages = XMLUtils.getElementsFromNodeList(root.getElementsByTagName("page"));
+            mainFrame.setFormsDocument(new FormsDocument(desDocument));
+
+            final List<org.pdf.forms.model.des.Page> pages = desDocument.getPage();
 
             final Map<String, String> changedFiles = getChangedPdfFileLocations(pages);
-            for (final Element page: pages) {
-                final Optional<String> pageType = XMLUtils.getAttributeValueFromChildElement(page, "pagetype");
-                final Optional<String> pageName = XMLUtils.getAttributeValueFromChildElement(page, "pagename");
-
-                final Element pageData = (Element) page.getElementsByTagName("pagedata").item(0);
-
-                final Optional<String> value1 = XMLUtils.getAttributeByIndex(pageData, 0);
-                final Optional<String> value2 = XMLUtils.getAttributeByIndex(pageData, 1);
-
+            for (final org.pdf.forms.model.des.Page page: pages) {
                 final Page newPage;
-                if (pageType.isPresent() && pageType.get().equals("pdfpage")) {
+
+                final String pageName = page.getPageName().orElse("");
+
+                final String pageType = page.getPageType();
+                if (pageType.equals("pdfpage")) {
+                    final PageData pageData = page.getPageData();
                     // PDF page
-                    final String pdfFileToUse = changedFiles.get(value1.get());
-                    final int pdfPageNumber = Integer.parseInt(value2.get());
+                    final String pdfFileToUse = changedFiles.get(pageData.getPdfFileLocation().orElse(""));
+                    final int pdfPageNumber = pageData.getPdfPageNumber().orElse(1);
                     //todo check for skip PDF files
-                    newPage = new Page(pageName.get(), pdfFileToUse, pdfPageNumber);
+                    newPage = new Page(pageName, pdfFileToUse, pdfPageNumber);
                 } else {
+                    final PageData pageData = page.getPageData();
                     // simple page
-                    final int width = Integer.parseInt(value1.get());
-                    final int height = Integer.parseInt(value2.get());
-                    newPage = new Page(pageName.get(), width, height);
+                    final int width = pageData.getWidth().orElse(1);
+                    final int height = pageData.getHeight().orElse(1);
+                    newPage = new Page(pageName, width, height);
                 }
 
-                addButtonGroupsToPage(page, newPage, IWidget.RADIO_BUTTON);
-                addButtonGroupsToPage(page, newPage, IWidget.CHECK_BOX);
+                addRadioButtonGroupsToPage(page, newPage);
+                addCheckBoxButtonGroupsToPage(page, newPage);
 
                 mainFrame.setCurrentPage(mainFrame.getCurrentPage() + 1);
 
                 addPage(mainFrame.getCurrentPage(), newPage);
 
-                final List<IWidget> widgets = getWidgetsFromXMLElement(page);
-                for (final IWidget widget: widgets) {
-                    mainFrame.addWidgetToHierarchy(widget);
-                }
-                newPage.setWidgets(widgets);
+                //todo: update hierarchy panel
+//                final List<Widget> widgets = page.getWidget();
+//                for (final Widget widget: widgets) {
+//                    mainFrame.addWidgetToHierarchy(widget);
+//                }
+                //todo: store model on page
+//                newPage.setWidgets(widgets);
             }
         } catch (final Exception e) {
             logger.error("Error opening designer file {}", designerFileToOpen, e);
         }
-    }
-
-    private Element readDesignerDocument(final String fileName) throws ParserConfigurationException, IOException, SAXException {
-//        if (fileName.startsWith("http:") || fileName.startsWith("file:")) {
-        //todo: read from url
-        //return XMLUtils.readDocumentFromUri(fileName).getDocumentElement();
-//        }
-        return XMLUtils.readDocument(new File(fileName)).getDocumentElement();
     }
 
     private void closePDF() {
@@ -165,15 +153,11 @@ public class OpenDesignerFileCommand implements Command {
         mainFrame.setCurrentPage(0);
     }
 
-    private Map<String, String> getChangedPdfFileLocations(final List<Element> pages) {
-        final Set<String> pdfFiles = pages.stream()
-                .map(page -> XMLUtils.getPropertyElement(page, "pdffilelocation"))
+    private Map<String, String> getChangedPdfFileLocations(final List<org.pdf.forms.model.des.Page> pages) {
+        return pages.stream()
+                .map(org.pdf.forms.model.des.Page::getPdfFileLocation)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(element -> element.getAttributeNode("value").getValue())
-                .collect(toUnmodifiableSet());
-
-        return pdfFiles.stream()
                 .collect(toUnmodifiableMap(
                         pdfFile -> pdfFile,
                         this::pdfFileName
@@ -189,33 +173,26 @@ public class OpenDesignerFileCommand implements Command {
         return pdfFile;
     }
 
-    private void addButtonGroupsToPage(
-            final Element page,
-            final Page newPage,
-            final int type) {
-        final String groupName = getGroupName(type);
-
-        final Element radioButtonGroupsElement = (Element) page.getElementsByTagName(groupName).item(0);
-
-        XMLUtils.getElementsFromNodeList(radioButtonGroupsElement.getChildNodes())
-                .forEach(buttonGroupElement -> {
-                    final ButtonGroup buttonGroup = new ButtonGroup(type);
-                    XMLUtils.getAttributeValueFromElement(buttonGroupElement, "buttongroupname")
-                            .ifPresent(buttonGroup::setName);
-
-                    if (type == IWidget.RADIO_BUTTON) {
-                        newPage.getRadioButtonGroups().add(buttonGroup);
-                    } else {
-                        newPage.getCheckBoxGroups().add(buttonGroup);
-                    }
-                });
+    private void addRadioButtonGroupsToPage(
+            final org.pdf.forms.model.des.Page page,
+            final Page newPage) {
+        final RadioButtonGroups radioButtonGroups = page.getRadioButtonGroups();
+        radioButtonGroups.getButtonGroupNames().forEach(buttonGroupName -> {
+            final ButtonGroup buttonGroup = new ButtonGroup(IWidget.RADIO_BUTTON);
+            buttonGroup.setName(buttonGroupName);
+            newPage.getRadioButtonGroups().add(buttonGroup);
+        });
     }
 
-    private String getGroupName(final int type) {
-        if (type == IWidget.RADIO_BUTTON) {
-            return "radiobuttongroups";
-        }
-        return "checkboxgroups";
+    private void addCheckBoxButtonGroupsToPage(
+            final org.pdf.forms.model.des.Page page,
+            final Page newPage) {
+        final CheckBoxGroups checkBoxGroups = page.getCheckBoxGroups();
+        checkBoxGroups.getButtonGroupNames().forEach(buttonGroupName -> {
+            final ButtonGroup buttonGroup = new ButtonGroup(IWidget.CHECK_BOX);
+            buttonGroup.setName(buttonGroupName);
+            newPage.getCheckBoxGroups().add(buttonGroup);
+        });
     }
 
     private void updateRecentDocuments(final List<String> recentDocs) {
@@ -238,34 +215,34 @@ public class OpenDesignerFileCommand implements Command {
         }
     }
 
-    private List<IWidget> getWidgetsFromXMLElement(final Element page) {
-        final List<Element> widgetsInPageList = XMLUtils.getElementsFromNodeList(page.getChildNodes()).stream()
-                .filter(element -> element.getNodeName().equals("widget"))
-                .collect(toUnmodifiableList());
+//    private List<IWidget> getWidgetsFromXMLElement(final org.pdf.forms.model.des.Page page) {
+//        final List<Element> widgetsInPageList = XMLUtils.getElementsFromNodeList(page.getChildNodes()).stream()
+//                .filter(element -> element.getNodeName().equals("widget"))
+//                .collect(toUnmodifiableList());
+//
+//        final List<IWidget> widgets = new ArrayList<>();
+//        for (final Element widgetElement: widgetsInPageList) {
+//            XMLUtils.getAttributeValueFromChildElement(widgetElement, "type")
+//                    .map(type -> IWidget.WIDGET_TYPES.getOrDefault(type.toLowerCase(), IWidget.NONE))
+//                    .map(widgetType -> createWidgetByType(widgetElement, widgetType))
+//                    .ifPresent(widgets::add);
+//        }
+//        return widgets;
+//    }
 
-        final List<IWidget> widgets = new ArrayList<>();
-        for (final Element widgetElement: widgetsInPageList) {
-            XMLUtils.getAttributeValueFromChildElement(widgetElement, "type")
-                    .map(type -> IWidget.WIDGET_TYPES.getOrDefault(type.toLowerCase(), IWidget.NONE))
-                    .map(widgetType -> createWidgetByType(widgetElement, widgetType))
-                    .ifPresent(widgets::add);
-        }
-        return widgets;
-    }
-
-    private IWidget createWidgetByType(
-            final Element widgetElement,
-            final Integer widgetType) {
-        //todo: move to WidgetFactory
-        if (widgetType == IWidget.GROUP) {
-            final GroupWidget widget = new GroupWidget();
-            final List<IWidget> widgetsInGroup = getWidgetsFromXMLElement(XMLUtils
-                    .getElementsFromNodeList(widgetElement.getElementsByTagName("widgets")).get(0));
-            widget.setWidgetsInGroup(widgetsInGroup);
-            return widget;
-        }
-        return widgetFactory.createWidget(widgetType, widgetElement);
-    }
+//    private IWidget createWidgetByType(
+//            final Element widgetElement,
+//            final Integer widgetType) {
+//        //todo: move to WidgetFactory
+//        if (widgetType == IWidget.GROUP) {
+//            final GroupWidget widget = new GroupWidget();
+//            final List<IWidget> widgetsInGroup = getWidgetsFromXMLElement(XMLUtils
+//                    .getElementsFromNodeList(widgetElement.getElementsByTagName("widgets")).get(0));
+//            widget.setWidgetsInGroup(widgetsInGroup);
+//            return widget;
+//        }
+//        return widgetFactory.createWidget(widgetType, widgetElement);
+//    }
 
     private void addPage(
             final int pdfPage,
