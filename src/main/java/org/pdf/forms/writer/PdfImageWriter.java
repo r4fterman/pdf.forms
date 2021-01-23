@@ -1,14 +1,13 @@
 package org.pdf.forms.writer;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.JLabel;
+import javax.swing.*;
 
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfContentByte;
@@ -30,7 +29,6 @@ public class PdfImageWriter implements PdfComponentWriter {
             final Rectangle pageSize,
             final int currentPage,
             final PdfWriter writer,
-            final Element rootElement,
             final GlobalPdfWriter globalPdfWriter) {
         addImage(widget, pageSize, currentPage, globalPdfWriter);
         return null;

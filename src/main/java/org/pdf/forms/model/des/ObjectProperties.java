@@ -11,11 +11,13 @@ public class ObjectProperties {
     private FieldProperties field;
     private ValueProperties value;
     private BindingProperties binding;
+    private Items items;
 
     public ObjectProperties() {
         this.field = new FieldProperties();
         this.value = new ValueProperties();
         this.binding = new BindingProperties();
+        this.items = new Items();
     }
 
     public FieldProperties getField() {
@@ -42,20 +44,29 @@ public class ObjectProperties {
         this.binding = binding;
     }
 
+    public Items getItems() {
+        return items;
+    }
+
+    public void setItems(final Items items) {
+        this.items = items;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (o instanceof ObjectProperties) {
             final ObjectProperties that = (ObjectProperties) o;
             return Objects.equals(field, that.field)
                     && Objects.equals(value, that.value)
-                    && Objects.equals(binding, that.binding);
+                    && Objects.equals(binding, that.binding)
+                    && Objects.equals(items, that.items);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(field, value, binding);
+        return Objects.hash(field, value, binding, items);
     }
 
     @Override
@@ -64,6 +75,7 @@ public class ObjectProperties {
                 .add("field=" + field)
                 .add("value=" + value)
                 .add("binding=" + binding)
+                .add("items=" + items)
                 .toString();
     }
 }

@@ -3,6 +3,7 @@ package org.pdf.forms.model.des;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlType;
@@ -22,6 +23,17 @@ public class ValueProperties {
 
     public void setProperty(final List<Property> property) {
         this.property = property;
+    }
+
+    public Optional<String> getDefault() {
+        return getProperty("Default");
+    }
+
+    private Optional<String> getProperty(final String propertyName) {
+        return getProperty().stream()
+                .filter(p -> p.getName().equals(propertyName))
+                .map(Property::getValue)
+                .findFirst();
     }
 
     @Override

@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.model.des.JavaScriptContent;
+import org.pdf.forms.model.des.Widget;
 import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.utils.WidgetSelection;
@@ -125,6 +126,12 @@ public class GroupWidget implements IWidget {
     public JavaScriptContent getJavaScript() {
         //todo: must be added to model
         return new JavaScriptContent();
+    }
+
+    @Override
+    public Widget getWidgetModel() {
+        //todo: must be added to model
+        return new Widget();
     }
 
     @Override

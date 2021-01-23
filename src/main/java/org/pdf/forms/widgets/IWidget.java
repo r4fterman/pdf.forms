@@ -159,4 +159,6 @@ public interface IWidget {
     int getArrayNumber();
 
     JavaScriptContent getJavaScript();
+
+    org.pdf.forms.model.des.Widget getWidgetModel();
 }

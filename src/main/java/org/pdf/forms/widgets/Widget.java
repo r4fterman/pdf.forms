@@ -311,6 +311,12 @@ public class Widget implements IWidget {
         return new JavaScriptContent();
     }
 
+    @Override
+    public org.pdf.forms.model.des.Widget getWidgetModel() {
+        //todo: must be added to model
+        return new org.pdf.forms.model.des.Widget();
+    }
+
     public Icon getIcon() {
         return icon;
     }

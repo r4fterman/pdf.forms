@@ -3,6 +3,7 @@ package org.pdf.forms.model.des;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlType;
@@ -22,6 +23,25 @@ public class Borders {
 
     public void setProperty(final List<Property> property) {
         this.property = property;
+    }
+
+    public Optional<String> getBorderStyle() {
+        return getProperty("Border Style");
+    }
+
+    public Optional<String> getBorderWidth() {
+        return getProperty("Border Width");
+    }
+
+    public Optional<String> getBorderColor() {
+        return getProperty("Border Color");
+    }
+
+    private Optional<String> getProperty(final String propertyName) {
+        return getProperty().stream()
+                .filter(p -> p.getName().equals(propertyName))
+                .map(Property::getValue)
+                .findFirst();
     }
 
     @Override

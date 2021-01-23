@@ -20,9 +20,12 @@ import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.model.des.BorderProperties;
+import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.model.des.DesDocument;
 import org.pdf.forms.model.des.JavaScriptContent;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.LayoutProperties;
+import org.pdf.forms.model.des.Widget;
 import org.pdf.forms.widgets.CheckBoxWidget;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.RadioButtonWidget;
@@ -30,7 +33,6 @@ import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.writer.PdfDocumentLayout.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 
 import com.itextpdf.awt.DefaultFontMapper;
 import com.itextpdf.text.Document;
@@ -389,12 +391,11 @@ public class Writer {
             if (type == IWidget.GROUP) {
                 addWidgets(writer, widget.getWidgetsInGroup(), pageSize, currentPage, globalPdfWriter);
             } else {
-                final Element rootElement = widget.getProperties().getDocumentElement();
-                final PdfFormField field = componentWriterMap.get(type).write(widget,
+                final PdfFormField field = componentWriterMap.get(type).write(
+                        widget,
                         pageSize,
                         currentPage,
                         writer,
-                        rootElement,
                         globalPdfWriter);
 
                 final JavaScriptContent javaScript = widget.getJavaScript();
@@ -422,15 +423,11 @@ public class Writer {
     private void addBorder(
             final IWidget widget,
             final BaseField baseField) {
-        final org.w3c.dom.Document document = widget.getProperties();
-        final Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
+        final Widget model = widget.getWidgetModel();
+        final BorderProperties borderProperties = model.getProperties().getBorder();
+        final Borders borders = borderProperties.getBorders();
 
-        final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
-
-        final String style = XMLUtils.getAttributeValueFromChildElement(border, "Border Style").orElse("None");
-        final String width = XMLUtils.getAttributeValueFromChildElement(border, "Border Width").orElse("1");
-        final String color = XMLUtils.getAttributeValueFromChildElement(border, "Border Color").orElse(String
-                .valueOf(Color.WHITE.getRGB()));
+        final String style = borders.getBorderStyle().orElse("None");
 
         if ("Solid".equals(style)) {
             baseField.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
@@ -444,7 +441,10 @@ public class Writer {
             return;
         }
 
+        final String color = borders.getBorderColor().orElse(String.valueOf(Color.WHITE.getRGB()));
         baseField.setBorderColor(new GrayColor(Integer.parseInt(color)));
+
+        final String width = borders.getBorderWidth().orElse("1");
         baseField.setBorderWidth(Integer.parseInt(width));
     }
 
@@ -493,25 +493,20 @@ public class Writer {
             final Rectangle pageSize,
             final int currentPage,
             final GlobalPdfWriter globalPdfWriter) {
-        final PdfCaption caption = widget.getCaptionComponent();
-        if (caption == null) {
+        final PdfCaption pdfCaption = widget.getCaptionComponent();
+        if (pdfCaption == null) {
             return;
         }
 
         if (widget.isComponentSplit()) {
-            final Element captionElement = XMLUtils.getElementsFromNodeList(
-                    widget.getProperties().getElementsByTagName("layout")).get(0);
-
-            final Optional<Element> positionElement = XMLUtils.getPropertyElement(captionElement, "Position");
-            if (positionElement.isPresent()) {
-                final String location = positionElement.get().getAttributeNode("value").getValue();
-                if (location.equals("None")) {
-                    return;
-                }
+            final Widget model = widget.getWidgetModel();
+            final LayoutProperties layoutProperties = model.getProperties().getLayout();
+            if (layoutProperties.getCaption().isPositionNone()) {
+                return;
             }
         }
 
-        final java.awt.Rectangle captionBounds = caption.getBounds();
+        final java.awt.Rectangle captionBounds = pdfCaption.getBounds();
         captionBounds.setLocation(widget.getAbsoluteLocationsOfCaption());
         final Rectangle pdfCaptionBounds = convertJavaCoordsToPdfCoords(captionBounds, pageSize);
 
@@ -526,7 +521,7 @@ public class Writer {
                 pdfCaptionBounds.getLeft(),
                 pdfCaptionBounds.getTop() - captionBounds.height);
 
-        final Font font = caption.getFont();
+        final Font font = pdfCaption.getFont();
         final String fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
@@ -550,7 +545,7 @@ public class Writer {
                 mapper,
                 true,
                 .95f);
-        caption.paint(graphics2D);
+        pdfCaption.paint(graphics2D);
 
         graphics2D.dispose();
         pdfWriterContentByte.restoreState();

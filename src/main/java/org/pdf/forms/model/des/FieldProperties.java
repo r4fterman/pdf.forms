@@ -3,6 +3,7 @@ package org.pdf.forms.model.des;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 public class FieldProperties {
@@ -19,6 +20,19 @@ public class FieldProperties {
 
     public void setProperty(final List<Property> property) {
         this.property = property;
+    }
+
+    public boolean allowCustomTextEntry() {
+        return getProperty("Allow Custom Text Entry")
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+    }
+
+    private Optional<String> getProperty(final String propertyName) {
+        return getProperty().stream()
+                .filter(p -> p.getName().equals(propertyName))
+                .map(Property::getValue)
+                .findFirst();
     }
 
     @Override
