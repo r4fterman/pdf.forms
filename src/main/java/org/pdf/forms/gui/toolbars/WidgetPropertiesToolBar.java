@@ -163,7 +163,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
                                     .ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
                         }
 
-                        widget.setParagraphProperties(paragraphElement, IWidget.COMPONENT_BOTH);
+                        widget.setParagraphProperties(IWidget.COMPONENT_BOTH);
                     });
         }
 
@@ -222,7 +222,7 @@ public class WidgetPropertiesToolBar extends VLToolBar {
 
                         setProperty(fontValue, fontCaptionElement, fontPropertyElement);
 
-                        widget.setFontProperties(fontElement, IWidget.COMPONENT_BOTH);
+                        widget.setFontProperties(IWidget.COMPONENT_BOTH);
                     });
         }
     }

@@ -11,6 +11,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType
 public class Caption {
 
+    private static final String POSITION = "Position";
+    private static final String RESERVE = "Reserve";
+
     private List<Property> property;
 
     public Caption() {
@@ -26,7 +29,7 @@ public class Caption {
     }
 
     public Optional<String> getPosition() {
-        return getProperty("Position");
+        return getPropertyValue(POSITION);
     }
 
     public boolean isPositionNone() {
@@ -35,14 +38,36 @@ public class Caption {
                 .isPresent();
     }
 
-    public Optional<String> getReserve() {
-        return getProperty("Reserve");
+    public void setPosition(final String position) {
+        setPropertyValue(POSITION, position);
     }
 
-    private Optional<String> getProperty(final String propertyName) {
+    public Optional<String> getReserve() {
+        return getPropertyValue(RESERVE);
+    }
+
+    public void setReserve(final String reserve) {
+        setPropertyValue(RESERVE, reserve);
+    }
+
+    private Optional<String> getPropertyValue(final String propertyName) {
+        return getProperty(propertyName)
+                .map(Property::getValue);
+    }
+
+    private void setPropertyValue(
+            final String propertyName,
+            final String propertyValue) {
+        getProperty(propertyName)
+                .ifPresentOrElse(
+                        p -> p.setValue(propertyValue),
+                        () -> property.add(new Property(propertyName, propertyValue))
+                );
+    }
+
+    private Optional<Property> getProperty(final String propertyName) {
         return getProperty().stream()
                 .filter(p -> p.getName().equals(propertyName))
-                .map(Property::getValue)
                 .findFirst();
     }
 

@@ -5,10 +5,9 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.swing.*;
 
@@ -18,11 +17,9 @@ import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.windows.CheckBoxButtonGroupOrganiser;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.ButtonGroup;
 import org.pdf.forms.widgets.CheckBoxWidget;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 public class CheckBoxFieldPanel extends JPanel {
 
@@ -36,7 +33,7 @@ public class CheckBoxFieldPanel extends JPanel {
 
     private final IDesigner designerPanel;
 
-    private Map<IWidget, Element> widgetsAndProperties;
+    private Set<IWidget> widgets;
     private List<ButtonGroup> buttonGroups;
 
     private JComboBox<String> buttonGroupBox;
@@ -128,27 +125,22 @@ public class CheckBoxFieldPanel extends JPanel {
 
         populateButtonGroups();
 
-        setProperties(widgetsAndProperties);
+        setProperties(this.widgets);
     }
 
     private void updateButtonGroup(final ActionEvent event) {
-        for (final IWidget widget: widgetsAndProperties.keySet()) {
-            final CheckBoxWidget checkBoxWidget = (CheckBoxWidget) widget;
-            checkBoxWidget.setCheckBoxGroupName((String) buttonGroupBox.getSelectedItem());
-
-            final Element objectProperties = widget.getProperties().getDocumentElement();
-            XMLUtils.getPropertyElement(objectProperties, "Default")
-                    .ifPresent(element -> {
-                        element.getAttributeNode("value").setValue("Off");
-                        widget.setObjectProperties(objectProperties);
-                    });
-        }
+        widgets.stream()
+                .map(widget -> (CheckBoxWidget) widget)
+                .forEach(checkBoxWidget -> {
+                    checkBoxWidget.setCheckBoxGroupName((String) buttonGroupBox.getSelectedItem());
+                    checkBoxWidget.getWidgetModel().getProperties().getObject().getValue().setDefault("Off");
+                });
 
         designerPanel.repaint();
     }
 
-    public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
-        this.widgetsAndProperties = widgetsAndProperties;
+    public void setProperties(final Set<IWidget> widgets) {
+        this.widgets = widgets;
 
         final IMainFrame mainFrame = designerPanel.getMainFrame();
         final Page page = mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage());
@@ -156,7 +148,7 @@ public class CheckBoxFieldPanel extends JPanel {
 
         populateButtonGroups();
 
-        final String buttonGroupToUse = getButtonGroupToUse(widgetsAndProperties.values());
+        final String buttonGroupToUse = getButtonGroupToUse(widgets);
         if (buttonGroupToUse.equals("mixed")) {
             setComboValue(buttonGroupBox, null);
         } else {
@@ -164,20 +156,12 @@ public class CheckBoxFieldPanel extends JPanel {
         }
     }
 
-    private String getButtonGroupToUse(final Collection<Element> elementValues) {
-        final List<String> buttonGroupValues = elementValues.stream()
-                .map(element -> {
-                    final Element fieldProperties = (Element) element.getElementsByTagName("field").item(0);
-                    return XMLUtils.getAttributeValueFromChildElement(fieldProperties, "Group Name").orElse("");
-                })
+    private String getButtonGroupToUse(final Set<IWidget> widgets) {
+        final List<String> buttonGroupValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getObject().getField().getGroupName().orElse(""))
                 .collect(toUnmodifiableList());
 
-        final boolean listContainsOnlyEqualValues = Collections
-                .frequency(buttonGroupValues, buttonGroupValues.get(0)) == buttonGroupValues.size();
-        if (listContainsOnlyEqualValues) {
-            return buttonGroupValues.get(0);
-        }
-        return "mixed";
+        return findCommonOrMixedValue(buttonGroupValues);
     }
 
     private void populateButtonGroups() {
@@ -205,6 +189,15 @@ public class CheckBoxFieldPanel extends JPanel {
         }
 
         Arrays.stream(listeners).forEach(comboBox::addActionListener);
+    }
+
+    private String findCommonOrMixedValue(final List<String> buttonGroupValues) {
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(buttonGroupValues, buttonGroupValues.get(0)) == buttonGroupValues.size();
+        if (listContainsOnlyEqualValues) {
+            return buttonGroupValues.get(0);
+        }
+        return "mixed";
     }
 
 }

@@ -1,20 +1,19 @@
 package org.pdf.forms.widgets;
 
-import java.awt.Image;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.io.File;
 
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.Draw;
+import org.pdf.forms.model.des.LayoutProperties;
+import org.pdf.forms.model.des.Margins;
+import org.pdf.forms.model.des.ObjectProperties;
+import org.pdf.forms.model.des.SizeAndPosition;
 import org.pdf.forms.widgets.utils.WidgetFactory;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
-public class ImageWidget extends Widget implements IWidget {
+public class ImageWidget extends Widget {
 
     private static int nextWidgetNumber = 1;
 
@@ -29,7 +28,12 @@ public class ImageWidget extends Widget implements IWidget {
             final JComponent baseComponent,
             final JComponent component,
             final FontHandler fontHandler) {
-        super(type, baseComponent, component, "/org/pdf/forms/res/Image.gif", fontHandler);
+        super(new org.pdf.forms.model.des.Widget(),
+                type,
+                baseComponent,
+                component,
+                "/org/pdf/forms/res/Image.gif",
+                fontHandler);
 
         setComponentSplit(false);
         setAllowEditCaptionAndValue(false);
@@ -39,91 +43,73 @@ public class ImageWidget extends Widget implements IWidget {
         nextWidgetNumber++;
 
         setWidgetName(widgetName);
+        getWidgetModel().setName(widgetName);
+        getWidgetModel().setType("IMAGE");
 
-        final Element rootElement = setupProperties();
-
-        XMLUtils.addBasicProperty(getProperties(), "type", "IMAGE", rootElement);
-        XMLUtils.addBasicProperty(getProperties(), "name", widgetName, rootElement);
-
-        addProperties(rootElement);
+        addProperties();
     }
 
     public ImageWidget(
             final int type,
             final JComponent baseComponent,
             final JComponent component,
-            final Element root,
+            final org.pdf.forms.model.des.Widget widget,
             final FontHandler fontHandler) {
-        super(type, baseComponent, component, "/org/pdf/forms/res/Image.gif", fontHandler);
+        super(widget, type, baseComponent, component, "/org/pdf/forms/res/Image.gif", fontHandler);
 
         setComponentSplit(false);
         setAllowEditCaptionAndValue(false);
 
-        setWidgetName(XMLUtils.getAttributeValueFromChildElement(root, "Name").orElse(""));
-
-        final Element rootElement = setupProperties();
-        final Node newRoot = getProperties().importNode(root, true);
-
-        getProperties().replaceChild(newRoot, rootElement);
+        setWidgetName(widget.getName().orElse(""));
 
         setAllProperties();
     }
 
-    private void addProperties(final Element rootElement) {
-        final Element propertiesElement = XMLUtils.createAndAppendElement(getProperties(), "properties", rootElement);
-
-        addObjectProperties(propertiesElement);
-        addLayoutProperties(propertiesElement);
+    private void addProperties() {
+        addObjectProperties();
+        addLayoutProperties();
     }
 
-    private void addLayoutProperties(final Element propertiesElement) {
-        final Element layoutElement = XMLUtils.createAndAppendElement(getProperties(), "layout", propertiesElement);
+    private void addLayoutProperties() {
+        final LayoutProperties layoutProperties = getWidgetModel().getProperties().getLayout();
 
-        final Element sizeAndPositionElement = XMLUtils.createAndAppendElement(getProperties(), "sizeandposition", layoutElement);
-        XMLUtils.addBasicProperty(getProperties(), "X", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Width", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Y", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Height", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Expand to fit", "false", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Expand to fit", "false", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Anchor", "Top Left", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Rotation", "0", sizeAndPositionElement);
+        final SizeAndPosition sizeAndPosition = layoutProperties.getSizeAndPosition();
+        sizeAndPosition.setXExpandToFit("false");
+        sizeAndPosition.setYExpandToFit("false");
+        sizeAndPosition.setAnchor("Top Left");
+        sizeAndPosition.setRotation("0");
 
-        final Element margins = XMLUtils.createAndAppendElement(getProperties(), "margins", layoutElement);
-        XMLUtils.addBasicProperty(getProperties(), "Left", "2", margins);
-        XMLUtils.addBasicProperty(getProperties(), "Right", "4", margins);
-        XMLUtils.addBasicProperty(getProperties(), "Top", "2", margins);
-        XMLUtils.addBasicProperty(getProperties(), "Bottom", "4", margins);
+        final Margins margins = layoutProperties.getMargins();
+        margins.setLeft("2");
+        margins.setRight("4");
+        margins.setTop("2");
+        margins.setBottom("4");
     }
 
-    private void addObjectProperties(final Element propertiesElement) {
-        final Element objectElement = XMLUtils.createAndAppendElement(getProperties(), "object", propertiesElement);
+    private void addObjectProperties() {
+        final ObjectProperties objectProperties = getWidgetModel().getProperties().getObject();
 
-        final Element fieldElement = XMLUtils.createAndAppendElement(getProperties(), "field", objectElement);
-        XMLUtils.addBasicProperty(getProperties(), "Presence", "Visible", fieldElement);
-
-        final Element drawElement = XMLUtils.createAndAppendElement(getProperties(), "draw", objectElement);
-        XMLUtils.addBasicProperty(getProperties(), "Location", "", drawElement);
-        XMLUtils.addBasicProperty(getProperties(), "Sizing", "Stretch Image To Fit", drawElement);
+        objectProperties.getField().setPresence("Visible");
+        objectProperties.getDraw().setSizing("Stretch Image To Fit");
     }
 
     @Override
-    public void setLayoutProperties(final Element layoutProperties) {
-        setSizeAndPosition(layoutProperties);
+    public void setLayoutProperties() {
+        setSizeAndPosition();
     }
 
     @Override
-    public void setObjectProperties(final Element objectElement) {
-        final Element drawElement = (Element) objectElement.getElementsByTagName("draw").item(0);
+    public void setObjectProperties() {
+        final Draw draw = getWidgetModel().getProperties().getObject().getDraw();
 
-        final String location = XMLUtils.getAttributeValueFromChildElement(drawElement, "Location").orElse("");
-        final String sizingPropertyValue = XMLUtils.getAttributeValueFromChildElement(drawElement, "Sizing").orElse("Stretch Image To Fit");
+        final String sizingPropertyValue = draw.getSizing().orElse("Stretch Image To Fit");
         if (sizingPropertyValue.equals("Stretch Image To Fit")) {
             this.sizing = STRETCH;
         } else if (sizingPropertyValue.equals("Use Image Size")) {
             this.sizing = FULL_SIZE;
         }
 
+        final String location = draw.getLocation().orElse("");
         if (new File(location).exists()) {
             this.currentImage = Toolkit.getDefaultToolkit().createImage(location);
         } else {

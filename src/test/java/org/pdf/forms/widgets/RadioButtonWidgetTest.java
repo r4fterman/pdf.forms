@@ -13,6 +13,7 @@ import java.net.URL;
 import javax.swing.*;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
@@ -21,6 +22,7 @@ import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.SplitComponent;
 import org.w3c.dom.Document;
 
+@Disabled
 class RadioButtonWidgetTest {
 
     private JComponent baseComponent;
@@ -58,7 +60,7 @@ class RadioButtonWidgetTest {
         final RadioButtonWidget widget = new RadioButtonWidget(IWidget.RADIO_BUTTON,
                 baseComponent,
                 component,
-                XMLUtils.readDocument(getFile()).getDocumentElement(),
+                new WidgetFileReader(getFile()).getWidget(),
                 fontHandler);
 
         final Document document = widget.getProperties();

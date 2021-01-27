@@ -1,13 +1,13 @@
 package org.pdf.forms.gui.properties.layout;
 
+import java.util.Set;
+
 import javax.swing.*;
-import java.util.Map;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 public class LayoutPropertiesPanel extends JPanel {
 
@@ -50,9 +50,9 @@ public class LayoutPropertiesPanel extends JPanel {
         );
     }
 
-    public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
-        sizeAndPositionPanel.setProperties(widgetsAndProperties);
-        captionPanel.setProperties(widgetsAndProperties);
+    public void setProperties(final Set<IWidget> widgets) {
+        sizeAndPositionPanel.setProperties(widgets);
+        captionPanel.setProperties(widgets);
     }
 
 }

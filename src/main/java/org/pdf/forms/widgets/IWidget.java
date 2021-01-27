@@ -9,7 +9,6 @@ import javax.swing.*;
 import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public interface IWidget {
 
@@ -138,21 +137,17 @@ public interface IWidget {
 
     Document getProperties();
 
-    void setObjectProperties(Element parentElement);
+    void setObjectProperties();
 
-    void setBorderAndBackgroundProperties(Element borderProperties);
+    void setBorderAndBackgroundProperties();
 
-    void setParagraphProperties(
-            Element parentElement,
-            int currentlyEditing);
+    void setParagraphProperties(int currentlyEditing);
 
-    void setLayoutProperties(Element parentElement);
+    void setLayoutProperties();
 
-    void setFontProperties(
-            Element parentElement,
-            int currentlyEditing);
+    void setFontProperties(int currentlyEditing);
 
-    void setCaptionProperties(Element captionProperties);
+    void setCaptionProperties();
 
     void setAllProperties();
 

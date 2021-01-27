@@ -3,12 +3,16 @@ package org.pdf.forms.model.des;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name = "binding")
 public class BindingProperties {
+
+    private static final String NAME = "Name";
+    private static final String ARRAY_NUMBER = "Array Number";
 
     private List<Property> property;
 
@@ -22,6 +26,43 @@ public class BindingProperties {
 
     public void setProperty(final List<Property> property) {
         this.property = property;
+    }
+
+    public Optional<String> getName() {
+        return getPropertyValue(NAME);
+    }
+
+    public void setName(final String name) {
+        setPropertyValue(NAME, name);
+    }
+
+    public Optional<String> getArrayNumber() {
+        return getPropertyValue(ARRAY_NUMBER);
+    }
+
+    public void setArrayNumber(final String arrayNumber) {
+        setPropertyValue(ARRAY_NUMBER, arrayNumber);
+    }
+
+    private Optional<String> getPropertyValue(final String propertyName) {
+        return getProperty(propertyName)
+                .map(Property::getValue);
+    }
+
+    private void setPropertyValue(
+            final String propertyName,
+            final String propertyValue) {
+        getProperty(propertyName)
+                .ifPresentOrElse(
+                        p -> p.setValue(propertyValue),
+                        () -> property.add(new Property(propertyName, propertyValue))
+                );
+    }
+
+    private Optional<Property> getProperty(final String propertyName) {
+        return property.stream()
+                .filter(p -> p.getName().equals(propertyName))
+                .findFirst();
     }
 
     @Override

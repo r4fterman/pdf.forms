@@ -5,10 +5,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.utils.XMLUtils;
 import org.w3c.dom.Document;
 
+@Disabled
 class GroupWidgetTest {
 
     private GroupWidget widget;

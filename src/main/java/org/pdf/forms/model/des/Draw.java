@@ -9,16 +9,11 @@ import java.util.StringJoiner;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType
-public class Margins {
-
-    private static final String BOTTOM = "Bottom";
-    private static final String TOP = "Top";
-    private static final String RIGHT = "Right";
-    private static final String LEFT = "Left";
+public class Draw {
 
     private List<Property> property;
 
-    public Margins() {
+    public Draw() {
         this.property = new ArrayList<>();
     }
 
@@ -30,36 +25,20 @@ public class Margins {
         this.property = property;
     }
 
-    public Optional<String> getLeft() {
-        return getPropertyValue(LEFT);
+    public Optional<String> getLocation() {
+        return getPropertyValue("Location");
     }
 
-    public void setLeft(final String left) {
-        setPropertyValue(LEFT, left);
+    public void setLocation(final String location) {
+        setPropertyValue("Location", location);
     }
 
-    public Optional<String> getRight() {
-        return getPropertyValue(RIGHT);
+    public Optional<String> getSizing() {
+        return getPropertyValue("Sizing");
     }
 
-    public void setRight(final String right) {
-        setPropertyValue(RIGHT, right);
-    }
-
-    public Optional<String> getTop() {
-        return getPropertyValue(TOP);
-    }
-
-    public void setTop(final String top) {
-        setPropertyValue(TOP, top);
-    }
-
-    public Optional<String> getBottom() {
-        return getPropertyValue(BOTTOM);
-    }
-
-    public void setBottom(final String bottom) {
-        setPropertyValue(BOTTOM, bottom);
+    public void setSizing(final String sizing) {
+        setPropertyValue("Sizing", sizing);
     }
 
     private Optional<String> getPropertyValue(final String propertyName) {
@@ -85,9 +64,9 @@ public class Margins {
 
     @Override
     public boolean equals(final Object o) {
-        if (o instanceof Margins) {
-            final Margins margins = (Margins) o;
-            return Objects.equals(property, margins.property);
+        if (o instanceof Draw) {
+            final Draw draw = (Draw) o;
+            return Objects.equals(property, draw.property);
         }
         return false;
     }
@@ -99,7 +78,7 @@ public class Margins {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", Margins.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", Draw.class.getSimpleName() + "[", "]")
                 .add("property=" + property)
                 .toString();
     }

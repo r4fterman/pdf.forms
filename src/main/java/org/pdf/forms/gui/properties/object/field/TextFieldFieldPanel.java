@@ -12,19 +12,16 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TriStateCheckBox;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
 
 public class TextFieldFieldPanel extends JPanel {
 
@@ -36,7 +33,7 @@ public class TextFieldFieldPanel extends JPanel {
             "Sunken Box",
             "Custom..."};
 
-    private Map<IWidget, Element> widgetsAndProperties;
+    private Set<IWidget> widgets;
 
     private JCheckBox allowMultipleLinesBox;
     private JCheckBox limitLengthBox;
@@ -150,67 +147,92 @@ public class TextFieldFieldPanel extends JPanel {
         layout.setVerticalGroup(layout.createParallelGroup(LEADING).add(sequentialGroup5));
     }
 
-    public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
-        this.widgetsAndProperties = widgetsAndProperties;
+    public void setProperties(final Set<IWidget> widgets) {
+        this.widgets = widgets;
 
-        final TriStateCheckBox.State allowMultipleLinesToUse = getAllowedMultipleLinesToUse(widgetsAndProperties
-                .values());
+        final TriStateCheckBox.State allowMultipleLinesToUse = getAllowedMultipleLinesToUse(widgets);
         ((TriStateCheckBox) allowMultipleLinesBox).setState(allowMultipleLinesToUse);
 
-        final TriStateCheckBox.State limitLengthToUse = getLimitLengthToUse(widgetsAndProperties.values());
+        final TriStateCheckBox.State limitLengthToUse = getLimitLengthToUse(widgets);
         ((TriStateCheckBox) limitLengthBox).setState(limitLengthToUse);
 
-        final String maxCharsToUse = getMaxCharsToUse(widgetsAndProperties.values());
+        final String maxCharsToUse = getMaxCharsToUse(widgets);
         maxCharsBox.setText(maxCharsToUse);
 
     }
 
     private void updateMaxChars(final String value) {
-        if (value != null && !value.equals("mixed")) {
-            for (final Element widgetProperties: widgetsAndProperties.values()) {
-                XMLUtils.getPropertyElement(widgetProperties, "Max Chars")
-                        .ifPresent(element -> element.getAttributeNode("value").setValue(value));
-            }
+        if (widgets != null
+                && value != null
+                && !value.equals("mixed")) {
+            widgets.forEach(widget -> widget.getWidgetModel().getProperties().getObject().getField()
+                    .setMaxChars(value));
         }
     }
 
-    private TriStateCheckBox.State getAllowedMultipleLinesToUse(final Collection<Element> widgetElements) {
-        final List<Boolean> allowMultipleLinesValues = widgetElements.stream()
-                .map(element -> {
-                    final Element fieldProperties = (Element) element.getElementsByTagName("field")
-                            .item(0);
-
-                    return XMLUtils.getAttributeValueFromChildElement(fieldProperties,
-                            "Allow Multiple Lines")
-                            .map(Boolean::valueOf)
-                            .orElse(false);
-                })
+    private TriStateCheckBox.State getAllowedMultipleLinesToUse(final Set<IWidget> widgets) {
+        final List<Boolean> allowMultipleLinesValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getObject().getField().allowMultipleLines())
                 .collect(toUnmodifiableList());
 
         return getTriStateValue(allowMultipleLinesValues);
     }
 
-    private TriStateCheckBox.State getLimitLengthToUse(final Collection<Element> widgetElements) {
-        final List<Boolean> limitLengthValues = widgetElements.stream()
-                .map(element -> {
-                    final Element fieldProperties = (Element) element.getElementsByTagName("field")
-                            .item(0);
-
-                    return XMLUtils.getAttributeValueFromChildElement(fieldProperties, "Limit Length")
-                            .map(Boolean::valueOf)
-                            .orElse(false);
-                })
+    private TriStateCheckBox.State getLimitLengthToUse(final Set<IWidget> widgets) {
+        final List<Boolean> limitLengthValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getObject().getField().getLimitLength())
                 .collect(toUnmodifiableList());
 
         return getTriStateValue(limitLengthValues);
     }
 
-    private TriStateCheckBox.State getTriStateValue(final List<Boolean> valueList) {
+    private String getMaxCharsToUse(final Set<IWidget> widgets) {
+        final List<String> maxCharValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getObject().getField().getMaxChars()
+                        .orElse("10"))
+                .collect(toUnmodifiableList());
+
+        return findCommonOrMixedValue(maxCharValues);
+    }
+
+    private void saveLimitLength(final MouseEvent event) {
+        final TriStateCheckBox.State state = (((TriStateCheckBox) limitLengthBox).getState());
+        final Optional<Boolean> triStateValue = getTriStateValue(state);
+        if (triStateValue.isEmpty()) {
+            return;
+        }
+
+        final boolean limit = triStateValue.get();
+        widgets.forEach(widget -> widget.getWidgetModel().getProperties().getObject().getField().setLimitLength(limit));
+    }
+
+    private void saveAllowedMultipleLines(final MouseEvent event) {
+        final TriStateCheckBox.State state = (((TriStateCheckBox) allowMultipleLinesBox).getState());
+        final Optional<Boolean> triStateValue = getTriStateValue(state);
+        if (triStateValue.isEmpty()) {
+            return;
+        }
+
+        final boolean allow = triStateValue.get();
+        widgets.forEach(widget -> widget.getWidgetModel().getProperties().getObject().getField()
+                .allowMultipleLines(allow));
+    }
+
+    private Optional<Boolean> getTriStateValue(final TriStateCheckBox.State state) {
+        if (state == TriStateCheckBox.DONT_CARE) {
+            return Optional.empty();
+        }
+
+        final boolean selected = state == TriStateCheckBox.SELECTED;
+        return Optional.of(selected);
+    }
+
+    private TriStateCheckBox.State getTriStateValue(final List<Boolean> values) {
         final boolean listContainsOnlyEqualValues = Collections
-                .frequency(valueList, valueList.get(0)) == valueList.size();
+                .frequency(values, values.get(0)) == values.size();
 
         if (listContainsOnlyEqualValues) {
-            if (Boolean.TRUE.equals(valueList.get(0))) {
+            if (Boolean.TRUE.equals(values.get(0))) {
                 return TriStateCheckBox.SELECTED;
             }
             return TriStateCheckBox.NOT_SELECTED;
@@ -218,62 +240,13 @@ public class TextFieldFieldPanel extends JPanel {
         return TriStateCheckBox.DONT_CARE;
     }
 
-    private String getMaxCharsToUse(final Collection<Element> widgetElements) {
-        final List<String> maxCharValues = widgetElements.stream()
-                .map(element -> {
-                    final Element fieldProperties = (Element) element.getElementsByTagName("field").item(0);
-                    return XMLUtils.getAttributeValueFromChildElement(fieldProperties, "Max Chars")
-                            .orElse("10");
-                })
-                .collect(toUnmodifiableList());
-
+    private String findCommonOrMixedValue(final List<String> values) {
         final boolean listContainsOnlyEqualValues = Collections
-                .frequency(maxCharValues, maxCharValues.get(0)) == maxCharValues.size();
+                .frequency(values, values.get(0)) == values.size();
         if (listContainsOnlyEqualValues) {
-            return maxCharValues.get(0);
+            return values.get(0);
         }
         return "mixed";
-    }
-
-    private void saveLimitLength(final MouseEvent event) {
-        final TriStateCheckBox.State state = (((TriStateCheckBox) limitLengthBox).getState());
-
-        for (final Element propertiesElement: widgetsAndProperties.values()) {
-            final List<Element> objectProperties = XMLUtils.getElementsFromNodeList(propertiesElement.getChildNodes());
-
-            final List<Element> fieldProperties = XMLUtils
-                    .getElementsFromNodeList(objectProperties.get(0).getChildNodes());
-            final Element element = fieldProperties.get(2);
-            saveTriStateValue(state, element);
-        }
-    }
-
-    private void saveAllowedMultipleLines(final MouseEvent event) {
-        final TriStateCheckBox.State state = (((TriStateCheckBox) allowMultipleLinesBox).getState());
-
-        for (final Element propertiesElement: widgetsAndProperties.values()) {
-            final List<Element> objectProperties = XMLUtils.getElementsFromNodeList(propertiesElement.getChildNodes());
-
-            final List<Element> fieldProperties = XMLUtils
-                    .getElementsFromNodeList(objectProperties.get(0).getChildNodes());
-            final Element element = fieldProperties.get(1);
-            saveTriStateValue(state, element);
-        }
-    }
-
-    private void saveTriStateValue(
-            final TriStateCheckBox.State state,
-            final Element element) {
-        if (state == TriStateCheckBox.DONT_CARE) {
-            return;
-        }
-
-        final Attr valueNode = element.getAttributeNode("value");
-        if (state == TriStateCheckBox.SELECTED) {
-             valueNode.setValue("true");
-        } else {
-            valueNode.setValue("false");
-        }
     }
 
 }

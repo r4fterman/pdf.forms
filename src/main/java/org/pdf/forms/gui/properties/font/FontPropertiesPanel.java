@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.*;
@@ -249,11 +250,11 @@ public class FontPropertiesPanel extends JPanel {
     private void updateFontProperties(final IWidget widget) {
         final FontCaption fontCaption = widget.getWidgetModel().getProperties().getFont().getFontCaption();
 
-        final FontValue fontValue;
+        final Optional<FontValue> fontValue;
         if (widget.allowEditCaptionAndValue()) {
-            fontValue = widget.getWidgetModel().getProperties().getFont().getFontValue();
+            fontValue = Optional.of(widget.getWidgetModel().getProperties().getFont().getFontValue());
         } else {
-            fontValue = null;
+            fontValue = Optional.empty();
         }
 
         updateFontNameProperty(widget, fontCaption, fontValue);
@@ -267,108 +268,108 @@ public class FontPropertiesPanel extends JPanel {
     private void updateFontNameProperty(
             final IWidget widget,
             final FontCaption fontCaption,
-            final FontValue fontValue) {
-        final Object value = fontNameBox.getSelectedItem();
+            final Optional<FontValue> fontValue) {
+        final String value = Optional.ofNullable(fontNameBox.getSelectedItem()).map(Object::toString).orElse("");
 
         if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
-            fontCaption.setFontName(value.toString());
+            fontCaption.setFontName(value);
             if (widget.allowEditCaptionAndValue()) {
-                fontValue.setFontName(value.toString());
+                fontValue.ifPresent(font -> font.setFontName(value));
             }
         } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
-            fontCaption.setFontName(value.toString());
+            fontCaption.setFontName(value);
         } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
-            fontValue.setFontName(value.toString());
+            fontValue.ifPresent(font -> font.setFontName(value));
         }
     }
 
     private void updateFontSizeProperty(
             final IWidget widget,
             final FontCaption fontCaption,
-            final FontValue fontValue) {
-        final Object value = fontSizeBox.getSelectedItem();
+            final Optional<FontValue> fontValue) {
+        final String value = Optional.ofNullable(fontSizeBox.getSelectedItem()).map(Object::toString).orElse("");
 
         if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
-            fontCaption.setFontSize(value.toString());
+            fontCaption.setFontSize(value);
             if (widget.allowEditCaptionAndValue()) {
-                fontValue.setFontSize(value.toString());
+                fontValue.ifPresent(font -> font.setFontSize(value));
             }
         } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
-            fontCaption.setFontSize(value.toString());
+            fontCaption.setFontSize(value);
         } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
-            fontValue.setFontSize(value.toString());
+            fontValue.ifPresent(font -> font.setFontSize(value));
         }
     }
 
     private void updateFontStyleProperty(
             final IWidget widget,
             final FontCaption fontCaption,
-            final FontValue fontValue) {
+            final Optional<FontValue> fontValue) {
         final String value = getComboBoxSelectedValueAsString(fontStyleBox);
 
         if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
             fontCaption.setFontStyle(value);
             if (widget.allowEditCaptionAndValue()) {
-                fontValue.setFontStyle(value);
+                fontValue.ifPresent(font -> font.setFontStyle(value));
             }
         } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
             fontCaption.setFontStyle(value);
         } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
-            fontValue.setFontStyle(value);
+            fontValue.ifPresent(font -> font.setFontStyle(value));
         }
     }
 
     private void updateUnderlineProperty(
             final IWidget widget,
             final FontCaption fontCaption,
-            final FontValue fontValue) {
+            final Optional<FontValue> fontValue) {
         final String value = getComboBoxSelectedValueAsString(underlineBox);
 
         if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
             fontCaption.setUnderline(value);
             if (widget.allowEditCaptionAndValue()) {
-                fontValue.setUnderline(value);
+                fontValue.ifPresent(font -> font.setUnderline(value));
             }
         } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
             fontCaption.setUnderline(value);
         } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
-            fontValue.setUnderline(value);
+            fontValue.ifPresent(font -> font.setUnderline(value));
         }
     }
 
     private void updateStrikethroughProperty(
             final IWidget widget,
             final FontCaption fontCaption,
-            final FontValue fontValue) {
+            final Optional<FontValue> fontValue) {
         final String value = getComboBoxSelectedValueAsString(strikethroughBox);
 
         if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
             fontCaption.setStrikeThrough(value);
             if (widget.allowEditCaptionAndValue()) {
-                fontValue.setStrikeThrough(value);
+                fontValue.ifPresent(font -> font.setStrikeThrough(value));
             }
         } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
             fontCaption.setStrikeThrough(value);
         } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
-            fontValue.setStrikeThrough(value);
+            fontValue.ifPresent(font -> font.setStrikeThrough(value));
         }
     }
 
     private void updateColorProperty(
             final IWidget widget,
             final FontCaption fontCaption,
-            final FontValue fontValue) {
+            final Optional<FontValue> fontValue) {
         final String value = getSelectedColorValueAsString();
 
         if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
             fontCaption.setColor(value);
             if (widget.allowEditCaptionAndValue()) {
-                fontValue.setColor(value);
+                fontValue.ifPresent(font -> font.setColor(value));
             }
         } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
             fontCaption.setColor(value);
         } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
-            fontValue.setColor(value);
+            fontValue.ifPresent(font -> font.setColor(value));
         }
     }
 

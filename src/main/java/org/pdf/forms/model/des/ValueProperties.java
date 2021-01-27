@@ -11,6 +11,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "value")
 public class ValueProperties {
 
+    private static final String TYPE = "Type";
+    private static final String DEFAULT = "Default";
+    private static final String EMPTY_MESSAGE = "Empty Message";
+
     private List<Property> property;
 
     public ValueProperties() {
@@ -26,13 +30,47 @@ public class ValueProperties {
     }
 
     public Optional<String> getDefault() {
-        return getProperty("Default");
+        return getPropertyValue(DEFAULT);
     }
 
-    private Optional<String> getProperty(final String propertyName) {
+    public void setDefault(final String defaultValue) {
+        setPropertyValue(DEFAULT, defaultValue);
+    }
+
+    public Optional<String> getType() {
+        return getPropertyValue(TYPE);
+    }
+
+    public void setType(final String type) {
+        setPropertyValue(TYPE, type);
+    }
+
+    public Optional<String> getEmptyMessage() {
+        return getPropertyValue(EMPTY_MESSAGE);
+    }
+
+    public void setEmptyMessage(final String emptyMessage) {
+        setPropertyValue(EMPTY_MESSAGE, emptyMessage);
+    }
+
+    private void setPropertyValue(
+            final String propertyName,
+            final String propertyValue) {
+        getProperty(propertyName)
+                .ifPresentOrElse(
+                        p -> p.setValue(propertyValue),
+                        () -> property.add(new Property(propertyName, propertyValue))
+                );
+    }
+
+    private Optional<String> getPropertyValue(final String propertyName) {
+        return getProperty(propertyName)
+                .map(Property::getValue);
+    }
+
+    private Optional<Property> getProperty(final String propertyName) {
         return getProperty().stream()
                 .filter(p -> p.getName().equals(propertyName))
-                .map(Property::getValue)
                 .findFirst();
     }
 

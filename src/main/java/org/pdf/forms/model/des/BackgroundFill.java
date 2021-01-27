@@ -11,6 +11,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "backgroundfill")
 public class BackgroundFill {
 
+    private static final String STYLE = "Style";
+    private static final String FILL_COLOR = "Fill Color";
+
     private List<Property> property;
 
     public BackgroundFill() {
@@ -26,16 +29,34 @@ public class BackgroundFill {
     }
 
     public Optional<String> getStyle() {
-        return getPropertyValue("Style");
+        return getPropertyValue(STYLE);
+    }
+
+    public void setStyle(final String style) {
+        setPropertyValue(STYLE, style);
     }
 
     public Optional<String> getFillColor() {
-        return getPropertyValue("Fill Color");
+        return getPropertyValue(FILL_COLOR);
+    }
+
+    public void setFillColor(final String color) {
+        setPropertyValue(FILL_COLOR, color);
     }
 
     private Optional<String> getPropertyValue(final String propertyName) {
         return getProperty(propertyName)
                 .map(Property::getValue);
+    }
+
+    private void setPropertyValue(
+            final String propertyName,
+            final String propertyValue) {
+        getProperty(propertyName)
+                .ifPresentOrElse(
+                        p -> p.setValue(propertyValue),
+                        () -> property.add(new Property(propertyName, propertyValue))
+                );
     }
 
     private Optional<Property> getProperty(final String propertyName) {

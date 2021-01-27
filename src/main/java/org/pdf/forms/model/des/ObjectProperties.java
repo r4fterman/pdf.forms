@@ -12,12 +12,14 @@ public class ObjectProperties {
     private ValueProperties value;
     private BindingProperties binding;
     private Items items;
+    private Draw draw;
 
     public ObjectProperties() {
         this.field = new FieldProperties();
         this.value = new ValueProperties();
         this.binding = new BindingProperties();
         this.items = new Items();
+        this.draw = new Draw();
     }
 
     public FieldProperties getField() {
@@ -52,6 +54,14 @@ public class ObjectProperties {
         this.items = items;
     }
 
+    public Draw getDraw() {
+        return draw;
+    }
+
+    public void setDraw(final Draw draw) {
+        this.draw = draw;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (o instanceof ObjectProperties) {
@@ -59,14 +69,15 @@ public class ObjectProperties {
             return Objects.equals(field, that.field)
                     && Objects.equals(value, that.value)
                     && Objects.equals(binding, that.binding)
-                    && Objects.equals(items, that.items);
+                    && Objects.equals(items, that.items)
+                    && Objects.equals(draw, that.draw);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(field, value, binding, items);
+        return Objects.hash(field, value, binding, items, draw);
     }
 
     @Override
@@ -76,6 +87,7 @@ public class ObjectProperties {
                 .add("value=" + value)
                 .add("binding=" + binding)
                 .add("items=" + items)
+                .add("draw=" + draw)
                 .toString();
     }
 }

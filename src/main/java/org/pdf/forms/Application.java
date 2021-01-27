@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 public final class Application {
 
-    private static final String DEFAULT_VERSION = "0.8b05";
     private static final String MANIFEST_MF = "META-INF/MANIFEST.MF";
 
     public static void main(final String[] args) {
@@ -33,7 +32,7 @@ public final class Application {
     }
 
     private void start() {
-        final String versionValue = readManifest().map(this::getVersion).orElse(DEFAULT_VERSION);
+        final String versionValue = readManifest().map(this::getVersion).orElse("");
         final Version version = new Version(versionValue);
 
         splashScreen(version);
@@ -111,6 +110,6 @@ public final class Application {
     private String getVersion(final Manifest manifest) {
         return Optional
                 .ofNullable(manifest.getMainAttributes().getValue("Implementation-Version"))
-                .orElse(DEFAULT_VERSION);
+                .orElse("");
     }
 }

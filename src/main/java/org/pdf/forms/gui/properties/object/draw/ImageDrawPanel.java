@@ -8,19 +8,16 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 public class ImageDrawPanel extends JPanel {
 
@@ -28,7 +25,7 @@ public class ImageDrawPanel extends JPanel {
             "Stretch Image To Fit",
             "Use Image Size"};
 
-    private Map<IWidget, Element> widgetsAndProperties;
+    private Set<IWidget> widgets;
 
     private IDesigner designerPanel;
 
@@ -111,19 +108,13 @@ public class ImageDrawPanel extends JPanel {
     }
 
     private void updateSizing(final ActionEvent event) {
-        if (widgetsAndProperties == null) {
+        if (widgets == null) {
             return;
         }
 
         final String sizing = (String) sizingBox.getSelectedItem();
-        for (final Map.Entry<IWidget, Element> entry: widgetsAndProperties.entrySet()) {
-            final IWidget widget = entry.getKey();
-            final Element widgetProperties = entry.getValue();
-            if (sizing != null) {
-                XMLUtils.getPropertyElement(widgetProperties, "Sizing")
-                        .ifPresent(element -> element.getAttributeNode("value").setValue(sizing));
-            }
-            widget.setObjectProperties(widgetProperties);
+        if (sizing != null) {
+            widgets.forEach(widget -> widget.getWidgetModel().getProperties().getObject().getDraw().setSizing(sizing));
         }
 
         designerPanel.repaint();
@@ -144,31 +135,26 @@ public class ImageDrawPanel extends JPanel {
     }
 
     private void updateImageLocation() {
-        if (widgetsAndProperties == null) {
+        if (widgets == null) {
             return;
         }
 
         final String location = imageLocationBox.getText();
-        for (final Map.Entry<IWidget, Element> entry: widgetsAndProperties.entrySet()) {
-            final IWidget widget = entry.getKey();
-            final Element widgetProperties = entry.getValue();
-            if (location != null && !location.equals("mixed")) {
-                final Element locationElement = XMLUtils.getPropertyElement(widgetProperties, "Location").get();
-                locationElement.getAttributeNode("value").setValue(location);
-            }
-            widget.setObjectProperties(widgetProperties);
+        if (location != null && !location.equals("mixed")) {
+            widgets.forEach(widget -> widget.getWidgetModel().getProperties().getObject().getDraw()
+                    .setLocation(location));
         }
 
         designerPanel.repaint();
     }
 
-    public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
-        this.widgetsAndProperties = widgetsAndProperties;
+    public void setProperties(final Set<IWidget> widgets) {
+        this.widgets = widgets;
 
-        final String locationToUse = getLocationToUse(widgetsAndProperties.values());
+        final String locationToUse = getLocationToUse(widgets);
         imageLocationBox.setText(locationToUse);
 
-        final String sizingToUse = getSizingToUse(widgetsAndProperties.values());
+        final String sizingToUse = getSizingToUse(widgets);
         if (sizingToUse.equals("mixed")) {
             setComboValue(sizingBox, null);
         } else {
@@ -176,37 +162,22 @@ public class ImageDrawPanel extends JPanel {
         }
     }
 
-    private String getSizingToUse(final Collection<Element> elements) {
-        final List<String> sizingValues = elements.stream()
-                .map(objectProperties -> {
-                    final Element drawProperties = (Element) objectProperties.getElementsByTagName("draw").item(0);
-                    return XMLUtils.getAttributeValueFromChildElement(drawProperties, "Sizing")
-                            .orElse("Stretch Image To Fit");
-                })
+    private String getSizingToUse(final Set<IWidget> widgets) {
+        final List<String> sizingValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getObject().getDraw().getSizing()
+                        .orElse("Stretch Image To Fit"))
                 .collect(toUnmodifiableList());
 
-        final boolean listContainsOnlyEqualValues =
-                Collections.frequency(sizingValues, sizingValues.get(0)) == sizingValues.size();
-        if (listContainsOnlyEqualValues) {
-            return sizingValues.get(0);
-        }
-        return "mixed";
+        return findCommonOrMixedValue(sizingValues);
     }
 
-    private String getLocationToUse(final Collection<Element> elements) {
-        final List<String> locationValues = elements.stream()
-                .map(objectProperties -> {
-                    final Element drawProperties = (Element) objectProperties.getElementsByTagName("draw").item(0);
-                    return XMLUtils.getAttributeValueFromChildElement(drawProperties, "Location").orElse("top left");
-                })
+    private String getLocationToUse(final Set<IWidget> widgets) {
+        final List<String> locationValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getObject().getDraw().getLocation()
+                        .orElse("top left"))
                 .collect(toUnmodifiableList());
 
-        final boolean listContainsOnlyEqualValues =
-                Collections.frequency(locationValues, locationValues.get(0)) == locationValues.size();
-        if (listContainsOnlyEqualValues) {
-            return locationValues.get(0);
-        }
-        return "mixed";
+        return findCommonOrMixedValue(locationValues);
     }
 
     private void setComboValue(
@@ -226,6 +197,15 @@ public class ImageDrawPanel extends JPanel {
 
     public void setDesignerPanel(final IDesigner designerPanel) {
         this.designerPanel = designerPanel;
+    }
+
+    private String findCommonOrMixedValue(final List<String> values) {
+        final boolean listContainsOnlyEqualValues =
+                Collections.frequency(values, values.get(0)) == values.size();
+        if (listContainsOnlyEqualValues) {
+            return values.get(0);
+        }
+        return "mixed";
     }
 
 }

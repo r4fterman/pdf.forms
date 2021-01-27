@@ -198,7 +198,7 @@ public class RadioButtonGroupOrganiser extends JPanel {
                     XMLUtils.getPropertyElement(objectProperties, "Default")
                             .ifPresent(defaultElement -> {
                                 defaultElement.getAttributeNode("value").setValue("Off");
-                                widget.setObjectProperties(objectProperties);
+                                widget.setObjectProperties();
                             });
                 });
     }

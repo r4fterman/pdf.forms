@@ -1,9 +1,6 @@
 package org.pdf.forms.gui.properties.object;
 
-import static java.util.stream.Collectors.toUnmodifiableMap;
-
 import java.awt.*;
-import java.util.Map;
 import java.util.Set;
 
 import javax.swing.*;
@@ -20,7 +17,6 @@ import org.pdf.forms.gui.properties.object.page.PagePanel;
 import org.pdf.forms.gui.properties.object.value.SimpleValuePanel;
 import org.pdf.forms.gui.properties.object.value.ValuePanel;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 public class ObjectPropertiesPanel extends JPanel {
 
@@ -55,117 +51,112 @@ public class ObjectPropertiesPanel extends JPanel {
             return;
         }
 
-        final Map<IWidget, Element> widgetsAndProperties = widgets.stream()
-                .collect(toUnmodifiableMap(
-                        widget -> widget,
-                        widget -> (Element) widget.getProperties().getElementsByTagName("object").item(0))
-                );
-
-        setPropertiesToPanel(type, widgetsAndProperties);
+        setPropertiesToPanel(type, widgets);
     }
 
     private void setPropertiesToPanel(
             final int type,
-            final Map<IWidget, Element> widgetsAndProperties) {
+            final Set<IWidget> widgets) {
         switch (type) {
             case IWidget.TEXT_FIELD:
-                setTextFieldOptionToPanel(widgetsAndProperties);
+                setTextFieldOptionToPanel(widgets);
                 break;
             case IWidget.BUTTON:
-                setButtonOptionsToPanel(widgetsAndProperties);
+                setButtonOptionsToPanel(widgets);
                 break;
             case IWidget.COMBO_BOX:
-                setComboBoxOptionsToPanel(widgetsAndProperties);
+                setComboBoxOptionsToPanel(widgets);
                 break;
             case IWidget.LIST_BOX:
-                setListBoxOptionsToPanel(widgetsAndProperties);
+                setListBoxOptionsToPanel(widgets);
                 break;
             case IWidget.CHECK_BOX:
-                setCheckBoxOptionsToPanel(widgetsAndProperties);
+                setCheckBoxOptionsToPanel(widgets);
                 break;
             case IWidget.RADIO_BUTTON:
-                setRadioButtonOptionsToPanel(widgetsAndProperties);
+                setRadioButtonOptionsToPanel(widgets);
                 break;
             case IWidget.IMAGE:
-                setImageOptionsToPanel(widgetsAndProperties);
+                setImageOptionsToPanel(widgets);
                 break;
             default:
                 break;
         }
     }
 
-    private void setCheckBoxOptionsToPanel(final Map<IWidget, Element> widgetsAndProperties) {
+    private void setCheckBoxOptionsToPanel(final Set<IWidget> widgets) {
         final CheckBoxFieldPanel fieldPanel = new CheckBoxFieldPanel(designerPanel);
-        fieldPanel.setProperties(widgetsAndProperties);
+        fieldPanel.setProperties(widgets);
 
-        addFieldValueBindingTabs(fieldPanel, widgetsAndProperties);
+        addFieldValueBindingTabs(fieldPanel, widgets);
     }
-    private void setRadioButtonOptionsToPanel(final Map<IWidget, Element> widgetsAndProperties) {
+
+    private void setRadioButtonOptionsToPanel(final Set<IWidget> widgets) {
         final RadioButtonFieldPanel fieldPanel = new RadioButtonFieldPanel(designerPanel);
-        fieldPanel.setProperties(widgetsAndProperties);
+        fieldPanel.setProperties(widgets);
 
-        addFieldValueBindingTabs(fieldPanel, widgetsAndProperties);
+        addFieldValueBindingTabs(fieldPanel, widgets);
     }
 
-    private void setListBoxOptionsToPanel(final Map<IWidget, Element> widgetsAndProperties) {
+    private void setListBoxOptionsToPanel(final Set<IWidget> widgets) {
         final ListFieldPanel fieldPanel = new ListFieldPanel(IWidget.LIST_BOX);
         fieldPanel.setDesignerPanel(designerPanel);
-        fieldPanel.setProperties(widgetsAndProperties);
+        fieldPanel.setProperties(widgets);
 
-        addFieldValueBindingTabs(fieldPanel, widgetsAndProperties);
+        addFieldValueBindingTabs(fieldPanel, widgets);
     }
 
-    private void setComboBoxOptionsToPanel(final Map<IWidget, Element> widgetsAndProperties) {
+    private void setComboBoxOptionsToPanel(final Set<IWidget> widgets) {
         final ListFieldPanel fieldPanel = new ListFieldPanel(IWidget.COMBO_BOX);
         fieldPanel.setDesignerPanel(designerPanel);
-        fieldPanel.setProperties(widgetsAndProperties);
+        fieldPanel.setProperties(widgets);
 
-        addFieldValueBindingTabs(fieldPanel, widgetsAndProperties);
+        addFieldValueBindingTabs(fieldPanel, widgets);
     }
 
-    private void setTextFieldOptionToPanel(final Map<IWidget, Element> widgetsAndProperties) {
+    private void setTextFieldOptionToPanel(final Set<IWidget> widgets) {
         final TextFieldFieldPanel fieldPanel = new TextFieldFieldPanel();
-        fieldPanel.setProperties(widgetsAndProperties);
+        fieldPanel.setProperties(widgets);
 
         final SimpleValuePanel simpleValuePanel = new SimpleValuePanel(IWidget.TEXT_FIELD);
-        simpleValuePanel.setProperties(widgetsAndProperties);
+        simpleValuePanel.setProperties(widgets);
 
-        addFieldValueBindingTabs(fieldPanel, widgetsAndProperties);
+        addFieldValueBindingTabs(fieldPanel, widgets);
     }
 
-    private void setButtonOptionsToPanel(final Map<IWidget, Element> widgetsAndProperties) {
+    private void setButtonOptionsToPanel(final Set<IWidget> widgets) {
         final SimpleValuePanel valuePanel = new SimpleValuePanel(IWidget.BUTTON);
-        valuePanel.setProperties(widgetsAndProperties);
+        valuePanel.setProperties(widgets);
 
         tabs.add("Value", valuePanel);
-        tabs.add("Binding", createBindingPanel(widgetsAndProperties));
+        tabs.add("Binding", createBindingPanel(widgets));
     }
 
-    private void setImageOptionsToPanel(final Map<IWidget, Element> widgetsAndProperties) {
+    private void setImageOptionsToPanel(final Set<IWidget> widgets) {
         final ImageDrawPanel imageDrawPanel = new ImageDrawPanel();
         imageDrawPanel.setDesignerPanel(designerPanel);
-        imageDrawPanel.setProperties(widgetsAndProperties);
+        imageDrawPanel.setProperties(widgets);
 
         tabs.add("Draw", imageDrawPanel);
     }
 
     private void addFieldValueBindingTabs(
             final Component fieldPanel,
-            final Map<IWidget, Element> widgetsAndProperties) {
+            final Set<IWidget> widgetsAndProperties) {
         tabs.add("Field", fieldPanel);
         tabs.add("Value", createValuePanel(widgetsAndProperties));
         tabs.add("Binding", createBindingPanel(widgetsAndProperties));
     }
 
-    private ValuePanel createValuePanel(final Map<IWidget, Element> widgetsAndProperties) {
+    private ValuePanel createValuePanel(final Set<IWidget> widgets) {
         final ValuePanel valuePanel = new ValuePanel(designerPanel);
-        valuePanel.setProperties(widgetsAndProperties);
+        valuePanel.setProperties(widgets);
         return valuePanel;
     }
 
-    private BindingPanel createBindingPanel(final Map<IWidget, Element> widgetsAndProperties) {
+    private BindingPanel createBindingPanel(final Set<IWidget> widgets) {
         final BindingPanel bindingPanel = new BindingPanel(designerPanel.getMainFrame());
-        bindingPanel.setProperties(widgetsAndProperties);
+        bindingPanel.setProperties(widgets);
         return bindingPanel;
     }
 

@@ -192,7 +192,7 @@ public class CheckBoxButtonGroupOrganiser extends JPanel {
         if (propertyElement.isPresent()) {
             final Element defaultElement = propertyElement.get();
             defaultElement.getAttributeNode("value").setValue("Off");
-            radioButtonWidget.setObjectProperties(objectProperties);
+            radioButtonWidget.setObjectProperties();
         }
     }
 

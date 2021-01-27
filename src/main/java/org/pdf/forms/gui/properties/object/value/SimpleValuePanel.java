@@ -1,16 +1,18 @@
 package org.pdf.forms.gui.properties.object.value;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 public class SimpleValuePanel extends JPanel {
 
@@ -21,7 +23,7 @@ public class SimpleValuePanel extends JPanel {
             "Read Only"
     };
 
-    private Map<IWidget, Element> widgetsAndProperties;
+    private Set<IWidget> widgets;
 
     private JTextField defaultTextBox;
     private JLabel typeLabel;
@@ -127,45 +129,36 @@ public class SimpleValuePanel extends JPanel {
     private void updateDefaultText() {
         final String defaultText = defaultTextBox.getText();
 
-        if (widgetsAndProperties != null) {
-            for (final Map.Entry<IWidget, Element> entry: widgetsAndProperties.entrySet()) {
-                final IWidget widget = entry.getKey();
-                final Element widgetProperties = entry.getValue();
-
-                if (defaultText != null && !defaultText.equals("mixed")) {
-                    final Element defaultTextElement = XMLUtils.getPropertyElement(widgetProperties, "Default").get();
-                    defaultTextElement.getAttributeNode("value").setValue(defaultText);
-                }
-
-                widget.setObjectProperties(widgetProperties);
-            }
+        if (widgets != null
+                && defaultText != null
+                && !defaultText.equals("mixed")) {
+            widgets.forEach(widget -> widget.getWidgetModel().getProperties().getObject().getValue()
+                    .setDefault(defaultText));
         }
     }
 
-    public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
-        this.widgetsAndProperties = widgetsAndProperties;
+    public void setProperties(final Set<IWidget> widgets) {
+        this.widgets = widgets;
 
-        String defaultTextToUse = null;
-        for (final Element objectPropertiesElement: widgetsAndProperties.values()) {
-            final Element valueProperties = (Element) objectPropertiesElement.getElementsByTagName("value").item(0);
+        final String defaultText = getDefaultText(widgets);
+        defaultTextBox.setText(defaultText);
+    }
 
-            final String defaultText = XMLUtils.getAttributeValueFromChildElement(valueProperties, "Default").orElse("");
-            if (defaultTextToUse == null) {
-                defaultTextToUse = defaultText;
-            } else {
-                if (!defaultTextToUse.equals(defaultText)) {
-                    defaultTextToUse = "mixed";
-                }
-            }
+    private String getDefaultText(final Set<IWidget> widgets) {
+        final List<String> defaultValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getObject().getValue().getDefault().orElse(""))
+                .collect(toUnmodifiableList());
 
-            final String mixed;
-            if (defaultTextToUse.equals("mixed")) {
-                mixed = "mixed";
-            } else {
-                mixed = defaultTextToUse;
-            }
-            defaultTextBox.setText(mixed);
+        return findCommonOrMixedValue(defaultValues);
+    }
+
+    private String findCommonOrMixedValue(final List<String> values) {
+        final int numberOfIdenticalItems = Collections.frequency(values, values.get(0));
+        final boolean listContainsOnlyEqualValues = numberOfIdenticalItems == values.size();
+        if (listContainsOnlyEqualValues) {
+            return values.get(0);
         }
+        return "mixed";
     }
 
 }

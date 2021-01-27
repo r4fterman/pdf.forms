@@ -12,6 +12,7 @@ import javax.swing.*;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.IDesigner;
+import org.pdf.forms.model.des.Widget;
 import org.pdf.forms.widgets.ButtonGroup;
 import org.pdf.forms.widgets.ButtonWidget;
 import org.pdf.forms.widgets.CheckBoxWidget;
@@ -32,7 +33,6 @@ import org.pdf.forms.widgets.components.PdfTextField;
 import org.pdf.forms.widgets.components.SplitComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 
 public class WidgetFactory {
 
@@ -74,7 +74,7 @@ public class WidgetFactory {
     }
 
     private final Logger logger = LoggerFactory.getLogger(WidgetFactory.class);
-    private final Map<Integer, BiFunction<Element, Rectangle, IWidget>> factoryMethods;
+    private final Map<Integer, BiFunction<Widget, Rectangle, IWidget>> factoryMethods;
 
     private final FontHandler fontHandler;
 
@@ -146,36 +146,36 @@ public class WidgetFactory {
 
     public IWidget createWidget(
             final int widgetToAdd,
-            final Element root) {
-        return createWidgetWithBounds(widgetToAdd, root, null);
+            final Widget widget) {
+        return createWidgetWithBounds(widgetToAdd, widget, null);
     }
 
     private IWidget createWidgetWithBounds(
             final int widgetToAdd,
-            final Element root,
+            final Widget widget,
             final Rectangle bounds) {
         return factoryMethods.getOrDefault(widgetToAdd, (r, b) -> {
             logger.warn("Manual exit because of impossible situation in WidgetFactory, trying to add widget type {}",
                     widgetToAdd);
             return null;
-        }).apply(root, bounds);
+        }).apply(widget, bounds);
     }
 
     private IWidget createImageWidget(
-            final Element root,
+            final Widget widget,
             final Rectangle bounds) {
         final JLabel image = new JLabel();
         image.setBackground(Color.WHITE);
 
         final JLabel label = getComponentAsLabel(image, getSize(150, 150, bounds));
-        if (root == null) {
+        if (widget == null) {
             return new ImageWidget(IWidget.IMAGE, image, label, fontHandler);
         }
-        return new ImageWidget(IWidget.IMAGE, image, label, root, fontHandler);
+        return new ImageWidget(IWidget.IMAGE, image, label, widget, fontHandler);
     }
 
     private IWidget createTextField(
-            final Element root,
+            final Widget widget,
             final Rectangle bounds) {
         final SplitComponent tf = new SplitComponent("Text Field",
                 new PdfTextField("Text Field", fontHandler),
@@ -183,41 +183,41 @@ public class WidgetFactory {
                 fontHandler);
 
         final JLabel label = getComponentAsLabel(tf, getSize(150, 20, bounds));
-        if (root == null) {
+        if (widget == null) {
             return new TextFieldWidget(IWidget.TEXT_FIELD, tf, label, fontHandler);
         }
-        return new TextFieldWidget(IWidget.TEXT_FIELD, tf, label, root, fontHandler);
+        return new TextFieldWidget(IWidget.TEXT_FIELD, tf, label, widget, fontHandler);
     }
 
     private IWidget createLabel(
-            final Element root,
+            final Widget widget,
             final Rectangle bounds) {
         final PdfCaption label = new PdfCaption("Text", fontHandler);
         label.setBackground(IDesigner.PAGE_COLOR);
 
         final JLabel componentAsLabel = getComponentAsLabel(label, getSize(100, 20, bounds));
-        if (root == null) {
+        if (widget == null) {
             return new TextWidget(IWidget.TEXT, label, componentAsLabel, fontHandler);
         }
-        return new TextWidget(IWidget.TEXT, label, componentAsLabel, root, fontHandler);
+        return new TextWidget(IWidget.TEXT, label, componentAsLabel, widget, fontHandler);
     }
 
     private CheckBoxWidget createCheckBox(
-            final Element root,
+            final Widget widget,
             final Rectangle bounds) {
         final PdfCheckBox cb = new PdfCheckBox();
         cb.setBackground(IDesigner.PAGE_COLOR);
 
         final SplitComponent checkBox = new SplitComponent("Check Box", cb, SplitComponent.CAPTION_RIGHT, fontHandler);
         final JLabel label = getComponentAsLabel(checkBox, getSize(100, 20, bounds));
-        if (root == null) {
+        if (widget == null) {
             return new CheckBoxWidget(IWidget.CHECK_BOX, checkBox, label, fontHandler);
         }
-        return new CheckBoxWidget(IWidget.CHECK_BOX, checkBox, label, root, fontHandler);
+        return new CheckBoxWidget(IWidget.CHECK_BOX, checkBox, label, widget, fontHandler);
     }
 
     private IWidget createComboBox(
-            final Element root,
+            final Widget widget,
             final Rectangle bounds) {
         final PdfComboBox pdfComboBox = new PdfComboBox(fontHandler);
 
@@ -226,40 +226,42 @@ public class WidgetFactory {
                 SplitComponent.CAPTION_LEFT,
                 fontHandler);
         final JLabel label = getComponentAsLabel(combo, getSize(200, 20, bounds));
-        if (root == null) {
+
+        if (widget == null) {
             return new ComboBoxWidget(IWidget.COMBO_BOX, combo, label, fontHandler);
         }
-        return new ComboBoxWidget(IWidget.COMBO_BOX, combo, label, root, fontHandler);
+        return new ComboBoxWidget(IWidget.COMBO_BOX, combo, label, widget, fontHandler);
     }
 
     private IWidget createListBox(
-            final Element root,
+            final Widget widget,
             final Rectangle bounds) {
         final PdfList pdfList = new PdfList(fontHandler);
 
         final SplitComponent scroll = new SplitComponent("List", pdfList, SplitComponent.CAPTION_TOP, fontHandler);
         final JLabel label = getComponentAsLabel(scroll, getSize(100, 100, bounds));
-        if (root == null) {
+
+        if (widget == null) {
             return new ListBoxWidget(IWidget.LIST_BOX, scroll, label, fontHandler);
         }
-        return new ListBoxWidget(IWidget.LIST_BOX, scroll, label, root, fontHandler);
+        return new ListBoxWidget(IWidget.LIST_BOX, scroll, label, widget, fontHandler);
     }
 
     private IWidget createButton(
-            final Element root,
+            final Widget widget,
             final Rectangle bounds) {
         final PdfButton pdfButton = new PdfButton("Button", fontHandler);
 
         final Dimension size = getSize(100, 50, bounds);
         final JLabel label = getComponentAsLabel(pdfButton, size);
-        if (root == null) {
+        if (widget == null) {
             return new ButtonWidget(IWidget.BUTTON, pdfButton, label, fontHandler);
         }
-        return new ButtonWidget(IWidget.BUTTON, pdfButton, label, root, fontHandler);
+        return new ButtonWidget(IWidget.BUTTON, pdfButton, label, widget, fontHandler);
     }
 
     private RadioButtonWidget createRadioButton(
-            final Element root,
+            final Widget widget,
             final Rectangle bounds) {
         final PdfRadioButton pdfRadioButton = new PdfRadioButton();
         pdfRadioButton.setBackground(IDesigner.PAGE_COLOR);
@@ -269,10 +271,10 @@ public class WidgetFactory {
                 SplitComponent.CAPTION_RIGHT,
                 fontHandler);
         final JLabel label = getComponentAsLabel(radioButton, getSize(200, 20, bounds));
-        if (root == null) {
+        if (widget == null) {
             return new RadioButtonWidget(IWidget.RADIO_BUTTON, radioButton, label, fontHandler);
         }
-        return new RadioButtonWidget(IWidget.RADIO_BUTTON, radioButton, label, root, fontHandler);
+        return new RadioButtonWidget(IWidget.RADIO_BUTTON, radioButton, label, widget, fontHandler);
     }
 
     private ButtonGroup createButtonGroup(

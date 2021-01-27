@@ -20,16 +20,14 @@ import org.pdf.forms.gui.designer.gui.Rule;
 import org.pdf.forms.gui.designer.listeners.DesignerKeyListener;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseListener;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
+import org.pdf.forms.model.des.FieldProperties;
 import org.pdf.forms.model.des.Version;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.pdf.forms.widgets.utils.WidgetSelection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public class Designer extends PdfDecoder implements IDesigner {
 
@@ -115,11 +113,10 @@ public class Designer extends PdfDecoder implements IDesigner {
     private void drawNormalWidget(
             final IWidget widget,
             final Graphics2D g2) {
-        final Document document = widget.getProperties();
-        final Element objectProperties = (Element) document.getElementsByTagName("object").item(0);
-        final Element fieldProperties = (Element) objectProperties.getElementsByTagName("field").item(0);
+        final FieldProperties fieldProperties = widget.getWidgetModel().getProperties().getObject()
+                .getField();
 
-        XMLUtils.getAttributeValueFromChildElement(fieldProperties, "Presence")
+        fieldProperties.getPresence()
                 .filter(visibility -> visibility.equals("Visible"))
                 .ifPresent(visibility -> {
                     g2.translate(widget.getX(), widget.getY());
@@ -305,7 +302,7 @@ public class Designer extends PdfDecoder implements IDesigner {
 
                 this.pageWidth = getPdfPageData().getCropBoxWidth(pdfPageNumber);
                 this.pageHeight = getPdfPageData().getCropBoxHeight(pdfPageNumber);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 logger.error("Error displaying page", e);
             }
         }

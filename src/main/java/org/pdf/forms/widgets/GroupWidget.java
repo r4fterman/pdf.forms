@@ -40,7 +40,7 @@ public class GroupWidget implements IWidget {
     private Element setupProperties() {
         try {
             properties = XMLUtils.createNewDocument();
-        } catch (ParserConfigurationException e) {
+        } catch (final ParserConfigurationException e) {
             logger.error("Error setting up properties", e);
         }
 
@@ -135,26 +135,22 @@ public class GroupWidget implements IWidget {
     }
 
     @Override
-    public void setParagraphProperties(
-            final Element paragraphProperties,
-            final int currentlyEditing) {
+    public void setParagraphProperties(final int currentlyEditing) {
         // not supported by groups
     }
 
     @Override
-    public void setLayoutProperties(final Element paragraphProperties) {
+    public void setLayoutProperties() {
         // not supported by groups
     }
 
     @Override
-    public void setFontProperties(
-            final Element parentElement,
-            final int currentlyEditing) {
+    public void setFontProperties(final int currentlyEditing) {
         // not supported by groups
     }
 
     @Override
-    public void setCaptionProperties(final Element captionProperties) {
+    public void setCaptionProperties() {
         // not supported by groups
     }
 
@@ -309,11 +305,11 @@ public class GroupWidget implements IWidget {
     }
 
     @Override
-    public void setObjectProperties(final Element parentElement) {
+    public void setObjectProperties() {
     }
 
     @Override
-    public void setBorderAndBackgroundProperties(final Element borderProperties) {
+    public void setBorderAndBackgroundProperties() {
     }
 
 }

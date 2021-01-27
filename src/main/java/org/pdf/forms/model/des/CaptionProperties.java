@@ -11,6 +11,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "caption_properties")
 public class CaptionProperties {
 
+    private static final String TEXT = "Text";
+    private static final String DIVISOR_LOCATION = "Divisor Location";
+
     private List<Property> property;
 
     public CaptionProperties() {
@@ -26,19 +29,34 @@ public class CaptionProperties {
     }
 
     public Optional<String> getTextValue() {
-        return getPropertyValue("Text");
+        return getPropertyValue(TEXT);
     }
 
     public void setTextValue(final String value) {
-        getProperty("Text")
-                .ifPresentOrElse(
-                        p -> p.setValue(value),
-                        () -> property.add(new Property("Text", value)));
+        setPropertyValue(TEXT, value);
+    }
+
+    public Optional<String> getDividerLocation() {
+        return getPropertyValue(DIVISOR_LOCATION);
+    }
+
+    public void setDividerLocation(final String location) {
+        setPropertyValue(DIVISOR_LOCATION, location);
     }
 
     private Optional<String> getPropertyValue(final String propertyName) {
         return getProperty(propertyName)
                 .map(Property::getValue);
+    }
+
+    private void setPropertyValue(
+            final String propertyName,
+            final String propertyValue) {
+        getProperty(propertyName)
+                .ifPresentOrElse(
+                        p -> p.setValue(propertyValue),
+                        () -> property.add(new Property(propertyName, propertyValue))
+                );
     }
 
     private Optional<Property> getProperty(final String propertyName) {

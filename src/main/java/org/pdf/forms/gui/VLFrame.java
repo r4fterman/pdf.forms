@@ -142,7 +142,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         splashWindow.setProgress(7, "Set docking panes");
         setupMenuBar(commandListener);
         setupDockingPanes();
-        setTitle(currentDesignerFileName + " - PDF Forms Designer Version " + version);
+        setTitle(currentDesignerFileName + " - PDF Forms Designer Version " + version.getVersion());
     }
 
     private void fillToolbarPanel(

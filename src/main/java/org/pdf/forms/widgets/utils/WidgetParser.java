@@ -189,7 +189,7 @@ public final class WidgetParser {
         final String text = formObject.getTextString();
         defaultTextElement.getAttributeNode("value").setValue(text);
 
-        widget.setObjectProperties(objectProperties);
+        widget.setObjectProperties();
 
         handleBorder(formObject, widget);
         handleVisibility(formObject, document);
@@ -220,7 +220,7 @@ public final class WidgetParser {
         final Element defaultTextElement = XMLUtils.getPropertyElement(objectProperties, "Default")
                 .get();
         defaultTextElement.getAttributeNode("value").setValue(text);
-        widget.setObjectProperties(objectProperties);
+        widget.setObjectProperties();
 
         handleBorder(formObject, widget);
 
@@ -315,7 +315,7 @@ public final class WidgetParser {
                 value = "Off";
             }
             defaultElement.getAttributeNode("value").setValue(value);
-            widget.setObjectProperties(objectProperties);
+            widget.setObjectProperties();
 
             handleBorder(formObject, widget);
 
@@ -369,7 +369,7 @@ public final class WidgetParser {
             final Element layoutProperties = (Element) document.getElementsByTagName("layout").item(0);
             setProperty(layoutProperties, "Position", "None");
 
-            widget.setLayoutProperties(layoutProperties);
+            widget.setLayoutProperties();
         }
 
         /* set the widgets name */
@@ -379,7 +379,7 @@ public final class WidgetParser {
         final Element nameElement = XMLUtils.getPropertyElement(objectProperties, "Name").get();
         nameElement.getAttributeNode("value").setValue(widgetName);
 
-        widget.setObjectProperties(objectProperties);
+        widget.setObjectProperties();
 
         final int arrayNumber = getNextArrayNumberForName(widgetName,
                 widget,
@@ -388,7 +388,7 @@ public final class WidgetParser {
         final Element arrayNumberElement = XMLUtils.getPropertyElement(objectProperties, "Array Number").get();
         arrayNumberElement.getAttributeNode("value").setValue(arrayNumber + "");
 
-        widget.setObjectProperties(objectProperties);
+        widget.setObjectProperties();
     }
 
     private Rectangle getBounds(
@@ -441,7 +441,7 @@ public final class WidgetParser {
             textValue = formObject.getValuesMap().get(textValue).toString();
         }
         defaultTextElement.getAttributeNode("value").setValue(textValue);
-        widget.setObjectProperties(objectProperties);
+        widget.setObjectProperties();
         handleBorder(formObject, widget);
         handleVisibility(formObject, document);
     }
@@ -489,7 +489,7 @@ public final class WidgetParser {
             setProperty(borderProperties, "Fill Color", backgroundColor.getRGB() + "");
         }
 
-        widget.setBorderAndBackgroundProperties(borderProperties);
+        widget.setBorderAndBackgroundProperties();
     }
 
     private void setProperty(
