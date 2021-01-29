@@ -24,11 +24,13 @@ public class Widget {
     private Properties properties;
     @XmlElement(name = "javascript")
     private JavaScriptContent javaScript;
+    private List<Widget> widgets;
 
     public Widget() {
         this.property = new ArrayList<>();
         this.properties = new Properties();
         this.javaScript = new JavaScriptContent();
+        this.widgets = new ArrayList<>();
     }
 
     public List<Property> getProperty() {
@@ -49,6 +51,18 @@ public class Widget {
 
     public JavaScriptContent getJavaScript() {
         return javaScript;
+    }
+
+    public void setJavaScript(final JavaScriptContent javaScript) {
+        this.javaScript = javaScript;
+    }
+
+    public List<Widget> getWidgets() {
+        return widgets;
+    }
+
+    public void setWidgets(final List<Widget> widgets) {
+        this.widgets = widgets;
     }
 
     public Optional<String> getType() {
@@ -88,9 +102,7 @@ public class Widget {
                 .findFirst();
     }
 
-    public void setJavaScript(final JavaScriptContent javaScript) {
-        this.javaScript = javaScript;
-    }
+
 
     @Override
     public boolean equals(final Object o) {
@@ -98,14 +110,15 @@ public class Widget {
             final Widget widget = (Widget) o;
             return Objects.equals(property, widget.property)
                     && Objects.equals(properties, widget.properties)
-                    && Objects.equals(javaScript, widget.javaScript);
+                    && Objects.equals(javaScript, widget.javaScript)
+                    && Objects.equals(widgets, widget.widgets);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(property, properties, javaScript);
+        return Objects.hash(property, properties, javaScript, widgets);
     }
 
     @Override
@@ -114,6 +127,7 @@ public class Widget {
                 .add("property=" + property)
                 .add("properties=" + properties)
                 .add("javascript=" + javaScript)
+                .add("widgets=" + widgets)
                 .toString();
     }
 }

@@ -8,7 +8,6 @@ import javax.swing.*;
 
 import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.widgets.components.PdfCaption;
-import org.w3c.dom.Document;
 
 public interface IWidget {
 
@@ -135,8 +134,6 @@ public interface IWidget {
 
     Icon getIcon();
 
-    Document getProperties();
-
     void setObjectProperties();
 
     void setBorderAndBackgroundProperties();
@@ -156,4 +153,5 @@ public interface IWidget {
     JavaScriptContent getJavaScript();
 
     org.pdf.forms.model.des.Widget getWidgetModel();
+
 }

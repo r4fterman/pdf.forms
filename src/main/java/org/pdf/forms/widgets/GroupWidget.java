@@ -1,22 +1,17 @@
 package org.pdf.forms.widgets;
 
+import static java.util.stream.Collectors.toList;
+
 import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.*;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.model.des.Widget;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.utils.WidgetSelection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
  * Special widget object that represents a group of widgets. Although this class
@@ -28,24 +23,11 @@ public class GroupWidget implements IWidget {
 
     private static final int TYPE = IWidget.GROUP;
 
-    private final Logger logger = LoggerFactory.getLogger(GroupWidget.class);
-
     private final Icon icon;
-    private final Element widgetsElement;
+    private final Widget widget;
 
     private List<IWidget> widgetsInGroup;
     private String widgetName;
-    private Document properties;
-
-    private Element setupProperties() {
-        try {
-            properties = XMLUtils.createNewDocument();
-        } catch (final ParserConfigurationException e) {
-            logger.error("Error setting up properties", e);
-        }
-
-        return XMLUtils.createAndAppendElement(properties, "widget", properties);
-    }
 
     public GroupWidget() {
         icon = new ImageIcon(getClass().getResource("/org/pdf/forms/res/Group.gif"));
@@ -53,12 +35,9 @@ public class GroupWidget implements IWidget {
         this.widgetName = "Group" + nextWidgetNumber;
         nextWidgetNumber++;
 
-        final Element rootElement = setupProperties();
-
-        XMLUtils.addBasicProperty(properties, "type", "GROUP", rootElement);
-        XMLUtils.addBasicProperty(properties, "name", widgetName, rootElement);
-
-        widgetsElement = XMLUtils.createAndAppendElement(properties, "widgets", rootElement);
+        this.widget = new Widget();
+        widget.setType("GROUP");
+        widget.setName(widgetName);
     }
 
     @Override
@@ -69,18 +48,10 @@ public class GroupWidget implements IWidget {
     @Override
     public void setWidgetsInGroup(final List<IWidget> widgetsInGroup) {
         this.widgetsInGroup = widgetsInGroup;
-
-        final List<Element> widgets = XMLUtils.getElementsFromNodeList(widgetsElement.getChildNodes());
-        for (final Element widget : widgets) {
-            final Node parent = widget.getParentNode();
-            parent.removeChild(widget);
-        }
-
-        for (final IWidget widget : widgetsInGroup) {
-            final Document widgetProperties = widget.getProperties();
-            final Element widgetRoot = widgetProperties.getDocumentElement();
-            widgetsElement.appendChild(properties.importNode(widgetRoot, true));
-        }
+        final List<Widget> widgets = widgetsInGroup.stream()
+                .map(IWidget::getWidgetModel)
+                .collect(toList());
+        widget.setWidgets(widgets);
     }
 
     @Override
@@ -105,11 +76,6 @@ public class GroupWidget implements IWidget {
 
     public void setName(final String widgetName) {
         this.widgetName = widgetName;
-    }
-
-    @Override
-    public Document getProperties() {
-        return properties;
     }
 
     @Override

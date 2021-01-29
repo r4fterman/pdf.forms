@@ -29,7 +29,6 @@ import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.pdf.forms.widgets.utils.WidgetSelection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 public abstract class Widget implements IWidget {
 
@@ -42,7 +41,6 @@ public abstract class Widget implements IWidget {
     private final FontHandler fontHandler;
 
     private JComponent component;
-    private Document properties;
     private boolean isComponentSplit;
     private boolean allowEditCaptionAndValue;
     private boolean allowEditOfCaptionOnClick;
@@ -367,11 +365,6 @@ public abstract class Widget implements IWidget {
     }
 
     @Override
-    public Document getProperties() {
-        return properties;
-    }
-
-    @Override
     public void setParagraphProperties(final int currentlyEditing) {
         // By default do nothing
     }
@@ -593,10 +586,6 @@ public abstract class Widget implements IWidget {
 
     public void setComponent(final JComponent component) {
         this.component = component;
-    }
-
-    public void setProperties(final Document properties) {
-        this.properties = properties;
     }
 
     public void setComponentSplit(final boolean componentSplit) {

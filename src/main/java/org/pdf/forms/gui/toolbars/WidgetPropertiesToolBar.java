@@ -1,27 +1,23 @@
 package org.pdf.forms.gui.toolbars;
 
 import static java.util.stream.Collectors.toUnmodifiableList;
-import static java.util.stream.Collectors.toUnmodifiableMap;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.FontProperties;
+import org.pdf.forms.model.des.ParagraphProperties;
 import org.pdf.forms.widgets.IWidget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import com.vlsolutions.swing.toolbars.VLToolBar;
 
@@ -145,26 +141,13 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     private void updateAlignment(final String alignment) {
         final Set<IWidget> widgets = designerPanel.getSelectedWidgets();
         for (final IWidget widget: widgets) {
-            final Document properties = widget.getProperties();
-            final Element paragraphElement = (Element) properties.getElementsByTagName("paragraph").item(0);
+            final ParagraphProperties paragraphProperties = widget.getWidgetModel().getProperties().getParagraph();
 
-            final List<Element> paragraphList = XMLUtils.getElementsFromNodeList(paragraphElement.getChildNodes());
-            final Element captionElement = paragraphList.get(0);
-
-            XMLUtils.getPropertyElement(captionElement, "Horizontal Alignment")
-                    .ifPresent(captionAlignment -> {
-                        captionAlignment.getAttributeNode("value").setValue(alignment);
-
-                        if (widget.allowEditCaptionAndValue()) {
-                            Optional.of(paragraphList.get(1))
-                                    .map(valueElement -> XMLUtils
-                                            .getPropertyElement(valueElement, "Horizontal Alignment"))
-                                    .flatMap(value -> value)
-                                    .ifPresent(element -> element.getAttributeNode("value").setValue(alignment));
-                        }
-
-                        widget.setParagraphProperties(IWidget.COMPONENT_BOTH);
-                    });
+            paragraphProperties.getParagraphCaption().setHorizontalAlignment(alignment);
+            if (widget.allowEditCaptionAndValue()) {
+                paragraphProperties.getParagraphValue().setHorizontalAlignment(alignment);
+            }
+            widget.setParagraphProperties(IWidget.COMPONENT_BOTH);
         }
 
         designerPanel.getMainFrame().setPropertiesCompound(widgets);
@@ -172,59 +155,29 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     }
 
     private void updateFont() {
-        final Set<IWidget> widgets = designerPanel.getSelectedWidgets();
 
-        updateFontName(widgets);
-        updateFontSize(widgets);
-        updateFontStyle(widgets);
+        final String fontName = (String) fontBox.getSelectedItem();
+        final String fontSize = (String) this.fontSize.getSelectedItem();
+        final String fontStyle = String.valueOf(getSelectedFontStyle());
+
+        final Set<IWidget> widgets = designerPanel.getSelectedWidgets();
+        for (final IWidget widget: widgets) {
+            final FontProperties fontProperties = widget.getWidgetModel().getProperties().getFont();
+
+            fontProperties.getFontCaption().setFontName(fontName);
+            fontProperties.getFontCaption().setFontSize(fontSize);
+            fontProperties.getFontCaption().setFontStyle(fontStyle);
+
+            if (widget.allowEditCaptionAndValue()) {
+                fontProperties.getFontValue().setFontName(fontName);
+                fontProperties.getFontValue().setFontSize(fontSize);
+                fontProperties.getFontValue().setFontStyle(fontStyle);
+            }
+            widget.setFontProperties(IWidget.COMPONENT_BOTH);
+        }
 
         designerPanel.getMainFrame().setPropertiesCompound(widgets);
         designerPanel.repaint();
-    }
-
-    private void updateFontName(final Set<IWidget> widgets) {
-        final String value = (String) fontBox.getSelectedItem();
-
-        updateFontProperty(widgets, value, "Font Name");
-    }
-
-    private void updateFontSize(final Set<IWidget> widgets) {
-        final String value = (String) fontSize.getSelectedItem();
-
-        updateFontProperty(widgets, value, "Font Size");
-    }
-
-    private void updateFontStyle(final Set<IWidget> widgets) {
-        final int fontStyle = getSelectedFontStyle();
-        final String value = String.valueOf(fontStyle);
-
-        updateFontProperty(widgets, value, "Font Style");
-    }
-
-    private void updateFontProperty(
-            final Set<IWidget> widgets,
-            final String fontValue,
-            final String fontPropertyName) {
-        for (final IWidget widget: widgets) {
-            final Document properties = widget.getProperties();
-            final Element fontElement = (Element) properties.getElementsByTagName("font").item(0);
-            final List<Element> fontList = XMLUtils.getElementsFromNodeList(fontElement.getChildNodes());
-            final Element captionElement = fontList.get(0);
-
-            XMLUtils.getPropertyElement(captionElement, fontPropertyName)
-                    .ifPresent(fontCaptionElement -> {
-                        Element fontPropertyElement = null;
-                        if (widget.allowEditCaptionAndValue()) {
-                            final Element valueElement = fontList.get(1);
-                            fontPropertyElement = XMLUtils.getPropertyElement(valueElement, fontPropertyName)
-                                    .orElse(null);
-                        }
-
-                        setProperty(fontValue, fontCaptionElement, fontPropertyElement);
-
-                        widget.setFontProperties(IWidget.COMPONENT_BOTH);
-                    });
-        }
     }
 
     private int getSelectedFontStyle() {
@@ -242,22 +195,31 @@ public class WidgetPropertiesToolBar extends VLToolBar {
     }
 
     private void setFontProperties(final Set<IWidget> widgets) {
-        final Map<IWidget, Element> widgetsAndProperties = widgets.stream()
-                .collect(toUnmodifiableMap(
-                        widget -> widget,
-                        widget -> {
-                            final Document properties = widget.getProperties();
-                            return (Element) properties.getElementsByTagName("font").item(0);
-                        })
-                );
-
-        selectFontNameInComboBox(widgetsAndProperties);
-        selectFontSizeInComboBox(widgetsAndProperties);
-        selectFontStyle(widgetsAndProperties);
+        selectFontNameInComboBox(widgets);
+        selectFontSizeInComboBox(widgets);
+        selectFontStyle(widgets);
     }
 
-    private void selectFontStyle(final Map<IWidget, Element> widgetsAndProperties) {
-        final String fontStyleToUse = getFontPropertyValueFromList(widgetsAndProperties, "Font Style");
+    private void selectFontNameInComboBox(final Set<IWidget> widgets) {
+        final String fontNameToUse = getFontName(widgets);
+        if (fontNameToUse.equals("mixed")) {
+            setComboValue(this.fontBox, null);
+        } else {
+            setComboValue(this.fontBox, fontNameToUse);
+        }
+    }
+
+    private void selectFontSizeInComboBox(final Set<IWidget> widgets) {
+        final String fontSizeToUse = getFontSize(widgets);
+        if (fontSizeToUse.equals("mixed")) {
+            setComboValue(this.fontSize, null);
+        } else {
+            setComboValue(this.fontSize, fontSizeToUse);
+        }
+    }
+
+    private void selectFontStyle(final Set<IWidget> widgets) {
+        final String fontStyleToUse = getFontStyle(widgets);
         if (fontStyleToUse.equals("mixed") || fontStyleToUse.equals("0")) {
             fontBold.setSelected(false);
             fontItalic.setSelected(false);
@@ -275,71 +237,58 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         }
     }
 
-    private void selectFontSizeInComboBox(final Map<IWidget, Element> widgetsAndProperties) {
-        final String fontSizeToUse = getFontPropertyValueFromList(widgetsAndProperties, "Font Size");
-        if (fontSizeToUse.equals("mixed")) {
-            setComboValue(this.fontSize, null);
-        } else {
-            setComboValue(this.fontSize, fontSizeToUse);
-        }
-    }
-
-    private void selectFontNameInComboBox(final Map<IWidget, Element> widgetsAndProperties) {
-        final String fontNameToUse = getFontPropertyValueFromList(widgetsAndProperties, "Font Name");
-        if (fontNameToUse.equals("mixed")) {
-            setComboValue(this.fontBox, null);
-        } else {
-            setComboValue(this.fontBox, fontNameToUse);
-        }
-    }
-
-    private String getFontPropertyValueFromList(
-            final Map<IWidget, Element> widgetsAndProperties,
-            final String fontPropertyName) {
-        final List<String> fontSizeValues = widgetsAndProperties.entrySet().stream()
-                .map(entry -> getFontPropertyValue(entry, fontPropertyName))
+    private String getFontName(final Set<IWidget> widgets) {
+        final List<String> values = widgets.stream()
+                .map(widget -> {
+                    final FontProperties fontProperties = widget.getWidgetModel().getProperties().getFont();
+                    if (widget.allowEditCaptionAndValue()) {
+                        return fontProperties.getFontValue().getFontName().orElse("");
+                    }
+                    return fontProperties.getFontCaption().getFontName().orElse("");
+                })
                 .collect(toUnmodifiableList());
 
-        final boolean listContainsOnlyEqualValues = Collections
-                .frequency(fontSizeValues, fontSizeValues.get(0)) == fontSizeValues.size();
+        return findCommonOrMixedValue(values);
+    }
+
+    private String getFontSize(final Set<IWidget> widgets) {
+        final List<String> values = widgets.stream()
+                .map(widget -> {
+                    final FontProperties fontProperties = widget.getWidgetModel().getProperties().getFont();
+                    if (widget.allowEditCaptionAndValue()) {
+                        return fontProperties.getFontValue().getFontSize().orElse("");
+                    }
+                    return fontProperties.getFontCaption().getFontSize().orElse("");
+                })
+                .collect(toUnmodifiableList());
+
+        return findCommonOrMixedValue(values);
+    }
+
+    private String getFontStyle(final Set<IWidget> widgets) {
+        final List<String> values = widgets.stream()
+                .map(widget -> {
+                    final FontProperties fontProperties = widget.getWidgetModel().getProperties().getFont();
+                    if (widget.allowEditCaptionAndValue()) {
+                        return fontProperties.getFontValue().getFontStyle().orElse("");
+                    }
+                    return fontProperties.getFontCaption().getFontStyle().orElse("");
+                })
+                .collect(toUnmodifiableList());
+
+        return findCommonOrMixedValue(values);
+    }
+
+    private String findCommonOrMixedValue(final List<String> values) {
+        final boolean listContainsOnlyEqualValues = Collections.frequency(values, values.get(0)) == values.size();
         if (listContainsOnlyEqualValues) {
-            return fontSizeValues.get(0);
+            return values.get(0);
         }
         return "mixed";
     }
 
-    private String getFontPropertyValue(
-            final Map.Entry<IWidget, Element> entry,
-            final String fontPropertyName) {
-        final IWidget widget = entry.getKey();
-        final Element fontProperties = entry.getValue();
-
-        final Element caption = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
-        final String captionFontStyle = XMLUtils.getAttributeValueFromChildElement(caption, fontPropertyName)
-                .orElse("");
-
-        final String valueFontStyle;
-        if (widget.allowEditCaptionAndValue()) {
-            final Element value = (Element) fontProperties.getElementsByTagName("font_value").item(0);
-            valueFontStyle = XMLUtils.getAttributeValueFromChildElement(value, fontPropertyName).orElse("");
-        } else {
-            valueFontStyle = captionFontStyle;
-        }
-
-        return getComparedPropertyValue(captionFontStyle, valueFontStyle);
-    }
-
     private void setParagraphProperties(final Set<IWidget> widgets) {
-        final Map<IWidget, Element> widgetsAndProperties = widgets.stream()
-                .collect(toUnmodifiableMap(
-                        widget -> widget,
-                        widget -> {
-                            final Document properties = widget.getProperties();
-                            return (Element) properties.getElementsByTagName("paragraph").item(0);
-                        }
-                ));
-
-        final String horizontalAlignmentToUse = getHorizontalAlignmentToUse(widgetsAndProperties);
+        final String horizontalAlignmentToUse = getHorizontalAlignmentToUse(widgets);
         if ("mixed".equals(horizontalAlignmentToUse)) {
             alignmentGroup.clearSelection();
         } else if ("left".equals(horizontalAlignmentToUse)) {
@@ -353,54 +302,22 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         }
     }
 
-    private String getHorizontalAlignmentToUse(final Map<IWidget, Element> widgetsAndProperties) {
-        final String captionPropertyName = "paragraph_caption";
-        final String valuePropertyName = "paragraph_value";
-        final String attributeName = "Horizontal Alignment";
+    private String getHorizontalAlignmentToUse(final Set<IWidget> widgets) {
+        final List<String> values = widgets.stream()
+                .map(widget -> {
+                    final ParagraphProperties paragraphProperties = widget.getWidgetModel().getProperties()
+                            .getParagraph();
 
-        final List<String> horizontalAlignmentValues = widgetsAndProperties.entrySet().stream()
-                .map(entry -> {
-                    final Element propertiesElement = entry.getValue();
-
-                    final Element captionElement = (Element) propertiesElement.getElementsByTagName(captionPropertyName)
-                            .item(0);
-                    final String captionHorizontalAlignment = XMLUtils.getAttributeValueFromChildElement(captionElement,
-                            attributeName).orElse("left");
-
-                    final String valueHorizontalAlignment;
-                    if (entry.getKey().allowEditCaptionAndValue()) {
-                        final Element valueElement = (Element) propertiesElement
-                                .getElementsByTagName(valuePropertyName).item(0);
-
-                        valueHorizontalAlignment = XMLUtils.getAttributeValueFromChildElement(valueElement,
-                                attributeName).orElse("left");
-                    } else {
-                        valueHorizontalAlignment = captionHorizontalAlignment;
+                    if (widget.allowEditCaptionAndValue()) {
+                        return paragraphProperties.getParagraphValue()
+                                .getHorizontalAlignment().orElse("left");
                     }
-
-                    return getComparedPropertyValue(captionHorizontalAlignment, valueHorizontalAlignment);
+                    return paragraphProperties.getParagraphCaption()
+                            .getHorizontalAlignment().orElse("left");
                 })
                 .collect(toUnmodifiableList());
 
-        final boolean listContainsOnlyEqualValues = Collections
-                .frequency(horizontalAlignmentValues, horizontalAlignmentValues.get(0)) == horizontalAlignmentValues
-                .size();
-        if (listContainsOnlyEqualValues) {
-            return horizontalAlignmentValues.get(0);
-        }
-        return "mixed";
-    }
-
-    private void setProperty(
-            final String value,
-            final Element captionElement,
-            final Element valueElement) {
-        if (value != null && !value.equals("")) {
-            captionElement.getAttributeNode("value").setValue(value);
-            if (valueElement != null) {
-                valueElement.getAttributeNode("value").setValue(value);
-            }
-        }
+        return findCommonOrMixedValue(values);
     }
 
     public void setProperties(final Set<IWidget> widgets) {
@@ -420,17 +337,6 @@ public class WidgetPropertiesToolBar extends VLToolBar {
 
         setFontProperties(widgets);
         setParagraphProperties(widgets);
-    }
-
-    private String getComparedPropertyValue(
-            final String captionProperty,
-            final String valueProperty) {
-        // both are the same
-        if (captionProperty.equals(valueProperty)) {
-            return captionProperty;
-        }
-        // properties are different
-        return "mixed";
     }
 
     private void setState(final boolean enabled) {
