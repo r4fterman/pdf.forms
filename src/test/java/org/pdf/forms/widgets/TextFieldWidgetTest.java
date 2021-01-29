@@ -4,7 +4,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.Matchers.notNullValue;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -13,17 +12,13 @@ import java.net.URL;
 import javax.swing.*;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.components.PdfTextField;
 import org.pdf.forms.widgets.components.SplitComponent;
-import org.w3c.dom.Document;
 
-@Disabled
 class TextFieldWidgetTest {
 
     private JComponent baseComponent;
@@ -43,15 +38,12 @@ class TextFieldWidgetTest {
     }
 
     @Test
-    void persist_widget_into_xml() {
+    void persist_widget_into_xml() throws Exception {
         final TextFieldWidget widget = new TextFieldWidget(IWidget.TEXT_FIELD,
                 baseComponent,
                 component,
                 fontHandler);
-        final Document document = widget.getProperties();
-        assertThat(document, is(notNullValue()));
-
-        final String serialize = XMLUtils.serialize(document);
+        final String serialize = new WidgetFileWriter(widget.getWidgetModel()).serialize();
         assertThat(serialize.length(), is(greaterThanOrEqualTo(2659)));
         assertThat(serialize.length(), is(lessThanOrEqualTo(2671)));
     }
@@ -63,11 +55,7 @@ class TextFieldWidgetTest {
                 component,
                 new WidgetFileReader(getFile()).getWidget(),
                 fontHandler);
-
-        final Document document = widget.getProperties();
-        assertThat(document, is(notNullValue()));
-
-        final String serialize = XMLUtils.serialize(document);
+        final String serialize = new WidgetFileWriter(widget.getWidgetModel()).serialize();
         assertThat(serialize.length(), is(3959));
     }
 

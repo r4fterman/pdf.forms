@@ -2,7 +2,6 @@ package org.pdf.forms.widgets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -11,15 +10,11 @@ import java.net.URL;
 import javax.swing.*;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
-import org.pdf.forms.utils.XMLUtils;
-import org.w3c.dom.Document;
 
-@Disabled
 class ImageWidgetTest {
 
     private JComponent baseComponent;
@@ -39,16 +34,13 @@ class ImageWidgetTest {
     }
 
     @Test
-    void persist_widget_into_xml() {
+    void persist_widget_into_xml() throws Exception {
         final ImageWidget widget = new ImageWidget(IWidget.IMAGE,
                 baseComponent,
                 component,
                 new FontHandler(designerPropertiesFile));
 
-        final Document document = widget.getProperties();
-        assertThat(document, is(notNullValue()));
-
-        final String serialize = XMLUtils.serialize(document);
+        final String serialize = new WidgetFileWriter(widget.getWidgetModel()).serialize();
         assertThat(serialize.length(), is(851));
     }
 
@@ -60,10 +52,7 @@ class ImageWidgetTest {
                 new WidgetFileReader(getFile()).getWidget(),
                 fontHandler);
 
-        final Document document = widget.getProperties();
-        assertThat(document, is(notNullValue()));
-
-        final String serialize = XMLUtils.serialize(document);
+        final String serialize = new WidgetFileWriter(widget.getWidgetModel()).serialize();
         assertThat(serialize.length(), is(1271));
     }
 

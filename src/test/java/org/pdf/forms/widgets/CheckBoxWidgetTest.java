@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import javax.swing.*;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
@@ -30,7 +29,6 @@ import nu.xom.Document;
 import nu.xom.ParsingException;
 import nu.xom.canonical.Canonicalizer;
 
-@Disabled
 class CheckBoxWidgetTest {
 
     private DesignerPropertiesFile designerPropertiesFile;
