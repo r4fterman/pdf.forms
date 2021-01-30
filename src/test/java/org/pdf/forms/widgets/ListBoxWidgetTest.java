@@ -12,6 +12,7 @@ import java.net.URL;
 import javax.swing.*;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
@@ -19,6 +20,7 @@ import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.components.PdfList;
 import org.pdf.forms.widgets.components.SplitComponent;
 
+@Disabled
 class ListBoxWidgetTest {
 
     private JComponent baseComponent;
