@@ -1,5 +1,6 @@
 package org.pdf.forms.widgets;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xmlunit.diff.Comparison;
@@ -13,13 +14,14 @@ public class IgnoreFontNameDifferenceEvaluator implements DifferenceEvaluator {
             final ComparisonResult outcome) {
         if (outcome == ComparisonResult.DIFFERENT) {
             final Node controlNode = comparison.getControlDetails().getTarget();
-            if (controlNode.getParentNode() instanceof Element) {
-                final Element element = (Element) controlNode;
+            if (((Attr) controlNode).getOwnerElement() != null) {
+                final Element element = ((Attr) controlNode).getOwnerElement();
                 final String nameValue = element.getAttribute("name");
                 if (nameValue.equals("Font Name")) {
                     return ComparisonResult.SIMILAR;
                 }
             }
+            System.out.println(outcome.name());
         }
         return outcome;
     }
