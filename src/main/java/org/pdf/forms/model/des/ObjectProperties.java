@@ -14,14 +14,6 @@ public class ObjectProperties {
     private Items items;
     private Draw draw;
 
-    public ObjectProperties() {
-        this.field = new FieldProperties();
-        this.value = new ValueProperties();
-        this.binding = new BindingProperties();
-        this.items = new Items();
-        this.draw = new Draw();
-    }
-
     public FieldProperties getField() {
         return field;
     }

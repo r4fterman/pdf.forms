@@ -351,7 +351,7 @@ public abstract class Widget implements IWidget {
 
     @Override
     public JavaScriptContent getJavaScript() {
-        return getWidgetModel().getJavaScript();
+        return widget.getJavaScript();
     }
 
     @Override

@@ -24,13 +24,12 @@ public class Widget {
     private Properties properties;
     @XmlElement(name = "javascript")
     private JavaScriptContent javaScript;
-    private List<Widget> widgets;
+    private Widgets widgets;
 
     public Widget() {
         this.property = new ArrayList<>();
         this.properties = new Properties();
         this.javaScript = new JavaScriptContent();
-        this.widgets = new ArrayList<>();
     }
 
     public List<Property> getProperty() {
@@ -57,11 +56,11 @@ public class Widget {
         this.javaScript = javaScript;
     }
 
-    public List<Widget> getWidgets() {
+    public Widgets getWidgets() {
         return widgets;
     }
 
-    public void setWidgets(final List<Widget> widgets) {
+    public void setWidgets(final Widgets widgets) {
         this.widgets = widgets;
     }
 

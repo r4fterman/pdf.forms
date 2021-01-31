@@ -23,7 +23,7 @@ import org.pdf.forms.widgets.components.SplitComponent;
 
 public class RadioButtonWidget extends Widget {
 
-    private static int nextWidgetNumber = 1;
+    private static int radioButtonNextWidgetNumber = 1;
 
     public RadioButtonWidget(
             final int type,
@@ -41,8 +41,8 @@ public class RadioButtonWidget extends Widget {
         setAllowEditCaptionAndValue(false);
         setAllowEditOfCaptionOnClick(true);
 
-        final String widgetName = "Radio Button" + nextWidgetNumber;
-        nextWidgetNumber++;
+        final String widgetName = "Radio Button" + radioButtonNextWidgetNumber;
+        radioButtonNextWidgetNumber++;
 
         setWidgetName(widgetName);
         getWidgetModel().setName(widgetName);
@@ -68,7 +68,7 @@ public class RadioButtonWidget extends Widget {
         setWidgetName(bindingProperties.getName().orElse(""));
         setArrayNumber(bindingProperties.getArrayNumber().map(Integer::parseInt).orElse(0));
 
-        setAllProperties();
+        addProperties();
     }
 
     private void addProperties() {
@@ -78,11 +78,6 @@ public class RadioButtonWidget extends Widget {
         addBorderProperties();
         addParagraphProperties();
         addCaptionProperties();
-    }
-
-    private void addCaptionProperties() {
-        final CaptionProperties captionProperties = getWidgetModel().getProperties().getCaptionProperties();
-        captionProperties.setTextValue("Radio Button");
     }
 
     private void addFontProperties() {
@@ -100,23 +95,31 @@ public class RadioButtonWidget extends Widget {
     private void addObjectProperties() {
         final ObjectProperties objectProperties = getWidgetModel().getProperties().getObject();
 
-        final FieldProperties fieldProperties = objectProperties.getField();
+        final FieldProperties fieldProperties = new FieldProperties();
         fieldProperties.setAppearance("Sunken Box");
         fieldProperties.setPresence("Visible");
+        fieldProperties.setGroupName("");
+        objectProperties.setField(fieldProperties);
 
-        final ValueProperties valueProperties = objectProperties.getValue();
+        final ValueProperties valueProperties = new ValueProperties();
         valueProperties.setType("User Entered - Optional");
         valueProperties.setDefault("Off");
+        objectProperties.setValue(valueProperties);
 
-        final BindingProperties bindingProperties = objectProperties.getBinding();
+        final BindingProperties bindingProperties = new BindingProperties();
         bindingProperties.setName(getWidgetName());
         bindingProperties.setArrayNumber("0");
+        objectProperties.setBinding(bindingProperties);
     }
 
     private void addLayoutProperties() {
         final LayoutProperties layoutProperties = getWidgetModel().getProperties().getLayout();
 
         final SizeAndPosition sizeAndPosition = layoutProperties.getSizeAndPosition();
+        sizeAndPosition.setX(1);
+        sizeAndPosition.setY(1);
+        sizeAndPosition.setWidth(1);
+        sizeAndPosition.setHeight(1);
         sizeAndPosition.setXExpandToFit("false");
         sizeAndPosition.setYExpandToFit("false");
         sizeAndPosition.setAnchor("Top Left");
@@ -128,9 +131,10 @@ public class RadioButtonWidget extends Widget {
         margins.setTop("2");
         margins.setBottom("4");
 
-        final org.pdf.forms.model.des.Caption caption = layoutProperties.getCaption();
+        final org.pdf.forms.model.des.Caption caption = new org.pdf.forms.model.des.Caption();
         caption.setPosition("Right");
         caption.setReserve("4");
+        layoutProperties.setCaption(caption);
     }
 
     private void addBorderProperties() {
@@ -150,6 +154,13 @@ public class RadioButtonWidget extends Widget {
         final ParagraphCaption paragraphCaption = getWidgetModel().getProperties().getParagraph().getParagraphCaption();
         paragraphCaption.setHorizontalAlignment("left");
         paragraphCaption.setVerticalAlignment("center");
+    }
+
+    private void addCaptionProperties() {
+        final CaptionProperties captionProperties = new CaptionProperties();
+        captionProperties.setTextValue("Radio Button");
+        captionProperties.setDividerLocation("");
+        getWidgetModel().getProperties().setCaptionProperties(captionProperties);
     }
 
     @Override

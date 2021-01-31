@@ -16,6 +16,7 @@ import org.pdf.forms.model.des.FontCaption;
 import org.pdf.forms.model.des.FontProperties;
 import org.pdf.forms.model.des.FontValue;
 import org.pdf.forms.model.des.Item;
+import org.pdf.forms.model.des.Items;
 import org.pdf.forms.model.des.LayoutProperties;
 import org.pdf.forms.model.des.Margins;
 import org.pdf.forms.model.des.ObjectProperties;
@@ -29,7 +30,7 @@ import org.pdf.forms.widgets.components.SplitComponent;
 
 public class ListBoxWidget extends Widget {
 
-    private static int nextWidgetNumber = 1;
+    private static int listBoxNextWidgetNumber = 1;
 
     private final FontHandler fontHandler;
 
@@ -50,8 +51,8 @@ public class ListBoxWidget extends Widget {
         setAllowEditCaptionAndValue(false);
         setAllowEditOfCaptionOnClick(true);
 
-        final String widgetName = "List Box" + nextWidgetNumber;
-        nextWidgetNumber++;
+        final String widgetName = "List Box" + listBoxNextWidgetNumber;
+        listBoxNextWidgetNumber++;
 
         setWidgetName(widgetName);
 
@@ -91,11 +92,6 @@ public class ListBoxWidget extends Widget {
         addCaptionProperties();
     }
 
-    private void addCaptionProperties() {
-        final CaptionProperties captionProperties = getWidgetModel().getProperties().getCaptionProperties();
-        captionProperties.setTextValue("List");
-    }
-
     private void addFontProperties() {
         final FontProperties fontProperties = getWidgetModel().getProperties().getFont();
 
@@ -119,22 +115,32 @@ public class ListBoxWidget extends Widget {
     private void addObjectProperties() {
         final ObjectProperties objectProperties = getWidgetModel().getProperties().getObject();
 
-        final FieldProperties fieldProperties = objectProperties.getField();
+        final FieldProperties fieldProperties = new FieldProperties();
         fieldProperties.setAppearance("Sunken Box");
         fieldProperties.setPresence("Visible");
+        objectProperties.setField(fieldProperties);
 
-        final ValueProperties valueProperties = objectProperties.getValue();
+        final ValueProperties valueProperties = new ValueProperties();
         valueProperties.setType("User Entered - Optional");
+        valueProperties.setDefault("");
+        objectProperties.setValue(valueProperties);
 
-        final BindingProperties bindingProperties = objectProperties.getBinding();
+        final BindingProperties bindingProperties = new BindingProperties();
         bindingProperties.setName(getWidgetName());
         bindingProperties.setArrayNumber("0");
+        objectProperties.setBinding(bindingProperties);
+
+        objectProperties.setItems(new Items());
     }
 
     private void addLayoutProperties() {
         final LayoutProperties layoutProperties = getWidgetModel().getProperties().getLayout();
 
         final SizeAndPosition sizeAndPosition = layoutProperties.getSizeAndPosition();
+        sizeAndPosition.setX(1);
+        sizeAndPosition.setY(1);
+        sizeAndPosition.setWidth(1);
+        sizeAndPosition.setHeight(1);
         sizeAndPosition.setXExpandToFit("false");
         sizeAndPosition.setYExpandToFit("false");
         sizeAndPosition.setAnchor("Top Left");
@@ -146,9 +152,10 @@ public class ListBoxWidget extends Widget {
         margins.setTop("2");
         margins.setBottom("4");
 
-        final org.pdf.forms.model.des.Caption caption = layoutProperties.getCaption();
+        final org.pdf.forms.model.des.Caption caption = new org.pdf.forms.model.des.Caption();
         caption.setPosition("Left");
         caption.setReserve("4");
+        layoutProperties.setCaption(caption);
     }
 
     private void addBorderProperties() {
@@ -170,9 +177,17 @@ public class ListBoxWidget extends Widget {
         paragraphCaption.setHorizontalAlignment("left");
         paragraphCaption.setVerticalAlignment("center");
 
-        final ParagraphValue paragraphValue = paragraphProperties.getParagraphValue();
+        final ParagraphValue paragraphValue = new ParagraphValue();
         paragraphValue.setHorizontalAlignment("left");
         paragraphValue.setVerticalAlignment("center");
+        paragraphProperties.setParagraphValue(paragraphValue);
+    }
+
+    private void addCaptionProperties() {
+        final CaptionProperties captionProperties = new CaptionProperties();
+        captionProperties.setTextValue("List");
+        captionProperties.setDividerLocation("");
+        getWidgetModel().getProperties().setCaptionProperties(captionProperties);
     }
 
     @Override

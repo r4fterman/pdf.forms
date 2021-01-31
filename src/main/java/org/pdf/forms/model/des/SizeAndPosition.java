@@ -100,25 +100,53 @@ public class SizeAndPosition {
         return Optional.ofNullable(values.get(0));
     }
 
+    public void setXExpandToFit(final String xExpandToFit) {
+//        removeObsoleteProperty(DEPRECATED_EXPAND_TO_FIT);
+//        setPropertyValue(X_EXPAND_TO_FIT, xExpandToFit);
+        final List<Property> expandProperties = property.stream()
+                .filter(p -> p.getName().equals(DEPRECATED_EXPAND_TO_FIT))
+                .collect(toUnmodifiableList());
+
+        if (expandProperties.isEmpty()) {
+            property.add(new Property(DEPRECATED_EXPAND_TO_FIT, xExpandToFit));
+        } else {
+            expandProperties.get(0).setValue(xExpandToFit);
+        }
+    }
+
+    public Optional<String> getYExpandToFit() {
+        final Optional<String> propertyValue = getPropertyValue(Y_EXPAND_TO_FIT);
+        if (propertyValue.isPresent()) {
+            return propertyValue;
+        }
+
+        final List<String> values = getPropertyValues(DEPRECATED_EXPAND_TO_FIT);
+        if (values.size() == 2) {
+            return Optional.ofNullable(values.get(1));
+        }
+        return Optional.empty();
+    }
+
+    public void setYExpandToFit(final String yExpandToFit) {
+//        removeObsoleteProperty(DEPRECATED_EXPAND_TO_FIT);
+//        setPropertyValue(Y_EXPAND_TO_FIT, yExpandToFit);
+
+        final List<Property> expandProperties = property.stream()
+                .filter(p -> p.getName().equals(DEPRECATED_EXPAND_TO_FIT))
+                .collect(toUnmodifiableList());
+
+        if (expandProperties.size() == 2) {
+            expandProperties.get(0).setValue(yExpandToFit);
+        } else {
+            property.add(new Property(DEPRECATED_EXPAND_TO_FIT, yExpandToFit));
+        }
+    }
+
     private List<String> getPropertyValues(final String propertyName) {
         return property.stream()
                 .filter(p -> p.getName().equals(propertyName))
                 .map(Property::getValue)
                 .collect(toUnmodifiableList());
-    }
-
-    public void setXExpandToFit(final String xExpandToFit) {
-        removeObsoleteProperty(DEPRECATED_EXPAND_TO_FIT);
-        setPropertyValue(X_EXPAND_TO_FIT, xExpandToFit);
-    }
-
-    public Optional<String> getYExpandToFit() {
-        return getPropertyValue(Y_EXPAND_TO_FIT);
-    }
-
-    public void setYExpandToFit(final String yExpandToFit) {
-        removeObsoleteProperty(DEPRECATED_EXPAND_TO_FIT);
-        setPropertyValue(Y_EXPAND_TO_FIT, yExpandToFit);
     }
 
     private Optional<String> getPropertyValue(final String propertyName) {

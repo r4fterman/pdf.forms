@@ -9,6 +9,7 @@ import org.pdf.forms.model.des.BackgroundFill;
 import org.pdf.forms.model.des.BindingProperties;
 import org.pdf.forms.model.des.BorderProperties;
 import org.pdf.forms.model.des.Borders;
+import org.pdf.forms.model.des.CaptionProperties;
 import org.pdf.forms.model.des.FieldProperties;
 import org.pdf.forms.model.des.FontCaption;
 import org.pdf.forms.model.des.FontProperties;
@@ -24,7 +25,7 @@ import org.pdf.forms.widgets.components.SplitComponent;
 
 public class CheckBoxWidget extends Widget {
 
-    private static int nextWidgetNumber = 1;
+    private static int checkBoxNextWidgetNumber = 1;
 
     public CheckBoxWidget(
             final int type,
@@ -42,8 +43,8 @@ public class CheckBoxWidget extends Widget {
         setAllowEditCaptionAndValue(false);
         setAllowEditOfCaptionOnClick(true);
 
-        final String widgetName = "Check Box" + nextWidgetNumber;
-        nextWidgetNumber++;
+        final String widgetName = "Check Box" + checkBoxNextWidgetNumber;
+        checkBoxNextWidgetNumber++;
 
         setWidgetName(widgetName);
 
@@ -83,7 +84,10 @@ public class CheckBoxWidget extends Widget {
     }
 
     private void addCaptionProperties() {
-        getWidgetModel().getProperties().getCaptionProperties().setTextValue("Check Box");
+        final CaptionProperties captionProperties = new CaptionProperties();
+        captionProperties.setTextValue("Check Box");
+        captionProperties.setDividerLocation("");
+        getWidgetModel().getProperties().setCaptionProperties(captionProperties);
     }
 
     private void addFontProperties() {
@@ -101,23 +105,31 @@ public class CheckBoxWidget extends Widget {
     private void addObjectProperties() {
         final ObjectProperties objectProperties = getWidgetModel().getProperties().getObject();
 
-        final FieldProperties fieldProperties = objectProperties.getField();
+        final FieldProperties fieldProperties = new FieldProperties();
         fieldProperties.setAppearance("Sunken Box");
+        fieldProperties.setGroupName("");
         fieldProperties.setPresence("Visible");
+        objectProperties.setField(fieldProperties);
 
-        final ValueProperties valueProperties = objectProperties.getValue();
+        final ValueProperties valueProperties = new ValueProperties();
         valueProperties.setType("User Entered - Optional");
         valueProperties.setDefault("Off");
+        objectProperties.setValue(valueProperties);
 
-        final BindingProperties bindingProperties = objectProperties.getBinding();
+        final BindingProperties bindingProperties = new BindingProperties();
         bindingProperties.setName(getWidgetName());
         bindingProperties.setArrayNumber("0");
+        objectProperties.setBinding(bindingProperties);
     }
 
     private void addLayoutProperties() {
         final LayoutProperties layoutProperties = getWidgetModel().getProperties().getLayout();
 
         final SizeAndPosition sizeAndPosition = layoutProperties.getSizeAndPosition();
+        sizeAndPosition.setX(1);
+        sizeAndPosition.setY(1);
+        sizeAndPosition.setWidth(1);
+        sizeAndPosition.setHeight(1);
         sizeAndPosition.setXExpandToFit("false");
         sizeAndPosition.setYExpandToFit("false");
         sizeAndPosition.setAnchor("Top Left");
@@ -129,9 +141,10 @@ public class CheckBoxWidget extends Widget {
         margins.setTop("2");
         margins.setBottom("4");
 
-        final org.pdf.forms.model.des.Caption caption = layoutProperties.getCaption();
+        final org.pdf.forms.model.des.Caption caption = new org.pdf.forms.model.des.Caption();
         caption.setPosition("Right");
         caption.setReserve("4");
+        layoutProperties.setCaption(caption);
     }
 
     private void addBorderProperties() {

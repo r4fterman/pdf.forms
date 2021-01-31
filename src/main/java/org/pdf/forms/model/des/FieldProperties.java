@@ -66,10 +66,9 @@ public class FieldProperties {
         setPropertyValue(ALLOW_MULTIPLE_LINES, String.valueOf(allow));
     }
 
-    public boolean getLimitLength() {
+    public String getLimitLength() {
         return getPropertyValue(LIMIT_LENGTH)
-                .map(Boolean::valueOf)
-                .orElse(false);
+                .orElse("");
     }
 
     public void setLimitLength(final boolean limitLength) {

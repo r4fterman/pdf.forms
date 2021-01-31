@@ -19,7 +19,6 @@ public class ParagraphProperties {
 
     public ParagraphProperties() {
         this.paragraphCaption = new ParagraphCaption();
-        this.paragraphValue = new ParagraphValue();
     }
     public ParagraphCaption getParagraphCaption() {
         return paragraphCaption;

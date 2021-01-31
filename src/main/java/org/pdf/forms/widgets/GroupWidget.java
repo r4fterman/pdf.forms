@@ -10,16 +10,17 @@ import javax.swing.*;
 
 import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.model.des.Widget;
+import org.pdf.forms.model.des.Widgets;
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.utils.WidgetSelection;
 
 /**
- * Special widget object that represents a group of widgets. Although this class
- * implements IWidget (as all widgets must do) it does not extend Widget
+ * Special widget object that represents a group of widgets. Although this class implements IWidget (as all widgets must
+ * do) it does not extend Widget
  */
 public class GroupWidget implements IWidget {
 
-    private static int nextWidgetNumber = 1;
+    private static int groupNextWidgetNumber = 1;
 
     private static final int TYPE = IWidget.GROUP;
 
@@ -32,12 +33,16 @@ public class GroupWidget implements IWidget {
     public GroupWidget() {
         icon = new ImageIcon(getClass().getResource("/org/pdf/forms/res/Group.gif"));
 
-        this.widgetName = "Group" + nextWidgetNumber;
-        nextWidgetNumber++;
+        this.widgetName = "Group" + groupNextWidgetNumber;
+        groupNextWidgetNumber++;
 
         this.widget = new Widget();
         widget.setType("GROUP");
         widget.setName(widgetName);
+
+        widget.setJavaScript(null);
+        widget.setProperties(null);
+        widget.setWidgets(new Widgets());
     }
 
     @Override
@@ -48,10 +53,11 @@ public class GroupWidget implements IWidget {
     @Override
     public void setWidgetsInGroup(final List<IWidget> widgetsInGroup) {
         this.widgetsInGroup = widgetsInGroup;
-        final List<Widget> widgets = widgetsInGroup.stream()
+
+        final List<Widget> widgetList = widgetsInGroup.stream()
                 .map(IWidget::getWidgetModel)
                 .collect(toList());
-        widget.setWidgets(widgets);
+        widget.getWidgets().setWidget(widgetList);
     }
 
     @Override
@@ -90,14 +96,12 @@ public class GroupWidget implements IWidget {
 
     @Override
     public JavaScriptContent getJavaScript() {
-        //todo: must be added to model
-        return new JavaScriptContent();
+        return widget.getJavaScript();
     }
 
     @Override
     public Widget getWidgetModel() {
-        //todo: must be added to model
-        return new Widget();
+        return widget;
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.pdf.forms.model.des.BackgroundFill;
 import org.pdf.forms.model.des.BindingProperties;
 import org.pdf.forms.model.des.BorderProperties;
 import org.pdf.forms.model.des.Borders;
+import org.pdf.forms.model.des.CaptionProperties;
 import org.pdf.forms.model.des.FieldProperties;
 import org.pdf.forms.model.des.FontCaption;
 import org.pdf.forms.model.des.FontProperties;
@@ -26,7 +27,7 @@ import org.pdf.forms.widgets.components.SplitComponent;
 
 public class TextFieldWidget extends Widget {
 
-    private static int nextWidgetNumber = 1;
+    private static int textFieldNextWidgetNumber = 1;
 
     public TextFieldWidget(
             final int type,
@@ -44,8 +45,8 @@ public class TextFieldWidget extends Widget {
         setAllowEditCaptionAndValue(true);
         setAllowEditOfCaptionOnClick(true);
 
-        final String widgetName = "Text Field" + nextWidgetNumber;
-        nextWidgetNumber++;
+        final String widgetName = "Text Field" + textFieldNextWidgetNumber;
+        textFieldNextWidgetNumber++;
 
         setWidgetName(widgetName);
         getWidgetModel().setName(widgetName);
@@ -71,7 +72,7 @@ public class TextFieldWidget extends Widget {
         setWidgetName(bindingProperties.getName().orElse(""));
         setArrayNumber(bindingProperties.getArrayNumber().map(Integer::parseInt).orElse(0));
 
-        setAllProperties();
+        addProperties();
     }
 
     private void addProperties() {
@@ -84,7 +85,10 @@ public class TextFieldWidget extends Widget {
     }
 
     private void addCaptionProperties() {
-        getWidgetModel().getProperties().getCaptionProperties().setTextValue("Text Field");
+        final CaptionProperties captionProperties = new CaptionProperties();
+        captionProperties.setTextValue("Text Field");
+        captionProperties.setDividerLocation("");
+        getWidgetModel().getProperties().setCaptionProperties(captionProperties);
     }
 
     private void addFontProperties() {
@@ -110,25 +114,34 @@ public class TextFieldWidget extends Widget {
     private void addObjectProperties() {
         final ObjectProperties objectProperties = getWidgetModel().getProperties().getObject();
 
-        final FieldProperties fieldProperties = objectProperties.getField();
+        final FieldProperties fieldProperties = new FieldProperties();
         fieldProperties.setAppearance("Sunken Box");
         fieldProperties.allowMultipleLines(false);
         fieldProperties.setLimitLength(false);
         fieldProperties.setPresence("Visible");
+        fieldProperties.setMaxChars("");
+        objectProperties.setField(fieldProperties);
 
-        final ValueProperties valueProperties = objectProperties.getValue();
+        final ValueProperties valueProperties = new ValueProperties();
         valueProperties.setType("User Entered - Optional");
         valueProperties.setDefault("Text Field");
+        valueProperties.setEmptyMessage("");
+        objectProperties.setValue(valueProperties);
 
-        final BindingProperties bindingProperties = objectProperties.getBinding();
+        final BindingProperties bindingProperties = new BindingProperties();
         bindingProperties.setName(getWidgetName());
         bindingProperties.setArrayNumber("0");
+        objectProperties.setBinding(bindingProperties);
     }
 
     private void addLayoutProperties() {
         final LayoutProperties layoutProperties = getWidgetModel().getProperties().getLayout();
 
         final SizeAndPosition sizeAndPosition = layoutProperties.getSizeAndPosition();
+        sizeAndPosition.setX(1);
+        sizeAndPosition.setY(1);
+        sizeAndPosition.setWidth(1);
+        sizeAndPosition.setHeight(1);
         sizeAndPosition.setXExpandToFit("false");
         sizeAndPosition.setYExpandToFit("false");
         sizeAndPosition.setAnchor("Top Left");
@@ -136,13 +149,14 @@ public class TextFieldWidget extends Widget {
 
         final Margins margins = layoutProperties.getMargins();
         margins.setLeft("2");
-        margins.setLeft("4");
-        margins.setLeft("2");
-        margins.setLeft("4");
+        margins.setRight("4");
+        margins.setTop("2");
+        margins.setBottom("4");
 
-        final org.pdf.forms.model.des.Caption caption = layoutProperties.getCaption();
+        final org.pdf.forms.model.des.Caption caption = new org.pdf.forms.model.des.Caption();
         caption.setPosition("Left");
         caption.setReserve("4");
+        layoutProperties.setCaption(caption);
     }
 
     private void addBorderProperties() {
@@ -165,9 +179,10 @@ public class TextFieldWidget extends Widget {
         paragraphCaption.setHorizontalAlignment("left");
         paragraphCaption.setVerticalAlignment("center");
 
-        final ParagraphValue paragraphValue = paragraphProperties.getParagraphValue();
+        final ParagraphValue paragraphValue = new ParagraphValue();
         paragraphValue.setHorizontalAlignment("left");
         paragraphValue.setVerticalAlignment("center");
+        paragraphProperties.setParagraphValue(paragraphValue);
     }
 
     @Override

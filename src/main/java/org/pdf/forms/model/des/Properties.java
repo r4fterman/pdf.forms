@@ -26,7 +26,6 @@ public class Properties {
         this.layout = new LayoutProperties();
         this.border = new BorderProperties();
         this.paragraph = new ParagraphProperties();
-        this.captionProperties = new CaptionProperties();
     }
 
     public FontProperties getFont() {

@@ -4,7 +4,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.io.File;
@@ -21,7 +20,7 @@ class CustomComponentsFileReaderTest {
 
     @Test
     void read_custom_component_document_from_file() throws Exception {
-        final CustomComponents customComponents = new CustomComponentsFileReader(getFile("/.custom_components.xml"))
+        final CustomComponents customComponents = new CustomComponentsFileReader(getFile())
                 .getCustomComponents();
 
         assertThat(customComponents.getCustomComponentList(), hasSize(1));
@@ -45,14 +44,14 @@ class CustomComponentsFileReaderTest {
         assertThat(properties.getCaptionProperties().getProperty(), hasSize(1));
         assertThat(properties.getFont().getFontCaption().getProperty(), hasSize(6));
         assertThat(properties.getFont().getFontValue().getProperty(), is(empty()));
-        assertThat(properties.getLayout().getCaption().getProperty(), is(empty()));
+        assertThat(properties.getLayout().getCaption(), is(nullValue()));
         assertThat(properties.getLayout().getMargins().getProperty(), hasSize(4));
         assertThat(properties.getLayout().getSizeAndPosition().getProperty(), hasSize(8));
-        assertThat(properties.getObject().getBinding().getProperty(), is(empty()));
+        assertThat(properties.getObject().getBinding(), is(nullValue()));
         assertThat(properties.getObject().getField().getProperty(), hasSize(1));
-        assertThat(properties.getObject().getValue().getProperty(), is(empty()));
+        assertThat(properties.getObject().getValue(), is(nullValue()));
         assertThat(properties.getParagraph().getParagraphCaption().getProperty(), hasSize(2));
-        assertThat(properties.getParagraph().getParagraphValue().getProperty(), is(empty()));
+        assertThat(properties.getParagraph().getParagraphValue(), is(nullValue()));
     }
 
     private void assertEmptyJavaScript(final JavaScriptContent javaScriptContent) {
@@ -65,10 +64,8 @@ class CustomComponentsFileReaderTest {
         assertThat(javaScriptContent.getMouseUp(), is(nullValue()));
     }
 
-    private File getFile(final String fileName) throws URISyntaxException {
-        final URL url = CustomComponentsFileReaderTest.class.getResource(fileName);
-        assertThat(url, is(notNullValue()));
-
+    private File getFile() throws URISyntaxException {
+        final URL url = CustomComponentsFileReaderTest.class.getResource("/.custom_components.xml");
         return new File(url.toURI());
     }
 }

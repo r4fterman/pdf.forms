@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.io.File;
@@ -24,7 +23,7 @@ class DesignerProjectFileReaderTest {
 
     @Test
     void read_des_document_from_file() throws Exception {
-        final DesDocument desDocument = new DesignerProjectFileReader(getFile("/example.des")).getDesDocument();
+        final DesDocument desDocument = new DesignerProjectFileReader(getFile()).getDesDocument();
 
         assertJavaScriptContent(desDocument.getJavaScript());
         assertDocumentProperty(desDocument.getProperty());
@@ -107,7 +106,7 @@ class DesignerProjectFileReaderTest {
         assertThat(widget.getProperties().getBorder().getBackgroundFill().getProperty(), hasSize(2));
 
         assertThat(widget.getProperties().getParagraph().getParagraphCaption().getProperty(), hasSize(2));
-        assertThat(widget.getProperties().getParagraph().getParagraphValue().getProperty(), is(empty()));
+        assertThat(widget.getProperties().getParagraph().getParagraphValue(), is(nullValue()));
 
         assertThat(widget.getProperties().getCaptionProperties().getProperty(), hasSize(2));
 
@@ -119,10 +118,8 @@ class DesignerProjectFileReaderTest {
         assertThat(widget.getJavaScript().getMouseDown(), is(emptyString()));
     }
 
-    private File getFile(final String fileName) throws URISyntaxException {
-        final URL url = DesignerProjectFileReaderTest.class.getResource(fileName);
-        assertThat("File not found: " + fileName, url, is(notNullValue()));
-
+    private File getFile() throws URISyntaxException {
+        final URL url = DesignerProjectFileReaderTest.class.getResource("/example.des");
         return new File(url.toURI());
 
     }

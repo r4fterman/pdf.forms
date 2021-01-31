@@ -9,17 +9,19 @@ import org.pdf.forms.model.des.BackgroundFill;
 import org.pdf.forms.model.des.BindingProperties;
 import org.pdf.forms.model.des.BorderProperties;
 import org.pdf.forms.model.des.Borders;
+import org.pdf.forms.model.des.FieldProperties;
 import org.pdf.forms.model.des.FontCaption;
 import org.pdf.forms.model.des.LayoutProperties;
 import org.pdf.forms.model.des.Margins;
 import org.pdf.forms.model.des.ObjectProperties;
 import org.pdf.forms.model.des.ParagraphCaption;
 import org.pdf.forms.model.des.SizeAndPosition;
+import org.pdf.forms.model.des.ValueProperties;
 import org.pdf.forms.widgets.components.IPdfComponent;
 
 public class ButtonWidget extends Widget {
 
-    private static int nextWidgetNumber = 1;
+    private static int buttonNextWidgetNumber = 1;
 
     public ButtonWidget(
             final int type,
@@ -36,8 +38,8 @@ public class ButtonWidget extends Widget {
         setComponentSplit(false);
         setAllowEditCaptionAndValue(false);
 
-        final String widgetName = "Button" + nextWidgetNumber;
-        nextWidgetNumber++;
+        final String widgetName = "Button" + buttonNextWidgetNumber;
+        buttonNextWidgetNumber++;
 
         setWidgetName(widgetName);
         getWidgetModel().setName(widgetName);
@@ -87,18 +89,28 @@ public class ButtonWidget extends Widget {
     private void addObjectProperties() {
         final ObjectProperties objectProperties = getWidgetModel().getProperties().getObject();
 
-        objectProperties.getField().setPresence("Visible");
-        objectProperties.getValue().setDefault("Button");
+        final FieldProperties fieldProperties = new FieldProperties();
+        fieldProperties.setPresence("Visible");
+        objectProperties.setField(fieldProperties);
 
-        final BindingProperties bindingProperties = objectProperties.getBinding();
+        final ValueProperties valueProperties = new ValueProperties();
+        valueProperties.setDefault("Button");
+        objectProperties.setValue(valueProperties);
+
+        final BindingProperties bindingProperties = new BindingProperties();
         bindingProperties.setName(getWidgetName());
         bindingProperties.setArrayNumber("0");
+        objectProperties.setBinding(bindingProperties);
     }
 
     private void addLayoutProperties() {
         final LayoutProperties layoutProperties = getWidgetModel().getProperties().getLayout();
 
         final SizeAndPosition sizeAndPosition = layoutProperties.getSizeAndPosition();
+        sizeAndPosition.setX(1);
+        sizeAndPosition.setY(1);
+        sizeAndPosition.setWidth(1);
+        sizeAndPosition.setHeight(1);
         sizeAndPosition.setXExpandToFit("false");
         sizeAndPosition.setYExpandToFit("false");
         sizeAndPosition.setAnchor("Top Left");

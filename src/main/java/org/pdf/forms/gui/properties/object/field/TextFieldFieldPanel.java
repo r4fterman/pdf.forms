@@ -181,6 +181,7 @@ public class TextFieldFieldPanel extends JPanel {
     private TriStateCheckBox.State getLimitLengthToUse(final Set<IWidget> widgets) {
         final List<Boolean> limitLengthValues = widgets.stream()
                 .map(widget -> widget.getWidgetModel().getProperties().getObject().getField().getLimitLength())
+                .map(Boolean::valueOf)
                 .collect(toUnmodifiableList());
 
         return getTriStateValue(limitLengthValues);

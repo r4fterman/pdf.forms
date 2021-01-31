@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <widget>
     <property name="type" value="COMBO_BOX"/>
     <property name="name" value="Drop-down List1"/>
@@ -25,7 +25,6 @@
             <field>
                 <property name="Appearance" value="Sunken Box"/>
                 <property name="Presence" value="Visible"/>
-                <items/>
                 <property name="Allow Custom Text Entry" value="false"/>
             </field>
             <value>

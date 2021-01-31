@@ -1,25 +1,26 @@
 package org.pdf.forms.widgets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 
 import javax.swing.*;
+import javax.xml.bind.JAXBException;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.components.SplitComponent;
+import org.xmlunit.diff.DefaultNodeMatcher;
+import org.xmlunit.diff.DifferenceEvaluators;
 
-@Disabled
 class ComboBoxWidgetTest {
 
     private FontHandler fontHandler;
@@ -41,15 +42,22 @@ class ComboBoxWidgetTest {
 
     @Test
     void persist_widget_into_xml() throws Exception {
-        final ComboBoxWidget widget = new ComboBoxWidget(IWidget.COMBO_BOX,
+        final ComboBoxWidget comboBoxWidget = new ComboBoxWidget(IWidget.COMBO_BOX,
                 baseComponent,
                 component,
                 fontHandler);
 
-        final String serializedComboBox = new WidgetFileWriter(widget.getWidgetModel()).serialize();
+        final String serialize = new WidgetFileWriter(comboBoxWidget.getWidgetModel()).serialize();
+        final String expected = Files.readString(getFile().toPath());
 
-        assertThat(serializedComboBox.length(), is(greaterThanOrEqualTo(2550)));
-        assertThat(serializedComboBox.length(), is(lessThanOrEqualTo(2562)));
+        assertThat(serialize, isSimilarTo(expected)
+                .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
+                .withDifferenceEvaluator(DifferenceEvaluators.chain(
+                        DifferenceEvaluators.Default,
+                        new PropertyWithIteratorNumberDifferenceEvaluator("Drop-down List")
+                        ))
+                .ignoreWhitespace()
+        );
     }
 
     @Test
@@ -57,11 +65,20 @@ class ComboBoxWidgetTest {
         final ComboBoxWidget widget = new ComboBoxWidget(IWidget.COMBO_BOX,
                 baseComponent,
                 component,
-                new WidgetFileReader(getFile()).getWidget(),
+                getWidgetFromFile(),
                 new FontHandler(designerPropertiesFile));
 
         final String serialize = new WidgetFileWriter(widget.getWidgetModel()).serialize();
-        assertThat(serialize.length(), is(3807));
+        final String expected = Files.readString(getFile().toPath());
+
+        assertThat(serialize, isSimilarTo(expected)
+                .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
+                .ignoreWhitespace()
+        );
+    }
+
+    private org.pdf.forms.model.des.Widget getWidgetFromFile() throws IOException, JAXBException, URISyntaxException {
+        return new WidgetFileReader(getFile()).getWidget();
     }
 
     private File getFile() throws URISyntaxException {

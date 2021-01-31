@@ -7,6 +7,7 @@ import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.model.des.Draw;
+import org.pdf.forms.model.des.FieldProperties;
 import org.pdf.forms.model.des.LayoutProperties;
 import org.pdf.forms.model.des.Margins;
 import org.pdf.forms.model.des.ObjectProperties;
@@ -15,7 +16,7 @@ import org.pdf.forms.widgets.utils.WidgetFactory;
 
 public class ImageWidget extends Widget {
 
-    private static int nextWidgetNumber = 1;
+    private static int imageNextWidgetNumber = 1;
 
     private static final int STRETCH = 0;
     private static final int FULL_SIZE = 1;
@@ -39,8 +40,8 @@ public class ImageWidget extends Widget {
         setAllowEditCaptionAndValue(false);
         setAllowEditOfCaptionOnClick(false);
 
-        final String widgetName = "Image " + nextWidgetNumber;
-        nextWidgetNumber++;
+        final String widgetName = "Image " + imageNextWidgetNumber;
+        imageNextWidgetNumber++;
 
         setWidgetName(widgetName);
         getWidgetModel().setName(widgetName);
@@ -62,18 +63,28 @@ public class ImageWidget extends Widget {
 
         setWidgetName(widget.getName().orElse(""));
 
-        setAllProperties();
+        addProperties();
     }
 
     private void addProperties() {
         addObjectProperties();
         addLayoutProperties();
+
+        getWidgetModel().getProperties().setFont(null);
+        getWidgetModel().getProperties().setBorder(null);
+        getWidgetModel().getProperties().setParagraph(null);
+        getWidgetModel().setJavaScript(null);
+
     }
 
     private void addLayoutProperties() {
         final LayoutProperties layoutProperties = getWidgetModel().getProperties().getLayout();
 
         final SizeAndPosition sizeAndPosition = layoutProperties.getSizeAndPosition();
+        sizeAndPosition.setX(1);
+        sizeAndPosition.setY(1);
+        sizeAndPosition.setWidth(1);
+        sizeAndPosition.setHeight(1);
         sizeAndPosition.setXExpandToFit("false");
         sizeAndPosition.setYExpandToFit("false");
         sizeAndPosition.setAnchor("Top Left");
@@ -89,8 +100,14 @@ public class ImageWidget extends Widget {
     private void addObjectProperties() {
         final ObjectProperties objectProperties = getWidgetModel().getProperties().getObject();
 
-        objectProperties.getField().setPresence("Visible");
-        objectProperties.getDraw().setSizing("Stretch Image To Fit");
+        FieldProperties fieldProperties = new FieldProperties();
+        fieldProperties.setPresence("Visible");
+        objectProperties.setField(fieldProperties);
+
+        final Draw draw = new Draw();
+        draw.setLocation("");
+        draw.setSizing("Stretch Image To Fit");
+        objectProperties.setDraw(draw);
     }
 
     @Override

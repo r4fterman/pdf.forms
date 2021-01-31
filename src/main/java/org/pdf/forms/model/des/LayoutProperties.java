@@ -20,7 +20,6 @@ public class LayoutProperties {
     public LayoutProperties() {
         this.sizeAndPosition = new SizeAndPosition();
         this.margins = new Margins();
-        this.caption = new Caption();
     }
 
     public SizeAndPosition getSizeAndPosition() {

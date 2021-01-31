@@ -1,22 +1,25 @@
 package org.pdf.forms.widgets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 
 import javax.swing.*;
+import javax.xml.bind.JAXBException;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
+import org.xmlunit.diff.DefaultNodeMatcher;
+import org.xmlunit.diff.DifferenceEvaluators;
 
-@Disabled
 class ImageWidgetTest {
 
     private JComponent baseComponent;
@@ -37,25 +40,44 @@ class ImageWidgetTest {
 
     @Test
     void persist_widget_into_xml() throws Exception {
-        final ImageWidget widget = new ImageWidget(IWidget.IMAGE,
+        final ImageWidget imageWidget = new ImageWidget(IWidget.IMAGE,
                 baseComponent,
                 component,
                 new FontHandler(designerPropertiesFile));
 
-        final String serialize = new WidgetFileWriter(widget.getWidgetModel()).serialize();
-        assertThat(serialize.length(), is(851));
+        final String serialize = new WidgetFileWriter(imageWidget.getWidgetModel()).serialize();
+        final String expected = Files.readString(getFile().toPath());
+
+        assertThat(serialize, isSimilarTo(expected)
+                .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
+                .withDifferenceEvaluator(DifferenceEvaluators.chain(
+                        DifferenceEvaluators.Default,
+                        new PropertyWithIteratorNumberDifferenceEvaluator("Image")
+
+                ))
+                .ignoreWhitespace()
+        );
     }
 
     @Test
     void read_persisted_xml_into_widget() throws Exception {
-        final ImageWidget widget = new ImageWidget(IWidget.IMAGE,
+        final ImageWidget imageWidget = new ImageWidget(IWidget.IMAGE,
                 baseComponent,
                 component,
-                new WidgetFileReader(getFile()).getWidget(),
+                getWidgetFromFile(),
                 fontHandler);
 
-        final String serialize = new WidgetFileWriter(widget.getWidgetModel()).serialize();
-        assertThat(serialize.length(), is(1271));
+        final String serialize = new WidgetFileWriter(imageWidget.getWidgetModel()).serialize();
+        final String expected = Files.readString(getFile().toPath());
+
+        assertThat(serialize, isSimilarTo(expected)
+                .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
+                .ignoreWhitespace()
+        );
+    }
+
+    private org.pdf.forms.model.des.Widget getWidgetFromFile() throws IOException, JAXBException, URISyntaxException {
+        return new WidgetFileReader(getFile()).getWidget();
     }
 
     private File getFile() throws URISyntaxException {

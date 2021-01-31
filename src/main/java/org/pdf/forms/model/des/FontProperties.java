@@ -19,7 +19,6 @@ public class FontProperties {
 
     public FontProperties() {
         this.fontCaption = new FontCaption();
-        this.fontValue = new FontValue();
     }
 
     public FontCaption getFontCaption() {
@@ -31,6 +30,9 @@ public class FontProperties {
     }
 
     public FontValue getFontValue() {
+        if (fontValue == null) {
+            setFontValue(new FontValue());
+        }
         return fontValue;
     }
 
