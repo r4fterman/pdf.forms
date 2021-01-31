@@ -54,6 +54,7 @@ class ComboBoxWidgetTest {
                 .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
                 .withDifferenceEvaluator(DifferenceEvaluators.chain(
                         DifferenceEvaluators.Default,
+                        new IgnoreFontNameDifferenceEvaluator(),
                         new PropertyWithIteratorNumberDifferenceEvaluator("Drop-down List")
                         ))
                 .ignoreWhitespace()

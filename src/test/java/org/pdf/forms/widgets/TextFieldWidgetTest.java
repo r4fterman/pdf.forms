@@ -20,6 +20,7 @@ import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.components.PdfTextField;
 import org.pdf.forms.widgets.components.SplitComponent;
 import org.xmlunit.diff.DefaultNodeMatcher;
+import org.xmlunit.diff.DifferenceEvaluators;
 
 class TextFieldWidgetTest {
 
@@ -48,9 +49,14 @@ class TextFieldWidgetTest {
         final String serialize = new WidgetFileWriter(textFieldWidget.getWidgetModel()).serialize();
         final String expected = Files.readString(getFile().toPath());
 
-        assertThat(serialize, isSimilarTo(expected)
-                .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
-                .ignoreWhitespace()
+        assertThat(serialize,
+                isSimilarTo(expected)
+                        .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
+                        .withDifferenceEvaluator(DifferenceEvaluators.chain(
+                                DifferenceEvaluators.Default,
+                                new IgnoreFontNameDifferenceEvaluator()
+                        ))
+                        .ignoreWhitespace()
         );
     }
 
@@ -64,9 +70,14 @@ class TextFieldWidgetTest {
         final String serialize = new WidgetFileWriter(textFieldWidget.getWidgetModel()).serialize();
         final String expected = Files.readString(getFile().toPath());
 
-        assertThat(serialize, isSimilarTo(expected)
-                .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
-                .ignoreWhitespace()
+        assertThat(serialize,
+                isSimilarTo(expected)
+                        .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
+                        .withDifferenceEvaluator(DifferenceEvaluators.chain(
+                                DifferenceEvaluators.Default,
+                                new IgnoreFontNameDifferenceEvaluator()
+                        ))
+                        .ignoreWhitespace()
         );
     }
 

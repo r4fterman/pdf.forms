@@ -19,6 +19,7 @@ import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.components.SplitComponent;
 import org.xmlunit.diff.DefaultNodeMatcher;
+import org.xmlunit.diff.DifferenceEvaluators;
 
 class CheckBoxWidgetTest {
 
@@ -49,9 +50,14 @@ class CheckBoxWidgetTest {
         final String serialize = new WidgetFileWriter(checkBoxWidget.getWidgetModel()).serialize();
         final String expected = Files.readString(getFile().toPath());
 
-        assertThat(serialize, isSimilarTo(expected)
-                .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
-                .ignoreWhitespace()
+        assertThat(serialize,
+                isSimilarTo(expected)
+                        .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
+                        .withDifferenceEvaluator(DifferenceEvaluators.chain(
+                                DifferenceEvaluators.Default,
+                                new IgnoreFontNameDifferenceEvaluator()
+                        ))
+                        .ignoreWhitespace()
         );
     }
 

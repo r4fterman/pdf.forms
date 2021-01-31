@@ -20,6 +20,7 @@ import org.pdf.forms.model.des.Widget;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.components.PdfButton;
 import org.xmlunit.diff.DefaultNodeMatcher;
+import org.xmlunit.diff.DifferenceEvaluators;
 
 class ButtonWidgetTest {
 
@@ -53,6 +54,10 @@ class ButtonWidgetTest {
         assertThat(serialize,
                 isSimilarTo(expected)
                         .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
+                        .withDifferenceEvaluator(DifferenceEvaluators.chain(
+                                DifferenceEvaluators.Default,
+                                new IgnoreFontNameDifferenceEvaluator()
+                        ))
                         .ignoreWhitespace()
         );
     }

@@ -50,6 +50,7 @@ class TextWidgetTest {
                 .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
                 .withDifferenceEvaluator(DifferenceEvaluators.chain(
                         DifferenceEvaluators.Default,
+                        new IgnoreFontNameDifferenceEvaluator(),
                         new PropertyWithIteratorNumberDifferenceEvaluator("Text")
                 ))
                 .ignoreWhitespace()
@@ -69,6 +70,11 @@ class TextWidgetTest {
 
         assertThat(serialize, isSimilarTo(expected)
                 .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
+                .withDifferenceEvaluator(DifferenceEvaluators.chain(
+                        DifferenceEvaluators.Default,
+                        new IgnoreFontNameDifferenceEvaluator(),
+                        new PropertyWithIteratorNumberDifferenceEvaluator("Text")
+                ))
                 .ignoreWhitespace()
         );
     }

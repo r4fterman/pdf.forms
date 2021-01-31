@@ -20,6 +20,7 @@ import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.components.PdfList;
 import org.pdf.forms.widgets.components.SplitComponent;
 import org.xmlunit.diff.DefaultNodeMatcher;
+import org.xmlunit.diff.DifferenceEvaluators;
 
 class ListBoxWidgetTest {
 
@@ -41,29 +42,34 @@ class ListBoxWidgetTest {
 
     @Test
     void persist_widget_into_xml() throws Exception {
-        final ListBoxWidget widget = new ListBoxWidget(IWidget.LIST_BOX,
+        final ListBoxWidget listBoxWidget = new ListBoxWidget(IWidget.LIST_BOX,
                 baseComponent,
                 component,
                 fontHandler);
 
-        final String serialize = new WidgetFileWriter(widget.getWidgetModel()).serialize();
+        final String serialize = new WidgetFileWriter(listBoxWidget.getWidgetModel()).serialize();
         final String expected = Files.readString(getFile().toPath());
 
-        assertThat(serialize, isSimilarTo(expected)
-                .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
-                .ignoreWhitespace()
+        assertThat(serialize,
+                isSimilarTo(expected)
+                        .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
+                        .withDifferenceEvaluator(DifferenceEvaluators.chain(
+                                DifferenceEvaluators.Default,
+                                new IgnoreFontNameDifferenceEvaluator()
+                        ))
+                        .ignoreWhitespace()
         );
     }
 
     @Test
     void read_persisted_xml_into_widget() throws Exception {
-        final ListBoxWidget widget = new ListBoxWidget(IWidget.LIST_BOX,
+        final ListBoxWidget listBoxWidget = new ListBoxWidget(IWidget.LIST_BOX,
                 baseComponent,
                 component,
                 getWidgetFromFile(),
                 fontHandler);
 
-        final String serialize = new WidgetFileWriter(widget.getWidgetModel()).serialize();
+        final String serialize = new WidgetFileWriter(listBoxWidget.getWidgetModel()).serialize();
         final String expected = Files.readString(getFile().toPath());
 
         assertThat(serialize, isSimilarTo(expected)
