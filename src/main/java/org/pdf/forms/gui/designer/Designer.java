@@ -71,7 +71,12 @@ public class Designer extends PdfDecoder implements IDesigner {
         setBackground(BACKGROUND_COLOR);
 
         selectionBox = new DesignerSelectionBox(this);
-        widgetSelection = new WidgetSelection(this, version, fontHandler, widgetFactory, configuration, designerPropertiesFile);
+        widgetSelection = new WidgetSelection(this,
+                version,
+                fontHandler,
+                widgetFactory,
+                configuration,
+                designerPropertiesFile);
 
         this.horizontalRuler = horizontalRuler;
         this.verticalRuler = verticalRuler;
@@ -119,17 +124,17 @@ public class Designer extends PdfDecoder implements IDesigner {
         fieldProperties.getPresence()
                 .filter(visibility -> visibility.equals("Visible"))
                 .ifPresent(visibility -> {
-                    g2.translate(widget.getX(), widget.getY());
+                    final int x = widget.getX();
+                    final int y = widget.getY();
 
-                    widget.getWidget().paint(g2);
-
+                    g2.translate(x, y);
+                    widget.getComponent().paint(g2);
                     final boolean drawNodes = selectedWidgets.size() == 1 && selectedWidgets.contains(widget);
                     widgetSelection.drawSingleSectionBox(
                             g2,
                             widget,
                             drawNodes);
-
-                    g2.translate(-widget.getX(), -widget.getY());
+                    g2.translate(-x, -y);
                 });
     }
 

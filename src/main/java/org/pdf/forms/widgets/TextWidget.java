@@ -11,9 +11,11 @@ import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.model.des.CaptionProperties;
 import org.pdf.forms.model.des.FieldProperties;
 import org.pdf.forms.model.des.FontCaption;
+import org.pdf.forms.model.des.FontProperties;
 import org.pdf.forms.model.des.LayoutProperties;
 import org.pdf.forms.model.des.Margins;
 import org.pdf.forms.model.des.ParagraphCaption;
+import org.pdf.forms.model.des.ParagraphProperties;
 import org.pdf.forms.model.des.SizeAndPosition;
 import org.pdf.forms.widgets.components.IPdfComponent;
 import org.pdf.forms.widgets.components.PdfCaption;
@@ -62,7 +64,7 @@ public class TextWidget extends Widget {
         setAllowEditOfCaptionOnClick(true);
 
         setWidgetName(getWidgetModel().getName().orElse(""));
-        addProperties();
+        setAllProperties();
     }
 
     private void addProperties() {
@@ -77,14 +79,17 @@ public class TextWidget extends Widget {
     }
 
     private void addFontProperties() {
-        final FontCaption fontCaption = getWidgetModel().getProperties().getFont().getFontCaption();
+        final FontProperties fontProperties = new FontProperties();
 
+        final FontCaption fontCaption = fontProperties.getFontCaption();
         fontCaption.setFontName(getFontHandler().getDefaultFont().getFontName());
         fontCaption.setFontSize("11");
         fontCaption.setFontStyle(String.valueOf(IWidget.STYLE_PLAIN));
         fontCaption.setUnderline(String.valueOf(IWidget.UNDERLINE_NONE));
         fontCaption.setStrikeThrough(String.valueOf(IWidget.STRIKETHROUGH_OFF));
         fontCaption.setColor(String.valueOf(Color.BLACK.getRGB()));
+
+        getWidgetModel().getProperties().setFont(fontProperties);
     }
 
     private void addObjectProperties() {
@@ -114,22 +119,27 @@ public class TextWidget extends Widget {
     }
 
     private void addBorderProperties() {
-        final BorderProperties border = getWidgetModel().getProperties().getBorder();
+        final BorderProperties borderProperties = new BorderProperties();
 
-        final Borders borders = border.getBorders();
+        final Borders borders = borderProperties.getBorders();
         borders.setBorderStyle("None");
         borders.setBorderWidth("1");
         borders.setBorderColor(String.valueOf(Color.BLACK.getRGB()));
 
-        final BackgroundFill backgroundFill = border.getBackgroundFill();
+        final BackgroundFill backgroundFill = borderProperties.getBackgroundFill();
         backgroundFill.setStyle("Solid");
         backgroundFill.setFillColor(String.valueOf(Color.WHITE.getRGB()));
+
+        getWidgetModel().getProperties().setBorder(borderProperties);
     }
 
     private void addParagraph() {
-        final ParagraphCaption paragraphCaption = getWidgetModel().getProperties().getParagraph().getParagraphCaption();
+        final ParagraphProperties paragraphProperties = new ParagraphProperties();
+
+        final ParagraphCaption paragraphCaption = paragraphProperties.getParagraphCaption();
         paragraphCaption.setHorizontalAlignment("left");
         paragraphCaption.setVerticalAlignment("center");
+        getWidgetModel().getProperties().setParagraph(paragraphProperties);
     }
 
     private void addCaptionProperties() {
@@ -140,8 +150,8 @@ public class TextWidget extends Widget {
 
     @Override
     public void setParagraphProperties(final int currentlyEditing) {
-        final IPdfComponent text = (IPdfComponent) getBaseComponent();
-        setParagraphProperties(text);
+        final IPdfComponent baseComponent = (IPdfComponent) getBaseComponent();
+        setParagraphProperties(baseComponent);
     }
 
     @Override
@@ -151,8 +161,8 @@ public class TextWidget extends Widget {
 
     @Override
     public void setFontProperties(final int currentlyEditing) {
-        final IPdfComponent text = (IPdfComponent) getBaseComponent();
-        setFontProperties(text);
+        final IPdfComponent baseComponent = (IPdfComponent) getBaseComponent();
+        setFontProperties(baseComponent);
         setSize(getWidth(), getHeight());
     }
 

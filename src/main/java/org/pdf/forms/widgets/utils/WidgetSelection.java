@@ -89,11 +89,10 @@ public class WidgetSelection {
                 (int) Math.round(selectionBoxBounds.width * resizeWidthRatio) - (BOX_MARGIN * 2),
                 (int) Math.round(selectionBoxBounds.height * resizeHeightRatio) - (BOX_MARGIN * 2));
 
-        selectedWidget.setY(
-                (int) Math.round(selectionBoxBounds.y + BOX_MARGIN + (selectionBoxBounds.height * resizeFromTopRatio)));
-
-        selectedWidget.setX(
-                (int) Math.round(selectionBoxBounds.x + BOX_MARGIN + (selectionBoxBounds.width * resizeFromLeftRatio)));
+        selectedWidget.setY((int) Math
+                .round(selectionBoxBounds.y + BOX_MARGIN + (selectionBoxBounds.height * resizeFromTopRatio)));
+        selectedWidget.setX((int) Math
+                .round(selectionBoxBounds.x + BOX_MARGIN + (selectionBoxBounds.width * resizeFromLeftRatio)));
     }
 
     private void drawBox(

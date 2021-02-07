@@ -29,7 +29,6 @@ public class Widget {
     public Widget() {
         this.property = new ArrayList<>();
         this.properties = new Properties();
-        this.javaScript = new JavaScriptContent();
     }
 
     public List<Property> getProperty() {

@@ -34,8 +34,8 @@ public abstract class Widget implements IWidget {
 
     private final Logger logger = LoggerFactory.getLogger(Widget.class);
 
+    private final org.pdf.forms.model.des.Widget widget;
     private final JComponent baseComponent;
-    private final Point position;
     private final int type;
     private final Icon icon;
     private final FontHandler fontHandler;
@@ -52,9 +52,8 @@ public abstract class Widget implements IWidget {
     private double resizeWidthRatio;
     private double resizeFromTopRatio;
     private double resizeWidthFromLeftRatio;
-    private final org.pdf.forms.model.des.Widget widget;
 
-    public Widget(
+    Widget(
             final org.pdf.forms.model.des.Widget widget,
             final int type,
             final JComponent baseComponent,
@@ -63,16 +62,28 @@ public abstract class Widget implements IWidget {
             final FontHandler fontHandler) {
         this.widget = widget;
         this.type = type;
-        this.component = component;
         this.baseComponent = baseComponent;
+        this.component = component;
         this.fontHandler = fontHandler;
+        this.icon = new ImageIcon(getClass().getResource(iconLocation));
 
-        position = new Point(0, 0);
-        icon = new ImageIcon(getClass().getResource(iconLocation));
+//        final SizeAndPosition sizeAndPosition = widget.getProperties().getLayout().getSizeAndPosition();
+//        if (sizeAndPosition.getX().map(Integer::valueOf).orElse(1).equals(1)) {
+//            sizeAndPosition.setX(component.getX());
+//        }
+//        if (sizeAndPosition.getY().map(Integer::valueOf).orElse(1).equals(1)) {
+//            sizeAndPosition.setY(component.getY());
+//        }
+//        if (sizeAndPosition.getWidth().map(Integer::valueOf).orElse(1).equals(1)) {
+//            sizeAndPosition.setWidth(component.getWidth());
+//        }
+//        if (sizeAndPosition.getHeight().map(Integer::valueOf).orElse(1).equals(1)) {
+//            sizeAndPosition.setHeight(component.getHeight());
+//        }
     }
 
     @Override
-    public JComponent getWidget() {
+    public JComponent getComponent() {
         return component;
     }
 
@@ -85,45 +96,56 @@ public abstract class Widget implements IWidget {
     public void setPosition(
             final int x,
             final int y) {
-        position.x = x;
-        position.y = y;
+        final SizeAndPosition sizeAndPosition = getWidgetModel().getProperties().getLayout().getSizeAndPosition();
+        sizeAndPosition.setX(x);
+        sizeAndPosition.setY(y);
     }
 
     @Override
     public void setX(final int x) {
-        position.x = x;
+        final SizeAndPosition sizeAndPosition = getWidgetModel().getProperties().getLayout().getSizeAndPosition();
+        sizeAndPosition.setX(x);
     }
 
     @Override
     public void setY(final int y) {
-        position.y = y;
+        final SizeAndPosition sizeAndPosition = getWidgetModel().getProperties().getLayout().getSizeAndPosition();
+        sizeAndPosition.setY(y);
     }
 
     @Override
     public int getX() {
-        return position.x;
+        final SizeAndPosition sizeAndPosition = getWidgetModel().getProperties().getLayout().getSizeAndPosition();
+        return sizeAndPosition.getX().map(Integer::valueOf).orElse(1);
     }
 
     @Override
     public int getY() {
-        return position.y;
+        final SizeAndPosition sizeAndPosition = getWidgetModel().getProperties().getLayout().getSizeAndPosition();
+        return sizeAndPosition.getY().map(Integer::valueOf).orElse(1);
     }
 
     @Override
     public int getWidth() {
-        return component.getWidth();
+        final SizeAndPosition sizeAndPosition = getWidgetModel().getProperties().getLayout().getSizeAndPosition();
+        return sizeAndPosition.getWidth().map(Integer::valueOf).orElse(1);
     }
 
     @Override
     public int getHeight() {
-        return component.getHeight();
+        final SizeAndPosition sizeAndPosition = getWidgetModel().getProperties().getLayout().getSizeAndPosition();
+        return sizeAndPosition.getHeight().map(Integer::valueOf).orElse(1);
     }
 
     @Override
     public void setSize(
             final int width,
             final int height) {
-        component = WidgetFactory.createResizedComponent(baseComponent, width, height);
+        final SizeAndPosition sizeAndPosition = getWidgetModel().getProperties().getLayout().getSizeAndPosition();
+        sizeAndPosition.setWidth(width);
+        sizeAndPosition.setHeight(height);
+
+        this.component = WidgetFactory.createResizedComponent(baseComponent, width, height);
     }
 
     @Override
@@ -499,7 +521,7 @@ public abstract class Widget implements IWidget {
     }
 
     void addJavaScript() {
-        final JavaScriptContent javaScript = getWidgetModel().getJavaScript();
+        final JavaScriptContent javaScript = new JavaScriptContent();
 
         javaScript.setMouseEnter("");
         javaScript.setMouseExit("");
@@ -510,6 +532,8 @@ public abstract class Widget implements IWidget {
         if (getType() == IWidget.TEXT_FIELD) {
             javaScript.setKeystroke("");
         }
+
+        getWidgetModel().setJavaScript(javaScript);
     }
 
     @Override
@@ -545,43 +569,61 @@ public abstract class Widget implements IWidget {
 
     @Override
     public void setBorderAndBackgroundProperties() {
-        final JComponent component = getValueComponent();
+        final JComponent valueComponent = getValueComponent();
 
         final Borders borders = getWidgetModel().getProperties().getBorder().getBorders();
+        setBordersOnValueComponent(valueComponent, borders);
 
-        final String borderStyle = borders.getBorderStyle().orElse("None");
-        if (borderStyle.equals("None")) {
-            component.setBorder(null);
-        } else {
-            final Optional<String> leftEdgeWidth = borders.getBorderWidth();
-
-            final Map<String, String> borderPropertiesMap = new HashMap<>();
-            if (borderStyle.equals("Beveled")) {
-                borderPropertiesMap.put("S", "/B");
-            }
-            if (borderStyle.equals("Solid")) {
-                borderPropertiesMap.put("S", "/S");
-            }
-            if (borderStyle.equals("Dashed")) {
-                borderPropertiesMap.put("S", "/D");
-            }
-
-            if (leftEdgeWidth.isPresent() && leftEdgeWidth.get().length() > 0) {
-                borderPropertiesMap.put("W", leftEdgeWidth.get());
-            }
-
-            final Color color = borders.getBorderColor().map(c -> new Color(Integer.parseInt(c))).orElse(Color.BLACK);
-            final Border border = JPedalBorderFactory.createBorderStyle(borderPropertiesMap, color, color);
-
-            component.setBorder(border);
-        }
-
-        final BackgroundFill backgroundFill = getWidgetModel().getProperties().getBorder().getBackgroundFill();
-        final Color backgroundColor = backgroundFill.getFillColor().map(c -> new Color(Integer.parseInt(c))).orElse(
-                Color.WHITE);
-        component.setBackground(backgroundColor);
+        setBackgroundOnValueComponent(valueComponent);
 
         setSize(getWidth(), getHeight());
+    }
+
+    private void setBordersOnValueComponent(
+            final JComponent valueComponent,
+            final Borders borders) {
+        final String borderStyle = borders.getBorderStyle().orElse("None");
+        if (borderStyle.equals("None")) {
+            valueComponent.setBorder(null);
+            return;
+        }
+
+        final Map<String, String> borderPropertiesMap = buildBorderPropertiesMap(borderStyle, borders.getBorderWidth());
+        final Color color = borders.getBorderColor()
+                .map(c -> new Color(Integer.parseInt(c)))
+                .orElse(Color.BLACK);
+        final Border border = JPedalBorderFactory.createBorderStyle(borderPropertiesMap, color, color);
+
+        valueComponent.setBorder(border);
+    }
+
+    private Map<String, String> buildBorderPropertiesMap(
+            final String borderStyle,
+            final Optional<String> borderWidth) {
+        final Map<String, String> borderPropertiesMap = new HashMap<>();
+        if (borderStyle.equals("Beveled")) {
+            borderPropertiesMap.put("S", "/B");
+        }
+        if (borderStyle.equals("Solid")) {
+            borderPropertiesMap.put("S", "/S");
+        }
+        if (borderStyle.equals("Dashed")) {
+            borderPropertiesMap.put("S", "/D");
+        }
+        borderWidth
+                .map(Integer::valueOf)
+                .filter(width -> width > 0)
+                .ifPresent(width -> borderPropertiesMap.put("W", String.valueOf(width)));
+
+        return borderPropertiesMap;
+    }
+
+    private void setBackgroundOnValueComponent(final JComponent valueComponent) {
+        final BackgroundFill backgroundFill = getWidgetModel().getProperties().getBorder().getBackgroundFill();
+        final Color backgroundColor = backgroundFill.getFillColor()
+                .map(c -> new Color(Integer.parseInt(c)))
+                .orElse(Color.WHITE);
+        valueComponent.setBackground(backgroundColor);
     }
 
     public void setComponent(final JComponent component) {
@@ -608,16 +650,8 @@ public abstract class Widget implements IWidget {
         this.arrayNumber = arrayNumber;
     }
 
-    public JComponent getComponent() {
-        return component;
-    }
-
     public JComponent getBaseComponent() {
         return baseComponent;
-    }
-
-    public Point getPosition() {
-        return position;
     }
 
     FontHandler getFontHandler() {

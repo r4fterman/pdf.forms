@@ -63,7 +63,7 @@ public class ImageWidget extends Widget {
 
         setWidgetName(widget.getName().orElse(""));
 
-        addProperties();
+        setAllProperties();
     }
 
     private void addProperties() {
@@ -74,7 +74,6 @@ public class ImageWidget extends Widget {
         getWidgetModel().getProperties().setBorder(null);
         getWidgetModel().getProperties().setParagraph(null);
         getWidgetModel().setJavaScript(null);
-
     }
 
     private void addLayoutProperties() {

@@ -1,9 +1,11 @@
 package org.pdf.forms.gui.commands;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.Collectors.toUnmodifiableMap;
 
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,9 +22,11 @@ import org.pdf.forms.model.des.DesDocument;
 import org.pdf.forms.model.des.PageData;
 import org.pdf.forms.model.des.RadioButtonGroups;
 import org.pdf.forms.model.des.Version;
+import org.pdf.forms.model.des.Widget;
 import org.pdf.forms.readers.des.DesignerProjectFileReader;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.ButtonGroup;
+import org.pdf.forms.widgets.GroupWidget;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.slf4j.Logger;
@@ -72,15 +76,15 @@ public class OpenDesignerFileCommand implements Command {
         closePDF();
 
         mainFrame.setPanelsState(true);
-
         mainFrame.setCurrentDesignerFileName(designerFileToOpen);
 
         readDesignerFile(designerFileToOpen);
 
         mainFrame.setCurrentPage(1);
-        mainFrame.displayPage(mainFrame.getCurrentPage());
+        // draw page
+        mainFrame.displayPage(1);
         mainFrame.setTotalNoOfDisplayedPages(mainFrame.getTotalNoOfPages());
-        mainFrame.setTitle(mainFrame.getCurrentDesignerFileName() + " - PDF Forms Designer Version " + version);
+        mainFrame.setTitle(designerFileToOpen + " - PDF Forms Designer Version " + version.getVersion());
 
         designerPropertiesFile.addRecentDesignerDocument(designerFileToOpen);
         updateRecentDocuments(designerPropertiesFile.getRecentDesignerDocuments());
@@ -97,44 +101,43 @@ public class OpenDesignerFileCommand implements Command {
 
             final Map<String, String> changedFiles = getChangedPdfFileLocations(pages);
             for (final org.pdf.forms.model.des.Page page: pages) {
-                final Page newPage;
-
-                final String pageName = page.getPageName().orElse("");
-
-                final String pageType = page.getPageType();
-                if (pageType.equals("pdfpage")) {
-                    final PageData pageData = page.getPageData();
-                    // PDF page
-                    final String pdfFileToUse = changedFiles.get(pageData.getPdfFileLocation().orElse(""));
-                    final int pdfPageNumber = pageData.getPdfPageNumber().orElse(1);
-                    //todo check for skip PDF files
-                    newPage = new Page(pageName, pdfFileToUse, pdfPageNumber);
-                } else {
-                    final PageData pageData = page.getPageData();
-                    // simple page
-                    final int width = pageData.getWidth().orElse(1);
-                    final int height = pageData.getHeight().orElse(1);
-                    newPage = new Page(pageName, width, height);
-                }
+                final Page newPage = convertToFormsPage(changedFiles, page);
 
                 addRadioButtonGroupsToPage(page, newPage);
                 addCheckBoxButtonGroupsToPage(page, newPage);
 
                 mainFrame.setCurrentPage(mainFrame.getCurrentPage() + 1);
-
                 addPage(mainFrame.getCurrentPage(), newPage);
 
-                //todo: update hierarchy panel
-//                final List<Widget> widgets = page.getWidget();
-//                for (final Widget widget: widgets) {
-//                    mainFrame.addWidgetToHierarchy(widget);
-//                }
-                //todo: store model on page
-//                newPage.setWidgets(widgets);
+                final List<IWidget> widgets = getWidgetsFromPage(page);
+                for (final IWidget widget: widgets) {
+                    mainFrame.addWidgetToHierarchy(widget);
+                }
+                newPage.setWidgets(widgets);
             }
         } catch (final Exception e) {
             logger.error("Error opening designer file {}", designerFileToOpen, e);
         }
+    }
+
+    private Page convertToFormsPage(
+            final Map<String, String> changedFiles,
+            final org.pdf.forms.model.des.Page page) {
+        final String pageName = page.getPageName().orElse("");
+        if (page.isPdfPage()) {
+            // PDF page
+            final PageData pageData = page.getPageData();
+            final String pdfFileToUse = changedFiles.get(pageData.getPdfFileLocation().orElse(""));
+            final int pdfPageNumber = pageData.getPdfPageNumber().orElse(1);
+            //todo check for skip PDF files
+            return new Page(pageName, pdfFileToUse, pdfPageNumber);
+        }
+
+        // simple page
+        final PageData pageData = page.getPageData();
+        final int width = pageData.getWidth().orElse(1);
+        final int height = pageData.getHeight().orElse(1);
+        return new Page(pageName, width, height);
     }
 
     private void closePDF() {
@@ -143,7 +146,7 @@ public class OpenDesignerFileCommand implements Command {
         mainFrame.getDesigner().close();
 
         mainFrame.setCurrentDesignerFileName("");
-        mainFrame.setTitle("PDF Forms Designer Version " + version);
+        mainFrame.setTitle("PDF Forms Designer Version " + version.getVersion());
 
         mainFrame.setPropertiesCompound(Set.of());
         mainFrame.setPropertiesToolBar(Set.of());
@@ -215,40 +218,41 @@ public class OpenDesignerFileCommand implements Command {
         }
     }
 
-//    private List<IWidget> getWidgetsFromXMLElement(final org.pdf.forms.model.des.Page page) {
-//        final List<Element> widgetsInPageList = XMLUtils.getElementsFromNodeList(page.getChildNodes()).stream()
-//                .filter(element -> element.getNodeName().equals("widget"))
-//                .collect(toUnmodifiableList());
-//
-//        final List<IWidget> widgets = new ArrayList<>();
-//        for (final Element widgetElement: widgetsInPageList) {
-//            XMLUtils.getAttributeValueFromChildElement(widgetElement, "type")
-//                    .map(type -> IWidget.WIDGET_TYPES.getOrDefault(type.toLowerCase(), IWidget.NONE))
-//                    .map(widgetType -> createWidgetByType(widgetElement, widgetType))
-//                    .ifPresent(widgets::add);
-//        }
-//        return widgets;
-//    }
+    private List<IWidget> getWidgetsFromPage(final org.pdf.forms.model.des.Page page) {
+        return page.getWidget().stream()
+                .map(this::createWidgetByType)
+                .collect(toUnmodifiableList());
+    }
 
-//    private IWidget createWidgetByType(
-//            final Element widgetElement,
-//            final Integer widgetType) {
-//        //todo: move to WidgetFactory
-//        if (widgetType == IWidget.GROUP) {
-//            final GroupWidget widget = new GroupWidget();
-//            final List<IWidget> widgetsInGroup = getWidgetsFromXMLElement(XMLUtils
-//                    .getElementsFromNodeList(widgetElement.getElementsByTagName("widgets")).get(0));
-//            widget.setWidgetsInGroup(widgetsInGroup);
-//            return widget;
-//        }
-//        return widgetFactory.createWidget(widgetType, widgetElement);
-//    }
+    private IWidget createWidgetByType(final org.pdf.forms.model.des.Widget widget) {
+        final int widgetType = getWidgetType(widget);
+        //todo: move to WidgetFactory
+        if (widgetType == IWidget.GROUP) {
+            final GroupWidget groupWidget = new GroupWidget();
+
+            final List<IWidget> widgetsInGroup = new ArrayList<>();
+            final List<Widget> widgetInGroupList = widget.getWidgets().getWidget();
+            for (final Widget widgetInGroup: widgetInGroupList) {
+                widgetsInGroup.add(createWidgetByType(widgetInGroup));
+            }
+            groupWidget.setWidgetsInGroup(widgetsInGroup);
+
+            return groupWidget;
+        }
+        return widgetFactory.createWidget(widgetType, widget);
+    }
+
+    private int getWidgetType(final Widget widget) {
+        return widget.getType()
+                .map(type -> IWidget.WIDGET_TYPES.getOrDefault(type.toLowerCase(), IWidget.NONE))
+                .orElse(IWidget.NONE);
+    }
 
     private void addPage(
-            final int pdfPage,
+            final int pageNumber,
             final Page newPage) {
-        mainFrame.getFormsDocument().addPage(pdfPage, newPage);
-        mainFrame.addPageToHierarchyPanel(pdfPage, newPage);
+        mainFrame.getFormsDocument().addPage(pageNumber, newPage);
+        mainFrame.addPageToHierarchyPanel(pageNumber, newPage);
     }
 
 }

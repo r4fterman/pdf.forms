@@ -17,6 +17,7 @@ import org.pdf.forms.model.des.DesDocument;
 import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.model.des.Page;
 import org.pdf.forms.model.des.Property;
+import org.pdf.forms.model.des.SizeAndPosition;
 import org.pdf.forms.model.des.Widget;
 
 class DesignerProjectFileReaderTest {
@@ -87,6 +88,8 @@ class DesignerProjectFileReaderTest {
         assertThat(page.getRadioButtonGroups().getProperty(), is(empty()));
 
         assertThat(page.getWidget(), hasSize(41));
+        assertSize(page.getWidget().get(7), 207, 200, 74, 19);
+
     }
 
     private void assertWidget(final Widget widget) {
@@ -116,6 +119,21 @@ class DesignerProjectFileReaderTest {
         assertThat(widget.getJavaScript().getChange(), is(emptyString()));
         assertThat(widget.getJavaScript().getMouseUp(), is(emptyString()));
         assertThat(widget.getJavaScript().getMouseDown(), is(emptyString()));
+
+        assertSize(widget, 113, 157, 37, 22);
+    }
+
+    private void assertSize(
+            final Widget widget,
+            final int x,
+            final int y,
+            final int width,
+            final int height) {
+        final SizeAndPosition sizeAndPosition = widget.getProperties().getLayout().getSizeAndPosition();
+        assertThat(sizeAndPosition.getX().map(Integer::valueOf).orElse(-1), is(x));
+        assertThat(sizeAndPosition.getY().map(Integer::valueOf).orElse(-1), is(y));
+        assertThat(sizeAndPosition.getWidth().map(Integer::valueOf).orElse(-1), is(width));
+        assertThat(sizeAndPosition.getHeight().map(Integer::valueOf).orElse(-1), is(height));
     }
 
     private File getFile() throws URISyntaxException {

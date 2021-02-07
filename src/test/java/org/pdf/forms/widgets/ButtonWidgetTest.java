@@ -73,7 +73,7 @@ class ButtonWidgetTest {
         final String serialize = new WidgetFileWriter(buttonWidget.getWidgetModel()).serialize();
         final String expected = Files.readString(getFile().toPath());
 
-        assertThat(serialize,
+        assertThat(serialize, serialize,
                 isSimilarTo(expected)
                         .withNodeMatcher(new DefaultNodeMatcher(new PropertyNameSelector()))
                         .ignoreWhitespace()

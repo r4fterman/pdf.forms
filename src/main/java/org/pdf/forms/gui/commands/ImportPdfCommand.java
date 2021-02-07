@@ -148,7 +148,7 @@ public class ImportPdfCommand implements Command {
         mainFrame.getDesigner().close();
 
         mainFrame.setCurrentDesignerFileName("");
-        mainFrame.setTitle("PDF Forms Designer Version " + version);
+        mainFrame.setTitle("PDF Forms Designer Version " + version.getVersion());
 
         mainFrame.setPropertiesCompound(new HashSet<>());
         mainFrame.setPropertiesToolBar(new HashSet<>());

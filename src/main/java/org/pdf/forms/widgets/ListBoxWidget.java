@@ -93,7 +93,7 @@ public class ListBoxWidget extends Widget {
     }
 
     private void addFontProperties() {
-        final FontProperties fontProperties = getWidgetModel().getProperties().getFont();
+        final FontProperties fontProperties = new FontProperties();
 
         final FontCaption fontCaption = fontProperties.getFontCaption();
         fontCaption.setFontName(fontHandler.getDefaultFont().getFontName());
@@ -110,6 +110,8 @@ public class ListBoxWidget extends Widget {
         fontValue.setUnderline(String.valueOf(IWidget.UNDERLINE_NONE));
         fontValue.setStrikeThrough(String.valueOf(IWidget.STRIKETHROUGH_OFF));
         fontValue.setColor(String.valueOf(Color.BLACK.getRGB()));
+
+        getWidgetModel().getProperties().setFont(fontProperties);
     }
 
     private void addObjectProperties() {
@@ -159,7 +161,8 @@ public class ListBoxWidget extends Widget {
     }
 
     private void addBorderProperties() {
-        final BorderProperties borderProperties = getWidgetModel().getProperties().getBorder();
+        final BorderProperties borderProperties = new BorderProperties();
+
         final Borders borders = borderProperties.getBorders();
         borders.setBorderStyle("None");
         borders.setBorderWidth("1");
@@ -168,10 +171,12 @@ public class ListBoxWidget extends Widget {
         final BackgroundFill backgroundFill = borderProperties.getBackgroundFill();
         backgroundFill.setStyle("Solid");
         backgroundFill.setFillColor(String.valueOf(Color.WHITE.getRGB()));
+
+        getWidgetModel().getProperties().setBorder(borderProperties);
     }
 
     private void addParagraphProperties() {
-        final ParagraphProperties paragraphProperties = getWidgetModel().getProperties().getParagraph();
+        final ParagraphProperties paragraphProperties = new ParagraphProperties();
 
         final ParagraphCaption paragraphCaption = paragraphProperties.getParagraphCaption();
         paragraphCaption.setHorizontalAlignment("left");
@@ -181,6 +186,8 @@ public class ListBoxWidget extends Widget {
         paragraphValue.setHorizontalAlignment("left");
         paragraphValue.setVerticalAlignment("center");
         paragraphProperties.setParagraphValue(paragraphValue);
+
+        getWidgetModel().getProperties().setParagraph(paragraphProperties);
     }
 
     private void addCaptionProperties() {

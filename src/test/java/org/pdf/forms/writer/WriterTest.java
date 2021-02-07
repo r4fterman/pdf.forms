@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.awt.*;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -45,8 +44,6 @@ import com.itextpdf.text.pdf.RadioCheckField;
 
 class WriterTest extends EasyMockSupport {
 
-    private static final String DESIGNER_FILE = "/example.des";
-
     //todo: get this unit test working
     void write_should_persist_ui_document(@TempDir final Path path) throws Exception {
         final MockMainFrame mainFrame = new MockMainFrame();
@@ -62,7 +59,7 @@ class WriterTest extends EasyMockSupport {
 
         replayAll();
         final File source = getFile();
-        final File target = createTargetFile(path, source);
+        final File target = createTargetFile(path, source.toPath());
 
         new OpenDesignerFileCommand(mainFrame, new Version("DEV-TEST"), widgetFactory, designerPropertiesFile)
                 .openDesignerFile(target.getAbsolutePath());
@@ -131,17 +128,17 @@ class WriterTest extends EasyMockSupport {
     }
 
     private File getFile() throws URISyntaxException {
-        final URL url = WriterTest.class.getResource(DESIGNER_FILE);
-        assertThat("File not found: " + DESIGNER_FILE, DESIGNER_FILE, not(nullValue()));
+        final URL url = WriterTest.class.getResource("/example.des");
+        assertThat("File not found: " + "/example.des", "/example.des", not(nullValue()));
 
         return new File(url.toURI());
     }
 
     private File createTargetFile(
             @TempDir final Path path,
-            final File source) throws IOException {
+            final Path source) throws IOException {
         final File target = new File(path.toFile(), "example.des");
-        Files.copy(new FileInputStream(source), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(source, target.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         return target;
     }

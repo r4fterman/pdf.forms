@@ -72,7 +72,7 @@ public class TextFieldWidget extends Widget {
         setWidgetName(bindingProperties.getName().orElse(""));
         setArrayNumber(bindingProperties.getArrayNumber().map(Integer::parseInt).orElse(0));
 
-        addProperties();
+        setAllProperties();
     }
 
     private void addProperties() {
@@ -92,7 +92,7 @@ public class TextFieldWidget extends Widget {
     }
 
     private void addFontProperties() {
-        final FontProperties fontProperties = getWidgetModel().getProperties().getFont();
+        final FontProperties fontProperties = new FontProperties();
 
         final FontCaption fontCaption = fontProperties.getFontCaption();
         fontCaption.setFontName(getFontHandler().getDefaultFont().getFontName());
@@ -109,6 +109,8 @@ public class TextFieldWidget extends Widget {
         fontValue.setUnderline(String.valueOf(IWidget.UNDERLINE_NONE));
         fontValue.setStrikeThrough(String.valueOf(IWidget.STRIKETHROUGH_OFF));
         fontValue.setColor(String.valueOf(Color.BLACK.getRGB()));
+
+        getWidgetModel().getProperties().setFont(fontProperties);
     }
 
     private void addObjectProperties() {
@@ -160,20 +162,22 @@ public class TextFieldWidget extends Widget {
     }
 
     private void addBorderProperties() {
-        final BorderProperties border = getWidgetModel().getProperties().getBorder();
+        final BorderProperties borderProperties = new BorderProperties();
 
-        final Borders borders = border.getBorders();
+        final Borders borders = borderProperties.getBorders();
         borders.setBorderStyle("None");
         borders.setBorderWidth("1");
         borders.setBorderColor(String.valueOf(Color.BLACK.getRGB()));
 
-        final BackgroundFill backgroundFill = border.getBackgroundFill();
+        final BackgroundFill backgroundFill = borderProperties.getBackgroundFill();
         backgroundFill.setStyle("Solid");
         backgroundFill.setFillColor(String.valueOf(Color.WHITE.getRGB()));
+
+        getWidgetModel().getProperties().setBorder(borderProperties);
     }
 
     private void addParagraphProperties() {
-        final ParagraphProperties paragraphProperties = getWidgetModel().getProperties().getParagraph();
+        final ParagraphProperties paragraphProperties = new ParagraphProperties();
 
         final ParagraphCaption paragraphCaption = paragraphProperties.getParagraphCaption();
         paragraphCaption.setHorizontalAlignment("left");
@@ -183,6 +187,8 @@ public class TextFieldWidget extends Widget {
         paragraphValue.setHorizontalAlignment("left");
         paragraphValue.setVerticalAlignment("center");
         paragraphProperties.setParagraphValue(paragraphValue);
+
+        getWidgetModel().getProperties().setParagraph(paragraphProperties);
     }
 
     @Override

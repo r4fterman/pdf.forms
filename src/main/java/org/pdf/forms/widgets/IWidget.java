@@ -53,7 +53,7 @@ public interface IWidget {
     int STRIKETHROUGH_OFF = 0;
     int STRIKETHROUGH_ON = 1;
 
-    JComponent getWidget();
+    JComponent getComponent();
 
     void setPosition(
             int x,

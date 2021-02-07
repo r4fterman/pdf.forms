@@ -24,7 +24,7 @@ class NewPdfCommand implements Command {
         closePDF();
 
         mainFrame.setCurrentDesignerFileName("Untitled");
-        mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version);
+        mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version.getVersion());
         mainFrame.setPanelsState(true);
         mainFrame.setFormsDocument(new FormsDocument(version));
 
@@ -35,7 +35,7 @@ class NewPdfCommand implements Command {
         mainFrame.setFormsDocument(null);
         mainFrame.getDesigner().close();
         mainFrame.setCurrentDesignerFileName("");
-        mainFrame.setTitle("PDF Forms Designer Version " + version);
+        mainFrame.setTitle("PDF Forms Designer Version " + version.getVersion());
         mainFrame.setPropertiesCompound(Set.of());
         mainFrame.setPropertiesToolBar(Set.of());
         mainFrame.setPanelsState(false);

@@ -73,30 +73,38 @@ public class Page {
     }
 
     public Optional<String> getPdfFileLocation() {
-        return getProperty("pdffilelocation");
+        return getPropertyValue("pdffilelocation");
     }
 
     public Optional<String> getPdfPageNumber() {
-        return getProperty("pdfpagenumber");
+        return getPropertyValue("pdfpagenumber");
     }
 
     public Optional<String> getPageName() {
-        return getProperty("pagename");
+        return getPropertyValue("pagename");
     }
 
     public String getPageType() {
-        return getProperty("pagetype")
+        return getPropertyValue("pagetype")
                 .orElseGet(() ->
                         getPdfFileLocation()
                         .map(location -> "pdfpage")
                         .orElse("simplepage"));
     }
 
-    private Optional<String> getProperty(final String name) {
-        return getProperty().stream()
-                .filter(p -> p.getName().equals(name))
-                .findFirst()
+    public boolean isPdfPage() {
+        return getPageType().equals("pdfpage");
+    }
+
+    private Optional<String> getPropertyValue(final String propertyName) {
+        return getProperty(propertyName)
                 .map(Property::getValue);
+    }
+
+    private Optional<Property> getProperty(final String propertyName) {
+        return getProperty().stream()
+                .filter(p -> p.getName().equals(propertyName))
+                .findFirst();
     }
 
     @Override

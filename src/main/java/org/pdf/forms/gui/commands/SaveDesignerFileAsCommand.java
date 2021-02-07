@@ -10,12 +10,8 @@ import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.model.des.DesDocument;
 import org.pdf.forms.model.des.Version;
 import org.pdf.forms.writer.des.DesignerProjectFileWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class SaveDesignerFileAsCommand implements Command {
-
-    private final Logger logger = LoggerFactory.getLogger(SaveDesignerFileAsCommand.class);
 
     private final IMainFrame mainFrame;
     private final Version version;

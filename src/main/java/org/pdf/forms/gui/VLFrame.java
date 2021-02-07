@@ -199,7 +199,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         // insert our desktop as the only one component of the frame
         toolbarContainer.add(desk, BorderLayout.CENTER);
 
-        designer = new Designer(IMainFrame.INSET,
+        this.designer = new Designer(IMainFrame.INSET,
                 horizontalRuler,
                 verticalRuler,
                 this,

@@ -17,6 +17,7 @@ import org.pdf.forms.model.des.LayoutProperties;
 import org.pdf.forms.model.des.Margins;
 import org.pdf.forms.model.des.ObjectProperties;
 import org.pdf.forms.model.des.ParagraphCaption;
+import org.pdf.forms.model.des.ParagraphProperties;
 import org.pdf.forms.model.des.SizeAndPosition;
 import org.pdf.forms.model.des.ValueProperties;
 import org.pdf.forms.widgets.components.CheckBoxIcon;
@@ -91,7 +92,7 @@ public class CheckBoxWidget extends Widget {
     }
 
     private void addFontProperties() {
-        final FontProperties fontProperties = getWidgetModel().getProperties().getFont();
+        final FontProperties fontProperties = new FontProperties();
 
         final FontCaption fontCaption = fontProperties.getFontCaption();
         fontCaption.setFontName(getFontHandler().getDefaultFont().getFontName());
@@ -100,6 +101,8 @@ public class CheckBoxWidget extends Widget {
         fontCaption.setUnderline(String.valueOf(IWidget.UNDERLINE_NONE));
         fontCaption.setStrikeThrough(String.valueOf(IWidget.STRIKETHROUGH_OFF));
         fontCaption.setColor(String.valueOf(Color.BLACK.getRGB()));
+
+        getWidgetModel().getProperties().setFont(fontProperties);
     }
 
     private void addObjectProperties() {
@@ -148,7 +151,7 @@ public class CheckBoxWidget extends Widget {
     }
 
     private void addBorderProperties() {
-        final BorderProperties borderProperties = getWidgetModel().getProperties().getBorder();
+        final BorderProperties borderProperties = new BorderProperties();
 
         final Borders borders = borderProperties.getBorders();
         borders.setBorderStyle("None");
@@ -158,12 +161,17 @@ public class CheckBoxWidget extends Widget {
         final BackgroundFill backgroundFill = borderProperties.getBackgroundFill();
         backgroundFill.setStyle("Solid");
         backgroundFill.setFillColor(String.valueOf(Color.WHITE.getRGB()));
+
+        getWidgetModel().getProperties().setBorder(borderProperties);
     }
 
     private void addParagraphProperties() {
-        final ParagraphCaption paragraphCaption = getWidgetModel().getProperties().getParagraph().getParagraphCaption();
+        final ParagraphProperties paragraphProperties = new ParagraphProperties();
+
+        final ParagraphCaption paragraphCaption = paragraphProperties.getParagraphCaption();
         paragraphCaption.setHorizontalAlignment("left");
         paragraphCaption.setVerticalAlignment("center");
+        getWidgetModel().getProperties().setParagraph(paragraphProperties);
     }
 
     @Override

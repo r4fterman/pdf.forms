@@ -11,10 +11,12 @@ import org.pdf.forms.model.des.BorderProperties;
 import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.model.des.FieldProperties;
 import org.pdf.forms.model.des.FontCaption;
+import org.pdf.forms.model.des.FontProperties;
 import org.pdf.forms.model.des.LayoutProperties;
 import org.pdf.forms.model.des.Margins;
 import org.pdf.forms.model.des.ObjectProperties;
 import org.pdf.forms.model.des.ParagraphCaption;
+import org.pdf.forms.model.des.ParagraphProperties;
 import org.pdf.forms.model.des.SizeAndPosition;
 import org.pdf.forms.model.des.ValueProperties;
 import org.pdf.forms.widgets.components.IPdfComponent;
@@ -76,14 +78,17 @@ public class ButtonWidget extends Widget {
     }
 
     private void addFontProperties() {
-        final FontCaption fontCaption = getWidgetModel().getProperties().getFont().getFontCaption();
+        final FontProperties fontProperties = new FontProperties();
 
+        final FontCaption fontCaption = fontProperties.getFontCaption();
         fontCaption.setFontName(getFontHandler().getDefaultFont().getFontName());
         fontCaption.setFontSize("11");
         fontCaption.setFontStyle(String.valueOf(IWidget.STYLE_PLAIN));
         fontCaption.setUnderline(String.valueOf(IWidget.UNDERLINE_NONE));
         fontCaption.setStrikeThrough(String.valueOf(IWidget.STRIKETHROUGH_OFF));
         fontCaption.setColor(String.valueOf(Color.BLACK.getRGB()));
+
+        getWidgetModel().getProperties().setFont(fontProperties);
     }
 
     private void addObjectProperties() {
@@ -124,7 +129,7 @@ public class ButtonWidget extends Widget {
     }
 
     private void addBorderProperties() {
-        final BorderProperties borderProperties = getWidgetModel().getProperties().getBorder();
+        final BorderProperties borderProperties = new BorderProperties();
 
         final Borders borders = borderProperties.getBorders();
         borders.setBorderStyle("None");
@@ -134,12 +139,18 @@ public class ButtonWidget extends Widget {
         final BackgroundFill backgroundFill = borderProperties.getBackgroundFill();
         backgroundFill.setStyle("Solid");
         backgroundFill.setFillColor(String.valueOf(getValueComponent().getBackground().getRGB()));
+
+        getWidgetModel().getProperties().setBorder(borderProperties);
     }
 
     private void addParagraphProperties() {
-        final ParagraphCaption paragraphCaption = getWidgetModel().getProperties().getParagraph().getParagraphCaption();
+        final ParagraphProperties paragraphProperties = new ParagraphProperties();
+
+        final ParagraphCaption paragraphCaption = paragraphProperties.getParagraphCaption();
         paragraphCaption.setHorizontalAlignment("center");
         paragraphCaption.setVerticalAlignment("center");
+
+        getWidgetModel().getProperties().setParagraph(paragraphProperties);
     }
 
     @Override

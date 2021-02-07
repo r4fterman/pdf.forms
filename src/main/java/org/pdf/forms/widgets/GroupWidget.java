@@ -125,7 +125,7 @@ public class GroupWidget implements IWidget {
     }
 
     @Override
-    public JComponent getWidget() {
+    public JComponent getComponent() {
         return null;
     }
 

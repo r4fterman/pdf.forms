@@ -13,7 +13,6 @@ import java.net.URL;
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.model.components.CustomComponent;
 import org.pdf.forms.model.components.CustomComponents;
-import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.model.des.Properties;
 
 class CustomComponentsFileReaderTest {
@@ -34,7 +33,7 @@ class CustomComponentsFileReaderTest {
 
         assertThat(customComponent.getWidget(), hasSize(1));
         assertThat(customComponent.getWidget().get(0).getProperty(), hasSize(2));
-        assertEmptyJavaScript(customComponent.getWidget().get(0).getJavaScript());
+        assertThat(customComponent.getWidget().get(0).getJavaScript(), is(nullValue()));
         assertWidgetProperties(customComponent.getWidget().get(0).getProperties());
     }
 
@@ -52,16 +51,6 @@ class CustomComponentsFileReaderTest {
         assertThat(properties.getObject().getValue(), is(nullValue()));
         assertThat(properties.getParagraph().getParagraphCaption().getProperty(), hasSize(2));
         assertThat(properties.getParagraph().getParagraphValue(), is(nullValue()));
-    }
-
-    private void assertEmptyJavaScript(final JavaScriptContent javaScriptContent) {
-        assertThat(javaScriptContent.getChange(), is(nullValue()));
-        assertThat(javaScriptContent.getInitialize(), is(nullValue()));
-        assertThat(javaScriptContent.getKeystroke(), is(nullValue()));
-        assertThat(javaScriptContent.getMouseDown(), is(nullValue()));
-        assertThat(javaScriptContent.getMouseExit(), is(nullValue()));
-        assertThat(javaScriptContent.getMouseEnter(), is(nullValue()));
-        assertThat(javaScriptContent.getMouseUp(), is(nullValue()));
     }
 
     private File getFile() throws URISyntaxException {
