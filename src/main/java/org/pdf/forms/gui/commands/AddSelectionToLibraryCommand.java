@@ -6,7 +6,7 @@ import java.io.File;
 import javax.swing.*;
 
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.CustomWidgetsFile;
+import org.pdf.forms.readers.custom.CustomWidgetsFile;
 
 class AddSelectionToLibraryCommand implements Command {
 
@@ -17,7 +17,7 @@ class AddSelectionToLibraryCommand implements Command {
             final IMainFrame mainFrame,
             final File configurationDirectory) {
         this.mainFrame = mainFrame;
-        this.customWidgetsFile = CustomWidgetsFile.getInstance(configurationDirectory);
+        this.customWidgetsFile = new CustomWidgetsFile(configurationDirectory);
     }
 
     @Override

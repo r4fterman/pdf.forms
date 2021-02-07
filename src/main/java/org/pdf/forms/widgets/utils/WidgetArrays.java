@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.BindingProperties;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 public class WidgetArrays {
 
@@ -39,14 +38,11 @@ public class WidgetArrays {
             for (int i = 0; i < array.size(); i++) {
                 final IWidget remainingWidget = array.get(i);
 
-                final Element objectElement = (Element) remainingWidget.getProperties().getElementsByTagName("object").item(0);
-                final Element bindingElement = (Element) objectElement.getElementsByTagName("binding").item(0);
+                final BindingProperties bindingProperties = remainingWidget.getWidgetModel().getProperties().getObject()
+                        .getBinding();
 
                 final String arrayIndex = String.valueOf(i);
-                XMLUtils.getPropertyElement(bindingElement, "Array Number")
-                        .ifPresent(arrayNumberElement -> arrayNumberElement.getAttributeNode("value").setValue(arrayIndex));
-
-                remainingWidget.setObjectProperties(objectElement);
+                bindingProperties.setArrayNumber(arrayIndex);
             }
         }
     }

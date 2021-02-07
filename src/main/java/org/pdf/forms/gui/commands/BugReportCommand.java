@@ -7,18 +7,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.swing.*;
-import javax.xml.XMLConstants;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.BugReportPanel;
+import org.pdf.forms.model.des.DesDocument;
+import org.pdf.forms.writer.des.DesignerProjectFileWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 class BugReportCommand implements Command {
 
@@ -47,12 +42,12 @@ class BugReportCommand implements Command {
             final File designerFile = File.createTempFile("bugreport", ".des");
             designerFile.deleteOnExit();
 
-            final Document documentProperties = mainFrame.getFormsDocument().getDocumentProperties();
-            writeXML(documentProperties, designerFile.getAbsolutePath());
+            final DesDocument designerDocument = mainFrame.getFormsDocument().getDesDocument();
+            writeXML(designerDocument, designerFile);
 
             final Double size = round(designerFile.length() / 1000d);
             filesAndSizes.put("Designer File", size);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.error("Unable to create temporary bug report file", e);
         }
 
@@ -60,19 +55,10 @@ class BugReportCommand implements Command {
     }
 
     private void writeXML(
-            final Document documentProperties,
-            final String fileName) {
-        try {
-            final TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-
-            final Transformer transformer = transformerFactory.newTransformer();
-            transformer.transform(new DOMSource(documentProperties), new StreamResult(fileName));
-        } catch (TransformerException e) {
-            logger.error("Error writing xml to file {}", fileName, e);
-        }
+            final DesDocument designerDocument,
+            final File file) {
+        final DesignerProjectFileWriter writer = new DesignerProjectFileWriter();
+        writer.writeToFile(designerDocument, file);
     }
 
     private double round(final double number) {

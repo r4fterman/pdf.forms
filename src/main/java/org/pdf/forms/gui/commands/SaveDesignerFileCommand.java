@@ -5,77 +5,62 @@ import java.io.File;
 import java.util.Optional;
 
 import javax.swing.*;
-import javax.xml.XMLConstants;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.model.des.DesDocument;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.writer.des.DesignerProjectFileWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 class SaveDesignerFileCommand implements Command {
 
     private final Logger logger = LoggerFactory.getLogger(SaveDesignerFileCommand.class);
 
     private final IMainFrame mainFrame;
-    private final String version;
+    private final Version version;
 
     SaveDesignerFileCommand(
             final IMainFrame mainFrame,
-            final String version) {
+            final Version version) {
         this.mainFrame = mainFrame;
         this.version = version;
     }
 
     @Override
     public void execute() {
-        final Document documentProperties = mainFrame.getFormsDocument().getDocumentProperties();
+        final DesDocument designerDocument = mainFrame.getFormsDocument().getDesDocument();
 
         final String currentDesignerFileName = mainFrame.getCurrentDesignerFileName();
         if (currentDesignerFileName.equals("Untitled")) {
             // saving for the first time
-            saveDesignerFileAs(documentProperties);
+            saveDesignerFileAs(designerDocument);
         } else {
             // saving an already saved file
-            writeXML(documentProperties, new File(currentDesignerFileName));
+            writeXML(designerDocument, new File(currentDesignerFileName));
         }
     }
 
-    private void saveDesignerFileAs(final Document documentProperties) {
-        getSelectedDesignerFile().ifPresent(file -> saveDesignerFile(file, documentProperties));
+    private void saveDesignerFileAs(final DesDocument designerDocument) {
+        getSelectedDesignerFile().ifPresent(file -> saveDesignerFile(file, designerDocument));
     }
 
     private void saveDesignerFile(
             final File file,
-            final Document documentProperties) {
+            final DesDocument designerDocument) {
         final String fileToSave = file.getAbsolutePath();
 
         mainFrame.setCurrentDesignerFileName(fileToSave);
-        writeXML(documentProperties, file);
-        mainFrame.setTitle(fileToSave + " - PDF Forms Designer Version " + version);
+        writeXML(designerDocument, file);
+        mainFrame.setTitle(fileToSave + " - PDF Forms Designer Version " + version.getVersion());
 
     }
 
     private void writeXML(
-            final Document documentProperties,
+            final DesDocument designerDocument,
             final File file) {
-        final String fileToSAve = file.getAbsolutePath();
-        try {
-            final TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-
-            final Transformer transformer = transformerFactory.newTransformer();
-            //initialize StreamResult with File object to save to file
-            transformer.transform(new DOMSource(documentProperties), new StreamResult(fileToSAve));
-        } catch (TransformerException e) {
-            logger.error("Error writing xml to file {}", fileToSAve, e);
-        }
+        final DesignerProjectFileWriter writer = new DesignerProjectFileWriter();
+        writer.writeToFile(designerDocument, file);
     }
 
     private Optional<File> getSelectedDesignerFile() {

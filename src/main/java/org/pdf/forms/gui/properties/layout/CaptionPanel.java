@@ -8,17 +8,15 @@ import static org.jdesktop.layout.LayoutStyle.RELATED;
 import java.awt.event.ActionEvent;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.Caption;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 public class CaptionPanel extends JPanel {
 
@@ -33,7 +31,7 @@ public class CaptionPanel extends JPanel {
     private final IDesigner designerPanel;
 
     private JComboBox<String> captionLocationBox;
-    private Map<IWidget, Element> widgetsAndProperties;
+    private Set<IWidget> widgets;
 
     public CaptionPanel(final IDesigner designerPanel) {
         this.designerPanel = designerPanel;
@@ -85,30 +83,24 @@ public class CaptionPanel extends JPanel {
             return;
         }
 
-        widgetsAndProperties.entrySet().stream()
-                .filter(entry -> entry.getKey().isComponentSplit())
-                .forEach(entry -> {
-                    final Element widgetProperties = entry.getValue();
-                    final Optional<Element> position = XMLUtils.getPropertyElement(widgetProperties, "Position");
-                    if (position.isPresent()) {
-                        final Element captionPositionElement = position.get();
-                        captionPositionElement.getAttributeNode("value").setValue(captionPosition);
-
-                        entry.getKey().setLayoutProperties(widgetProperties);
-                    }
+        widgets.stream()
+                .filter(IWidget::isComponentSplit)
+                .forEach(widget -> {
+                    final Caption caption = widget.getWidgetModel().getProperties().getLayout().getCaption();
+                    caption.setPosition(captionPosition);
                 });
 
         designerPanel.repaint();
     }
 
-    public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
-        this.widgetsAndProperties = widgetsAndProperties;
+    public void setProperties(final Set<IWidget> widgets) {
+        this.widgets = widgets;
 
-        final boolean isComponentSplit = isComponentSplit(widgetsAndProperties);
+        final boolean isComponentSplit = isComponentSplit(widgets);
         captionLocationBox.setEnabled(isComponentSplit);
 
         if (isComponentSplit) {
-            final String captionPositionToUse = getCaptionPositionToUse(widgetsAndProperties);
+            final String captionPositionToUse = getCaptionPositionToUse(widgets);
             if (captionPositionToUse.equals("mixed")) {
                 captionLocationBox.setSelectedItem(null);
             } else {
@@ -119,14 +111,12 @@ public class CaptionPanel extends JPanel {
         }
     }
 
-    private String getCaptionPositionToUse(final Map<IWidget, Element> widgetsAndProperties) {
-        final List<String> captionValues = widgetsAndProperties.entrySet().stream()
-                .map(entry -> {
-                    final IWidget widget = entry.getKey();
-                    final Element widgetProperties = entry.getValue();
+    private String getCaptionPositionToUse(final Set<IWidget> widgets) {
+        final List<String> captionValues = widgets.stream()
+                .map(widget -> {
                     if (widget.isComponentSplit()) {
-                        final Element caption = (Element) widgetProperties.getElementsByTagName("caption").item(0);
-                        return XMLUtils.getAttributeValueFromChildElement(caption, "Position").orElse("");
+                        return widget.getWidgetModel().getProperties().getLayout().getCaption().getPosition()
+                                .orElse("");
                     }
                     return "";
                 })
@@ -141,8 +131,8 @@ public class CaptionPanel extends JPanel {
 
     }
 
-    private boolean isComponentSplit(final Map<IWidget, Element> widgetsAndProperties) {
-        return widgetsAndProperties.entrySet().stream()
-                .anyMatch(entry -> entry.getKey().isComponentSplit());
+    private boolean isComponentSplit(final Set<IWidget> widgets) {
+        return widgets.stream()
+                .anyMatch(IWidget::isComponentSplit);
     }
 }

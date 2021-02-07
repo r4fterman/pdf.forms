@@ -1,22 +1,20 @@
 package org.pdf.forms.writer;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.Borders;
+import org.pdf.forms.model.des.LayoutProperties;
+import org.pdf.forms.model.des.ObjectProperties;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.components.PdfComboBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import com.itextpdf.awt.DefaultFontMapper;
 import com.itextpdf.text.BaseColor;
@@ -33,7 +31,7 @@ import com.itextpdf.text.pdf.TextField;
 
 public class PdfComboBoxWriter implements PdfComponentWriter {
 
-    private Logger logger = LoggerFactory.getLogger(PdfComboBoxWriter.class);
+    private final Logger logger = LoggerFactory.getLogger(PdfComboBoxWriter.class);
 
     private final Set<String> fontSubstitutions = new HashSet<>();
     private final FontHandler fontHandler;
@@ -53,7 +51,6 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
             final Rectangle pageSize,
             final int currentPage,
             final PdfWriter writer,
-            final Element rootElement,
             final GlobalPdfWriter globalPdfWriter) throws IOException, DocumentException {
         //PdfCaption comboBoxCaption = widget.getCaptionComponent();
         writeOutCaption(widget, pageSize, currentPage, globalPdfWriter);
@@ -64,11 +61,7 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
 
         final Rectangle pdfValueBounds = convertJavaCoordsToPdfCoords(valueBounds, pageSize);
 
-        final Element itemsElement = (Element) rootElement.getElementsByTagName("items").item(0);
-
-        final String[] items = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes()).stream()
-                .map(item -> XMLUtils.getAttributeValueFromElement(item, "item").get())
-                .toArray(String[]::new);
+        final ObjectProperties objectProperties = widget.getWidgetModel().getProperties().getObject();
 
         final Font font = value.getFont();
 
@@ -78,25 +71,29 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
         combo.setFont(baseFont);
         combo.setFontSize(value.getFont().getSize());
         combo.setTextColor(getBaseColor(widget.getValueComponent().getForeground()));
-        combo.setChoices(items);
+        combo.setChoices(objectProperties.getItems().getItemValues().toArray(new String[0]));
 
-        final Element editableElement = XMLUtils.getPropertyElement(rootElement, "Allow Custom Text Entry").get();
-        final boolean editable = Boolean.parseBoolean(editableElement.getAttributes().getNamedItem("value").getNodeValue());
+        final boolean editable = objectProperties.getField().allowCustomTextEntry();
         if (editable) {
             combo.setOptions(BaseField.EDIT);
         }
 
-        final Element defaultElement = XMLUtils.getPropertyElement(rootElement, "Default").get();
-        String defaultText = defaultElement.getAttributes().getNamedItem("value").getNodeValue();
-        if (defaultText.equals("< None >")) {
-            defaultText = "";
-        }
+        final String defaultText = objectProperties.getValue().getDefault()
+                .map(this::convertDefaultValue)
+                .orElse("");
 
         addBorder(widget, combo);
 
         final PdfFormField field = combo.getComboField();
         field.setValueAsString(defaultText);
         return field;
+    }
+
+    private String convertDefaultValue(final String defaultValue) {
+        if (defaultValue.equals("< None >")) {
+            return "";
+        }
+        return defaultValue;
     }
 
     private void writeOutCaption(
@@ -110,11 +107,8 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
         }
 
         if (widget.isComponentSplit()) {
-            final Element captionElement = XMLUtils.getElementsFromNodeList(
-                    widget.getProperties().getElementsByTagName("layout")).get(0);
-
-            final Element positionElement = XMLUtils.getPropertyElement(captionElement, "Position").get();
-            final String location = positionElement.getAttributeNode("value").getValue();
+            final LayoutProperties layoutProperties = widget.getWidgetModel().getProperties().getLayout();
+            final String location = layoutProperties.getCaption().getPosition().orElse("None");
             if (location.equals("None")) {
                 return;
             }
@@ -142,7 +136,7 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
          */
         try {
             mapper.awtToPdf(font);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Failed converting font from AWT to PDF for {}!", font.getName(), e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());
@@ -160,43 +154,37 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
 
     private void addBorder(
             final IWidget widget,
-            final BaseField tf) {
-        final Document document = widget.getProperties();
-        final Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
+            final BaseField baseField) {
+        final Borders borders = widget.getWidgetModel().getProperties().getBorder().getBorders();
 
-        final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
-
-        final String style = XMLUtils.getAttributeValueFromChildElement(border, "Border Style").orElse("None");
-        final String width = XMLUtils.getAttributeValueFromChildElement(border, "Border Width").orElse("1");
-        final String color = XMLUtils.getAttributeValueFromChildElement(border, "Border Color").orElse(String.valueOf(Color.WHITE.getRGB()));
-
+        final String style = borders.getBorderStyle().orElse("None");
         switch (style) {
             case "Solid":
-                tf.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
+                baseField.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
                 break;
             case "Dashed":
-                tf.setBorderStyle(PdfBorderDictionary.STYLE_DASHED);
+                baseField.setBorderStyle(PdfBorderDictionary.STYLE_DASHED);
                 break;
             case "Beveled":
-                tf.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
+                baseField.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
                 break;
-            case "None":
-                return;
             default:
                 return;
         }
 
-        tf.setBorderColor(new GrayColor(Integer.parseInt(color)));
-        tf.setBorderWidth(Integer.parseInt(width));
+        final int borderColor = borders.getBorderColor().map(Integer::parseInt).orElse(Color.WHITE.getRGB());
+        baseField.setBorderColor(new GrayColor(borderColor));
+        final int borderWidth = borders.getBorderWidth().map(Integer::parseInt).orElse(1);
+        baseField.setBorderWidth(borderWidth);
     }
 
     private Rectangle convertJavaCoordsToPdfCoords(
             final java.awt.Rectangle bounds,
             final Rectangle pageSize) {
-        final float javaX1 = bounds.x - IMainFrame.INSET;
-        final float javaY1 = bounds.y - IMainFrame.INSET;
+        final int javaX1 = bounds.x - IMainFrame.INSET;
+        final int javaY1 = bounds.y - IMainFrame.INSET;
 
-        final float javaX2 = javaX1 + bounds.width;
+        final int javaX2 = javaX1 + bounds.width;
 
         final float pdfY1 = pageSize.getHeight() - javaY1 - bounds.height;
         final float pdfY2 = pdfY1 + bounds.height;
@@ -208,7 +196,7 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
         final String fontPath = fontHandler.getAbsoluteFontPath(font);
         try {
             return BaseFont.createFont(fontPath, BaseFont.CP1250, BaseFont.EMBEDDED);
-        } catch (DocumentException e) {
+        } catch (final DocumentException e) {
             logger.error("Failed creating font from path {}!", fontPath, e);
 
             /*

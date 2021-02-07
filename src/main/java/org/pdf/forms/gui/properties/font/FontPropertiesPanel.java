@@ -12,8 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.swing.*;
 
@@ -23,9 +23,9 @@ import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.properties.customcomponents.colorcombobox.ColorCellRenderer;
 import org.pdf.forms.gui.properties.customcomponents.colorcombobox.ColorComboBoxEditor;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.FontCaption;
+import org.pdf.forms.model.des.FontValue;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 public class FontPropertiesPanel extends JPanel {
 
@@ -89,7 +89,7 @@ public class FontPropertiesPanel extends JPanel {
 
     private ColorComboBoxEditor editor;
     private IDesigner designerPanel;
-    private Map<IWidget, Element> widgetsAndProperties;
+    private Set<IWidget> widgets;
 
     private JComboBox<Object> colorBox;
     private JComboBox<String> currentlyEditingBox;
@@ -237,93 +237,140 @@ public class FontPropertiesPanel extends JPanel {
     }
 
     private void updateFont(final ActionEvent event) {
-        widgetsAndProperties.forEach((widget, value) -> {
-            updateFontProperties(value, widget);
-
-            widget.setFontProperties(value, currentlyEditingBox.getSelectedIndex());
+        widgets.forEach(widget -> {
+            updateFontProperties(widget);
+            // todo: set widget model font properties
+            //widget.setFontProperties(value, currentlyEditingBox.getSelectedIndex());
         });
 
-        designerPanel.getMainFrame().setPropertiesToolBar(widgetsAndProperties.keySet());
+        designerPanel.getMainFrame().setPropertiesToolBar(widgets);
         designerPanel.repaint();
     }
 
-    private void updateFontProperties(
-            final Element fontElement,
-            final IWidget widget) {
-        final List<Element> fontList = XMLUtils.getElementsFromNodeList(fontElement.getChildNodes());
-        if (fontList.isEmpty()) {
-            return;
-        }
+    private void updateFontProperties(final IWidget widget) {
+        final FontCaption fontCaption = widget.getWidgetModel().getProperties().getFont().getFontCaption();
 
-        final Element valueElement;
+        final Optional<FontValue> fontValue;
         if (widget.allowEditCaptionAndValue()) {
-            valueElement = fontList.get(1);
+            fontValue = Optional.of(widget.getWidgetModel().getProperties().getFont().getFontValue());
         } else {
-            valueElement = null;
+            fontValue = Optional.empty();
         }
 
-        final Element captionElement = fontList.get(0);
-
-        updateFontNameProperty(widget, captionElement, valueElement);
-        updateFontSizeProperty(widget, captionElement, valueElement);
-        updateFontStyleProperty(widget, captionElement, valueElement);
-        updateUnderlineProperty(widget, captionElement, valueElement);
-        updateStrikethroughProperty(widget, captionElement, valueElement);
-        updateColorProperty(widget, captionElement, valueElement);
+        updateFontNameProperty(widget, fontCaption, fontValue);
+        updateFontSizeProperty(widget, fontCaption, fontValue);
+        updateFontStyleProperty(widget, fontCaption, fontValue);
+        updateUnderlineProperty(widget, fontCaption, fontValue);
+        updateStrikethroughProperty(widget, fontCaption, fontValue);
+        updateColorProperty(widget, fontCaption, fontValue);
     }
 
     private void updateFontNameProperty(
             final IWidget widget,
-            final Element captionElement,
-            final Element valueElement) {
-        final Object value = fontNameBox.getSelectedItem();
+            final FontCaption fontCaption,
+            final Optional<FontValue> fontValue) {
+        final String value = Optional.ofNullable(fontNameBox.getSelectedItem()).map(Object::toString).orElse("");
 
-        updatePropertyElementValue(widget, captionElement, valueElement, PROPERTY_FONT_NAME, value);
+        if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
+            fontCaption.setFontName(value);
+            if (widget.allowEditCaptionAndValue()) {
+                fontValue.ifPresent(font -> font.setFontName(value));
+            }
+        } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
+            fontCaption.setFontName(value);
+        } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
+            fontValue.ifPresent(font -> font.setFontName(value));
+        }
     }
 
     private void updateFontSizeProperty(
             final IWidget widget,
-            final Element captionElement,
-            final Element valueElement) {
-        final Object value = fontSizeBox.getSelectedItem();
+            final FontCaption fontCaption,
+            final Optional<FontValue> fontValue) {
+        final String value = Optional.ofNullable(fontSizeBox.getSelectedItem()).map(Object::toString).orElse("");
 
-        updatePropertyElementValue(widget, captionElement, valueElement, PROPERTY_FONT_SIZE, value);
+        if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
+            fontCaption.setFontSize(value);
+            if (widget.allowEditCaptionAndValue()) {
+                fontValue.ifPresent(font -> font.setFontSize(value));
+            }
+        } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
+            fontCaption.setFontSize(value);
+        } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
+            fontValue.ifPresent(font -> font.setFontSize(value));
+        }
     }
 
     private void updateFontStyleProperty(
             final IWidget widget,
-            final Element captionElement,
-            final Element valueElement) {
+            final FontCaption fontCaption,
+            final Optional<FontValue> fontValue) {
         final String value = getComboBoxSelectedValueAsString(fontStyleBox);
 
-        updatePropertyElementValue(widget, captionElement, valueElement, PROPERTY_FONT_STYLE, value);
+        if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
+            fontCaption.setFontStyle(value);
+            if (widget.allowEditCaptionAndValue()) {
+                fontValue.ifPresent(font -> font.setFontStyle(value));
+            }
+        } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
+            fontCaption.setFontStyle(value);
+        } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
+            fontValue.ifPresent(font -> font.setFontStyle(value));
+        }
     }
 
     private void updateUnderlineProperty(
             final IWidget widget,
-            final Element captionElement,
-            final Element valueElement) {
+            final FontCaption fontCaption,
+            final Optional<FontValue> fontValue) {
         final String value = getComboBoxSelectedValueAsString(underlineBox);
 
-        updatePropertyElementValue(widget, captionElement, valueElement, PROPERTY_UNDERLINE, value);
+        if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
+            fontCaption.setUnderline(value);
+            if (widget.allowEditCaptionAndValue()) {
+                fontValue.ifPresent(font -> font.setUnderline(value));
+            }
+        } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
+            fontCaption.setUnderline(value);
+        } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
+            fontValue.ifPresent(font -> font.setUnderline(value));
+        }
     }
 
     private void updateStrikethroughProperty(
             final IWidget widget,
-            final Element captionElement,
-            final Element valueElement) {
+            final FontCaption fontCaption,
+            final Optional<FontValue> fontValue) {
         final String value = getComboBoxSelectedValueAsString(strikethroughBox);
 
-        updatePropertyElementValue(widget, captionElement, valueElement, PROPERTY_STRIKETHROUGH, value);
+        if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
+            fontCaption.setStrikeThrough(value);
+            if (widget.allowEditCaptionAndValue()) {
+                fontValue.ifPresent(font -> font.setStrikeThrough(value));
+            }
+        } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
+            fontCaption.setStrikeThrough(value);
+        } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
+            fontValue.ifPresent(font -> font.setStrikeThrough(value));
+        }
     }
 
     private void updateColorProperty(
             final IWidget widget,
-            final Element captionElement,
-            final Element valueElement) {
+            final FontCaption fontCaption,
+            final Optional<FontValue> fontValue) {
         final String value = getSelectedColorValueAsString();
 
-        updatePropertyElementValue(widget, captionElement, valueElement, PROPERTY_COLOR, value);
+        if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
+            fontCaption.setColor(value);
+            if (widget.allowEditCaptionAndValue()) {
+                fontValue.ifPresent(font -> font.setColor(value));
+            }
+        } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
+            fontCaption.setColor(value);
+        } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
+            fontValue.ifPresent(font -> font.setColor(value));
+        }
     }
 
     private void updateColor(final ActionEvent event) {
@@ -338,55 +385,8 @@ public class FontPropertiesPanel extends JPanel {
         updateFont(null);
     }
 
-    private void updatePropertyElementValue(
-            final IWidget widget,
-            final Element captionElement,
-            final Element valueElement,
-            final String propertyName,
-            final Object value) {
-        final Optional<Element> captionPropertyElement = XMLUtils.getPropertyElement(captionElement, propertyName);
-        if (captionPropertyElement.isEmpty()) {
-            return;
-        }
-        final Element propertyElement = captionPropertyElement.get();
-
-        Element propertyValueElement = null;
-        if (widget.allowEditCaptionAndValue()) {
-            final Optional<Element> element = XMLUtils.getPropertyElement(valueElement, propertyName);
-            if (element.isPresent()) {
-                propertyValueElement = element.get();
-            }
-        }
-        setProperty(value, propertyElement, propertyValueElement);
-    }
-
-    private void setProperty(
-            final Object value,
-            final Element captionElement,
-            final Element valueElement) {
-        if (value == null) {
-            return;
-        }
-
-        if ("Caption and Value".equals(currentlyEditingBox.getSelectedItem())) {
-            saveValueAsElementAttribute(value.toString(), captionElement);
-            saveValueAsElementAttribute(value.toString(), valueElement);
-        } else if ("Caption properties".equals(currentlyEditingBox.getSelectedItem())) {
-            saveValueAsElementAttribute(value.toString(), captionElement);
-        } else if ("Value properties".equals(currentlyEditingBox.getSelectedItem())) {
-            saveValueAsElementAttribute(value.toString(), valueElement);
-        }
-    }
-
-    private void saveValueAsElementAttribute(
-            final String value,
-            final Element element) {
-        Optional.ofNullable(element)
-                .ifPresent(e -> element.getAttributeNode(ATTRIBUTE_VALUE).setValue(value));
-    }
-
     private void updateCurrentlyEditingBox(final ActionEvent event) {
-        setProperties(widgetsAndProperties, currentlyEditingBox.getSelectedIndex());
+        setProperties(widgets, currentlyEditingBox.getSelectedIndex());
     }
 
     public void updateAvailableFonts() {
@@ -395,11 +395,11 @@ public class FontPropertiesPanel extends JPanel {
     }
 
     public void setProperties(
-            final Map<IWidget, Element> widgetsAndProperties,
+            final Set<IWidget> widgets,
             final int currentlyEditing) {
-        this.widgetsAndProperties = widgetsAndProperties;
+        this.widgets = widgets;
 
-        final boolean allowEditCaptionAndValue = widgetsAndProperties.keySet().stream()
+        final boolean allowEditCaptionAndValue = widgets.stream()
                 .anyMatch(IWidget::allowEditCaptionAndValue);
 
         final int currentlyEditingIdx;
@@ -413,8 +413,9 @@ public class FontPropertiesPanel extends JPanel {
         currentlyEditingBox.setEnabled(allowEditCaptionAndValue);
 
         final FontPropertiesList fontPropertiesList = getFontPropertiesList(
-                widgetsAndProperties,
-                currentlyEditing);
+                widgets,
+                currentlyEditing
+        );
 
         setComboValue(fontNameBox, fontPropertiesList.getFontName());
         setComboValue(fontSizeBox, fontPropertiesList.getFontSize());
@@ -425,10 +426,10 @@ public class FontPropertiesPanel extends JPanel {
     }
 
     private FontPropertiesList getFontPropertiesList(
-            final Map<IWidget, Element> widgetsAndProperties,
+            final Set<IWidget> widgets,
             final int currentlyEditing) {
-        final List<FontProperties> fontProperties = widgetsAndProperties.entrySet().stream()
-                .map(entry -> convertToFontProperties(entry.getKey(), entry.getValue(), currentlyEditing))
+        final List<FontProperties> fontProperties = widgets.stream()
+                .map(widget -> convertToFontProperties(widget, currentlyEditing))
                 .collect(toUnmodifiableList());
 
         return new FontPropertiesList(fontProperties);
@@ -436,88 +437,33 @@ public class FontPropertiesPanel extends JPanel {
 
     private FontProperties convertToFontProperties(
             final IWidget widget,
-            final Element fontProperties,
             final int currentlyEditing) {
-        final Element caption = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
+        final org.pdf.forms.model.des.FontProperties font = widget.getWidgetModel().getProperties().getFont();
 
-        final String fontName = getFontPropertyValue(
-                currentlyEditing,
-                widget,
-                fontProperties,
-                caption,
-                PROPERTY_FONT_NAME,
-                "Arial");
-        final String fontSize = getFontPropertyValue(
-                currentlyEditing,
-                widget,
-                fontProperties,
-                caption,
-                PROPERTY_FONT_SIZE,
-                "10");
-        final String fontStyle = getFontPropertyValue(
-                currentlyEditing,
-                widget,
-                fontProperties,
-                caption,
-                PROPERTY_FONT_STYLE,
-                "1");
-        final String underline = getFontPropertyValue(
-                currentlyEditing,
-                widget,
-                fontProperties,
-                caption,
-                PROPERTY_UNDERLINE,
-                "1");
-        final String strikethrough = getFontPropertyValue(
-                currentlyEditing,
-                widget,
-                fontProperties,
-                caption,
-                PROPERTY_STRIKETHROUGH,
-                "1");
-        final String color = getFontPropertyValue(
-                currentlyEditing,
-                widget,
-                fontProperties,
-                caption, PROPERTY_COLOR,
-                String.valueOf(Color.BLACK.getRGB()));
+        final FontCaption fontCaption = font.getFontCaption();
+        final String captionFontName = fontCaption.getFontName().orElse("Arial");
+        final String captionFontSize = fontCaption.getFontSize().orElse("10");
+        final String captionFontStyle = fontCaption.getFontStyle().orElse("1");
+        final String captionUnderline = fontCaption.getUnderline().orElse("1");
+        final String captionStrikethrough = fontCaption.getStrikeThrough().orElse("1");
+        final String captionColor = fontCaption.getColor().orElse(String.valueOf(Color.BLACK.getRGB()));
+
+        final FontValue fontValue = font.getFontValue();
+        final String valueFontName = fontValue.getFontName().orElse("Arial");
+        final String valueFontSize = fontValue.getFontSize().orElse("10");
+        final String valueFontStyle = fontValue.getFontStyle().orElse("1");
+        final String valueUnderline = fontValue.getUnderline().orElse("1");
+        final String valueStrikethrough = fontValue.getStrikeThrough().orElse("1");
+        final String valueColor = fontValue.getColor().orElse(String.valueOf(Color.BLACK.getRGB()));
 
         return new FontProperties(
-                fontName,
-                fontSize,
-                fontStyle,
-                underline,
-                strikethrough,
-                color
+                getProperty(currentlyEditing, captionFontName, valueFontName),
+                getProperty(currentlyEditing, captionFontSize, valueFontSize),
+                getProperty(currentlyEditing, captionFontStyle, valueFontStyle),
+                getProperty(currentlyEditing, captionUnderline, valueUnderline),
+                getProperty(currentlyEditing, captionStrikethrough, valueStrikethrough),
+                getProperty(currentlyEditing, captionColor, valueColor)
         );
-    }
-
-    private String getFontPropertyValue(
-            final int currentlyEditing,
-            final IWidget widget,
-            final Element fontProperties,
-            final Element element,
-            final String propertyName,
-            final String defaultValue) {
-        final String fontCaption = XMLUtils.getAttributeValueFromChildElement(element, propertyName)
-                .orElse(defaultValue);
-
-        final String fontValue = getFontValue(widget, fontProperties, fontCaption, propertyName);
-
-        return getProperty(currentlyEditing, fontCaption, fontValue);
-    }
-
-    private String getFontValue(
-            final IWidget widget,
-            final Element fontProperties,
-            final String captionFontName,
-            final String propertyFontName) {
-        if (widget.allowEditCaptionAndValue()) {
-            final Element value = (Element) fontProperties.getElementsByTagName("font_value").item(0);
-            return XMLUtils.getAttributeValueFromChildElement(value, propertyFontName)
-                    .orElse(captionFontName);
-        }
-        return captionFontName;
     }
 
     private void setComboValue(

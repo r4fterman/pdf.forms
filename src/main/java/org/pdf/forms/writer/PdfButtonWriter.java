@@ -7,12 +7,11 @@ import java.util.Set;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.components.PdfButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
@@ -48,7 +47,6 @@ public class PdfButtonWriter implements PdfComponentWriter {
             final Rectangle pageSize,
             final int currentPage,
             final PdfWriter writer,
-            final Element rootElement,
             final GlobalPdfWriter globalPdfWriter) throws IOException, DocumentException {
         final PdfButton value = (PdfButton) widget.getValueComponent();
 
@@ -75,15 +73,9 @@ public class PdfButtonWriter implements PdfComponentWriter {
     private void addBorder(
             final IWidget widget,
             final BaseField baseField) {
-        final org.w3c.dom.Document document = widget.getProperties();
-        final Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
+        final Borders borders = widget.getWidgetModel().getProperties().getBorder().getBorders();
 
-        final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
-
-        final String style = XMLUtils.getAttributeValueFromChildElement(border, "Border Style").orElse("None");
-        final String width = XMLUtils.getAttributeValueFromChildElement(border, "Border Width").orElse("1");
-        final String color = XMLUtils.getAttributeValueFromChildElement(border, "Border Color").orElse(String.valueOf(Color.WHITE.getRGB()));
-
+        final String style = borders.getBorderStyle().orElse("None");
         switch (style) {
             case "Solid":
                 baseField.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
@@ -94,23 +86,24 @@ public class PdfButtonWriter implements PdfComponentWriter {
             case "Beveled":
                 baseField.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
                 break;
-            case "None":
-                return;
             default:
                 return;
         }
 
-        baseField.setBorderColor(new GrayColor(Integer.parseInt(color)));
-        baseField.setBorderWidth(Integer.parseInt(width));
+        final int borderColor = borders.getBorderColor().map(Integer::parseInt).orElse(Color.WHITE.getRGB());
+        baseField.setBorderColor(new GrayColor(borderColor));
+
+        final int borderWidth = borders.getBorderWidth().map(Integer::parseInt).orElse(1);
+        baseField.setBorderWidth(borderWidth);
     }
 
     private Rectangle convertJavaCoordsToPdfCoords(
             final java.awt.Rectangle bounds,
             final Rectangle pageSize) {
-        final float javaX1 = bounds.x - IMainFrame.INSET;
-        final float javaY1 = bounds.y - IMainFrame.INSET;
+        final int javaX1 = bounds.x - IMainFrame.INSET;
+        final int javaY1 = bounds.y - IMainFrame.INSET;
 
-        final float javaX2 = javaX1 + bounds.width;
+        final int javaX2 = javaX1 + bounds.width;
 
         final float pdfY1 = pageSize.getHeight() - javaY1 - bounds.height;
         final float pdfY2 = pdfY1 + bounds.height;
@@ -122,7 +115,7 @@ public class PdfButtonWriter implements PdfComponentWriter {
         final String fontPath = fontHandler.getAbsoluteFontPath(font);
         try {
             return BaseFont.createFont(fontPath, BaseFont.CP1250, BaseFont.EMBEDDED);
-        } catch (DocumentException e) {
+        } catch (final DocumentException e) {
             logger.error("Failed creating font from path {}!", fontPath, e);
 
             /*

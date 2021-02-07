@@ -9,10 +9,10 @@ import javax.swing.*;
 import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 import org.jpedal.objects.PdfPageData;
-import org.jpedal.utils.SwingWorker;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.PDFImportChooser;
+import org.pdf.forms.model.des.Version;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.pdf.forms.widgets.utils.WidgetParser;
@@ -24,7 +24,7 @@ class PDFImportWorker extends SwingWorker {
     private final Logger logger = LoggerFactory.getLogger(PDFImportWorker.class);
 
     private final IMainFrame mainFrame;
-    private final String version;
+    private final Version version;
     private final WidgetFactory widgetFactory;
     private final int importType;
     private final int pageCount;
@@ -33,7 +33,7 @@ class PDFImportWorker extends SwingWorker {
 
     PDFImportWorker(
             final IMainFrame mainFrame,
-            final String version,
+            final Version version,
             final WidgetFactory widgetFactory,
             final int importType,
             final int pageCount,
@@ -49,19 +49,11 @@ class PDFImportWorker extends SwingWorker {
     }
 
     @Override
-    public Object construct() {
+    protected Object doInBackground() {
         final ProgressMonitor progressDialog = createProgressMonitor();
 
         final List<Object[]> pages = new ArrayList<>();
-
-        final int currentLastPage;
-        if (importType == PDFImportChooser.IMPORT_NEW) {
-            currentLastPage = importNew(progressDialog, pages, mainFrame.getTotalNoOfPages());
-        } else if (importType == PDFImportChooser.IMPORT_EXISTING) {
-            currentLastPage = importExisting(progressDialog, pages, mainFrame.getTotalNoOfPages());
-        } else {
-            currentLastPage = 1;
-        }
+        final int currentLastPage = getCurrentLastPage(progressDialog, pages);
 
         EventQueue.invokeLater(() -> {
             for (final Object[] properties: pages) {
@@ -84,6 +76,20 @@ class PDFImportWorker extends SwingWorker {
         });
 
         return null;
+    }
+
+    private int getCurrentLastPage(
+            final ProgressMonitor progressDialog,
+            final List<Object[]> pages) {
+        final int currentLastPage;
+        if (importType == PDFImportChooser.IMPORT_NEW) {
+            currentLastPage = importNew(progressDialog, pages, mainFrame.getTotalNoOfPages());
+        } else if (importType == PDFImportChooser.IMPORT_EXISTING) {
+            currentLastPage = importExisting(progressDialog, pages, mainFrame.getTotalNoOfPages());
+        } else {
+            currentLastPage = 1;
+        }
+        return currentLastPage;
     }
 
     private int importNew(
@@ -116,7 +122,7 @@ class PDFImportWorker extends SwingWorker {
         }
 
         mainFrame.setCurrentDesignerFileName("Untitled");
-        mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version);
+        mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version.getVersion());
         return currentLastPage;
     }
 
@@ -200,7 +206,7 @@ class PDFImportWorker extends SwingWorker {
         try {
             final PdfDecoder decoder = getDecoder(pdfPath);
             decoder.decodePage(pdfPageNumber);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Error decoding PDF page {} of file {}", pdfPageNumber, pdfPath, e);
         }
 

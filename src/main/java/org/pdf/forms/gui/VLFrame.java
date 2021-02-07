@@ -31,6 +31,7 @@ import org.pdf.forms.gui.designer.gui.Rule;
 import org.pdf.forms.gui.editor.JavaScriptEditorPanel;
 import org.pdf.forms.gui.hierarchy.HierarchyPanel;
 import org.pdf.forms.gui.library.LibraryPanel;
+import org.pdf.forms.gui.menu.MenubarCreator;
 import org.pdf.forms.gui.properties.PropertiesPanel;
 import org.pdf.forms.gui.properties.PropertyChanger;
 import org.pdf.forms.gui.toolbars.DocumentToolBar;
@@ -38,9 +39,12 @@ import org.pdf.forms.gui.toolbars.ReportToolbar;
 import org.pdf.forms.gui.toolbars.WidgetAlignmentAndOrderToolbar;
 import org.pdf.forms.gui.toolbars.WidgetPropertiesToolBar;
 import org.pdf.forms.gui.windows.SplashWindow;
-import org.pdf.forms.utils.DesignerPropertiesFile;
-import org.pdf.forms.utils.configuration.MenuConfigurationFile;
-import org.pdf.forms.utils.configuration.WindowConfigurationFile;
+import org.pdf.forms.model.configuration.MenuConfiguration;
+import org.pdf.forms.model.configuration.WindowConfiguration;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.configuration.MenuConfigurationFile;
+import org.pdf.forms.readers.configuration.WindowConfigurationFile;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetArrays;
 import org.pdf.forms.widgets.utils.WidgetFactory;
@@ -58,7 +62,7 @@ import com.vlsolutions.swing.toolbars.ToolBarPanel;
 
 public class VLFrame extends JFrame implements IMainFrame {
 
-    private final String version;
+    private final Version version;
     private final WidgetFactory widgetFactory;
     private final Configuration configuration;
     private final DesignerPropertiesFile designerPropertiesFile;
@@ -92,7 +96,7 @@ public class VLFrame extends JFrame implements IMainFrame {
 
     public VLFrame(
             final SplashWindow splashWindow,
-            final String version,
+            final Version version,
             final FontHandler fontHandler,
             final WidgetFactory widgetFactory,
             final Configuration configuration,
@@ -117,7 +121,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         final CommandListener commandListener = new CommandListener(commands);
 
         splashWindow.setProgress(2, "Initializing window");
-        toolbarContainer = initializeWindow(commandListener, horizontalRuler, verticalRuler, fontHandler);
+        toolbarContainer = initializeWindow(horizontalRuler, verticalRuler, fontHandler);
 
         splashWindow.setProgress(3, "Setting up designer panel");
         initializeJavaScriptPanel();
@@ -136,9 +140,9 @@ public class VLFrame extends JFrame implements IMainFrame {
         commands.executeCommand(Commands.INSERT_PAGE);
 
         splashWindow.setProgress(7, "Set docking panes");
-        setupMenuBar();
+        setupMenuBar(commandListener);
         setupDockingPanes();
-        setTitle(currentDesignerFileName + " - PDF Forms Designer Version " + version);
+        setTitle(currentDesignerFileName + " - PDF Forms Designer Version " + version.getVersion());
     }
 
     private void fillToolbarPanel(
@@ -185,7 +189,6 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     private ToolBarContainer initializeWindow(
-            final CommandListener commandListener,
             final Rule horizontalRuler,
             final Rule verticalRuler,
             final FontHandler fontHandler) {
@@ -196,7 +199,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         // insert our desktop as the only one component of the frame
         toolbarContainer.add(desk, BorderLayout.CENTER);
 
-        designer = new Designer(IMainFrame.INSET,
+        this.designer = new Designer(IMainFrame.INSET,
                 horizontalRuler,
                 verticalRuler,
                 this,
@@ -209,14 +212,13 @@ public class VLFrame extends JFrame implements IMainFrame {
                 this,
                 version,
                 this.widgetFactory,
-                configuration,
                 designerPropertiesFile);
         designer.setTransferHandler(dth);
 
         final File configDir = new File(configuration.getConfigDirectory(), "configuration");
 
-        menuConfigurationFile = new MenuConfigurationFile(commandListener, designer, this, configDir, configuration.getConfigDirectory());
-        windowConfigurationFile = new WindowConfigurationFile(configDir, configuration.getConfigDirectory());
+        menuConfigurationFile = new MenuConfigurationFile(configDir);
+        windowConfigurationFile = new WindowConfigurationFile(configDir);
 
         formsDocument = new FormsDocument(version);
 
@@ -341,6 +343,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         libraryPanel.setState(state);
         designerPanel.setState(state);
         javaScriptEditor.setState(state);
+        //todo: apply state change to menubar
         menuConfigurationFile.setState(state);
         documentToolBar.setSaveState(state);
 
@@ -356,7 +359,7 @@ public class VLFrame extends JFrame implements IMainFrame {
     public void addPageToHierarchyPanel(
             final int pdfPage,
             final Page newPage) {
-        hierarchyPanel.addPage(pdfPage, newPage);
+        hierarchyPanel.addPageToHierarchy(pdfPage, newPage);
     }
 
     @Override
@@ -443,29 +446,25 @@ public class VLFrame extends JFrame implements IMainFrame {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    private void setupMenuBar() {
-        final JMenuBar menubar = new JMenuBar();
+    private void setupMenuBar(final CommandListener commandListener) {
+        final MenuConfiguration menuConfiguration = menuConfigurationFile.getMenuConfiguration();
+        final MenubarCreator menubarCreator = new MenubarCreator(menuConfiguration.getMenu(), commandListener);
 
-        final JMenu[] menus = menuConfigurationFile.getMenus();
-        for (final JMenu menu: menus) {
-            menubar.add(menu);
-        }
+        //todo: addRecentDesignerFilesAsMenuEntries;
+        //todo: addRecentPDFFilesAsMenuEntries;
 
-        addRecentDesignerFilesAsMenuEntries(menuConfigurationFile.getRecentDesignerFilesMenu());
-        addRecentPDFFilesAsMenuEntries(menuConfigurationFile.getRecentImportedFilesMenu());
-
-        setJMenuBar(menubar);
+        setJMenuBar(menubarCreator.getMenuBar());
     }
 
     private void addRecentDesignerFilesAsMenuEntries(final JMenu file) {
-        final String[] recentDocs = designerPropertiesFile.getRecentDesignerDocuments();
-        if (recentDocs.length == 0) {
+        final List<String> recentDocs = designerPropertiesFile.getRecentDesignerDocuments();
+        if (recentDocs.isEmpty()) {
             return;
         }
 
-        final int numberOfRecentDocs = designerPropertiesFile.getNumberRecentDocumentsToDisplay();
+        final int numberOfRecentDocs = DesignerPropertiesFile.NO_OF_RECENT_DOCS;
         for (int i = 0; i < numberOfRecentDocs; i++) {
-            final JMenuItem menuItem = addDocumentToMenuEntry(recentDocs[i], i);
+            final JMenuItem menuItem = addDocumentToMenuEntry(recentDocs.get(i), i);
             file.add(menuItem);
 
             menuItem.addActionListener(e -> {
@@ -480,11 +479,11 @@ public class VLFrame extends JFrame implements IMainFrame {
     }
 
     private void addRecentPDFFilesAsMenuEntries(final JMenu file) {
-        final String[] recentDocs = designerPropertiesFile.getRecentPDFDocuments();
+        final List<String> recentDocs = designerPropertiesFile.getRecentPDFDocuments();
 
-        final int numberOfRecentDocs = designerPropertiesFile.getNumberRecentDocumentsToDisplay();
+        final int numberOfRecentDocs = DesignerPropertiesFile.NO_OF_RECENT_DOCS;
         for (int i = 0; i < numberOfRecentDocs; i++) {
-            final JMenuItem menuItem = addDocumentToMenuEntry(recentDocs[i], i);
+            final JMenuItem menuItem = addDocumentToMenuEntry(recentDocs.get(i), i);
             file.add(menuItem);
 
             menuItem.addActionListener(e -> {
@@ -514,25 +513,27 @@ public class VLFrame extends JFrame implements IMainFrame {
         desk.addDockable(designerPanel);
         dockableNames.put("Designer", designerPanel);
 
-        if (windowConfigurationFile.isWindowVisible(WindowConfigurationFile.SCRIPT_EDITOR)) {
+        final WindowConfiguration windowConfiguration = windowConfigurationFile.getWindowConfiguration();
+
+        if (windowConfiguration.isScriptEditorVisible()) {
             desk.split(designerPanel, javaScriptEditor, DockingConstants.SPLIT_TOP);
             desk.setDockableHeight(javaScriptEditor, .22);
             dockableNames.put("Script Editor", javaScriptEditor);
         }
 
-        if (windowConfigurationFile.isWindowVisible(WindowConfigurationFile.HIERARCHY)) {
+        if (windowConfiguration.isHierarchyVisible()) {
             desk.split(designerPanel, hierarchyPanel, DockingConstants.SPLIT_LEFT);
             desk.setDockableWidth(hierarchyPanel, .15);
             dockableNames.put("Hierarchy", hierarchyPanel);
         }
 
-        if (windowConfigurationFile.isWindowVisible(WindowConfigurationFile.LIBRARY)) {
+        if (windowConfiguration.isLibraryVisible()) {
             desk.split(designerPanel, libraryPanel, DockingConstants.SPLIT_RIGHT);
             desk.setDockableWidth(libraryPanel, .32);
             dockableNames.put("Library", libraryPanel);
         }
 
-        if (windowConfigurationFile.isWindowVisible(WindowConfigurationFile.PROPERTIES)) {
+        if (windowConfiguration.isPropertiesVisible()) {
             desk.split(libraryPanel, propertiesPanel, DockingConstants.SPLIT_BOTTOM);
             desk.setDockableHeight(propertiesPanel, .74);
             propertiesPanel.addDockables(desk);
@@ -618,14 +619,13 @@ public class VLFrame extends JFrame implements IMainFrame {
             final List<IWidget> widgetsOnPage = page.getWidgets();
             for (final IWidget widgetOnPage: widgetsOnPage) {
                 final String widgetName = widgetOnPage.getWidgetName();
+                // another widget of this name already exists, and this is the first
+                // we've heard of it
                 if (name.equals(widgetName) && !widgetOnPage.equals(widget)) {
-                    /*
-                     * another widget of this name already exists, and this is the first
-                     * we've heard of it
-                     */
-
-                    widgetArrays.addWidgetToArray(name, widgetOnPage); // add the original widget
-                    widgetArrays.addWidgetToArray(name, widget); // add the new widget
+                    // add the original widget
+                    widgetArrays.addWidgetToArray(name, widgetOnPage);
+                    // add the new widget
+                    widgetArrays.addWidgetToArray(name, widget);
 
                     return widgetArrays.getNextArrayIndex(name);
                 }

@@ -8,14 +8,13 @@ import java.util.Set;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.Borders;
+import org.pdf.forms.model.des.Caption;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.components.PdfTextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import com.itextpdf.awt.DefaultFontMapper;
 import com.itextpdf.text.BaseColor;
@@ -55,7 +54,6 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
             final Rectangle pageSize,
             final int currentPage,
             final PdfWriter writer,
-            final Element rootElement,
             final GlobalPdfWriter globalPdfWriter) throws IOException, DocumentException {
         //PdfCaption textFieldCaption = widget.getCaptionComponent();
         writeOutCaption(widget, pageSize, currentPage, globalPdfWriter);
@@ -92,23 +90,20 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
             final Rectangle pageSize,
             final int currentPage,
             final GlobalPdfWriter globalPdfWriter) {
-        final PdfCaption caption = widget.getCaptionComponent();
-        if (caption == null) {
+        final PdfCaption pdfCaption = widget.getCaptionComponent();
+        if (pdfCaption == null) {
             return;
         }
 
         if (widget.isComponentSplit()) {
-            final Element captionElement = XMLUtils.getElementsFromNodeList(
-                    widget.getProperties().getElementsByTagName("layout")).get(0);
-
-            final Element positionElement = XMLUtils.getPropertyElement(captionElement, "Position").get();
-            final String location = positionElement.getAttributeNode("value").getValue();
+            final Caption caption = widget.getWidgetModel().getProperties().getLayout().getCaption();
+            final String location = caption.getPosition().orElse("None");
             if (location.equals("None")) {
                 return;
             }
         }
 
-        final java.awt.Rectangle captionBounds = caption.getBounds();
+        final java.awt.Rectangle captionBounds = pdfCaption.getBounds();
         captionBounds.setLocation(widget.getAbsoluteLocationsOfCaption());
         final Rectangle pdfCaptionBounds = convertJavaCoordsToPdfCoords(captionBounds, pageSize);
 
@@ -117,7 +112,7 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
         cb.saveState();
         cb.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
 
-        final Font font = caption.getFont();
+        final Font font = pdfCaption.getFont();
         final String fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
@@ -130,7 +125,7 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
          */
         try {
             mapper.awtToPdf(font);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Failed converting font from AWT to PDF for {}!", font.getName(), e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());
@@ -140,7 +135,7 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
 
         //Graphics2D graphics2D = cb.createGraphicsShapes(captionBounds.width, captionBounds.height, true, 0.95f);
 
-        caption.paint(graphics2D);
+        pdfCaption.paint(graphics2D);
 
         graphics2D.dispose();
         cb.restoreState();
@@ -149,15 +144,9 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
     private void addBorder(
             final IWidget widget,
             final BaseField baseField) {
-        final Document document = widget.getProperties();
-        final Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
+        final Borders borders = widget.getWidgetModel().getProperties().getBorder().getBorders();
 
-        final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
-
-        final String style = XMLUtils.getAttributeValueFromChildElement(border, "Border Style").orElse("None");
-        final String width = XMLUtils.getAttributeValueFromChildElement(border, "Border Width").orElse("1");
-        final String color = XMLUtils.getAttributeValueFromChildElement(border, "Border Color").orElse(String.valueOf(Color.WHITE.getRGB()));
-
+        final String style = borders.getBorderStyle().orElse("None");
         switch (style) {
             case "Solid":
                 baseField.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
@@ -168,14 +157,15 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
             case "Beveled":
                 baseField.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
                 break;
-            case "None":
-                return;
             default:
                 return;
         }
 
-        baseField.setBorderColor(new GrayColor(Integer.parseInt(color)));
-        baseField.setBorderWidth(Integer.parseInt(width));
+        final int color = borders.getBorderColor().map(Integer::parseInt).orElse(Color.WHITE.getRGB());
+        baseField.setBorderColor(new GrayColor(color));
+
+        final int width = borders.getBorderWidth().map(Integer::parseInt).orElse(1);
+        baseField.setBorderWidth(width);
     }
 
     private Rectangle convertJavaCoordsToPdfCoords(
@@ -196,7 +186,7 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
             final Map<PdfName, String> eventsAndScripts,
             final PdfFormField formField,
             final PdfWriter writer) {
-        for (final Map.Entry<PdfName, String> entry : eventsAndScripts.entrySet()) {
+        for (final Map.Entry<PdfName, String> entry: eventsAndScripts.entrySet()) {
             final String script = entry.getValue();
             if (!script.equals("")) {
                 formField.setAdditionalActions(entry.getKey(), PdfAction.javaScript(script, writer));
@@ -208,7 +198,7 @@ public class PdfTextFieldWriter implements PdfComponentWriter {
         try {
             final String fontPath = fontHandler.getAbsoluteFontPath(font);
             return BaseFont.createFont(fontPath, "Cp1250", BaseFont.EMBEDDED);
-        } catch (DocumentException e) {
+        } catch (final DocumentException e) {
             logger.error("Error embedding font. So use Helvetica instead.", e);
 
             /*

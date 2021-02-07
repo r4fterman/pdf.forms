@@ -11,14 +11,14 @@ import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.Borders;
+import org.pdf.forms.model.des.LayoutProperties;
+import org.pdf.forms.model.des.ObjectProperties;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.components.PdfList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import com.itextpdf.awt.DefaultFontMapper;
 import com.itextpdf.text.DocumentException;
@@ -55,7 +55,6 @@ public class PdfListBoxWriter implements PdfComponentWriter {
             final Rectangle pageSize,
             final int currentPage,
             final PdfWriter writer,
-            final Element rootElement,
             final GlobalPdfWriter globalPdfWriter) throws IOException, DocumentException {
         //PdfCaption listBoxCaption = widget.getCaptionComponent();
         writeOutCaption(widget, pageSize, currentPage, globalPdfWriter);
@@ -81,8 +80,8 @@ public class PdfListBoxWriter implements PdfComponentWriter {
         list.setFontSize(value.getFont().getSize());
         list.setChoices(items.toArray(String[]::new));
 
-        final String defaultText = XMLUtils.getPropertyElement(rootElement, "Default")
-                .map(defaultElement -> defaultElement.getAttributes().getNamedItem("value").getNodeValue())
+        final ObjectProperties objectProperties = widget.getWidgetModel().getProperties().getObject();
+        final String defaultText = objectProperties.getValue().getDefault()
                 .orElse("");
 
         int index = 0;
@@ -114,12 +113,8 @@ public class PdfListBoxWriter implements PdfComponentWriter {
         }
 
         if (widget.isComponentSplit()) {
-            final Element captionElement = XMLUtils.getElementsFromNodeList(
-                    widget.getProperties().getElementsByTagName("layout")).get(0);
-
-            final String location = XMLUtils.getPropertyElement(captionElement, "Position")
-                    .map(positionElement -> positionElement.getAttributeNode("value").getValue())
-                    .orElse("None");
+            final LayoutProperties layoutProperties = widget.getWidgetModel().getProperties().getLayout();
+            final String location = layoutProperties.getCaption().getPosition().orElse("None");
             if (location.equals("None")) {
                 return;
             }
@@ -132,11 +127,15 @@ public class PdfListBoxWriter implements PdfComponentWriter {
         // write out caption
         final PdfContentByte pdfContentByte = globalPdfWriter.getContentByte(currentPage);
         pdfContentByte.saveState();
-        pdfContentByte.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
+        pdfContentByte.concatCTM(1,
+                0,
+                0,
+                1,
+                pdfCaptionBounds.getLeft(),
+                pdfCaptionBounds.getTop() - captionBounds.height);
 
         final Font font = caption.getFont();
         final String fontDirectory = fontHandler.getFontDirectory(font);
-
 
         /*
          * we need to make this erroneous call to awtToPdf to see if an exception is thrown, if it is, it is
@@ -147,13 +146,17 @@ public class PdfListBoxWriter implements PdfComponentWriter {
             mapper = new DefaultFontMapper();
             mapper.insertDirectory(fontDirectory);
             mapper.awtToPdf(font);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Failed converting font from AWT to PDF for {}!", font.getName(), e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());
         }
 
-        final Graphics2D graphics2D = pdfContentByte.createGraphics(captionBounds.width, captionBounds.height, mapper, true, .95f);
+        final Graphics2D graphics2D = pdfContentByte.createGraphics(captionBounds.width,
+                captionBounds.height,
+                mapper,
+                true,
+                .95f);
 
         //Graphics2D graphics2D = cb.createGraphicsShapes(captionBounds.width, captionBounds.height, true, 0.95f);
 
@@ -166,16 +169,9 @@ public class PdfListBoxWriter implements PdfComponentWriter {
     private void addBorder(
             final IWidget widget,
             final BaseField baseField) {
-        final Document document = widget.getProperties();
-        final Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
+        final Borders borders = widget.getWidgetModel().getProperties().getBorder().getBorders();
 
-        final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
-
-        final String style = XMLUtils.getAttributeValueFromChildElement(border, "Border Style").orElse("None");
-        final String width = XMLUtils.getAttributeValueFromChildElement(border, "Border Width").orElse("1");
-        final String color = XMLUtils.getAttributeValueFromChildElement(border, "Border Color").orElse(String
-                .valueOf(Color.WHITE.getRGB()));
-
+        final String style = borders.getBorderStyle().orElse("None");
         switch (style) {
             case "Solid":
                 baseField.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
@@ -186,23 +182,24 @@ public class PdfListBoxWriter implements PdfComponentWriter {
             case "Beveled":
                 baseField.setBorderStyle(PdfBorderDictionary.STYLE_BEVELED);
                 break;
-            case "None":
-                return;
             default:
                 return;
         }
 
-        baseField.setBorderColor(new GrayColor(Integer.parseInt(color)));
-        baseField.setBorderWidth(Integer.parseInt(width));
+        final int borderColor = borders.getBorderColor().map(Integer::parseInt).orElse(Color.WHITE.getRGB());
+        baseField.setBorderColor(new GrayColor(borderColor));
+
+        final int borderWidth = borders.getBorderWidth().map(Integer::parseInt).orElse(1);
+        baseField.setBorderWidth(borderWidth);
     }
 
     private Rectangle convertJavaCoordsToPdfCoords(
             final java.awt.Rectangle bounds,
             final Rectangle pageSize) {
-        final float javaX1 = bounds.x - IMainFrame.INSET;
-        final float javaY1 = bounds.y - IMainFrame.INSET;
+        final int javaX1 = bounds.x - IMainFrame.INSET;
+        final int javaY1 = bounds.y - IMainFrame.INSET;
 
-        final float javaX2 = javaX1 + bounds.width;
+        final int javaX2 = javaX1 + bounds.width;
 
         final float pdfY1 = pageSize.getHeight() - javaY1 - bounds.height;
         final float pdfY2 = pdfY1 + bounds.height;
@@ -214,7 +211,7 @@ public class PdfListBoxWriter implements PdfComponentWriter {
         final String fontPath = fontHandler.getAbsoluteFontPath(font);
         try {
             return BaseFont.createFont(fontPath, "Cp1250", BaseFont.EMBEDDED);
-        } catch (DocumentException e) {
+        } catch (final DocumentException e) {
             logger.error("Error embedding font. So use Helvetica instead.", e);
             /*
              * A document exception has been thrown meaning that the font cannot be embedded

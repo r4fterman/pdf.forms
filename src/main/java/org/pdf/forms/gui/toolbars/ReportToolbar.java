@@ -1,44 +1,35 @@
 package org.pdf.forms.gui.toolbars;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JButton;
+import javax.swing.*;
 
 import org.pdf.forms.gui.commands.CommandListener;
+import org.pdf.forms.gui.commands.Commands;
+import org.pdf.forms.gui.components.ButtonWithID;
 
 import com.vlsolutions.swing.toolbars.VLToolBar;
 
 public class ReportToolbar extends VLToolBar {
 
-    private final List<JButton> buttonsList = new ArrayList<>();
+    private final ButtonWithID bugReportButton;
 
     public ReportToolbar(final CommandListener commandListener) {
+        this.bugReportButton = createBugReportButton(commandListener);
 
-        //     SwingButton button = new SwingButton("Email bug report");
-        //        button.init("/org/pdf/forms/res/email.png", Commands.BUGREPORT, "Email bug report");
-        //        button.addActionListener(commandListener);
-        //        add(button);
+        add(bugReportButton);
+    }
 
-        //        return button;
-
-        //     JButton button = new JButton("Email bug report");
-        //     button.setIcon(new ImageIcon(getClass().getResource("/org/jpedal/examples/simpleviewer/res/start.gif")));
-        //     button.setToolTipText("Email bug report");
-        //     button.addActionListener(new ActionListener() {
-        //      public void actionPerformed(ActionEvent e) {
-        //       WidgetAlignmentAndOrder.alignAndOrder(designer, type);
-        //      }
-        //     });
-
-        //     buttonsList.add(button);
-
-        //     add(button);
+    private ButtonWithID createBugReportButton(final CommandListener commandListener) {
+        final ButtonWithID button = new ButtonWithID(
+                "Email bug report",
+                new ImageIcon("/org/pdf/forms/res/email.png"),
+                "Email bug report",
+                Commands.BUG_REPORT
+        );
+        button.addActionListener(commandListener);
+        return button;
     }
 
     public void setState(final boolean enabled) {
-        for (final JButton button : buttonsList) {
-            button.setEnabled(enabled);
-        }
+        bugReportButton.setEnabled(enabled);
     }
 }

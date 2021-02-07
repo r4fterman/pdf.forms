@@ -6,10 +6,10 @@ import java.util.List;
 
 import javax.swing.*;
 
-import org.jpedal.examples.simpleviewer.gui.swing.SwingButton;
-import org.jpedal.examples.simpleviewer.gui.swing.SwingCombo;
 import org.pdf.forms.gui.commands.CommandListener;
 import org.pdf.forms.gui.commands.Commands;
+import org.pdf.forms.gui.components.ButtonWithID;
+import org.pdf.forms.gui.components.ComboBoxWithID;
 
 import com.vlsolutions.swing.toolbars.VLToolBar;
 
@@ -27,7 +27,7 @@ public class DocumentToolBar extends VLToolBar {
 
     private final CommandListener commandListener;
     private final JButton saveButton;
-    private final SwingCombo zoomBox;
+    private final JComboBox<String> zoomBox;
 
     public DocumentToolBar(final CommandListener commandListener) {
         this.commandListener = commandListener;
@@ -43,13 +43,11 @@ public class DocumentToolBar extends VLToolBar {
         zoomIn.setEnabled(false);
         zoomComponents.add(zoomIn);
 
-        zoomBox = new SwingCombo(ZOOMS);
-        zoomBox.setEditable(true);
-        zoomBox.setID(Commands.ZOOM);
+        zoomBox = new ComboBoxWithID<>(ZOOMS, true, Commands.ZOOM);
+        zoomBox.setEnabled(false);
         zoomBox.addActionListener(commandListener);
         zoomBox.setPreferredSize(new Dimension(80, 24));
         add(zoomBox);
-        zoomBox.setEnabled(false);
         zoomComponents.add(zoomBox);
 
         final JButton zoomOut = addToolBarButton("/org/pdf/forms/res/minus.gif", Commands.ZOOM_OUT, "Zoom Out");
@@ -60,9 +58,9 @@ public class DocumentToolBar extends VLToolBar {
     private JButton addToolBarButton(
             final String url,
             final int command,
-            final String toolTip) {
-        final SwingButton button = new SwingButton();
-        button.init(url, command, toolTip);
+            final String tooltipText) {
+        final ImageIcon imageIcon = new ImageIcon(url);
+        final ButtonWithID button = new ButtonWithID(imageIcon, tooltipText, command);
         button.addActionListener(commandListener);
         add(button);
 

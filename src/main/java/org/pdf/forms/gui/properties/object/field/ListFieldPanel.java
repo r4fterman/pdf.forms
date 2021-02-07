@@ -3,8 +3,8 @@ package org.pdf.forms.gui.properties.object.field;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.swing.*;
@@ -13,9 +13,8 @@ import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TriStateCheckBox;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.Item;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 public class ListFieldPanel extends JPanel {
 
@@ -28,7 +27,7 @@ public class ListFieldPanel extends JPanel {
     };
     private static final String[] PRESENCES = {"Visible"};
 
-    private Map<IWidget, Element> widgetsAndProperties;
+    private Set<IWidget> widgets;
     private IDesigner designerPanel;
 
     private JButton addButton;
@@ -208,52 +207,38 @@ public class ListFieldPanel extends JPanel {
     }
 
     private void updateItems() {
-        final Set<Map.Entry<IWidget, Element>> entries = widgetsAndProperties.entrySet();
-        if (entries.size() == 1) {
-            final Map.Entry<IWidget, Element> entry = entries.iterator().next();
-            final IWidget widget = entry.getKey();
-            final Element widgetProperties = entry.getValue();
-            updateItemsInModel(widget, widgetProperties);
+        if (widgets.size() == 1) {
+            final IWidget widget = widgets.iterator().next();
+            updateItemsInModel(widget);
         }
 
         designerPanel.repaint();
     }
 
-    private void updateItemsInModel(
-            final IWidget widget,
-            final Element widgetProperties) {
-        final Element itemsElement = (Element) widgetProperties.getElementsByTagName("items").item(0);
-        final List<Element> items = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes());
-
-        // remove all elements from list before re-populating
-        items.forEach(itemsElement::removeChild);
-
+    private void updateItemsInModel(final IWidget widget) {
+        final List<Item> items = new ArrayList<>();
         for (int i = 0; i < itemsTable.getRowCount(); i++) {
             final String value = (String) itemsTable.getValueAt(i, 0);
-            if (value != null && !value.equals("")) {
-                XMLUtils.addBasicProperty(widget.getProperties(), "item", value, itemsElement);
+            if (value != null && !value.trim().isEmpty()) {
+                items.add(new Item(value.trim()));
             }
         }
 
-        widget.setObjectProperties(widgetProperties);
+        widget.getWidgetModel().getProperties().getObject().getItems().setItem(items);
     }
 
-    public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
-        this.widgetsAndProperties = widgetsAndProperties;
+    public void setProperties(final Set<IWidget> widgets) {
+        this.widgets = widgets;
 
-        setItemsEnabled(widgetsAndProperties.size() == 1);
+        setItemsEnabled(widgets.size() == 1);
 
         // only 1 widget is currently selected
-        if (widgetsAndProperties.size() == 1) {
-            final Element objectProperties = widgetsAndProperties.values().iterator().next();
-            final Element itemElement = (Element) objectProperties.getElementsByTagName("items").item(0);
+        if (widgets.size() == 1) {
+            final IWidget widget = widgets.iterator().next();
 
-            final List<Element> itemsList = XMLUtils.getElementsFromNodeList(itemElement.getChildNodes());
-
-            for (int i = 0; i < itemsList.size(); i++) {
-                final Element item = itemsList.get(i);
-
-                final String value = XMLUtils.getAttributeValueFromElement(item, "item").orElse("");
+            final List<Item> items = widget.getWidgetModel().getProperties().getObject().getItems().getItem();
+            for (int i = 0; i < items.size(); i++) {
+                final String value = getItemValue(items.get(i));
 
                 ((ItemsTableModel) itemsTable.getModel()).insertRow(i);
                 itemsTable.setValueAt(value, i, 0);
@@ -261,6 +246,15 @@ public class ListFieldPanel extends JPanel {
         }
 
         itemsTable.getModel().addTableModelListener(e -> updateItems());
+    }
+
+    private String getItemValue(final Item item) {
+        final String value = item.getValue();
+        if (value != null && !value.isEmpty()) {
+            return value;
+        }
+        // deprecated value location
+        return item.getItem();
     }
 
     private void setItemsEnabled(final boolean enabled) {
@@ -278,14 +272,9 @@ public class ListFieldPanel extends JPanel {
             return;
         }
 
-        final boolean value = state == TriStateCheckBox.SELECTED;
-        for (final Element propertiesElement: widgetsAndProperties.values()) {
-            final List<Element> objectProperties = XMLUtils.getElementsFromNodeList(propertiesElement.getChildNodes());
-            final List<Element> fieldProperties = XMLUtils.getElementsFromNodeList(objectProperties.get(0)
-                    .getChildNodes());
-
-            fieldProperties.get(2).getAttributeNode("value").setValue(String.valueOf(value));
-        }
+        final boolean allow = state == TriStateCheckBox.SELECTED;
+        widgets.forEach(widget -> widget.getWidgetModel().getProperties().getObject().getField()
+                .allowCustomTextEntry(allow));
     }
 
 }

@@ -17,9 +17,6 @@
         <maven.version>3.5.4</maven.version>
         <java.version>13</java.version>
 
-        <slf4j-release-version>1.7.30</slf4j-release-version>
-        <log4j-release-version>1.2.17</log4j-release-version>
-
         <junit.jupiter.version>5.6.0-M1</junit.jupiter.version>
     </properties>
 
@@ -49,6 +46,32 @@
         </dependency>
 
         <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>javax.activation</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.8</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>30.1-jre</version>
@@ -66,40 +89,46 @@
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-migrationsupport</artifactId>
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-junit</artifactId>
             <version>2.0.0.0</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
             <version>4.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-core</artifactId>
+            <version>2.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-matchers</artifactId>
+            <version>2.8.2</version>
         </dependency>
     </dependencies>
 
@@ -232,24 +261,23 @@
                             </execution>
                         </executions>
                     </plugin>
-
-                    <!--<plugin>-->
-                    <!--<groupId>org.pitest</groupId>-->
-                    <!--<artifactId>pitest-maven</artifactId>-->
-                    <!--<version>1.4.3</version>-->
-                    <!--<configuration>-->
-                    <!--<reportsDirectory>${project.reporting.outputDirectory}/pit-report</reportsDirectory>-->
-                    <!--</configuration>-->
-                    <!--<executions>-->
-                    <!--<execution>-->
-                    <!--<phase>prepare-package</phase>-->
-                    <!--<goals>-->
-                    <!--<goal>mutationCoverage</goal>-->
-                    <!--</goals>-->
-                    <!--</execution>-->
-                    <!--</executions>-->
-                    <!--</plugin>-->
-
+                    <plugin>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <version>3.14.0</version>
+                        <configuration>
+                            <linkXRef>false</linkXRef>
+                            <failOnViolation>false</failOnViolation>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                    <goal>cpd-check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs-maven-plugin</artifactId>

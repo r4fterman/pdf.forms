@@ -1,61 +1,48 @@
 package org.pdf.forms.widgets;
 
-import javax.swing.*;
-import javax.xml.parsers.ParserConfigurationException;
+import static java.util.stream.Collectors.toList;
+
 import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
 
-import org.pdf.forms.utils.XMLUtils;
+import javax.swing.*;
+
+import org.pdf.forms.model.des.JavaScriptContent;
+import org.pdf.forms.model.des.Widget;
+import org.pdf.forms.model.des.Widgets;
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.widgets.utils.WidgetSelection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
- * Special widget object that represents a group of widgets. Although this class
- * implements IWidget (as all widgets must do) it does not extend Widget
+ * Special widget object that represents a group of widgets. Although this class implements IWidget (as all widgets must
+ * do) it does not extend Widget
  */
 public class GroupWidget implements IWidget {
 
-    private static int nextWidgetNumber = 1;
+    private static int groupNextWidgetNumber = 1;
 
     private static final int TYPE = IWidget.GROUP;
 
-    private final Logger logger = LoggerFactory.getLogger(GroupWidget.class);
-
     private final Icon icon;
-    private final Element widgetsElement;
+    private final Widget widget;
 
     private List<IWidget> widgetsInGroup;
     private String widgetName;
-    private Document properties;
-
-    private Element setupProperties() {
-        try {
-            properties = XMLUtils.createNewDocument();
-        } catch (ParserConfigurationException e) {
-            logger.error("Error setting up properties", e);
-        }
-
-        return XMLUtils.createAndAppendElement(properties, "widget", properties);
-    }
 
     public GroupWidget() {
         icon = new ImageIcon(getClass().getResource("/org/pdf/forms/res/Group.gif"));
 
-        this.widgetName = "Group" + nextWidgetNumber;
-        nextWidgetNumber++;
+        this.widgetName = "Group" + groupNextWidgetNumber;
+        groupNextWidgetNumber++;
 
-        final Element rootElement = setupProperties();
+        this.widget = new Widget();
+        widget.setType("GROUP");
+        widget.setName(widgetName);
 
-        XMLUtils.addBasicProperty(properties, "type", "GROUP", rootElement);
-        XMLUtils.addBasicProperty(properties, "name", widgetName, rootElement);
-
-        widgetsElement = XMLUtils.createAndAppendElement(properties, "widgets", rootElement);
+        widget.setJavaScript(null);
+        widget.setProperties(null);
+        widget.setWidgets(new Widgets());
     }
 
     @Override
@@ -67,17 +54,10 @@ public class GroupWidget implements IWidget {
     public void setWidgetsInGroup(final List<IWidget> widgetsInGroup) {
         this.widgetsInGroup = widgetsInGroup;
 
-        final List<Element> widgets = XMLUtils.getElementsFromNodeList(widgetsElement.getChildNodes());
-        for (final Element widget : widgets) {
-            final Node parent = widget.getParentNode();
-            parent.removeChild(widget);
-        }
-
-        for (final IWidget widget : widgetsInGroup) {
-            final Document widgetProperties = widget.getProperties();
-            final Element widgetRoot = widgetProperties.getDocumentElement();
-            widgetsElement.appendChild(properties.importNode(widgetRoot, true));
-        }
+        final List<Widget> widgetList = widgetsInGroup.stream()
+                .map(IWidget::getWidgetModel)
+                .collect(toList());
+        widget.getWidgets().setWidget(widgetList);
     }
 
     @Override
@@ -105,11 +85,6 @@ public class GroupWidget implements IWidget {
     }
 
     @Override
-    public Document getProperties() {
-        return properties;
-    }
-
-    @Override
     public void setAllProperties() {
         // not supported by groups
     }
@@ -120,31 +95,37 @@ public class GroupWidget implements IWidget {
     }
 
     @Override
-    public void setParagraphProperties(
-            final Element paragraphProperties,
-            final int currentlyEditing) {
+    public JavaScriptContent getJavaScript() {
+        return widget.getJavaScript();
+    }
+
+    @Override
+    public Widget getWidgetModel() {
+        return widget;
+    }
+
+    @Override
+    public void setParagraphProperties(final int currentlyEditing) {
         // not supported by groups
     }
 
     @Override
-    public void setLayoutProperties(final Element paragraphProperties) {
+    public void setLayoutProperties() {
         // not supported by groups
     }
 
     @Override
-    public void setFontProperties(
-            final Element parentElement,
-            final int currentlyEditing) {
+    public void setFontProperties(final int currentlyEditing) {
         // not supported by groups
     }
 
     @Override
-    public void setCaptionProperties(final Element captionProperties) {
+    public void setCaptionProperties() {
         // not supported by groups
     }
 
     @Override
-    public JComponent getWidget() {
+    public JComponent getComponent() {
         return null;
     }
 
@@ -294,11 +275,11 @@ public class GroupWidget implements IWidget {
     }
 
     @Override
-    public void setObjectProperties(final Element parentElement) {
+    public void setObjectProperties() {
     }
 
     @Override
-    public void setBorderAndBackgroundProperties(final Element borderProperties) {
+    public void setBorderAndBackgroundProperties() {
     }
 
 }

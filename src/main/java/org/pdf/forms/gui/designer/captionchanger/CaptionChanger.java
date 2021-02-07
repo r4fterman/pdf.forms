@@ -7,13 +7,10 @@ import java.awt.*;
 
 import javax.swing.*;
 
-import org.jpedal.utils.Strip;
+import org.apache.commons.text.StringEscapeUtils;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.components.PdfCaption;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public class CaptionChanger {
 
@@ -85,7 +82,9 @@ public class CaptionChanger {
     }
 
     private void setCaptionText() {
-        final String captionText = captionTextArea.getText().replace(STRING_LINE_BREAK, HTML_LINE_BREAK);
+        final String userEnteredText = captionTextArea.getText();
+        final String sanitizedXml = StringEscapeUtils.escapeXml11(userEnteredText);
+        final String captionText = sanitizedXml.replace(STRING_LINE_BREAK, HTML_LINE_BREAK);
 
         final StringBuilder builder = new StringBuilder("<html>");
         if (alignment == null) {
@@ -96,16 +95,10 @@ public class CaptionChanger {
                     .append(captionText)
                     .append("</p>");
         }
+        builder.append("</html>");
         final String text = builder.toString();
 
-        final Document properties = selectedWidget.getProperties();
-        final Element captionProperties =
-                XMLUtils.getElementsFromNodeList(properties.getElementsByTagName("caption_properties")).get(0);
-
-        XMLUtils.getPropertyElement(captionProperties, "Text")
-                .ifPresent(textElement -> textElement.getAttributeNode("value").setValue(text));
-
-        selectedWidget.setCaptionProperties(captionProperties);
+        selectedWidget.getWidgetModel().getProperties().getCaptionProperties().setTextValue(text);
 
         captionTextArea.setText("");
         captionTextArea.setVisible(false);
@@ -142,8 +135,8 @@ public class CaptionChanger {
                 .replace("<br>", HTML_LINE_BREAK)
                 .replace(HTML_LINE_BREAK, STRING_LINE_BREAK);
 
-        return Strip.stripXML(textWithEditingLineBreaks).toString();
-
+        // &lt; --> <
+        return StringEscapeUtils.unescapeXml(textWithEditingLineBreaks);
     }
 }
 

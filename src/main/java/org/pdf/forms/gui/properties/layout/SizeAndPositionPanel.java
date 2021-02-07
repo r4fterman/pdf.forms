@@ -1,5 +1,6 @@
 package org.pdf.forms.gui.properties.layout;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.jdesktop.layout.GroupLayout.BASELINE;
 import static org.jdesktop.layout.GroupLayout.DEFAULT_SIZE;
 import static org.jdesktop.layout.GroupLayout.LEADING;
@@ -12,13 +13,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.swing.*;
 
@@ -28,11 +26,10 @@ import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.Rule;
 import org.pdf.forms.gui.properties.PropertyChanger;
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TriStateCheckBox;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.SizeAndPosition;
 import org.pdf.forms.widgets.IWidget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
@@ -70,7 +67,7 @@ public class SizeAndPositionPanel extends JPanel {
     private JToggleButton rotate180Degree;
     private JToggleButton rotate270Degree;
     private ButtonGroup buttonGroup;
-    private Map<IWidget, Element> widgetsAndProperties;
+    private Set<IWidget> widgets;
 
     public SizeAndPositionPanel(final IDesigner designerPanel) {
         this.designerPanel = designerPanel;
@@ -107,7 +104,6 @@ public class SizeAndPositionPanel extends JPanel {
         xExpandToFitBox.setMargin(new java.awt.Insets(0, 0, 0, 0));
 
         final JLabel yLabel = new JLabel("Y:");
-
         final JLabel heightLabel = new JLabel("Height:");
 
         heightBox = new JTextField();
@@ -266,34 +262,25 @@ public class SizeAndPositionPanel extends JPanel {
     }
 
     private void updateAnchor(final ActionEvent e) {
-        Optional.ofNullable(anchorLocationBox.getSelectedItem())
-                .ifPresent(anchor -> updatePropertyValue("Anchor", anchor.toString()));
+        final String value = Optional.ofNullable(anchorLocationBox.getSelectedItem())
+                .map(Object::toString)
+                .orElse("");
+
+        widgets.forEach(widget -> widget.getWidgetModel().getProperties().getLayout().getSizeAndPosition()
+                .setAnchor(value));
     }
 
     private void updateRotation(final ActionEvent e) {
         final String value = ((JComponent) e.getSource()).getName();
-
-        updatePropertyValue("Rotation", value);
-    }
-
-    private void updatePropertyValue(
-            final String propertyName,
-            final String value) {
-        widgetsAndProperties.forEach((key, widgetProperties) ->
-                XMLUtils.getPropertyElement(widgetProperties, propertyName)
-                        .ifPresent(propertyElement ->
-                                propertyElement.getAttributeNode("value").setValue(value)));
+        widgets.forEach(widget -> widget.getWidgetModel().getProperties().getLayout().getSizeAndPosition()
+                .setRotation(value));
     }
 
     private void updateSizeAndPosition() {
-        if (widgetsAndProperties != null) {
-            final Set<IWidget> widgets = widgetsAndProperties.keySet();
-
+        if (widgets != null) {
             final Point point = getPoint();
             final Dimension dimension = getDimension();
             PropertyChanger.updateSizeAndPosition(widgets, point, dimension);
-
-            widgetsAndProperties.forEach(IWidget::setLayoutProperties);
         }
 
         if (designerPanel != null) {
@@ -349,25 +336,25 @@ public class SizeAndPositionPanel extends JPanel {
         return dimension;
     }
 
-    public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
-        this.widgetsAndProperties = widgetsAndProperties;
+    public void setProperties(final Set<IWidget> widgets) {
+        this.widgets = widgets;
 
-        final String xCordToUse = getXCoordinateToUse(widgetsAndProperties.values());
+        final String xCordToUse = getXCoordinateToUse(widgets);
         setXCoordinate(xCordToUse);
 
-        final String yCordToUse = getYCoordinateToUse(widgetsAndProperties.values());
+        final String yCordToUse = getYCoordinateToUse(widgets);
         setYCoordinate(yCordToUse);
 
-        final String widthToUse = getWidthToUse(widgetsAndProperties.values());
+        final String widthToUse = getWidthToUse(widgets);
         setWidth(widthToUse);
 
-        final String heightToUse = getHeightToUse(widgetsAndProperties.values());
+        final String heightToUse = getHeightToUse(widgets);
         setHeight(heightToUse);
 
-        final String anchorLocationToUse = getAnchorToUse(widgetsAndProperties.values());
+        final String anchorLocationToUse = getAnchorToUse(widgets);
         setAnchorLocation(anchorLocationToUse);
 
-        final String rotationToUse = getRotationToUse(widgetsAndProperties.values());
+        final String rotationToUse = getRotationToUse(widgets);
         setRotation(rotationToUse);
     }
 
@@ -443,114 +430,87 @@ public class SizeAndPositionPanel extends JPanel {
             return;
         }
 
-        if ("mixed".equals(rotationToUse)) {
-            buttonGroup.setSelected(new JToggleButton("").getModel(), true);
-        } else if ("0".equals(rotationToUse)) {
-            rotate0Degree.setSelected(true);
-        } else if ("90".equals(rotationToUse)) {
-            rotate90Degree.setSelected(true);
-        } else if ("180".equals(rotationToUse)) {
-            rotate180Degree.setSelected(true);
-        } else if ("270".equals(rotationToUse)) {
-            rotate270Degree.setSelected(true);
-        } else {
-            logger.warn("Unexpected rotation to use {}", rotationToUse);
+        switch (rotationToUse) {
+            case "mixed":
+                buttonGroup.setSelected(new JToggleButton("").getModel(), true);
+                break;
+            case "0":
+                rotate0Degree.setSelected(true);
+                break;
+            case "90":
+                rotate90Degree.setSelected(true);
+                break;
+            case "180":
+                rotate180Degree.setSelected(true);
+                break;
+            case "270":
+                rotate270Degree.setSelected(true);
+                break;
+            default:
+                logger.warn("Unexpected rotation to use {}", rotationToUse);
+                break;
         }
     }
 
-    private String getXCoordinateToUse(final Collection<Element> elements) {
-        final List<String> xCoordValues = elements.stream()
-                .map(props -> {
-                    final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
-                    return XMLUtils.getAttributeValueFromChildElement(sizeAndPosition, "X").orElse("");
-                })
-                .collect(Collectors.toUnmodifiableList());
+    private String getXCoordinateToUse(final Set<IWidget> widgets) {
+        final List<String> xCoordValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getLayout().getSizeAndPosition().getX()
+                        .orElse(""))
+                .collect(toUnmodifiableList());
 
-        final boolean listContainsOnlyEqualValues = Collections
-                .frequency(xCoordValues, xCoordValues.get(0)) == xCoordValues.size();
-        if (listContainsOnlyEqualValues) {
-            return xCoordValues.get(0);
-        }
-        return "mixed";
+        return findCommonOrMixedValue(xCoordValues);
     }
 
-    private String getYCoordinateToUse(final Collection<Element> elements) {
-        final List<String> yCoordValues = elements.stream()
-                .map(props -> {
-                    final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
-                    return XMLUtils.getAttributeValueFromChildElement(sizeAndPosition, "Y").orElse("");
-                })
-                .collect(Collectors.toUnmodifiableList());
+    private String getYCoordinateToUse(final Set<IWidget> widgets) {
+        final List<String> yCoordValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getLayout().getSizeAndPosition().getY()
+                        .orElse(""))
+                .collect(toUnmodifiableList());
 
-        final boolean listContainsOnlyEqualValues = Collections
-                .frequency(yCoordValues, yCoordValues.get(0)) == yCoordValues.size();
-        if (listContainsOnlyEqualValues) {
-            return yCoordValues.get(0);
-        }
-        return "mixed";
+        return findCommonOrMixedValue(yCoordValues);
     }
 
-    private String getWidthToUse(final Collection<Element> elements) {
-        final List<String> widthValues = elements.stream()
-                .map(props -> {
-                    final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
-                    return XMLUtils.getAttributeValueFromChildElement(sizeAndPosition, "Width").orElse("");
-                })
-                .collect(Collectors.toUnmodifiableList());
+    private String getWidthToUse(final Set<IWidget> widgets) {
+        final List<String> widthValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getLayout().getSizeAndPosition().getWidth()
+                        .orElse(""))
+                .collect(toUnmodifiableList());
 
-        final boolean listContainsOnlyEqualValues = Collections
-                .frequency(widthValues, widthValues.get(0)) == widthValues.size();
-        if (listContainsOnlyEqualValues) {
-            return widthValues.get(0);
-        }
-        return "mixed";
+        return findCommonOrMixedValue(widthValues);
     }
 
-    private String getHeightToUse(final Collection<Element> elements) {
-        final List<String> heightValues = elements.stream()
-                .map(props -> {
-                    final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
-                    return XMLUtils.getAttributeValueFromChildElement(sizeAndPosition, "Height").orElse("");
-                })
-                .collect(Collectors.toUnmodifiableList());
+    private String getHeightToUse(final Set<IWidget> widgets) {
+        final List<String> heightValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getLayout().getSizeAndPosition().getHeight()
+                        .orElse(""))
+                .collect(toUnmodifiableList());
 
-        final boolean listContainsOnlyEqualValues = Collections
-                .frequency(heightValues, heightValues.get(0)) == heightValues.size();
-        if (listContainsOnlyEqualValues) {
-            return heightValues.get(0);
-        }
-        return "mixed";
+        return findCommonOrMixedValue(heightValues);
     }
 
-    private String getAnchorToUse(final Collection<Element> elements) {
-        final List<String> anchorValues = elements.stream()
-                .map(props -> {
-                    final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
-                    return XMLUtils.getAttributeValueFromChildElement(sizeAndPosition, "Anchor").orElse("");
-                })
-                .collect(Collectors.toUnmodifiableList());
+    private String getAnchorToUse(final Set<IWidget> widgets) {
+        final List<String> anchorValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getLayout().getSizeAndPosition().getAnchor()
+                        .orElse(""))
+                .collect(toUnmodifiableList());
 
-        final boolean listContainsOnlyEqualValues = Collections
-                .frequency(anchorValues, anchorValues.get(0)) == anchorValues.size();
-        if (listContainsOnlyEqualValues) {
-            return anchorValues.get(0);
-        }
-        return "mixed";
+        return findCommonOrMixedValue(anchorValues);
     }
 
-    private String getRotationToUse(final Collection<Element> elements) {
-        final List<String> rotationValues = elements.stream()
-                .map(props -> {
-                    final Element sizeAndPosition = (Element) props.getElementsByTagName("sizeandposition").item(0);
-                    return XMLUtils.getAttributeValueFromChildElement(sizeAndPosition, "Rotation")
-                            .orElse("");
-                })
-                .collect(Collectors.toUnmodifiableList());
+    private String getRotationToUse(final Set<IWidget> widgets) {
+        final List<String> rotationValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getLayout().getSizeAndPosition().getRotation()
+                        .orElse(""))
+                .collect(toUnmodifiableList());
 
+        return findCommonOrMixedValue(rotationValues);
+    }
+
+    private String findCommonOrMixedValue(final List<String> values) {
         final boolean listContainsOnlyEqualValues = Collections
-                .frequency(rotationValues, rotationValues.get(0)) == rotationValues.size();
+                .frequency(values, values.get(0)) == values.size();
         if (listContainsOnlyEqualValues) {
-            return rotationValues.get(0);
+            return values.get(0);
         }
         return "mixed";
     }
@@ -580,21 +540,18 @@ public class SizeAndPositionPanel extends JPanel {
         final TriStateCheckBox.State xExpandState = xExpandToFitBox.getState();
         final TriStateCheckBox.State yExpandState = yExpandToFitBox.getState();
 
-        widgetsAndProperties.forEach((key, widgetProperties) -> {
-            final List<Element> layoutProperties = XMLUtils.getElementsFromNodeList(widgetProperties.getChildNodes());
-            final List<Element> sizeAndPosition = XMLUtils.getElementsFromNodeList(layoutProperties.get(0)
-                    .getChildNodes());
+        widgets.forEach(widget -> {
+            final SizeAndPosition sizeAndPosition = widget.getWidgetModel().getProperties().getLayout()
+                    .getSizeAndPosition();
 
             if (xExpandState != TriStateCheckBox.DONT_CARE) {
-                final Element xExpand = sizeAndPosition.get(4);
                 final String value = String.valueOf(xExpandState == TriStateCheckBox.SELECTED);
-                xExpand.getAttributeNode("value").setValue(value);
+                sizeAndPosition.setXExpandToFit(value);
             }
 
             if (yExpandState != TriStateCheckBox.DONT_CARE) {
-                final Element yExpand = sizeAndPosition.get(5);
                 final String value = String.valueOf(yExpandState == TriStateCheckBox.SELECTED);
-                yExpand.getAttributeNode("value").setValue(value);
+                sizeAndPosition.setYExpandToFit(value);
             }
         });
     }

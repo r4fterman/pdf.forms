@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<widget>
+    <property name="type" value="IMAGE"/>
+    <property name="name" value="Image 1"/>
+    <properties>
+        <object>
+            <field>
+                <property name="Presence" value="Visible"/>
+            </field>
+            <draw>
+                <property name="Location" value=""/>
+                <property name="Sizing" value="Stretch Image To Fit"/>
+            </draw>
+        </object>
+        <layout>
+            <sizeandposition>
+                <property name="X" value="1"/>
+                <property name="Width" value="1"/>
+                <property name="Y" value="1"/>
+                <property name="Height" value="1"/>
+                <property name="Expand to fit" value="false"/>
+                <property name="Expand to fit" value="false"/>
+                <property name="Anchor" value="Top Left"/>
+                <property name="Rotation" value="0"/>
+            </sizeandposition>
+            <margins>
+                <property name="Left" value="2"/>
+                <property name="Right" value="4"/>
+                <property name="Top" value="2"/>
+                <property name="Bottom" value="4"/>
+            </margins>
+        </layout>
+    </properties>
+</widget>

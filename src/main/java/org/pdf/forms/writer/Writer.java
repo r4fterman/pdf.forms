@@ -1,5 +1,7 @@
 package org.pdf.forms.writer;
 
+import static java.util.stream.Collectors.toUnmodifiableMap;
+
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,7 +20,12 @@ import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.BorderProperties;
+import org.pdf.forms.model.des.Borders;
+import org.pdf.forms.model.des.DesDocument;
+import org.pdf.forms.model.des.JavaScriptContent;
+import org.pdf.forms.model.des.LayoutProperties;
+import org.pdf.forms.model.des.Widget;
 import org.pdf.forms.widgets.CheckBoxWidget;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.RadioButtonWidget;
@@ -26,9 +33,6 @@ import org.pdf.forms.widgets.components.PdfCaption;
 import org.pdf.forms.writer.PdfDocumentLayout.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 import com.itextpdf.awt.DefaultFontMapper;
 import com.itextpdf.text.Document;
@@ -51,6 +55,15 @@ import com.itextpdf.text.pdf.RadioCheckField;
 public class Writer {
 
     private final Logger logger = LoggerFactory.getLogger(Writer.class);
+
+    private final Map<String, PdfName> pdfEventMap = Map.of(
+            "mouseEnter", PdfName.E,
+            "mouseExit", PdfName.X,
+            "mouseDown", PdfName.D,
+            "mouseUp", PdfName.U,
+            "change", PdfName.F,
+            "keystroke", PdfName.K
+    );
 
     private final Set<String> fontSubstitutions = new HashSet<>();
 
@@ -83,22 +96,19 @@ public class Writer {
     public void write(
             final File fileToWriteTo,
             final Map<Integer, List<IWidget>> widgetsByPageNumber,
-            final org.w3c.dom.Document model) {
-
-        final List<Element> pages = XMLUtils.getElementsFromNodeList(model.getElementsByTagName("page"));
-        final Optional<String> documentJavaScript = getJavaScript(model);
+            final DesDocument designerDocument) {
+        final List<org.pdf.forms.model.des.Page> pages = designerDocument.getPage();
+        final Optional<String> javaScript = getJavaScript(designerDocument.getJavaScript());
         final PdfDocumentLayout pdfDocumentLayout = getPdfDocumentLayout(pages);
-        final List<PdfDocumentLayout.Page> pdfPages = pdfDocumentLayout.getPdfPages();
-
-        if (pdfPages.isEmpty()) {
+        if (pdfDocumentLayout.getPdfPages().isEmpty()) {
             logger.info("write: PDF page list is empty.");
-            writeModelToPDF(fileToWriteTo, widgetsByPageNumber, pages, documentJavaScript);
+            writeModelToPDF(fileToWriteTo, widgetsByPageNumber, pages, javaScript);
         } else {
             logger.info("write: " + pages.size() + " PDF pages.");
             writeExternalPDFPagesToPDF(fileToWriteTo,
                     widgetsByPageNumber,
                     pages,
-                    documentJavaScript,
+                    javaScript,
                     pdfDocumentLayout);
         }
     }
@@ -106,8 +116,8 @@ public class Writer {
     private void writeModelToPDF(
             final File fileToWriteTo,
             final Map<Integer, List<IWidget>> widgetsByPageNumber,
-            final List<Element> pages,
-            final Optional<String> documentJavaScript) {
+            final List<org.pdf.forms.model.des.Page> pages,
+            final Optional<String> javaScript) {
         // this is just a plain, hand made document
         final Document document = new Document(getPageSize(pages, 1));
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -120,24 +130,27 @@ public class Writer {
             addWidgets(writer, widgetsForFirstPage, document.getPageSize(), 0, globalPdfWriter);
 
             if (widgetsForFirstPage.isEmpty()) {
+                logger.info("Widgets for page 1 are empty.");
                 writer.setPageEmpty(false);
             }
 
             for (int pageNumber = 1; pageNumber < pages.size(); pageNumber++) {
                 final int currentPage = pageNumber + 1;
-                document.setPageSize(getPageSize(pages, currentPage));
+                final Rectangle pageSize = getPageSize(pages, currentPage);
+                document.setPageSize(pageSize);
 
                 document.newPage();
 
-                final List<IWidget> widgetForPage = widgetsByPageNumber.get(pageNumber);
-                addWidgets(writer, widgetForPage, document.getPageSize(), currentPage, globalPdfWriter);
+                final List<IWidget> widgetsForPage = widgetsByPageNumber.get(pageNumber);
+                addWidgets(writer, widgetsForPage, document.getPageSize(), currentPage, globalPdfWriter);
 
-                if (widgetForPage.isEmpty()) {
+                if (widgetsForPage.isEmpty()) {
+                    logger.info("Widget for page {} are empty.", currentPage);
                     writer.setPageEmpty(false);
                 }
             }
 
-            documentJavaScript.ifPresent(writer::addJavaScript);
+            javaScript.ifPresent(writer::addJavaScript);
         } catch (IOException | DocumentException e) {
             logger.error("Writing to file {} failed!", fileToWriteTo, e);
         } finally {
@@ -148,8 +161,8 @@ public class Writer {
     private void writeExternalPDFPagesToPDF(
             final File fileToWriteTo,
             final Map<Integer, List<IWidget>> widgetsByPageNumber,
-            final List<Element> pages,
-            final Optional<String> documentJavaScript,
+            final List<org.pdf.forms.model.des.Page> pages,
+            final Optional<String> javaScript,
             final PdfDocumentLayout pdfDocumentLayout) {
         // we've got pages imported from other PDF's
         try (FileOutputStream fos = new FileOutputStream(fileToWriteTo)) {
@@ -159,7 +172,7 @@ public class Writer {
             final GlobalPdfWriter globalPdfWriter = new GlobalPdfWriter(stamper);
 
             for (int pageNumber = 0; pageNumber < pages.size(); pageNumber++) {
-                final Element page = pages.get(pageNumber);
+                final org.pdf.forms.model.des.Page page = pages.get(pageNumber);
 
                 final int currentPage = pageNumber + 1;
 
@@ -186,7 +199,7 @@ public class Writer {
                 }
             }
 
-            documentJavaScript.ifPresent(stamper::addJavaScript);
+            javaScript.ifPresent(stamper::addJavaScript);
 
             stamper.close();
         } catch (IOException | DocumentException e) {
@@ -195,11 +208,11 @@ public class Writer {
     }
 
     private PdfReader createPdfReader(
-            final List<Element> pages,
+            final List<org.pdf.forms.model.des.Page> pages,
             final PdfDocumentLayout pdfDocumentLayout) throws DocumentException, IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        //TODO: use PdfCopy instead
+        //todo: use PdfCopy instead
         final PdfCopyFields pdfCopyFields = new PdfCopyFields(baos);
 
         for (int i = 0; i < pages.size(); i++) {
@@ -218,21 +231,14 @@ public class Writer {
         return new PdfReader(baos.toByteArray());
     }
 
-    private Optional<String> getJavaScript(final org.w3c.dom.Document model) {
-        final Element rootElement = model.getDocumentElement();
-        final List<Element> elementsFromNodeList = XMLUtils.getElementsFromNodeList(rootElement
-                .getElementsByTagName("javascript"));
-        if (elementsFromNodeList.isEmpty()) {
-            return Optional.empty();
-        }
-
-        final Element javaScriptElement = elementsFromNodeList.get(0);
-        final Map<PdfName, String> eventsAndScripts = getEventAndScriptMap(javaScriptElement);
+    private Optional<String> getJavaScript(final org.pdf.forms.model.des.JavaScriptContent javaScriptContent) {
+        final Map<PdfName, String> eventsAndScripts = getEventAndScriptMap(javaScriptContent.getEvents());
         final Collection<String> values = eventsAndScripts.values();
         if (values.isEmpty()) {
             return Optional.empty();
         }
 
+        //todo: what script part should be found here?
         final String script = values.iterator().next();
         if (script == null || script.isEmpty()) {
             return Optional.empty();
@@ -241,21 +247,16 @@ public class Writer {
         return Optional.of(script);
     }
 
-    private boolean isPdfPage(final Element page) {
-        return XMLUtils.getPropertyElement(page, "pdffilelocation").isPresent();
+    private boolean isPdfPage(final org.pdf.forms.model.des.Page page) {
+        return page.getPdfFileLocation().isPresent();
     }
 
     private Rectangle getPageSize(
-            final List<Element> pages,
+            final List<org.pdf.forms.model.des.Page> pages,
             final int currentPage) {
-        final Element page = pages.get(currentPage - 1);
-        final Element pageDataElement = (Element) page.getElementsByTagName("pagedata").item(0);
-
-        final int width = Integer.parseInt(XMLUtils.getAttributeValueFromChildElement(pageDataElement, "width")
-                .orElse("25"));
-        final int height = Integer.parseInt(XMLUtils.getAttributeValueFromChildElement(pageDataElement, "height")
-                .orElse("25"));
-
+        final org.pdf.forms.model.des.Page page = pages.get(currentPage - 1);
+        final int width = page.getPageData().getWidth().orElse(25);
+        final int height = page.getPageData().getHeight().orElse(25);
         return new Rectangle(width, height);
     }
 
@@ -324,11 +325,8 @@ public class Writer {
             final int type,
             final PdfFormField top) throws IOException, DocumentException {
         for (final IWidget widget: widgetsInGroup) {
-            final Element rootElement = widget.getProperties().getDocumentElement();
-
-            final List<Element> elementsFromNodeList = XMLUtils.getElementsFromNodeList(rootElement
-                    .getElementsByTagName("javascript"));
-            if (!elementsFromNodeList.isEmpty()) {
+            final Map<String, String> events = widget.getJavaScript().getEvents();
+            if (!events.isEmpty()) {
                 writeOutCaption(widget, pageSize, currentPage, globalPdfWriter);
 
                 final AbstractButton value = (AbstractButton) widget.getValueComponent();
@@ -372,8 +370,7 @@ public class Writer {
 
                 top.addKid(field);
 
-                final Element javaScriptElement = elementsFromNodeList.get(0);
-                final Map<PdfName, String> eventsAndScripts = getEventAndScriptMap(javaScriptElement);
+                final Map<PdfName, String> eventsAndScripts = getEventAndScriptMap(events);
                 addJavaScriptToFormField(eventsAndScripts, field, writer);
             }
         }
@@ -391,23 +388,20 @@ public class Writer {
         for (final IWidget widget: widgets) {
             final int type = widget.getType();
 
-            final Element rootElement = widget.getProperties().getDocumentElement();
-
             if (type == IWidget.GROUP) {
                 addWidgets(writer, widget.getWidgetsInGroup(), pageSize, currentPage, globalPdfWriter);
             } else {
-                final PdfFormField field = componentWriterMap.get(type).write(widget,
+                final PdfFormField field = componentWriterMap.get(type).write(
+                        widget,
                         pageSize,
                         currentPage,
                         writer,
-                        rootElement,
                         globalPdfWriter);
 
-                final List<Element> elementsFromNodeList = XMLUtils.getElementsFromNodeList(rootElement
-                        .getElementsByTagName("javascript"));
-                if (!elementsFromNodeList.isEmpty()) {
-                    final Element javaScriptElement = elementsFromNodeList.get(0);
-                    final Map<PdfName, String> eventsAndScripts = getEventAndScriptMap(javaScriptElement);
+                final JavaScriptContent javaScript = widget.getJavaScript();
+                final Map<String, String> events = javaScript.getEvents();
+                if (!events.isEmpty()) {
+                    final Map<PdfName, String> eventsAndScripts = getEventAndScriptMap(events);
                     addJavaScriptToFormField(eventsAndScripts, field, writer);
                 }
 
@@ -429,15 +423,11 @@ public class Writer {
     private void addBorder(
             final IWidget widget,
             final BaseField baseField) {
-        final org.w3c.dom.Document document = widget.getProperties();
-        final Element borderProperties = (Element) document.getElementsByTagName("border").item(0);
+        final Widget model = widget.getWidgetModel();
+        final BorderProperties borderProperties = model.getProperties().getBorder();
+        final Borders borders = borderProperties.getBorders();
 
-        final Element border = (Element) borderProperties.getElementsByTagName("borders").item(0);
-
-        final String style = XMLUtils.getAttributeValueFromChildElement(border, "Border Style").orElse("None");
-        final String width = XMLUtils.getAttributeValueFromChildElement(border, "Border Width").orElse("1");
-        final String color = XMLUtils.getAttributeValueFromChildElement(border, "Border Color").orElse(String
-                .valueOf(Color.WHITE.getRGB()));
+        final String style = borders.getBorderStyle().orElse("None");
 
         if ("Solid".equals(style)) {
             baseField.setBorderStyle(PdfBorderDictionary.STYLE_SOLID);
@@ -451,7 +441,10 @@ public class Writer {
             return;
         }
 
+        final String color = borders.getBorderColor().orElse(String.valueOf(Color.WHITE.getRGB()));
         baseField.setBorderColor(new GrayColor(Integer.parseInt(color)));
+
+        final String width = borders.getBorderWidth().orElse("1");
         baseField.setBorderWidth(Integer.parseInt(width));
     }
 
@@ -467,64 +460,32 @@ public class Writer {
         }
     }
 
-    private PdfDocumentLayout getPdfDocumentLayout(final List<Element> pages) {
+    private PdfDocumentLayout getPdfDocumentLayout(final List<org.pdf.forms.model.des.Page> pages) {
         final PdfDocumentLayout pdfDocumentLayout = new PdfDocumentLayout();
 
-        for (final Element page: pages) {
-            final Optional<Element> fileLocationElement = XMLUtils.getPropertyElement(page, "pdffilelocation");
-            if (fileLocationElement.isEmpty()) {
-                // is a hand made page
-                pdfDocumentLayout.addPage(false);
-            } else {
-                // its an imported page
-                final String fileLocation = fileLocationElement.get().getAttributeNode("value").getValue();
-
-                final Optional<Element> pdfPageNumberElement = XMLUtils.getPropertyElement(page, "pdfpagenumber");
-                if (pdfPageNumberElement.isPresent()) {
-                    final String pdfPageNumber = pdfPageNumberElement.get().getAttributeNode("value").getValue();
-                    pdfDocumentLayout.addPage(true, fileLocation, Integer.parseInt(pdfPageNumber));
-                }
-            }
+        for (final org.pdf.forms.model.des.Page page: pages) {
+            page.getPdfFileLocation().ifPresentOrElse(fileLocation -> {
+                        // its an imported page
+                        page.getPdfPageNumber().ifPresent(pdfPageNumber ->
+                                pdfDocumentLayout
+                                        .addPage(true, fileLocation, Integer.parseInt(pdfPageNumber))
+                        );
+                    },
+                    () -> {
+                        // is a hand made page
+                        pdfDocumentLayout.addPage(false);
+                    });
         }
 
         return pdfDocumentLayout;
     }
 
-    private Map<PdfName, String> getEventAndScriptMap(final Element javaScriptElement) {
-        final Map<PdfName, String> actionAndScriptMap = new HashMap<>();
-        final List<Element> javaScriptProperties = XMLUtils.getElementsFromNodeList(javaScriptElement.getChildNodes());
-        for (final Element property: javaScriptProperties) {
-            final String event = property.getNodeName();
-
-            getEventToUse(event)
-                    .ifPresent(eventToUse -> {
-                        final NodeList childNodes = property.getChildNodes();
-                        if (childNodes.getLength() != 0) {
-                            final Text textNode = (Text) childNodes.item(0);
-                            final String nodeValue = textNode.getNodeValue();
-                            actionAndScriptMap.put(eventToUse, nodeValue);
-                        }
-                    });
-        }
-
-        return actionAndScriptMap;
-    }
-
-    private Optional<PdfName> getEventToUse(final String event) {
-        if ("mouseEnter".equals(event)) {
-            return Optional.of(PdfName.E);
-        } else if ("mouseExit".equals(event)) {
-            return Optional.of(PdfName.X);
-        } else if ("change".equals(event)) {
-            return Optional.of(PdfName.F);
-        } else if ("mouseUp".equals(event)) {
-            return Optional.of(PdfName.U);
-        } else if ("mouseDown".equals(event)) {
-            return Optional.of(PdfName.D);
-        } else if ("keystroke".equals(event)) {
-            return Optional.of(PdfName.K);
-        }
-        return Optional.empty();
+    private Map<PdfName, String> getEventAndScriptMap(final Map<String, String> eventsInModel) {
+        return eventsInModel.entrySet().stream()
+                .collect(toUnmodifiableMap(
+                        entry -> pdfEventMap.get(entry.getKey()),
+                        Map.Entry::getValue
+                ));
     }
 
     private void writeOutCaption(
@@ -532,25 +493,20 @@ public class Writer {
             final Rectangle pageSize,
             final int currentPage,
             final GlobalPdfWriter globalPdfWriter) {
-        final PdfCaption caption = widget.getCaptionComponent();
-        if (caption == null) {
+        final PdfCaption pdfCaption = widget.getCaptionComponent();
+        if (pdfCaption == null) {
             return;
         }
 
         if (widget.isComponentSplit()) {
-            final Element captionElement = XMLUtils.getElementsFromNodeList(
-                    widget.getProperties().getElementsByTagName("layout")).get(0);
-
-            final Optional<Element> positionElement = XMLUtils.getPropertyElement(captionElement, "Position");
-            if (positionElement.isPresent()) {
-                final String location = positionElement.get().getAttributeNode("value").getValue();
-                if (location.equals("None")) {
-                    return;
-                }
+            final Widget model = widget.getWidgetModel();
+            final LayoutProperties layoutProperties = model.getProperties().getLayout();
+            if (layoutProperties.getCaption().isPositionNone()) {
+                return;
             }
         }
 
-        final java.awt.Rectangle captionBounds = caption.getBounds();
+        final java.awt.Rectangle captionBounds = pdfCaption.getBounds();
         captionBounds.setLocation(widget.getAbsoluteLocationsOfCaption());
         final Rectangle pdfCaptionBounds = convertJavaCoordsToPdfCoords(captionBounds, pageSize);
 
@@ -565,7 +521,7 @@ public class Writer {
                 pdfCaptionBounds.getLeft(),
                 pdfCaptionBounds.getTop() - captionBounds.height);
 
-        final Font font = caption.getFont();
+        final Font font = pdfCaption.getFont();
         final String fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
@@ -577,7 +533,7 @@ public class Writer {
          */
         try {
             mapper.awtToPdf(font);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Error writing out caption", e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());
@@ -589,7 +545,7 @@ public class Writer {
                 mapper,
                 true,
                 .95f);
-        caption.paint(graphics2D);
+        pdfCaption.paint(graphics2D);
 
         graphics2D.dispose();
         pdfWriterContentByte.restoreState();

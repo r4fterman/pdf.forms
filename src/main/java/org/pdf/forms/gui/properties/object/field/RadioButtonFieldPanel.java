@@ -5,10 +5,9 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.swing.*;
 
@@ -18,11 +17,9 @@ import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.windows.RadioButtonGroupOrganiser;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.ButtonGroup;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.RadioButtonWidget;
-import org.w3c.dom.Element;
 
 public class RadioButtonFieldPanel extends JPanel {
 
@@ -36,7 +33,7 @@ public class RadioButtonFieldPanel extends JPanel {
 
     private final IDesigner designerPanel;
 
-    private Map<IWidget, Element> widgetsAndProperties;
+    private Set<IWidget> widgets;
     private List<ButtonGroup> buttonGroups;
     private JComboBox<String> buttonGroupBox;
 
@@ -126,27 +123,22 @@ public class RadioButtonFieldPanel extends JPanel {
 
         populateButtonGroups();
 
-        setProperties(widgetsAndProperties);
+        setProperties(this.widgets);
     }
 
     private void updateButtonGroup(final ActionEvent event) {
-        for (final IWidget widget: widgetsAndProperties.keySet()) {
-            final RadioButtonWidget radioButtonWidget = (RadioButtonWidget) widget;
-            radioButtonWidget.setRadioButtonGroupName((String) buttonGroupBox.getSelectedItem());
-
-            final Element objectProperties = widget.getProperties().getDocumentElement();
-            XMLUtils.getPropertyElement(objectProperties, "Default")
-                    .ifPresent(element -> {
-                        element.getAttributeNode("value").setValue("Off");
-                        widget.setObjectProperties(objectProperties);
-                    });
-        }
+        widgets.stream()
+                .map(widget -> (RadioButtonWidget) widget)
+                .forEach(radioButtonWidget -> {
+                    radioButtonWidget.setRadioButtonGroupName((String) buttonGroupBox.getSelectedItem());
+                    radioButtonWidget.getWidgetModel().getProperties().getObject().getValue().setDefault("Off");
+                });
 
         designerPanel.repaint();
     }
 
-    public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
-        this.widgetsAndProperties = widgetsAndProperties;
+    public void setProperties(final Set<IWidget> widgets) {
+        this.widgets = widgets;
 
         final IMainFrame mainFrame = designerPanel.getMainFrame();
         final Page page = mainFrame.getFormsDocument().getPage(mainFrame.getCurrentPage());
@@ -154,7 +146,7 @@ public class RadioButtonFieldPanel extends JPanel {
 
         populateButtonGroups();
 
-        final String buttonGroupToUse = getButtonGroupToUse(widgetsAndProperties.values());
+        final String buttonGroupToUse = getButtonGroupToUse(widgets);
         if (buttonGroupToUse.equals("mixed")) {
             setComboValue(buttonGroupBox, null);
         } else {
@@ -162,20 +154,12 @@ public class RadioButtonFieldPanel extends JPanel {
         }
     }
 
-    private String getButtonGroupToUse(final Collection<Element> elementValues) {
-        final List<String> buttonGroupValues = elementValues.stream()
-                .map(element -> {
-                    final Element fieldProperties = (Element) element.getElementsByTagName("field").item(0);
-                    return XMLUtils.getAttributeValueFromChildElement(fieldProperties, "Group Name").orElse("");
-                })
+    private String getButtonGroupToUse(final Set<IWidget> widgets) {
+        final List<String> buttonGroupValues = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getObject().getField().getGroupName().orElse(""))
                 .collect(toUnmodifiableList());
 
-        final boolean listContainsOnlyEqualValues = Collections
-                .frequency(buttonGroupValues, buttonGroupValues.get(0)) == buttonGroupValues.size();
-        if (listContainsOnlyEqualValues) {
-            return buttonGroupValues.get(0);
-        }
-        return "mixed";
+        return findCommonOrMixedValue(buttonGroupValues);
     }
 
     private void populateButtonGroups() {
@@ -203,6 +187,15 @@ public class RadioButtonFieldPanel extends JPanel {
         }
 
         Arrays.stream(listeners).forEach(comboBox::addActionListener);
+    }
+
+    private String findCommonOrMixedValue(final List<String> values) {
+        final boolean listContainsOnlyEqualValues = Collections
+                .frequency(values, values.get(0)) == values.size();
+        if (listContainsOnlyEqualValues) {
+            return values.get(0);
+        }
+        return "mixed";
     }
 
 }

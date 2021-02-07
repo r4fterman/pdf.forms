@@ -1,212 +1,214 @@
 package org.pdf.forms.widgets;
 
-import java.awt.Color;
-import java.util.List;
+import java.awt.*;
+import java.util.Optional;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
+import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.BackgroundFill;
+import org.pdf.forms.model.des.BindingProperties;
+import org.pdf.forms.model.des.BorderProperties;
+import org.pdf.forms.model.des.Borders;
+import org.pdf.forms.model.des.CaptionProperties;
+import org.pdf.forms.model.des.FieldProperties;
+import org.pdf.forms.model.des.FontCaption;
+import org.pdf.forms.model.des.FontProperties;
+import org.pdf.forms.model.des.FontValue;
+import org.pdf.forms.model.des.LayoutProperties;
+import org.pdf.forms.model.des.Margins;
+import org.pdf.forms.model.des.ObjectProperties;
+import org.pdf.forms.model.des.ParagraphCaption;
+import org.pdf.forms.model.des.ParagraphProperties;
+import org.pdf.forms.model.des.ParagraphValue;
+import org.pdf.forms.model.des.SizeAndPosition;
+import org.pdf.forms.model.des.ValueProperties;
 import org.pdf.forms.widgets.components.SplitComponent;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
-public class ComboBoxWidget extends Widget implements IWidget {
+public class ComboBoxWidget extends Widget {
 
-    private static int nextWidgetNumber = 1;
-
-    private final FontHandler fontHandler;
+    private static int comboBoxNextWidgetNumber = 1;
 
     public ComboBoxWidget(
             final int type,
             final JComponent baseComponent,
             final JComponent component,
             final FontHandler fontHandler) {
-        super(type, baseComponent, component, "/org/pdf/forms/res/Drop-down List.gif", fontHandler);
-        this.fontHandler = fontHandler;
+        super(new org.pdf.forms.model.des.Widget(),
+                type,
+                baseComponent,
+                component,
+                "/org/pdf/forms/res/Drop-down List.gif",
+                fontHandler);
 
         setComponentSplit(true);
         setAllowEditCaptionAndValue(true);
         setAllowEditOfCaptionOnClick(true);
 
-        final String widgetName = "Drop-down List" + nextWidgetNumber;
-        nextWidgetNumber++;
+        final String widgetName = "Drop-down List" + comboBoxNextWidgetNumber;
+        comboBoxNextWidgetNumber++;
 
         setWidgetName(widgetName);
 
-        final Element rootElement = setupProperties();
+        getWidgetModel().setName(widgetName);
+        getWidgetModel().setType("COMBO_BOX");
 
-        XMLUtils.addBasicProperty(getProperties(), "type", "COMBO_BOX", rootElement);
-        XMLUtils.addBasicProperty(getProperties(), "name", widgetName, rootElement);
-
-        addProperties(rootElement);
-
-        addJavaScript(rootElement);
+        addProperties();
+        addJavaScript();
     }
 
     public ComboBoxWidget(
             final int type,
             final JComponent baseComponent,
             final JComponent component,
-            final Element root,
+            final org.pdf.forms.model.des.Widget widget,
             final FontHandler fontHandler) {
-        super(type, baseComponent, component, "/org/pdf/forms/res/Drop-down List.gif", fontHandler);
-        this.fontHandler = fontHandler;
+        super(widget, type, baseComponent, component, "/org/pdf/forms/res/Drop-down List.gif", fontHandler);
 
         setComponentSplit(true);
         setAllowEditCaptionAndValue(true);
         setAllowEditOfCaptionOnClick(true);
 
-        final Element bindingElement = XMLUtils.getElementsFromNodeList(root.getElementsByTagName("binding")).get(0);
-        setWidgetName(XMLUtils.getAttributeValueFromChildElement(bindingElement, "Name").orElse(""));
-        setArrayNumber(Integer.parseInt(XMLUtils.getAttributeValueFromChildElement(bindingElement, "Array Number").orElse("0")));
-
-        final Element rootElement = setupProperties();
-        final Node newRoot = getProperties().importNode(root, true);
-
-        getProperties().replaceChild(newRoot, rootElement);
+        final BindingProperties bindingProperties = widget.getProperties().getObject().getBinding();
+        setWidgetName(bindingProperties.getName().orElse(""));
+        setArrayNumber(bindingProperties.getArrayNumber().map(Integer::parseInt).orElse(0));
 
         setAllProperties();
     }
 
-    private void addProperties(final Element rootElement) {
-        final Element propertiesElement = XMLUtils.createAndAppendElement(getProperties(), "properties", rootElement);
-
-        addFontProperties(propertiesElement);
-
-        addObjectProperties(propertiesElement);
-
-        addLayoutProperties(propertiesElement);
-
-        addBorderProperties(propertiesElement);
-
-        addParagraphProperties(propertiesElement);
-
-        addCaptionProperties(propertiesElement);
+    private void addProperties() {
+        addFontProperties();
+        addObjectProperties();
+        addLayoutProperties();
+        addBorderProperties();
+        addParagraphProperties();
+        addCaptionProperties();
     }
 
-    private void addCaptionProperties(final Element propertiesElement) {
-        final Element captionElement = XMLUtils.createAndAppendElement(getProperties(), "caption_properties", propertiesElement);
-        XMLUtils.addBasicProperty(getProperties(), "Text", "Drop-down List", captionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Divisor Location", "", captionElement);
+    private void addCaptionProperties() {
+        final CaptionProperties captionProperties = new CaptionProperties();
+        captionProperties.setTextValue("Drop-down List");
+        captionProperties.setDividerLocation("");
+        getWidgetModel().getProperties().setCaptionProperties(captionProperties);
     }
 
-    private void addFontProperties(final Element propertiesElement) {
-        final Element fontElement = XMLUtils.createAndAppendElement(getProperties(), "font", propertiesElement);
+    private void addFontProperties() {
+        final FontProperties fontProperties = new FontProperties();
 
-        final Element caption = XMLUtils.createAndAppendElement(getProperties(), "font_caption", fontElement);
-        XMLUtils.addBasicProperty(getProperties(), "Font Name", fontHandler.getDefaultFont().getFontName(), caption);
-        XMLUtils.addBasicProperty(getProperties(), "Font Size", "11", caption);
-        XMLUtils.addBasicProperty(getProperties(), "Font Style", "0", caption);
-        XMLUtils.addBasicProperty(getProperties(), "Underline", "0", caption);
-        XMLUtils.addBasicProperty(getProperties(), "Strikethrough", "0", caption);
-        XMLUtils.addBasicProperty(getProperties(), "Color", Color.BLACK.getRGB() + "", caption);
+        final FontCaption fontCaption = fontProperties.getFontCaption();
+        fontCaption.setFontName(getFontHandler().getDefaultFont().getFontName());
+        fontCaption.setFontSize("11");
+        fontCaption.setFontStyle(String.valueOf(IWidget.STYLE_PLAIN));
+        fontCaption.setUnderline(String.valueOf(IWidget.UNDERLINE_NONE));
+        fontCaption.setStrikeThrough(String.valueOf(IWidget.STRIKETHROUGH_OFF));
+        fontCaption.setColor(String.valueOf(Color.BLACK.getRGB()));
 
-        final Element value = XMLUtils.createAndAppendElement(getProperties(), "font_value", fontElement);
-        XMLUtils.addBasicProperty(getProperties(), "Font Name", fontHandler.getDefaultFont().getFontName(), value);
-        XMLUtils.addBasicProperty(getProperties(), "Font Size", "11", value);
-        XMLUtils.addBasicProperty(getProperties(), "Font Style", "0", value);
-        XMLUtils.addBasicProperty(getProperties(), "Underline", "0", value);
-        XMLUtils.addBasicProperty(getProperties(), "Strikethrough", "0", value);
-        XMLUtils.addBasicProperty(getProperties(), "Color", Color.BLACK.getRGB() + "", value);
+        final FontValue fontValue = fontProperties.getFontValue();
+        fontValue.setFontName(getFontHandler().getDefaultFont().getFontName());
+        fontValue.setFontSize("11");
+        fontValue.setFontStyle(String.valueOf(IWidget.STYLE_PLAIN));
+        fontValue.setUnderline(String.valueOf(IWidget.UNDERLINE_NONE));
+        fontValue.setStrikeThrough(String.valueOf(IWidget.STRIKETHROUGH_OFF));
+        fontValue.setColor(String.valueOf(Color.BLACK.getRGB()));
+
+        getWidgetModel().getProperties().setFont(fontProperties);
     }
 
-    private void addObjectProperties(final Element propertiesElement) {
-        final Element objectElement = XMLUtils.createAndAppendElement(getProperties(), "object", propertiesElement);
+    private void addObjectProperties() {
+        final ObjectProperties objectProperties = getWidgetModel().getProperties().getObject();
 
-        final Element fieldElement = XMLUtils.createAndAppendElement(getProperties(), "field", objectElement);
-        XMLUtils.addBasicProperty(getProperties(), "Appearance", "Sunken Box", fieldElement);
-        XMLUtils.addBasicProperty(getProperties(), "Presence", "Visible", fieldElement);
+        final FieldProperties fieldProperties = new FieldProperties();
+        fieldProperties.setAppearance("Sunken Box");
+        fieldProperties.setPresence("Visible");
+        fieldProperties.allowCustomTextEntry(false);
+        objectProperties.setField(fieldProperties);
 
-        final Element itemsElement = XMLUtils.createAndAppendElement(getProperties(), "items", fieldElement);
+        final ValueProperties valueProperties = new ValueProperties();
+        valueProperties.setType("User Entered - Optional");
+        valueProperties.setDefault("< None >");
+        objectProperties.setValue(valueProperties);
 
-        XMLUtils.addBasicProperty(getProperties(), "Allow Custom Text Entry", "false", fieldElement);
-
-        final Element valueElement = XMLUtils.createAndAppendElement(getProperties(), "value", objectElement);
-        XMLUtils.addBasicProperty(getProperties(), "Type", "User Entered - Optional", valueElement);
-        XMLUtils.addBasicProperty(getProperties(), "Default", "< None >", valueElement);
-
-        final Element bindingElement = XMLUtils.createAndAppendElement(getProperties(), "binding", objectElement);
-        XMLUtils.addBasicProperty(getProperties(), "Name", getWidgetName(), bindingElement);
-        XMLUtils.addBasicProperty(getProperties(), "Array Number", "0", bindingElement);
+        final BindingProperties bindingProperties = new BindingProperties();
+        bindingProperties.setName(getWidgetName());
+        bindingProperties.setArrayNumber("0");
+        objectProperties.setBinding(bindingProperties);
     }
 
-    private void addLayoutProperties(final Element propertiesElement) {
-        final Element layoutElement = XMLUtils.createAndAppendElement(getProperties(), "layout", propertiesElement);
+    private void addLayoutProperties() {
+        final LayoutProperties layoutProperties = getWidgetModel().getProperties().getLayout();
 
-        final Element sizeAndPositionElement = XMLUtils.createAndAppendElement(getProperties(), "sizeandposition", layoutElement);
-        XMLUtils.addBasicProperty(getProperties(), "X", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Width", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Y", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Height", "", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Expand to fit", "false", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Expand to fit", "false", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Anchor", "Top Left", sizeAndPositionElement);
-        XMLUtils.addBasicProperty(getProperties(), "Rotation", "0", sizeAndPositionElement);
+        final SizeAndPosition sizeAndPosition = layoutProperties.getSizeAndPosition();
+        sizeAndPosition.setX(1);
+        sizeAndPosition.setY(1);
+        sizeAndPosition.setWidth(1);
+        sizeAndPosition.setHeight(1);
+        sizeAndPosition.setXExpandToFit("false");
+        sizeAndPosition.setYExpandToFit("false");
+        sizeAndPosition.setAnchor("Top Left");
+        sizeAndPosition.setRotation("0");
 
-        final Element margins = XMLUtils.createAndAppendElement(getProperties(), "margins", layoutElement);
-        XMLUtils.addBasicProperty(getProperties(), "Left", "2", margins);
-        XMLUtils.addBasicProperty(getProperties(), "Right", "4", margins);
-        XMLUtils.addBasicProperty(getProperties(), "Top", "2", margins);
-        XMLUtils.addBasicProperty(getProperties(), "Bottom", "4", margins);
+        final Margins margins = layoutProperties.getMargins();
+        margins.setLeft("2");
+        margins.setRight("4");
+        margins.setTop("2");
+        margins.setBottom("4");
 
-        final Element caption = XMLUtils.createAndAppendElement(getProperties(), "caption", layoutElement);
-        XMLUtils.addBasicProperty(getProperties(), "Position", "Left", caption);
-        XMLUtils.addBasicProperty(getProperties(), "Reserve", "4", caption);
+        final org.pdf.forms.model.des.Caption caption = new org.pdf.forms.model.des.Caption();
+        caption.setPosition("Left");
+        caption.setReserve("4");
+        layoutProperties.setCaption(caption);
     }
 
-    private void addBorderProperties(final Element propertiesElement) {
-        final Element borderElement = XMLUtils.createAndAppendElement(getProperties(), "border", propertiesElement);
+    private void addBorderProperties() {
+        final BorderProperties borderProperties = new BorderProperties();
 
-        final Element borders = XMLUtils.createAndAppendElement(getProperties(), "borders", borderElement);
-        XMLUtils.addBasicProperty(getProperties(), "Border Style", "None", borders);
-        XMLUtils.addBasicProperty(getProperties(), "Border Width", "1", borders);
-        XMLUtils.addBasicProperty(getProperties(), "Border Color", Color.BLACK.getRGB() + "", borders);
+        final Borders borders = borderProperties.getBorders();
+        borders.setBorderStyle("None");
+        borders.setBorderWidth("1");
+        borders.setBorderColor(String.valueOf(Color.BLACK.getRGB()));
 
-        final Element backgroundFill = XMLUtils.createAndAppendElement(getProperties(), "backgroundfill", borderElement);
-        XMLUtils.addBasicProperty(getProperties(), "Style", "Solid", backgroundFill);
-        XMLUtils.addBasicProperty(getProperties(), "Fill Color", Color.WHITE.getRGB() + "", backgroundFill);
+        final BackgroundFill backgroundFill = borderProperties.getBackgroundFill();
+        backgroundFill.setStyle("Solid");
+        backgroundFill.setFillColor(String.valueOf(Color.WHITE.getRGB()));
+
+        getWidgetModel().getProperties().setBorder(borderProperties);
     }
 
-    private void addParagraphProperties(final Element propertiesElement) {
-        final Element paragraphElement = XMLUtils.createAndAppendElement(getProperties(), "paragraph", propertiesElement);
+    private void addParagraphProperties() {
+        final ParagraphProperties paragraphProperties = new ParagraphProperties();
 
-        final Element caption = XMLUtils.createAndAppendElement(getProperties(), "paragraph_caption", paragraphElement);
-        XMLUtils.addBasicProperty(getProperties(), "Horizontal Alignment", "left", caption);
-        XMLUtils.addBasicProperty(getProperties(), "Vertical Alignment", "center", caption);
+        final ParagraphCaption paragraphCaption = paragraphProperties.getParagraphCaption();
+        paragraphCaption.setHorizontalAlignment("left");
+        paragraphCaption.setVerticalAlignment("center");
 
-        final Element value = XMLUtils.createAndAppendElement(getProperties(), "paragraph_value", paragraphElement);
-        XMLUtils.addBasicProperty(getProperties(), "Horizontal Alignment", "left", value);
-        XMLUtils.addBasicProperty(getProperties(), "Vertical Alignment", "center", value);
+        final ParagraphValue paragraphValue = new ParagraphValue();
+        paragraphValue.setHorizontalAlignment("left");
+        paragraphValue.setVerticalAlignment("center");
+        paragraphProperties.setParagraphValue(paragraphValue);
+
+        getWidgetModel().getProperties().setParagraph(paragraphProperties);
     }
 
     @Override
-    public void setParagraphProperties(
-            final Element paragraphPropertiesElement,
-            final int currentlyEditing) {
-
+    public void setParagraphProperties(final int currentlyEditing) {
         final SplitComponent comboBox = (SplitComponent) getBaseComponent();
-
-        final Element paragraphCaptionElement =
-                (Element) paragraphPropertiesElement.getElementsByTagName("paragraph_caption").item(0);
-
-        setParagraphProperties(paragraphCaptionElement, comboBox.getCaption());
+        setParagraphProperties(comboBox.getCaption());
 
         setSize(getWidth(), getHeight());
     }
 
     @Override
-    public void setLayoutProperties(final Element layoutProperties) {
-        setSizeAndPosition(layoutProperties);
-        setCaptionLocation(layoutProperties);
+    public void setLayoutProperties() {
+        setSizeAndPosition();
+        setCaptionLocation();
 
         setSize(getWidth(), getHeight());
     }
 
-    private void setCaptionLocation(final Element layoutProperties) {
-        final int captionLocation = extractCaptionLocation(layoutProperties);
+    private void setCaptionLocation() {
+        final int captionLocation = getWidgetModel().getProperties().getLayout().getCaption().getPosition()
+                .map(caption -> new Caption(caption).getLocation())
+                .orElse(Caption.DEFAULT_LOCATION);
 
         final SplitComponent comboBox = (SplitComponent) getBaseComponent();
         if (comboBox.getCaptionPosition() != captionLocation) {
@@ -214,53 +216,31 @@ public class ComboBoxWidget extends Widget implements IWidget {
         }
     }
 
-    private int extractCaptionLocation(final Element layoutProperties) {
-        final Element captionElement = (Element) layoutProperties.getElementsByTagName("caption").item(0);
-        return XMLUtils.getAttributeValueFromChildElement(captionElement, "Position")
-                .map(caption -> new Caption(caption).getLocation())
-                .orElse(Caption.DEFAULT_LOCATION);
-    }
-
     @Override
-    public void setFontProperties(
-            final Element fontProperties,
-            final int currentlyEditing) {
+    public void setFontProperties(final int currentlyEditing) {
         final SplitComponent comboBox = (SplitComponent) getBaseComponent();
-
-        final Element captionProperties = (Element) fontProperties.getElementsByTagName("font_caption").item(0);
-
-        setFontProperties(captionProperties, comboBox.getCaption());
+        setFontProperties(comboBox.getCaption());
 
         setSize(getWidth(), getHeight());
     }
 
     @Override
-    public void setObjectProperties(final Element objectProperties) {
-        final JComboBox<String> comboBox = (JComboBox<String>) getValueComponent();
-
+    public void setObjectProperties() {
         /* add items to combo box list */
-        final Element itemsElement = (Element) objectProperties.getElementsByTagName("items").item(0);
-
-        final List<Element> items = XMLUtils.getElementsFromNodeList(itemsElement.getChildNodes());
-
+        final JComboBox<String> comboBox = (JComboBox<String>) getValueComponent();
         final DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) comboBox.getModel();
         model.removeAllElements();
 
-        for (final Element item : items) {
-            final String value = XMLUtils.getAttributeValueFromElement(item, "item").get();
-            model.addElement(value);
-        }
+        Optional.ofNullable(getWidgetModel().getProperties().getObject().getItems())
+                .ifPresent(items -> items.getItem().forEach(item -> model.addElement(item.getItem())));
 
         /* set default value for combo box */
-        final Element valueElement = (Element) objectProperties.getElementsByTagName("value").item(0);
-
-        String defaultText = XMLUtils.getAttributeValueFromChildElement(valueElement, "Default").orElse("< None >");
+        String defaultText = getWidgetModel().getProperties().getObject().getValue().getDefault().orElse("< None >");
         if (defaultText.equals("< None >")) {
             defaultText = "";
         }
         comboBox.setSelectedItem(defaultText);
-
-        setBindingProperties(objectProperties);
+        setBindingProperties();
 
         setSize(getWidth(), getHeight());
     }

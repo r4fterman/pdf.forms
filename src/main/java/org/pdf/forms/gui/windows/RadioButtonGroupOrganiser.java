@@ -12,11 +12,9 @@ import java.util.Optional;
 import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.ButtonGroup;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.RadioButtonWidget;
-import org.w3c.dom.Element;
 
 public class RadioButtonGroupOrganiser extends JPanel {
 
@@ -193,13 +191,7 @@ public class RadioButtonGroupOrganiser extends JPanel {
                 .filter(widget -> widget.getRadioButtonGroupName().equals(buttonGroupName))
                 .forEach(widget -> {
                     widget.setRadioButtonGroupName(buttonGroupToSelect);
-
-                    final Element objectProperties = widget.getProperties().getDocumentElement();
-                    XMLUtils.getPropertyElement(objectProperties, "Default")
-                            .ifPresent(defaultElement -> {
-                                defaultElement.getAttributeNode("value").setValue("Off");
-                                widget.setObjectProperties(objectProperties);
-                            });
+                    widget.getWidgetModel().getProperties().getObject().getValue().setDefault("Off");
                 });
     }
 

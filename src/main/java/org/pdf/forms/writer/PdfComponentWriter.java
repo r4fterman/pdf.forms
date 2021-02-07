@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Rectangle;
@@ -20,6 +19,5 @@ public interface PdfComponentWriter {
             Rectangle pageSize,
             int currentPage,
             PdfWriter writer,
-            Element rootElement,
             GlobalPdfWriter globalPdfWriter) throws IOException, DocumentException;
 }

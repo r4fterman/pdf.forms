@@ -12,23 +12,17 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.swing.*;
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.pdf.forms.Configuration;
+import org.pdf.forms.gui.commands.AddImageFileCommand;
 import org.pdf.forms.gui.commands.ImportPdfCommand;
 import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.utils.DesignerPropertiesFile;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 public class DefaultTransferHandler extends TransferHandler {
 
@@ -36,23 +30,20 @@ public class DefaultTransferHandler extends TransferHandler {
 
     private final IDesigner designerPanel;
     private final IMainFrame mainFrame;
-    private final String version;
+    private final Version version;
     private final WidgetFactory widgetFactory;
-    private final Configuration configuration;
     private final DesignerPropertiesFile designerPropertiesFile;
 
     DefaultTransferHandler(
             final IDesigner designerPanel,
             final IMainFrame mainFrame,
-            final String version,
+            final Version version,
             final WidgetFactory widgetFactory,
-            final Configuration configuration,
             final DesignerPropertiesFile designerPropertiesFile) {
         this.designerPanel = designerPanel;
         this.mainFrame = mainFrame;
         this.version = version;
         this.widgetFactory = widgetFactory;
-        this.configuration = configuration;
         this.designerPropertiesFile = designerPropertiesFile;
     }
 
@@ -130,7 +121,7 @@ public class DefaultTransferHandler extends TransferHandler {
                 }
             }
             return true;
-        } catch (SAXException | IOException | UnsupportedFlavorException | ParserConfigurationException e) {
+        } catch (IOException | UnsupportedFlavorException e) {
             logger.error("Caught exception decoding drag'n'drop transferable", e);
             return false;
         }
@@ -156,12 +147,8 @@ public class DefaultTransferHandler extends TransferHandler {
         } else if (filePath.endsWith(".des")) {
             new OpenDesignerFileCommand(mainFrame, version, widgetFactory, designerPropertiesFile)
                     .openDesignerFile(filePath);
-            // final boolean isImage = filePath.endsWith(".des") || filePath.endsWith(".tif")
-            // || filePath.endsWith(".tiff") || filePath.endsWith(".png")
-            // || filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")
-            // || filePath.endsWith(".gif");
-            //} else if (isImage) {
-            //currentCommands.openFile(file);
+        } else if (AddImageFileCommand.isImage(file)) {
+            new AddImageFileCommand(mainFrame).openFile(file);
         } else {
             JOptionPane.showMessageDialog(component, "You may only import a valid PDF, des file or image.");
         }
@@ -171,8 +158,9 @@ public class DefaultTransferHandler extends TransferHandler {
         final char c = (char) 0;
         final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < value.length(); i++) {
-            if (value.charAt(i) != c) {
-                builder.append(value.charAt(i));
+            final char charAt = value.charAt(i);
+            if (charAt != c) {
+                builder.append(charAt);
             }
         }
         return builder.toString();
@@ -188,15 +176,15 @@ public class DefaultTransferHandler extends TransferHandler {
      * @param textData text data acquired from the transferable.
      * @return the URL of the file to open
      */
-    private Optional<String> getURL(final String textData) throws ParserConfigurationException, SAXException, IOException {
+    private Optional<String> getURL(final String textData) {
         if (textData.startsWith("http://") || textData.startsWith("file://")) {
             return Optional.of(textData);
         }
 
-        // its not a url so it must be a file
-        final Document doc = XMLUtils.readDocument(textData);
-        final Element a = (Element) doc.getElementsByTagName("a").item(0);
-        return getHrefAttribute(a);
+        // its not an url so it must be a file
+        final FileLinkParser parser = new FileLinkParser();
+        parser.parse(textData);
+        return parser.getFileReference();
     }
 
     /**
@@ -217,22 +205,5 @@ public class DefaultTransferHandler extends TransferHandler {
             }
             return builder.toString();
         }
-    }
-
-    /**
-     * Returns the URL held in the href attribute from an element.
-     *
-     * @param element the element containing the href attribute
-     * @return the URL held in the href attribute
-     */
-    private Optional<String> getHrefAttribute(final Element element) {
-        final NamedNodeMap attrs = element.getAttributes();
-        final Node nameNode = attrs.getNamedItem("href");
-        if (nameNode != null) {
-            final String value = nameNode.getNodeValue();
-            return Optional.ofNullable(value);
-        }
-
-        return Optional.empty();
     }
 }

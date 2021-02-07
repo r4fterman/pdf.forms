@@ -12,7 +12,8 @@ import org.jpedal.exception.PdfException;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.gui.IMainFrame;
 import org.pdf.forms.gui.windows.PDFImportChooser;
-import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ public class ImportPdfCommand implements Command {
     private final Logger logger = LoggerFactory.getLogger(ImportPdfCommand.class);
 
     private final IMainFrame mainFrame;
-    private final String version;
+    private final Version version;
     private final WidgetFactory widgetFactory;
     private final DesignerPropertiesFile designerPropertiesFile;
 
@@ -30,7 +31,7 @@ public class ImportPdfCommand implements Command {
 
     public ImportPdfCommand(
             final IMainFrame mainFrame,
-            final String version,
+            final Version version,
             final WidgetFactory widgetFactory,
             final DesignerPropertiesFile designerPropertiesFile) {
         this.mainFrame = mainFrame;
@@ -38,13 +39,13 @@ public class ImportPdfCommand implements Command {
         this.widgetFactory = widgetFactory;
         this.designerPropertiesFile = designerPropertiesFile;
 
-        final int numberOfRecentDocs = designerPropertiesFile.getNumberRecentDocumentsToDisplay();
+        final int numberOfRecentDocs = DesignerPropertiesFile.NO_OF_RECENT_DOCS;
         this.recentDesignerDocuments = new JMenuItem[numberOfRecentDocs];
     }
 
     @Override
     public void execute() {
-        //TODO: do not allow import of a PDF into a closed document
+        //todo: do not allow import of a PDF into a closed document
         final int importType = acquirePDFImportType();
         selectPdfImportFile()
                 .ifPresent(file -> importPDF(importType, file.getAbsolutePath()));
@@ -88,7 +89,7 @@ public class ImportPdfCommand implements Command {
                     pageCount,
                     pdfPath,
                     pdfDecoder);
-            worker.start();
+            worker.execute();
 
             designerPropertiesFile.addRecentPDFDocument(pdfPath);
             updateRecentDocuments(designerPropertiesFile.getRecentPDFDocuments());
@@ -113,13 +114,13 @@ public class ImportPdfCommand implements Command {
         return decoder;
     }
 
-    private void updateRecentDocuments(final String[] recentDocs) {
-        if (recentDocs == null) {
+    private void updateRecentDocuments(final java.util.List<String> recentDocs) {
+        if (recentDocs.isEmpty()) {
             return;
         }
 
-        for (int i = 0; i < recentDocs.length; i++) {
-            updateRecentDocuments(recentDocs[i], recentDesignerDocuments, i);
+        for (int i = 0; i < recentDocs.size(); i++) {
+            updateRecentDocuments(recentDocs.get(i), recentDesignerDocuments, i);
         }
     }
 
@@ -147,7 +148,7 @@ public class ImportPdfCommand implements Command {
         mainFrame.getDesigner().close();
 
         mainFrame.setCurrentDesignerFileName("");
-        mainFrame.setTitle("PDF Forms Designer Version " + version);
+        mainFrame.setTitle("PDF Forms Designer Version " + version.getVersion());
 
         mainFrame.setPropertiesCompound(new HashSet<>());
         mainFrame.setPropertiesToolBar(new HashSet<>());

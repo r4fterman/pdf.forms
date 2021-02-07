@@ -12,11 +12,9 @@ import java.util.Optional;
 import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
-import org.pdf.forms.utils.XMLUtils;
 import org.pdf.forms.widgets.ButtonGroup;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.RadioButtonWidget;
-import org.w3c.dom.Element;
 
 public class CheckBoxButtonGroupOrganiser extends JPanel {
 
@@ -185,15 +183,7 @@ public class CheckBoxButtonGroupOrganiser extends JPanel {
             final RadioButtonWidget radioButtonWidget,
             final String radioButtonGroupName) {
         radioButtonWidget.setRadioButtonGroupName(radioButtonGroupName);
-
-        final Element objectProperties = radioButtonWidget.getProperties().getDocumentElement();
-        final Optional<Element> propertyElement = XMLUtils
-                .getPropertyElement(objectProperties, "Default");
-        if (propertyElement.isPresent()) {
-            final Element defaultElement = propertyElement.get();
-            defaultElement.getAttributeNode("value").setValue("Off");
-            radioButtonWidget.setObjectProperties(objectProperties);
-        }
+        radioButtonWidget.getWidgetModel().getProperties().getObject().getValue().setDefault("off");
     }
 
     private void addClicked(final ActionEvent evt) {

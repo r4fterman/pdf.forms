@@ -1,13 +1,13 @@
 package org.pdf.forms.widgets;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.*;
+
+import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.widgets.components.PdfCaption;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public interface IWidget {
 
@@ -53,7 +53,7 @@ public interface IWidget {
     int STRIKETHROUGH_OFF = 0;
     int STRIKETHROUGH_ON = 1;
 
-    JComponent getWidget();
+    JComponent getComponent();
 
     void setPosition(
             int x,
@@ -134,25 +134,24 @@ public interface IWidget {
 
     Icon getIcon();
 
-    Document getProperties();
+    void setObjectProperties();
 
-    void setObjectProperties(Element parentElement);
+    void setBorderAndBackgroundProperties();
 
-    void setBorderAndBackgroundProperties(Element borderProperties);
+    void setParagraphProperties(int currentlyEditing);
 
-    void setParagraphProperties(
-            Element parentElement,
-            int currentlyEditing);
+    void setLayoutProperties();
 
-    void setLayoutProperties(Element parentElement);
+    void setFontProperties(int currentlyEditing);
 
-    void setFontProperties(
-            Element parentElement,
-            int currentlyEditing);
-
-    void setCaptionProperties(Element captionProperties);
+    void setCaptionProperties();
 
     void setAllProperties();
 
     int getArrayNumber();
+
+    JavaScriptContent getJavaScript();
+
+    org.pdf.forms.model.des.Widget getWidgetModel();
+
 }

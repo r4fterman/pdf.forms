@@ -1,17 +1,16 @@
 package org.pdf.forms.writer;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.Caption;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.components.PdfCaption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 
 import com.itextpdf.awt.DefaultFontMapper;
 import com.itextpdf.text.Rectangle;
@@ -42,7 +41,6 @@ public class PdfTextWriter implements PdfComponentWriter {
             final Rectangle pageSize,
             final int currentPage,
             final PdfWriter writer,
-            final Element rootElement,
             final GlobalPdfWriter globalPdfWriter) {
         writeOutCaption(widget, pageSize, currentPage, globalPdfWriter);
         return null;
@@ -53,23 +51,20 @@ public class PdfTextWriter implements PdfComponentWriter {
             final Rectangle pageSize,
             final int currentPage,
             final GlobalPdfWriter globalPdfWriter) {
-        final PdfCaption caption = widget.getCaptionComponent();
-        if (caption == null) {
+        final PdfCaption pdfCaption = widget.getCaptionComponent();
+        if (pdfCaption == null) {
             return;
         }
 
         if (widget.isComponentSplit()) {
-            final Element captionElement = XMLUtils.getElementsFromNodeList(
-                    widget.getProperties().getElementsByTagName("layout")).get(0);
-
-            final Element positionElement = XMLUtils.getPropertyElement(captionElement, "Position").get();
-            final String location = positionElement.getAttributeNode("value").getValue();
+            final Caption caption = widget.getWidgetModel().getProperties().getLayout().getCaption();
+            final String location = caption.getPosition().orElse("None");
             if (location.equals("None")) {
                 return;
             }
         }
 
-        final java.awt.Rectangle captionBounds = caption.getBounds();
+        final java.awt.Rectangle captionBounds = pdfCaption.getBounds();
         captionBounds.setLocation(widget.getAbsoluteLocationsOfCaption());
         final Rectangle pdfCaptionBounds = convertJavaCoordsToPdfCoords(captionBounds, pageSize);
 
@@ -79,11 +74,10 @@ public class PdfTextWriter implements PdfComponentWriter {
         cb.saveState();
         cb.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
 
-        final java.awt.Font font = caption.getFont();
+        final Font font = pdfCaption.getFont();
         final String fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
-
         mapper.insertDirectory(fontDirectory);
 
         /*
@@ -92,7 +86,7 @@ public class PdfTextWriter implements PdfComponentWriter {
          */
         try {
             mapper.awtToPdf(font);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Failed converting font from AWT to PDF for {}!", font.getName(), e);
             mapper = new DefaultFontMapper();
             fontSubstitutions.add(font.getFontName());
@@ -102,7 +96,7 @@ public class PdfTextWriter implements PdfComponentWriter {
 
         //Graphics2D g2 = cb.createGraphicsShapes(captionBounds.width, captionBounds.height, true, 0.95f);
 
-        caption.paint(g2);
+        pdfCaption.paint(g2);
 
         g2.dispose();
         cb.restoreState();
@@ -111,13 +105,12 @@ public class PdfTextWriter implements PdfComponentWriter {
     private Rectangle convertJavaCoordsToPdfCoords(
             final java.awt.Rectangle bounds,
             final Rectangle pageSize) {
-        final float javaX1 = bounds.x - IMainFrame.INSET;
-        final float javaY1 = bounds.y - IMainFrame.INSET;
+        final int javaX1 = bounds.x - IMainFrame.INSET;
+        final int javaY1 = bounds.y - IMainFrame.INSET;
 
-        final float javaX2 = javaX1 + bounds.width;
+        final int javaX2 = javaX1 + bounds.width;
 
         final float pdfY1 = pageSize.getHeight() - javaY1 - bounds.height;
-
         final float pdfY2 = pdfY1 + bounds.height;
 
         return new Rectangle(javaX1, pdfY1, javaX2, pdfY2);

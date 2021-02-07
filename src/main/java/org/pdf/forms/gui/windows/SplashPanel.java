@@ -1,17 +1,20 @@
 package org.pdf.forms.gui.windows;
 
-import javax.swing.*;
 import java.awt.*;
+
+import javax.swing.*;
+
+import org.pdf.forms.model.des.Version;
 
 class SplashPanel extends JPanel {
 
     private JProgressBar progressBar;
 
-    SplashPanel(final String version) {
+    SplashPanel(final Version version) {
         initComponents(version);
     }
 
-    private void initComponents(final String version) {
+    private void initComponents(final Version version) {
         setLayout(null);
 
         progressBar = new JProgressBar();
@@ -20,7 +23,7 @@ class SplashPanel extends JPanel {
 
         final JLabel versionLabel = new JLabel();
         versionLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        versionLabel.setText("Version: " + version);
+        versionLabel.setText("Version: " + version.getVersion());
         versionLabel.setBounds(600, 230, 100, 14);
 
         final JLabel imageLabel = new JLabel();

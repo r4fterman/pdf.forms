@@ -1,12 +1,11 @@
 package org.pdf.forms.gui.commands;
 
-import java.awt.Component;
+import java.awt.*;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.fonts.FontHandler;
@@ -62,7 +61,7 @@ class PublishPdfCommand implements Command {
             widgets.put(pageNumber, documentProperties.getPage(pageNumber + 1).getWidgets());
         }
 
-        writer.write(file, widgets.build(), documentProperties.getDocumentProperties());
+        writer.write(file, widgets.build(), documentProperties.getDesDocument());
     }
 
     private Optional<File> choosePdfFile() {

@@ -2,22 +2,21 @@ package org.pdf.forms.gui.properties.object.binding;
 
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.util.Map;
+import java.util.Set;
 
 import javax.swing.*;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.BindingProperties;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 public class BindingPanel extends JPanel {
 
-    private Map<IWidget, Element> widgetsAndProperties;
     private final IMainFrame mainFrame;
 
+    private Set<IWidget> widgets;
     private JTextField arrayField;
     private JTextField nameField;
 
@@ -73,26 +72,21 @@ public class BindingPanel extends JPanel {
     }
 
     private void updateName() {
-        if (widgetsAndProperties == null) {
+        if (widgets == null) {
             return;
         }
 
         final String name = nameField.getText();
-        for (final Map.Entry<IWidget, Element> entry: widgetsAndProperties.entrySet()) {
-            final IWidget widget = entry.getKey();
-            final Element widgetProperties = entry.getValue();
-
-            saveNameToModel(name, widget, widgetProperties);
-            widget.setObjectProperties(widgetProperties);
+        widgets.forEach(widget -> {
+            saveNameToModel(name, widget);
 
             mainFrame.updateHierarchyPanelUI();
-        }
+        });
     }
 
     private void saveNameToModel(
             final String name,
-            final IWidget widget,
-            final Element widgetProperties) {
+            final IWidget widget) {
         if (name == null || name.equals("mixed")) {
             return;
         }
@@ -102,32 +96,26 @@ public class BindingPanel extends JPanel {
             mainFrame.renameWidget(oldName, name, widget);
         }
 
-        XMLUtils.getPropertyElement(widgetProperties, "Name")
-                .ifPresent(nameElement -> nameElement.getAttributeNode("value").setValue(name));
+        final BindingProperties bindingProperties = widget.getWidgetModel().getProperties().getObject().getBinding();
+        bindingProperties.setName(name);
 
         final int arrayNumber = mainFrame.getNextArrayNumberForName(name, widget);
-        XMLUtils.getPropertyElement(widgetProperties, "Array Number")
-                .ifPresent(arrayNumberElement -> arrayNumberElement.getAttributeNode("value")
-                        .setValue(String.valueOf(arrayNumber)));
+        bindingProperties.setArrayNumber(String.valueOf(arrayNumber));
     }
 
-    public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
-        this.widgetsAndProperties = widgetsAndProperties;
+    public void setProperties(final Set<IWidget> widgets) {
+        this.widgets = widgets;
 
-        final boolean onlySingleWidgetSelected = widgetsAndProperties.size() == 1;
+        final boolean onlySingleWidgetSelected = widgets.size() == 1;
         nameField.setEnabled(onlySingleWidgetSelected);
 
         if (onlySingleWidgetSelected) {
-            final Element objectProperties = widgetsAndProperties.entrySet().iterator().next().getValue();
-            final Element valueProperties = (Element) objectProperties.getElementsByTagName("binding").item(0);
-            final String name = XMLUtils.getAttributeValueFromChildElement(valueProperties, "Name")
-                    .orElse("");
-            final String arrayNumber = XMLUtils.getAttributeValueFromChildElement(valueProperties, "Array Number")
-                    .orElse("0");
+            final IWidget widget = widgets.iterator().next();
+            final BindingProperties bindingProperties = widget.getWidgetModel().getProperties().getObject()
+                    .getBinding();
 
-            nameField.setText(name);
-            arrayField.setText(arrayNumber);
+            nameField.setText(bindingProperties.getName().orElse(""));
+            arrayField.setText(bindingProperties.getArrayNumber().orElse("0"));
         }
     }
-
 }

@@ -7,7 +7,9 @@ import java.util.Map;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
+import org.pdf.forms.widgets.utils.WidgetAlignmentAndOrder;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 
 public class Commands {
@@ -30,6 +32,12 @@ public class Commands {
     public static final int REMOVE_PAGE = 13;
 
     public static final int ALIGN = 14;
+    public static final int ALIGN_LEFT = 141;
+    public static final int ALIGN_RIGHT = 142;
+    public static final int ALIGN_TOP = 143;
+    public static final int ALIGN_BOTTOM = 144;
+    public static final int ALIGN_VERTICALLY = 145;
+    public static final int ALIGN_HORIZONTALLY = 146;
     public static final int GROUP = 15;
     public static final int UNGROUP = 16;
     public static final int BRING_TO_FRONT = 17;
@@ -72,6 +80,12 @@ public class Commands {
             entry("INSERT_PAGE", INSERT_PAGE),
             entry("REMOVE_PAGE", REMOVE_PAGE),
             entry("ALIGN", ALIGN),
+            entry(WidgetAlignmentAndOrder.ALIGN_LEFT, ALIGN_LEFT),
+            entry(WidgetAlignmentAndOrder.ALIGN_RIGHT, ALIGN_RIGHT),
+            entry(WidgetAlignmentAndOrder.ALIGN_TOP, ALIGN_TOP),
+            entry(WidgetAlignmentAndOrder.ALIGN_BOTTOM, ALIGN_BOTTOM),
+            entry(WidgetAlignmentAndOrder.ALIGN_VERTICALLY, ALIGN_VERTICALLY),
+            entry(WidgetAlignmentAndOrder.ALIGN_HORIZONTALLY, ALIGN_HORIZONTALLY),
             entry("GROUP", GROUP),
             entry("UNGROUP", UNGROUP),
             entry("BRING_TO_FRONT", BRING_TO_FRONT),
@@ -105,7 +119,7 @@ public class Commands {
 
     public Commands(
             final IMainFrame mainFrame,
-            final String version,
+            final Version version,
             final FontHandler fontHandler,
             final WidgetFactory widgetFactory,
             final Configuration configuration,
@@ -119,13 +133,23 @@ public class Commands {
                 entry(SAVE_FILE_AS, new SaveDesignerFileAsCommand(mainFrame, version)),
                 entry(PUBLISH, new PublishPdfCommand(mainFrame, fontHandler)),
                 entry(FONT_MANAGEMENT, new FontManagementCommand(mainFrame, fontHandler, designerPropertiesFile)),
-                entry(EXIT, () -> System.exit(0)),
+                entry(EXIT, new ExitCommand(mainFrame)),
                 entry(ZOOM_IN, new ZoomInCommand(mainFrame)),
                 entry(ZOOM_OUT, new ZoomOutCommand(mainFrame)),
                 entry(ZOOM, new ZoomCommand(mainFrame)),
                 entry(INSERT_PAGE, new InsertPageCommand(mainFrame)),
                 entry(REMOVE_PAGE, new RemovePageCommand(mainFrame)),
                 entry(ADD_SELECTION_TO_LIBRARY, new AddSelectionToLibraryCommand(mainFrame, configuration.getConfigDirectory())),
+                entry(ALIGN_LEFT, new AlignLeftCommand(mainFrame)),
+                entry(ALIGN_RIGHT, new AlignRightCommand(mainFrame)),
+                entry(ALIGN_TOP, new AlignTopCommand(mainFrame)),
+                entry(ALIGN_BOTTOM, new AlignBottomCommand(mainFrame)),
+                entry(ALIGN_VERTICALLY, new AlignVerticallyCommand(mainFrame)),
+                entry(ALIGN_HORIZONTALLY, new AlignHorizontallyCommand(mainFrame)),
+                entry(BRING_TO_FRONT, new BringToFrontCommand(mainFrame)),
+                entry(SEND_TO_BACK, new SendToBackCommand(mainFrame)),
+                entry(BRING_FORWARDS, new BringForwardCommand(mainFrame)),
+                entry(SEND_BACKWARDS, new SendBackwardCommand(mainFrame)),
                 entry(GROUP, new GroupCommand(mainFrame)),
                 entry(UNGROUP, new UnGroupCommand(mainFrame)),
                 entry(WEBSITE, new VisitWebsiteCommand()),

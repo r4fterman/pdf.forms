@@ -4,5 +4,6 @@ target/
 logs/
 
 .custom_components.xml
+!src/test/resources/.custom_components.xml
 .properties.xml
 !src/test/resources/.properties.xml

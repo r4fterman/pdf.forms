@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -172,9 +171,9 @@ public final class XMLUtils {
     public static String serialize(final Node node) {
         try {
             final TransformerFactory transFactory = TransformerFactory.newInstance();
-            transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+//            transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 //            transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-            transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+//            transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
 
             final Transformer transformer = transFactory.newTransformer();
             final StringWriter buffer = new StringWriter();

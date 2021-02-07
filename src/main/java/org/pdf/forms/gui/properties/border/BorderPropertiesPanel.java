@@ -9,11 +9,10 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.swing.*;
 
@@ -21,9 +20,8 @@ import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.Rule;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.widgets.IWidget;
-import org.w3c.dom.Element;
 
 import com.google.common.primitives.Doubles;
 
@@ -42,7 +40,7 @@ public class BorderPropertiesPanel extends JPanel {
     private static final int UNITS = (int) (Rule.INCH / 2.54);
 
     private IDesigner designerPanel;
-    private Map<IWidget, Element> widgetsAndProperties;
+    private Set<IWidget> widgets;
 
     private JComboBox<String> backgroundFillBox;
     private JButton backgroundFillColorButton;
@@ -211,11 +209,11 @@ public class BorderPropertiesPanel extends JPanel {
     }
 
     private void fillColorClicked(final ActionEvent evt) {
-        // TODO add your handling code here:
+        //todo: add your handling code here:
     }
 
     private void updateFillStyle(final ActionEvent evt) {
-        // TODO add your handling code here:
+        //todo: add your handling code here:
     }
 
     private void borderColorButtonClicked(final ActionEvent evt) {
@@ -238,20 +236,17 @@ public class BorderPropertiesPanel extends JPanel {
         borderWidthBox.setEnabled(borderEnabled);
         borderColorButton.setEnabled(borderEnabled);
 
-        widgetsAndProperties.forEach((widget, borderProperties) -> {
+        widgets.forEach(widget -> {
+            final Borders borders = widget.getWidgetModel().getProperties().getBorder().getBorders();
 
             Optional.ofNullable(style)
-                    .ifPresent(s -> setProperty(borderProperties, "Border Style", s));
+                    .ifPresent(s -> borders.setBorderStyle(s));
 
             Optional.ofNullable(borderColorButton.getBackground())
-                    .ifPresent(color -> setProperty(borderProperties, "Border Color", String.valueOf(color.getRGB())));
+                    .ifPresent(color -> borders.setBorderColor(String.valueOf(color.getRGB())));
 
             getBorderWidthValue()
-                    .ifPresent(width -> setProperty(borderProperties,
-                            "Border Width",
-                            String.valueOf(Math.round(width))));
-
-            widget.setBorderAndBackgroundProperties(borderProperties);
+                    .ifPresent(width -> borders.setBorderWidth(String.valueOf(Math.round(width))));
         });
 
         designerPanel.repaint();
@@ -270,22 +265,22 @@ public class BorderPropertiesPanel extends JPanel {
                 });
     }
 
-    public void setProperties(final Map<IWidget, Element> widgetsAndProperties) {
-        this.widgetsAndProperties = widgetsAndProperties;
+    public void setProperties(final Set<IWidget> widgets) {
+        this.widgets = widgets;
 
-        final String borderStyleToUse = getBorderStyle(widgetsAndProperties.values());
+        final String borderStyleToUse = getBorderStyle(widgets);
         applyBorderStyle(borderStyleToUse);
 
-        final String borderWidthToUse = getBorderWidth(widgetsAndProperties.values());
+        final String borderWidthToUse = getBorderWidth(widgets);
         applyBorderWidth(borderWidthToUse);
 
-        final String borderColorToUse = getBorderColor(widgetsAndProperties.values());
+        final String borderColorToUse = getBorderColor(widgets);
         setButtonBackgroundColor(borderColorToUse, borderColorButton);
 
-        final String backgroundStyleToUse = getBackgroundStyle(widgetsAndProperties.values());
-        // TODO: apply background style
+        final String backgroundStyleToUse = getBackgroundStyle(widgets);
+        //todo: apply background style
 
-        final String backgroundColorToUse = getBackgroundColor(widgetsAndProperties.values());
+        final String backgroundColorToUse = getBackgroundColor(widgets);
         setComboBoxValue(backgroundColorToUse, backgroundFillBox);
         setButtonBackgroundColor(backgroundColorToUse, backgroundFillColorButton);
     }
@@ -304,24 +299,49 @@ public class BorderPropertiesPanel extends JPanel {
         borderWidthBox.setText(convertedBorderWidth + " cm");
     }
 
-    private String getBorderStyle(final Collection<Element> elements) {
-        return getPropertyValueFromCollection(elements, "borders", "Border Style");
+    private String getBorderStyle(final Set<IWidget> widgets) {
+        final List<String> borderStyles = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getBorder().getBorders())
+                .map(borders -> borders.getBorderStyle().orElse(""))
+                .collect(toUnmodifiableList());
+
+        return findCommonOrMixedValue(borderStyles);
     }
 
-    private String getBorderWidth(final Collection<Element> elements) {
-        return getPropertyValueFromCollection(elements, "borders", "Border Width");
+    private String getBorderWidth(final Set<IWidget> widgets) {
+        final List<String> borderWidth = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getBorder().getBorders())
+                .map(borders -> borders.getBorderWidth().orElse(""))
+                .collect(toUnmodifiableList());
+
+        return findCommonOrMixedValue(borderWidth);
     }
 
-    private String getBorderColor(final Collection<Element> elements) {
-        return getPropertyValueFromCollection(elements, "borders", "Border Color");
+    private String getBorderColor(final Set<IWidget> widgets) {
+        final List<String> borderColors = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getBorder().getBorders())
+                .map(borders -> borders.getBorderColor().orElse(""))
+                .collect(toUnmodifiableList());
+
+        return findCommonOrMixedValue(borderColors);
     }
 
-    private String getBackgroundStyle(final Collection<Element> elements) {
-        return getPropertyValueFromCollection(elements, "backgroundfill", "Style");
+    private String getBackgroundStyle(final Set<IWidget> widgets) {
+        final List<String> styles = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getBorder().getBackgroundFill())
+                .map(backgroundFill -> backgroundFill.getStyle().orElse(""))
+                .collect(toUnmodifiableList());
+
+        return findCommonOrMixedValue(styles);
     }
 
-    private String getBackgroundColor(final Collection<Element> elements) {
-        return getPropertyValueFromCollection(elements, "backgroundfill", "Fill Color");
+    private String getBackgroundColor(final Set<IWidget> widgets) {
+        final List<String> backgroundColors = widgets.stream()
+                .map(widget -> widget.getWidgetModel().getProperties().getBorder().getBackgroundFill())
+                .map(backgroundFill -> backgroundFill.getFillColor().orElse(""))
+                .collect(toUnmodifiableList());
+
+        return findCommonOrMixedValue(backgroundColors);
     }
 
     private void setButtonBackgroundColor(
@@ -366,31 +386,13 @@ public class BorderPropertiesPanel extends JPanel {
         return value;
     }
 
-    private String getPropertyValueFromCollection(
-            final Collection<Element> elements,
-            final String propertyName,
-            final String attributeName) {
-        final List<String> values = elements.stream()
-                .map(borderProperties -> {
-                    final Element border = (Element) borderProperties.getElementsByTagName(propertyName).item(0);
-                    return XMLUtils.getAttributeValueFromChildElement(border, attributeName).orElse("");
-                })
-                .collect(toUnmodifiableList());
-
+    private String findCommonOrMixedValue(final List<String> values) {
         final int numberOfIdenticalItems = Collections.frequency(values, values.get(0));
         final boolean listContainsOnlyEqualValues = numberOfIdenticalItems == values.size();
         if (listContainsOnlyEqualValues) {
             return values.get(0);
         }
         return "mixed";
-    }
-
-    private void setProperty(
-            final Element borderProperties,
-            final String attribute,
-            final String value) {
-        XMLUtils.getPropertyElement(borderProperties, attribute)
-                .ifPresent(leftEdgeWidthElement -> leftEdgeWidthElement.getAttributeNode("value").setValue(value));
     }
 
     private double round(final double number) {

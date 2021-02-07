@@ -12,7 +12,7 @@ import org.pdf.forms.widgets.IWidget;
 
 class GroupCommand implements Command {
 
-    private IMainFrame mainFrame;
+    private final IMainFrame mainFrame;
 
     GroupCommand(final IMainFrame mainFrame) {
         this.mainFrame = mainFrame;

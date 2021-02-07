@@ -9,7 +9,7 @@ import javax.swing.*;
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 
 public class FontSelector extends javax.swing.JPanel {
 

@@ -9,7 +9,8 @@ import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.Designer;
 import org.pdf.forms.gui.designer.gui.Rule;
 import org.pdf.forms.gui.windows.SplashWindow;
-import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 
 public abstract class UIPanelTest {
@@ -21,7 +22,7 @@ public abstract class UIPanelTest {
 
     @BeforeEach
     void setUp() {
-        final String version = "DEV-TEST";
+        final Version version = new Version("DEV-TEST");
 
         final Rule horizontalRuler = new Rule(IMainFrame.INSET, Rule.HORIZONTAL, true);
         final Rule verticalRuler = new Rule(IMainFrame.INSET, Rule.VERTICAL, true);
@@ -29,8 +30,7 @@ public abstract class UIPanelTest {
         final SplashWindow splashWindow = new SplashWindow(version);
 
         final Configuration configuration = new Configuration();
-        this.designerPropertiesFile = new DesignerPropertiesFile(configuration
-                .getConfigDirectory());
+        this.designerPropertiesFile = new DesignerPropertiesFile(configuration.getConfigDirectory());
         this.fontHandler = new FontHandler(designerPropertiesFile);
         this.widgetFactory = new WidgetFactory(fontHandler);
         final IMainFrame mainFrame = new VLFrame(

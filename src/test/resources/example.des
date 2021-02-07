@@ -67,7 +67,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;&lt;p align=left&gt;Dieser Bereich wird vom Übungsleiter ausgefüllt!&lt;br&gt;&lt;br&gt;&lt;br&gt;Sportart:"/>
+                    <property name="Text"
+                              value="&lt;html&gt;&lt;p align=left&gt;Dieser Bereich wird vom Übungsleiter ausgefüllt!&lt;br&gt;&lt;br&gt;&lt;br&gt;Sportart:"/>
                 </caption_properties>
             </properties>
         </widget>
@@ -341,7 +342,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;Für jede Person (auch Kinder) ist ein gesonderter Aufnahmeantrag auszufüllen."/>
+                    <property name="Text"
+                              value="&lt;html&gt;Für jede Person (auch Kinder) ist ein gesonderter Aufnahmeantrag auszufüllen."/>
                 </caption_properties>
             </properties>
         </widget>
@@ -459,7 +461,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;Wir weisen darauf hin, dass die vorstehendenen Angaben für die Mitgliederverwaltung in einer EDV-Anlage gespeichert werden."/>
+                    <property name="Text"
+                              value="&lt;html&gt;Wir weisen darauf hin, dass die vorstehendenen Angaben für die Mitgliederverwaltung in einer EDV-Anlage gespeichert werden."/>
                 </caption_properties>
             </properties>
         </widget>
@@ -1515,7 +1518,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;Mit vorstehendem Antrag erkenne ich für den Fall der Aufnahme die Vereinssatzung und die Ordnungen an. Von den Anmerkungen auf der Rückseite habe ich Kenntnis genommen."/>
+                    <property name="Text"
+                              value="&lt;html&gt;Mit vorstehendem Antrag erkenne ich für den Fall der Aufnahme die Vereinssatzung und die Ordnungen an. Von den Anmerkungen auf der Rückseite habe ich Kenntnis genommen."/>
                 </caption_properties>
             </properties>
         </widget>
@@ -1574,7 +1578,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;Bei Kindern unter 18 Jahren und anderen (beschränkt) Geschäftsfähigen: Für den Fall der Aufnahme erkenne(n) ich/wir die Vereinssatzung und die Ordnungen an. Ich/Wir überehme(n) die persönliche Haftung für die Beitragsschuld des von mir/uns vertretenden Kindes. Von den Anmerkungen auf der Rückseite habe(n) ich/wir Kenntnis genommen."/>
+                    <property name="Text"
+                              value="&lt;html&gt;Bei Kindern unter 18 Jahren und anderen (beschränkt) Geschäftsfähigen: Für den Fall der Aufnahme erkenne(n) ich/wir die Vereinssatzung und die Ordnungen an. Ich/Wir überehme(n) die persönliche Haftung für die Beitragsschuld des von mir/uns vertretenden Kindes. Von den Anmerkungen auf der Rückseite habe(n) ich/wir Kenntnis genommen."/>
                 </caption_properties>
             </properties>
         </widget>
@@ -1856,7 +1861,8 @@
                     </paragraph_value>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;Eigenhändige Unterschrift des Vaters und der Mutter oder des sonstigen gesetlichen Vertreters"/>
+                    <property name="Text"
+                              value="&lt;html&gt;Eigenhändige Unterschrift des Vaters und der Mutter oder des sonstigen gesetlichen Vertreters"/>
                     <property name="Divisor Location" value="28"/>
                 </caption_properties>
             </properties>
@@ -1953,7 +1959,8 @@
                     </paragraph_value>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;Eigenständige Unterschrift des Antragstellers (entfällt bei nicht geschäftsfähigen Antragstellern)"/>
+                    <property name="Text"
+                              value="&lt;html&gt;Eigenständige Unterschrift des Antragstellers (entfällt bei nicht geschäftsfähigen Antragstellern)"/>
                     <property name="Divisor Location" value="29"/>
                 </caption_properties>
             </properties>
@@ -2050,7 +2057,8 @@
                     </paragraph_value>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;&lt;p align=center&gt;Vorname&lt;br&gt;(In Druckbuchstaben)"/>
+                    <property name="Text"
+                              value="&lt;html&gt;&lt;p align=center&gt;Vorname&lt;br&gt;(In Druckbuchstaben)"/>
                     <property name="Divisor Location" value="19"/>
                 </caption_properties>
             </properties>
@@ -2147,7 +2155,8 @@
                     </paragraph_value>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;&lt;p align=center&gt;Nachname&lt;br&gt;(In Druckbuchstaben)"/>
+                    <property name="Text"
+                              value="&lt;html&gt;&lt;p align=center&gt;Nachname&lt;br&gt;(In Druckbuchstaben)"/>
                     <property name="Divisor Location" value="17"/>
                 </caption_properties>
             </properties>
@@ -2303,7 +2312,8 @@
                     </paragraph_value>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;&lt;p align=center&gt;Vorname&lt;br&gt;(In Druckbuchstaben)"/>
+                    <property name="Text"
+                              value="&lt;html&gt;&lt;p align=center&gt;Vorname&lt;br&gt;(In Druckbuchstaben)"/>
                     <property name="Divisor Location" value="17"/>
                 </caption_properties>
             </properties>
@@ -2400,7 +2410,8 @@
                     </paragraph_value>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;&lt;p align=center&gt;Nachname&lt;br&gt;(In Druckbuchstaben)"/>
+                    <property name="Text"
+                              value="&lt;html&gt;&lt;p align=center&gt;Nachname&lt;br&gt;(In Druckbuchstaben)"/>
                     <property name="Divisor Location" value="18"/>
                 </caption_properties>
             </properties>
@@ -3882,7 +3893,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;Hiermit beantrage(n) ich/wir die Aufnahme für mich/Sohn/Tochter/Pflegekind/Mündel in den"/>
+                    <property name="Text"
+                              value="&lt;html&gt;Hiermit beantrage(n) ich/wir die Aufnahme für mich/Sohn/Tochter/Pflegekind/Mündel in den"/>
                 </caption_properties>
             </properties>
         </widget>
@@ -4031,7 +4043,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;1. Der vollständig ausgefüllte Aufnahmeantrag ist zu senden an die Geschäftsstelle des Vereins"/>
+                    <property name="Text"
+                              value="&lt;html&gt;1. Der vollständig ausgefüllte Aufnahmeantrag ist zu senden an die Geschäftsstelle des Vereins"/>
                 </caption_properties>
             </properties>
         </widget>
@@ -4149,7 +4162,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;2. Nach Bearbeitung des Aufnahmeantrages erhalten Sie eine schriftliche Eintrittsbestätigung. Die Eintrittsbestätigung legen Sie bitte Ihrem Übungsleiter/Trainer vor."/>
+                    <property name="Text"
+                              value="&lt;html&gt;2. Nach Bearbeitung des Aufnahmeantrages erhalten Sie eine schriftliche Eintrittsbestätigung. Die Eintrittsbestätigung legen Sie bitte Ihrem Übungsleiter/Trainer vor."/>
                 </caption_properties>
             </properties>
         </widget>
@@ -4208,7 +4222,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;3. Zur Zeit wird folgender monatlicher Mitgliedsbeitrag in der Abteilung erhoben:"/>
+                    <property name="Text"
+                              value="&lt;html&gt;3. Zur Zeit wird folgender monatlicher Mitgliedsbeitrag in der Abteilung erhoben:"/>
                 </caption_properties>
             </properties>
         </widget>
@@ -5165,7 +5180,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;5. Der Beitrag wird als Jahresbeitrag erhoben und ist ibis zum 28.Februar des Kalenderjahres fällig."/>
+                    <property name="Text"
+                              value="&lt;html&gt;5. Der Beitrag wird als Jahresbeitrag erhoben und ist ibis zum 28.Februar des Kalenderjahres fällig."/>
                 </caption_properties>
             </properties>
         </widget>
@@ -5224,7 +5240,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;6. Der Austritt eines Mitgliedes muß dem Präsidium gegenüber schrftlich erklärt werden. Es ist eine Kündigungsfrist von 3 Monaten einzuhalten. Bei Beendigung der Mitgliedschaft bleiben die Beitragspflicht bis zum Ende des laufenden Geschäftsjahres sowie sämtliche sonstigen Verpflichtungen gegenüber dem Verein bestehen."/>
+                    <property name="Text"
+                              value="&lt;html&gt;6. Der Austritt eines Mitgliedes muß dem Präsidium gegenüber schrftlich erklärt werden. Es ist eine Kündigungsfrist von 3 Monaten einzuhalten. Bei Beendigung der Mitgliedschaft bleiben die Beitragspflicht bis zum Ende des laufenden Geschäftsjahres sowie sämtliche sonstigen Verpflichtungen gegenüber dem Verein bestehen."/>
                 </caption_properties>
             </properties>
         </widget>
@@ -6666,7 +6683,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;&lt;p align=left&gt;Hiermit ermächtige(n) ich/wir den Verein SV Berliner Verkehrsbetriebe 49 e.V. widerruflich, den Vereinsbeitrag sowie etwaige von der Mitgliederversammlung beschlossene Auslagen und Fälligkeiten zu Lasten meines/unseres nachfolgend benannten Kontos durch Lastschrift einzuziehen. Zugleich weise ich an, die vom Verein auf mein Konto gezogenen Lastschriften einzulösen."/>
+                    <property name="Text"
+                              value="&lt;html&gt;&lt;p align=left&gt;Hiermit ermächtige(n) ich/wir den Verein SV Berliner Verkehrsbetriebe 49 e.V. widerruflich, den Vereinsbeitrag sowie etwaige von der Mitgliederversammlung beschlossene Auslagen und Fälligkeiten zu Lasten meines/unseres nachfolgend benannten Kontos durch Lastschrift einzuziehen. Zugleich weise ich an, die vom Verein auf mein Konto gezogenen Lastschriften einzulösen."/>
                 </caption_properties>
             </properties>
         </widget>
@@ -6725,7 +6743,8 @@
                     </paragraph_caption>
                 </paragraph>
                 <caption_properties>
-                    <property name="Text" value="&lt;html&gt;&lt;p align=left&gt;Wenn mein/unser Konto die erforderliche Deckung nicht aufweist, besteht seitens des kontoführenden Kreditinstituts keine Verpflichtung zur Einlösung."/>
+                    <property name="Text"
+                              value="&lt;html&gt;&lt;p align=left&gt;Wenn mein/unser Konto die erforderliche Deckung nicht aufweist, besteht seitens des kontoführenden Kreditinstituts keine Verpflichtung zur Einlösung."/>
                 </caption_properties>
             </properties>
         </widget>

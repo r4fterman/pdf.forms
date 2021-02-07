@@ -113,11 +113,11 @@ public class Rule extends JComponent {
             final Optional<String> text = getComponentText(incrementCount, numberCount);
             if (text.isPresent()) {
                 final FontMetrics metrics = g2.getFontMetrics();
-                final int width = (int) metrics.getStringBounds(text.get(), g2).getWidth() + i + 2;
+                final int y = (int) metrics.getStringBounds(text.get(), g2).getWidth() + i + 2;
 
-                g2.rotate(-Math.PI / 2.0, 9, width);
-                g2.drawString(text.get(), 9, width);
-                g2.rotate(Math.PI / 2.0, 9, width);
+                g2.rotate(-Math.PI / 2.0, 9, y);
+                g2.drawString(text.get(), 9, y);
+                g2.rotate(Math.PI / 2.0, 9, y);
 
                 numberCount++;
             }

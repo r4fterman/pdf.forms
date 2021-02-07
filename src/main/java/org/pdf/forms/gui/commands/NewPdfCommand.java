@@ -5,15 +5,16 @@ import java.util.Set;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.model.des.Version;
 
 class NewPdfCommand implements Command {
 
     private final IMainFrame mainFrame;
-    private final String version;
+    private final Version version;
 
     NewPdfCommand(
             final IMainFrame mainFrame,
-            final String version) {
+            final Version version) {
         this.mainFrame = mainFrame;
         this.version = version;
     }
@@ -23,7 +24,7 @@ class NewPdfCommand implements Command {
         closePDF();
 
         mainFrame.setCurrentDesignerFileName("Untitled");
-        mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version);
+        mainFrame.setTitle("Untitled - PDF Forms Designer Version " + version.getVersion());
         mainFrame.setPanelsState(true);
         mainFrame.setFormsDocument(new FormsDocument(version));
 
@@ -34,7 +35,7 @@ class NewPdfCommand implements Command {
         mainFrame.setFormsDocument(null);
         mainFrame.getDesigner().close();
         mainFrame.setCurrentDesignerFileName("");
-        mainFrame.setTitle("PDF Forms Designer Version " + version);
+        mainFrame.setTitle("PDF Forms Designer Version " + version.getVersion());
         mainFrame.setPropertiesCompound(Set.of());
         mainFrame.setPropertiesToolBar(Set.of());
         mainFrame.setPanelsState(false);

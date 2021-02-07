@@ -1,17 +1,16 @@
 package org.pdf.forms.gui.hierarchy;
 
-import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import com.vlsolutions.swing.docking.DockKey;
-import com.vlsolutions.swing.docking.Dockable;
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.designer.IDesigner;
@@ -19,6 +18,9 @@ import org.pdf.forms.gui.hierarchy.tree.CTree;
 import org.pdf.forms.gui.hierarchy.tree.HierarchyTreeCellEditor;
 import org.pdf.forms.gui.hierarchy.tree.HierarchyTreeCellRenderer;
 import org.pdf.forms.widgets.IWidget;
+
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
 
 public class HierarchyPanel extends JPanel implements Dockable {
 
@@ -48,7 +50,7 @@ public class HierarchyPanel extends JPanel implements Dockable {
         add(treeScrollPane);
     }
 
-    public void addPage(
+    public void addPageToHierarchy(
             final int currentPage,
             final Page page) {
         final DefaultMutableTreeNode pageNode = new DefaultMutableTreeNode(page);
@@ -73,7 +75,7 @@ public class HierarchyPanel extends JPanel implements Dockable {
 
         for (int i = 1; i <= document.getNoOfPages(); i++) {
             final Page page = document.getPage(i);
-            addPage(i, page);
+            addPageToHierarchy(i, page);
             for (final IWidget widget : page.getWidgets()) {
                 addWidgetToHierarchy(widget, i);
             }

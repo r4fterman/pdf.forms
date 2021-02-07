@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.awt.*;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -20,14 +19,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.easymock.EasyMockSupport;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.commands.OpenDesignerFileCommand;
 import org.pdf.forms.gui.designer.IDesigner;
-import org.pdf.forms.utils.DesignerPropertiesFile;
-import org.pdf.forms.utils.XMLUtils;
+import org.pdf.forms.model.des.DesDocument;
+import org.pdf.forms.model.des.Version;
+import org.pdf.forms.readers.des.DesignerProjectFileReader;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.utils.WidgetFactory;
 
@@ -44,9 +44,7 @@ import com.itextpdf.text.pdf.RadioCheckField;
 
 class WriterTest extends EasyMockSupport {
 
-    private static final String DESIGNER_FILE = "/example.des";
-
-    @Disabled(value = "Does not work on headless Travis CI")
+    //todo: get this unit test working
     void write_should_persist_ui_document(@TempDir final Path path) throws Exception {
         final MockMainFrame mainFrame = new MockMainFrame();
 
@@ -61,13 +59,13 @@ class WriterTest extends EasyMockSupport {
 
         replayAll();
         final File source = getFile();
-        final File target = createTargetFile(path, source);
+        final File target = createTargetFile(path, source.toPath());
 
-
-        new OpenDesignerFileCommand(mainFrame, "DEV-TEST", widgetFactory, designerPropertiesFile).openDesignerFile(target.getAbsolutePath());
+        new OpenDesignerFileCommand(mainFrame, new Version("DEV-TEST"), widgetFactory, designerPropertiesFile)
+                .openDesignerFile(target.getAbsolutePath());
 
         final File outputFile = new File(path.toFile(), "output.des");
-        final org.w3c.dom.Document properties = XMLUtils.readDocument(source);
+        final DesDocument designerDocument = new DesignerProjectFileReader(target).getDesDocument();
 
         final List<IWidget> page1Widgets = mainFrame.getFormsDocument().getPage(1).getWidgets();
         final List<IWidget> page2Widgets = mainFrame.getFormsDocument().getPage(2).getWidgets();
@@ -76,7 +74,7 @@ class WriterTest extends EasyMockSupport {
                 1, page2Widgets
         );
 
-        writer.write(outputFile, widgetsMap, properties);
+        writer.write(outputFile, widgetsMap, designerDocument);
         verifyAll();
 
         assertThat(outputFile.length(), is(15161L));
@@ -130,17 +128,17 @@ class WriterTest extends EasyMockSupport {
     }
 
     private File getFile() throws URISyntaxException {
-        final URL url = WriterTest.class.getResource(DESIGNER_FILE);
-        assertThat("File not found: " + DESIGNER_FILE, DESIGNER_FILE, not(nullValue()));
+        final URL url = WriterTest.class.getResource("/example.des");
+        assertThat("File not found: " + "/example.des", "/example.des", not(nullValue()));
 
         return new File(url.toURI());
     }
 
     private File createTargetFile(
             @TempDir final Path path,
-            final File source) throws IOException {
+            final Path source) throws IOException {
         final File target = new File(path.toFile(), "example.des");
-        Files.copy(new FileInputStream(source), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(source, target.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         return target;
     }

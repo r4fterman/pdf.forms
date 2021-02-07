@@ -7,7 +7,7 @@ import javax.swing.*;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.fonts.FontSelector;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.utils.DesignerPropertiesFile;
+import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 
 class FontManagementCommand implements Command {
 
