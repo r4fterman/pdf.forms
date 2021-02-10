@@ -81,7 +81,7 @@ public class ListFieldPanel extends JPanel {
 
         allowCustomTextEntryBox = new TriStateCheckBox(
                 "Allow Custom Text Entry",
-                TriStateCheckBox.NOT_SELECTED,
+                TriStateCheckBox.State.NOT_SELECTED,
                 this::saveAllowedCustomText);
         allowCustomTextEntryBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         allowCustomTextEntryBox.setMargin(new Insets(0, 0, 0, 0));
@@ -268,11 +268,11 @@ public class ListFieldPanel extends JPanel {
 
     private void saveAllowedCustomText(final MouseEvent mouseEvent) {
         final TriStateCheckBox.State state = (((TriStateCheckBox) allowCustomTextEntryBox).getState());
-        if (state == TriStateCheckBox.DONT_CARE) {
+        if (state == TriStateCheckBox.State.DONT_CARE) {
             return;
         }
 
-        final boolean allow = state == TriStateCheckBox.SELECTED;
+        final boolean allow = state == TriStateCheckBox.State.SELECTED;
         widgets.forEach(widget -> widget.getWidgetModel().getProperties().getObject().getField()
                 .allowCustomTextEntry(allow));
     }

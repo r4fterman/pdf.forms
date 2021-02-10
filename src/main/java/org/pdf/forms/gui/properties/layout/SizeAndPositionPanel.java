@@ -6,7 +6,6 @@ import static org.jdesktop.layout.GroupLayout.DEFAULT_SIZE;
 import static org.jdesktop.layout.GroupLayout.LEADING;
 import static org.jdesktop.layout.GroupLayout.PREFERRED_SIZE;
 import static org.jdesktop.layout.LayoutStyle.RELATED;
-import static org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TriStateCheckBox.NOT_SELECTED;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -97,7 +96,10 @@ public class SizeAndPositionPanel extends JPanel {
             }
         });
 
-        xExpandToFitBox = new TriStateCheckBox(EXPAND_TO_FIT, NOT_SELECTED, this::checkboxClicked);
+        xExpandToFitBox = new TriStateCheckBox(
+                EXPAND_TO_FIT,
+                TriStateCheckBox.State.NOT_SELECTED,
+                this::checkboxClicked);
         //xExpandToFitBox.setText(EXPAND_TO_FIT);
         xExpandToFitBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         xExpandToFitBox.setEnabled(false);
@@ -122,7 +124,10 @@ public class SizeAndPositionPanel extends JPanel {
             }
         });
 
-        yExpandToFitBox = new TriStateCheckBox(EXPAND_TO_FIT, NOT_SELECTED, this::checkboxClicked);
+        yExpandToFitBox = new TriStateCheckBox(
+                EXPAND_TO_FIT,
+                TriStateCheckBox.State.NOT_SELECTED,
+                this::checkboxClicked);
         //yExpandToFitBox.setText(EXPAND_TO_FIT);
         yExpandToFitBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         yExpandToFitBox.setEnabled(false);
@@ -544,13 +549,13 @@ public class SizeAndPositionPanel extends JPanel {
             final SizeAndPosition sizeAndPosition = widget.getWidgetModel().getProperties().getLayout()
                     .getSizeAndPosition();
 
-            if (xExpandState != TriStateCheckBox.DONT_CARE) {
-                final String value = String.valueOf(xExpandState == TriStateCheckBox.SELECTED);
+            if (xExpandState != TriStateCheckBox.State.DONT_CARE) {
+                final String value = String.valueOf(xExpandState == TriStateCheckBox.State.SELECTED);
                 sizeAndPosition.setXExpandToFit(value);
             }
 
-            if (yExpandState != TriStateCheckBox.DONT_CARE) {
-                final String value = String.valueOf(yExpandState == TriStateCheckBox.SELECTED);
+            if (yExpandState != TriStateCheckBox.State.DONT_CARE) {
+                final String value = String.valueOf(yExpandState == TriStateCheckBox.State.SELECTED);
                 sizeAndPosition.setYExpandToFit(value);
             }
         });
