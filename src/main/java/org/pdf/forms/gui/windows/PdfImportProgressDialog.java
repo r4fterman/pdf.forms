@@ -31,7 +31,7 @@ public class PdfImportProgressDialog extends AbstractDialog {
 
     @Override
     protected Component createMainPanel() {
-        final JPanel panel = new JPanel(new BorderLayout(5,5));
+        final JPanel panel = new JPanel(new BorderLayout(5, 5));
 
         panel.add(createAnimationPanel(), BorderLayout.CENTER);
         panel.add(createProgressPanel(), BorderLayout.SOUTH);
@@ -40,7 +40,7 @@ public class PdfImportProgressDialog extends AbstractDialog {
     }
 
     private JPanel createAnimationPanel() {
-        JPanel panel = new JPanel(new BorderLayout(5,5));
+        final JPanel panel = new JPanel(new BorderLayout(5, 5));
 
         final JLabel animationLabel = new JLabel(new ImageIcon(getClass()
                 .getResource("/org/pdf/forms/res/animation.gif"))); // NOI18N
@@ -51,7 +51,7 @@ public class PdfImportProgressDialog extends AbstractDialog {
     }
 
     private JPanel createProgressPanel() {
-        JPanel panel = new JPanel(new BorderLayout(5,5));
+        final JPanel panel = new JPanel(new BorderLayout(5, 5));
 
         this.progressBar = new JProgressBar();
 
