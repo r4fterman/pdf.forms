@@ -1,10 +1,9 @@
 package org.pdf.forms.readers.properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.anEmptyMap;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -13,10 +12,10 @@ import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.pdf.forms.model.properties.Font;
 
 class DesignerPropertiesFileTest {
 
@@ -113,8 +112,8 @@ class DesignerPropertiesFileTest {
     void getCustomFonts_from_non_existing_properties_file_should_return_empty_map(@TempDir final Path configDir) {
         final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir.toFile());
 
-        final Map<String, String> customFonts = designerPropertiesFile.getCustomFonts();
-        assertThat(customFonts, is(anEmptyMap()));
+        final List<Font> customFonts = designerPropertiesFile.getCustomFonts();
+        assertThat(customFonts, is(empty()));
     }
 
     @Test
@@ -125,10 +124,12 @@ class DesignerPropertiesFileTest {
         final File configDir = new File(url.toURI()).getParentFile();
         final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir);
 
-        final Map<String, String> customFonts = designerPropertiesFile.getCustomFonts();
-        assertThat(customFonts, is(aMapWithSize(2)));
-        assertThat(customFonts, hasEntry("Helvetica", "/path/to/font/helvetica"));
-        assertThat(customFonts, hasEntry("Arial", "/path/to/font/arial"));
+        final List<Font> customFonts = designerPropertiesFile.getCustomFonts();
+        assertThat(customFonts, hasSize(2));
+        assertThat(customFonts, containsInAnyOrder(
+                new Font("Helvetica", "/path/to/font/helvetica"),
+                new Font("Arial", "/path/to/font/arial")
+        ));
     }
 
     @Test
@@ -138,10 +139,12 @@ class DesignerPropertiesFileTest {
         designerPropertiesFile.addCustomFont("Courier", "/path/to/font/courier");
         designerPropertiesFile.addCustomFont("TimesNewRoman", "/path/to/font/timesnewroman");
 
-        final Map<String, String> customFonts = designerPropertiesFile.getCustomFonts();
-        assertThat(customFonts, is(aMapWithSize(2)));
-        assertThat(customFonts, hasEntry("Courier", "/path/to/font/courier"));
-        assertThat(customFonts, hasEntry("TimesNewRoman", "/path/to/font/timesnewroman"));
+        final List<Font> customFonts = designerPropertiesFile.getCustomFonts();
+        assertThat(customFonts, hasSize(2));
+        assertThat(customFonts, containsInAnyOrder(
+                new Font("Courier", "/path/to/font/courier"),
+                new Font("TimesNewRoman", "/path/to/font/timesnewroman")
+        ));
     }
 
 }

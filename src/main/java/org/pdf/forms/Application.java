@@ -8,6 +8,7 @@ import java.util.jar.Manifest;
 
 import javax.swing.*;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.VLFrame;
 import org.pdf.forms.gui.windows.SplashWindow;
@@ -35,10 +36,12 @@ public final class Application {
         final String versionValue = readManifest().map(this::getVersion).orElse("");
         final Version version = new Version(versionValue);
 
-        splashScreen(version);
+        final Configuration configuration = new Configuration();
+
+        splashScreen(version, configuration);
     }
 
-    private void splashScreen(final Version version) {
+    private void splashScreen(final Version version, final Configuration configuration) {
         final SplashWindow splashWindow = new SplashWindow(version);
         splashWindow.setStatusMaximum(7);
         splashWindow.setVisible(true);
@@ -52,7 +55,7 @@ public final class Application {
         }
 
         try {
-            initializeUI(version, splashWindow);
+            initializeUI(version, splashWindow, configuration);
         } finally {
             splashWindow.setVisible(false);
         }
@@ -60,11 +63,11 @@ public final class Application {
 
     private void initializeUI(
             final Version version,
-            final SplashWindow splashWindow) {
-        final Configuration configuration = new Configuration();
+            final SplashWindow splashWindow,
+            final Configuration configuration) {
         final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configuration
                 .getConfigDirectory());
-        final FontHandler fontHandler = new FontHandler(designerPropertiesFile);
+        final FontHandler fontHandler = new FontHandler(designerPropertiesFile, configuration.getFontDirectories());
         final WidgetFactory widgetFactory = new WidgetFactory(fontHandler);
         final VLFrame frame = new VLFrame(splashWindow,
                 version,
@@ -86,8 +89,7 @@ public final class Application {
     }
 
     private void configureMacOSXSupport() {
-        final String lcOSName = System.getProperty("os.name").toLowerCase();
-        if (lcOSName.startsWith("mac os x")) {
+        if (SystemUtils.IS_OS_MAC) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
         }
     }

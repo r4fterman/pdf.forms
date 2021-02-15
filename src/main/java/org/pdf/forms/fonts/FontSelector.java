@@ -103,8 +103,8 @@ public class FontSelector extends javax.swing.JPanel {
         final File fileToOpen = chooser.getSelectedFile();
 
         if (fileToOpen != null && state == JFileChooser.APPROVE_OPTION) {
-            final String name = fontHandler.registerFont(fileToOpen);
-            designerPropertiesFile.addCustomFont(name, fileToOpen.getAbsolutePath());
+            fontHandler.registerFont(fileToOpen)
+                    .ifPresent(name -> designerPropertiesFile.addCustomFont(name, fileToOpen.getAbsolutePath()));
 
             populateFontsAvailable();
         }
@@ -113,9 +113,9 @@ public class FontSelector extends javax.swing.JPanel {
     private void populateFontsAvailable() {
         final DefaultListModel<String> model = new DefaultListModel<>();
 
-        fontHandler.getFontFileMap()
-                .forEach((key, value) -> model.addElement(key.getFontName() + "->" + value));
-
+//        fontHandler.getFonts()
+//                .forEach((key, value) -> model.addElement(key.getFontName() + "->" + value));
+//
         fontsList.setModel(model);
     }
 

@@ -16,6 +16,7 @@ import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.IWidget;
 import org.pdf.forms.widgets.TextWidget;
 import org.pdf.forms.widgets.components.PdfCaption;
+import org.pdf.forms.writer.MockFontDirectories;
 
 class CustomWidgetsFileTest {
 
@@ -45,7 +46,7 @@ class CustomWidgetsFileTest {
 
     private TextWidget createCustomWidget(final Path configDir) {
         final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configDir.toFile());
-        final FontHandler fontHandler = new FontHandler(designerPropertiesFile);
+        final FontHandler fontHandler = new FontHandler(designerPropertiesFile, new MockFontDirectories());
         final PdfCaption pdfCaption = new PdfCaption("Text", fontHandler);
 
         final JLabel label = new JLabel("Text");

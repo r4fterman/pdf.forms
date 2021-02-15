@@ -124,7 +124,7 @@ public class Commands {
             final WidgetFactory widgetFactory,
             final Configuration configuration,
             final DesignerPropertiesFile designerPropertiesFile) {
-        commandMap = Map.ofEntries(
+        this.commandMap = Map.ofEntries(
                 entry(NEW, new NewPdfCommand(mainFrame, version)),
                 entry(OPEN, new OpenDesignerFileCommand(mainFrame, version, widgetFactory, designerPropertiesFile)),
                 entry(CLOSE, new ClosePdfCommand(mainFrame, version)),

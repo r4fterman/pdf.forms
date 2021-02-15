@@ -53,7 +53,7 @@ class WriterTest extends EasyMockSupport {
         designer.close();
 
         final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(path.toFile());
-        final FontHandler fontHandler = new FontHandler(designerPropertiesFile);
+        final FontHandler fontHandler = new FontHandler(designerPropertiesFile, new MockFontDirectories());
         final WidgetFactory widgetFactory = new WidgetFactory(fontHandler);
         final Writer writer = new Writer(mainFrame, fontHandler);
 

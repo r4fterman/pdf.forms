@@ -3,6 +3,7 @@ package org.pdf.forms.writer;
 import java.awt.*;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.pdf.forms.fonts.FontHandler;
@@ -124,11 +125,10 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
         cb.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
 
         final java.awt.Font font = caption.getFont();
-        final String fontDirectory = fontHandler.getFontDirectory(font);
+        final Optional<String> fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
-
-        mapper.insertDirectory(fontDirectory);
+        fontDirectory.ifPresent(mapper::insertDirectory);
 
         /*
          * we need to make this erroneous call to awtToPdf to see if an exception is thrown, if it is, it is
@@ -193,19 +193,21 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
     }
 
     private BaseFont getBaseFont(final Font font) throws IOException, DocumentException {
-        final String fontPath = fontHandler.getAbsoluteFontPath(font);
-        try {
-            return BaseFont.createFont(fontPath, BaseFont.CP1250, BaseFont.EMBEDDED);
-        } catch (final DocumentException e) {
-            logger.error("Failed creating font from path {}!", fontPath, e);
-
-            /*
-             * A document exception has been thrown meaning that the font cannot be embedded
-             * due to licensing restrictions so substitute with Helvetica
-             */
-            fontSubstitutions.add(font.getFontName());
-            return BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
+        final Optional<String> absoluteFontPath = fontHandler.getAbsoluteFontPath(font);
+        if (absoluteFontPath.isPresent()) {
+            final String fontPath = absoluteFontPath.get();
+            try {
+                return BaseFont.createFont(fontPath, BaseFont.CP1250, BaseFont.EMBEDDED);
+            } catch (final DocumentException e) {
+                 // A document exception has been thrown meaning that the font cannot be embedded
+                 // due to licensing restrictions
+                logger.error("Failed creating font from path {}!", fontPath, e);
+            }
         }
+
+        // substitute with Helvetica
+        fontSubstitutions.add(font.getFontName());
+        return BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
     }
 
     private BaseColor getBaseColor(final Color color) {

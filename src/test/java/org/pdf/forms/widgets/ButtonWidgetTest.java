@@ -19,6 +19,7 @@ import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.model.des.Widget;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.components.PdfButton;
+import org.pdf.forms.writer.MockFontDirectories;
 import org.xmlunit.diff.DefaultNodeMatcher;
 import org.xmlunit.diff.DifferenceEvaluators;
 
@@ -34,7 +35,7 @@ class ButtonWidgetTest {
         final Configuration configuration = new Configuration();
         this.designerPropertiesFile = new DesignerPropertiesFile(configuration
                 .getConfigDirectory());
-        this.fontHandler = new FontHandler(designerPropertiesFile);
+        this.fontHandler = new FontHandler(designerPropertiesFile, new MockFontDirectories());
 
         this.baseComponent = new PdfButton("button", fontHandler);
         this.component = new JButton();
@@ -68,7 +69,7 @@ class ButtonWidgetTest {
                 baseComponent,
                 component,
                 getWidgetFromFile(),
-                new FontHandler(designerPropertiesFile));
+                new FontHandler(designerPropertiesFile, new MockFontDirectories()));
 
         final String serialize = new WidgetFileWriter(buttonWidget.getWidgetModel()).serialize();
         final String expected = Files.readString(getFile().toPath());

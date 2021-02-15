@@ -31,7 +31,7 @@ public abstract class UIPanelTest {
 
         final Configuration configuration = new Configuration();
         this.designerPropertiesFile = new DesignerPropertiesFile(configuration.getConfigDirectory());
-        this.fontHandler = new FontHandler(designerPropertiesFile);
+        this.fontHandler = new FontHandler(designerPropertiesFile, configuration.getFontDirectories());
         this.widgetFactory = new WidgetFactory(fontHandler);
         final IMainFrame mainFrame = new VLFrame(
                 splashWindow,

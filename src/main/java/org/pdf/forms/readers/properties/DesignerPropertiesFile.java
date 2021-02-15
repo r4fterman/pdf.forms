@@ -1,12 +1,10 @@
 package org.pdf.forms.readers.properties;
 
 import static java.util.stream.Collectors.toUnmodifiableList;
-import static java.util.stream.Collectors.toUnmodifiableMap;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.pdf.forms.model.properties.CustomProperties;
@@ -50,12 +48,12 @@ public class DesignerPropertiesFile {
         customProperties.getCustomFonts().getFont().add(0, new org.pdf.forms.model.properties.Font(name, path));
     }
 
-    public Map<String, String> getCustomFonts() {
-        return customProperties.getCustomFonts().getFont().stream()
-                .collect(toUnmodifiableMap(
-                        Font::getName,
-                        Font::getPath
-                ));
+    public void setCustomFonts(final List<Font> customFonts) {
+        customProperties.getCustomFonts().setFont(customFonts);
+    }
+
+    public List<Font> getCustomFonts() {
+        return List.copyOf(customProperties.getCustomFonts().getFont());
     }
 
     private List<String> fillList(final List<String> list) {

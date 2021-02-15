@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
+import org.pdf.forms.writer.MockFontDirectories;
 import org.xmlunit.diff.DefaultNodeMatcher;
 import org.xmlunit.diff.DifferenceEvaluators;
 
@@ -32,7 +33,7 @@ class ImageWidgetTest {
         final Configuration configuration = new Configuration();
         this.designerPropertiesFile =
                 new DesignerPropertiesFile(configuration.getConfigDirectory());
-        this.fontHandler = new FontHandler(designerPropertiesFile);
+        this.fontHandler = new FontHandler(designerPropertiesFile, new MockFontDirectories());
 
         this.baseComponent = new JLabel("label");
         this.component = new JCheckBox();
@@ -43,7 +44,7 @@ class ImageWidgetTest {
         final ImageWidget imageWidget = new ImageWidget(IWidget.IMAGE,
                 baseComponent,
                 component,
-                new FontHandler(designerPropertiesFile));
+                new FontHandler(designerPropertiesFile, new MockFontDirectories()));
 
         final String serialize = new WidgetFileWriter(imageWidget.getWidgetModel()).serialize();
         final String expected = Files.readString(getFile().toPath());

@@ -18,6 +18,7 @@ import org.pdf.forms.Configuration;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.pdf.forms.widgets.components.SplitComponent;
+import org.pdf.forms.writer.MockFontDirectories;
 import org.xmlunit.diff.DefaultNodeMatcher;
 import org.xmlunit.diff.DifferenceEvaluators;
 
@@ -32,7 +33,7 @@ class RadioButtonWidgetTest {
         final Configuration configuration = new Configuration();
         final DesignerPropertiesFile designerPropertiesFile = new DesignerPropertiesFile(configuration
                 .getConfigDirectory());
-        this.fontHandler = new FontHandler(designerPropertiesFile);
+        this.fontHandler = new FontHandler(designerPropertiesFile, new MockFontDirectories());
 
         this.baseComponent = new SplitComponent("captionText", new JRadioButton(), 1, fontHandler);
         this.component = new JRadioButton();

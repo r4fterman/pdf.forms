@@ -1,13 +1,22 @@
 package org.pdf.forms.model.properties;
 
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @XmlType
 public class Font {
+
+    private final Logger logger = LoggerFactory.getLogger(Font.class);
 
     private String name;
     private String path;
@@ -63,4 +72,18 @@ public class Font {
                 .add("path='" + path + "'")
                 .toString();
     }
+
+    public Optional<java.awt.Font> convertToJavaFont() {
+        try {
+            final java.awt.Font javaFont = java.awt.Font.createFont(
+                    java.awt.Font.TRUETYPE_FONT,
+                    new File(getPath())
+            );
+            return Optional.of(javaFont);
+        } catch (FontFormatException | IOException e) {
+            logger.error("Unable to create font. {}", getPath(), e);
+        }
+        return Optional.empty();
+    }
+
 }
