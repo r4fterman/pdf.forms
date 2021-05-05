@@ -18,12 +18,18 @@ public final class FontHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FontHandler.class);
     private final List<Font> fonts = new ArrayList<>();
+    private final DesignerPropertiesFile designerPropertiesFile;
 
     public FontHandler(
             final DesignerPropertiesFile designerPropertiesFile,
             final FontDirectories fontDirectories) {
+        this.designerPropertiesFile = designerPropertiesFile;
         fontDirectories.getDirectories().forEach(this::registerDirectory);
 
+        updateFonts();
+    }
+
+    public void updateFonts() {
         //todo: need to check if file has moved, and if so offer user chance to browse
         designerPropertiesFile.getCustomFonts().forEach(font -> registerFont(new File(font.getPath())));
     }

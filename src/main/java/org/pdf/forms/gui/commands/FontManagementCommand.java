@@ -41,6 +41,7 @@ class FontManagementCommand implements Command {
 
         final List<Font> customFonts = dialog.getCustomFonts();
         designerPropertiesFile.setCustomFonts(customFonts);
+        fontHandler.updateFonts();
         mainFrame.updateAvailableFonts();
     }
 
