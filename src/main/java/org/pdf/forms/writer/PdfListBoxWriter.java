@@ -12,6 +12,7 @@ import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.model.des.BorderProperties;
 import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.model.des.LayoutProperties;
 import org.pdf.forms.model.des.ObjectProperties;
@@ -170,7 +171,11 @@ public class PdfListBoxWriter implements PdfComponentWriter {
     private void addBorder(
             final IWidget widget,
             final BaseField baseField) {
-        final Borders borders = widget.getWidgetModel().getProperties().getBorder().getBorders();
+        final Optional<BorderProperties> borderProperties = widget.getWidgetModel().getProperties().getBorder();
+        if (borderProperties.isEmpty()) {
+            return;
+        }
+        final Borders borders = borderProperties.get().getBorders();
 
         final String style = borders.getBorderStyle().orElse("None");
         switch (style) {

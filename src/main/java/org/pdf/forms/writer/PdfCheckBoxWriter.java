@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.model.des.BorderProperties;
 import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.model.des.Caption;
 import org.pdf.forms.widgets.IWidget;
@@ -133,7 +134,12 @@ public class PdfCheckBoxWriter implements PdfComponentWriter {
     private void addBorder(
             final IWidget widget,
             final BaseField baseField) {
-        final Borders borders = widget.getWidgetModel().getProperties().getBorder().getBorders();
+        final Optional<BorderProperties> borderProperties = widget.getWidgetModel().getProperties().getBorder();
+        if (borderProperties.isEmpty()) {
+            return;
+        }
+
+        final Borders borders = borderProperties.get().getBorders();
 
         final String style = borders.getBorderStyle().orElse("None");
         switch (style) {

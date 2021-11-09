@@ -424,8 +424,11 @@ public class Writer {
             final IWidget widget,
             final BaseField baseField) {
         final Widget model = widget.getWidgetModel();
-        final BorderProperties borderProperties = model.getProperties().getBorder();
-        final Borders borders = borderProperties.getBorders();
+        final Optional<BorderProperties> borderProperties = model.getProperties().getBorder();
+        if (borderProperties.isEmpty()) {
+            return;
+        }
+        final Borders borders = borderProperties.get().getBorders();
 
         final String style = borders.getBorderStyle().orElse("None");
 

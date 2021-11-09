@@ -248,21 +248,23 @@ public class FontPropertiesPanel extends JPanel {
     }
 
     private void updateFontProperties(final IWidget widget) {
-        final FontCaption fontCaption = widget.getWidgetModel().getProperties().getFont().getFontCaption();
+        widget.getWidgetModel().getProperties().getFont().ifPresent(fontProperties -> {
+            final FontCaption fontCaption = fontProperties.getFontCaption();
 
-        final Optional<FontValue> fontValue;
-        if (widget.allowEditCaptionAndValue()) {
-            fontValue = Optional.of(widget.getWidgetModel().getProperties().getFont().getFontValue());
-        } else {
-            fontValue = Optional.empty();
-        }
+            final Optional<FontValue> fontValue;
+            if (widget.allowEditCaptionAndValue()) {
+                fontValue = Optional.of(fontProperties.getFontValue());
+            } else {
+                fontValue = Optional.empty();
+            }
 
-        updateFontNameProperty(widget, fontCaption, fontValue);
-        updateFontSizeProperty(widget, fontCaption, fontValue);
-        updateFontStyleProperty(widget, fontCaption, fontValue);
-        updateUnderlineProperty(widget, fontCaption, fontValue);
-        updateStrikethroughProperty(widget, fontCaption, fontValue);
-        updateColorProperty(widget, fontCaption, fontValue);
+            updateFontNameProperty(widget, fontCaption, fontValue);
+            updateFontSizeProperty(widget, fontCaption, fontValue);
+            updateFontStyleProperty(widget, fontCaption, fontValue);
+            updateUnderlineProperty(widget, fontCaption, fontValue);
+            updateStrikethroughProperty(widget, fontCaption, fontValue);
+            updateColorProperty(widget, fontCaption, fontValue);
+        });
     }
 
     private void updateFontNameProperty(
@@ -430,40 +432,43 @@ public class FontPropertiesPanel extends JPanel {
             final int currentlyEditing) {
         final List<FontProperties> fontProperties = widgets.stream()
                 .map(widget -> convertToFontProperties(widget, currentlyEditing))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(toUnmodifiableList());
 
         return new FontPropertiesList(fontProperties);
     }
 
-    private FontProperties convertToFontProperties(
+    private Optional<FontProperties> convertToFontProperties(
             final IWidget widget,
             final int currentlyEditing) {
-        final org.pdf.forms.model.des.FontProperties font = widget.getWidgetModel().getProperties().getFont();
+        return widget.getWidgetModel().getProperties().getFont()
+                .map(font -> {
+                    final FontCaption fontCaption = font.getFontCaption();
+                    final String captionFontName = fontCaption.getFontName().orElse("Arial");
+                    final String captionFontSize = fontCaption.getFontSize().orElse("10");
+                    final String captionFontStyle = fontCaption.getFontStyle().orElse("1");
+                    final String captionUnderline = fontCaption.getUnderline().orElse("1");
+                    final String captionStrikethrough = fontCaption.getStrikeThrough().orElse("1");
+                    final String captionColor = fontCaption.getColor().orElse(String.valueOf(Color.BLACK.getRGB()));
 
-        final FontCaption fontCaption = font.getFontCaption();
-        final String captionFontName = fontCaption.getFontName().orElse("Arial");
-        final String captionFontSize = fontCaption.getFontSize().orElse("10");
-        final String captionFontStyle = fontCaption.getFontStyle().orElse("1");
-        final String captionUnderline = fontCaption.getUnderline().orElse("1");
-        final String captionStrikethrough = fontCaption.getStrikeThrough().orElse("1");
-        final String captionColor = fontCaption.getColor().orElse(String.valueOf(Color.BLACK.getRGB()));
+                    final FontValue fontValue = font.getFontValue();
+                    final String valueFontName = fontValue.getFontName().orElse("Arial");
+                    final String valueFontSize = fontValue.getFontSize().orElse("10");
+                    final String valueFontStyle = fontValue.getFontStyle().orElse("1");
+                    final String valueUnderline = fontValue.getUnderline().orElse("1");
+                    final String valueStrikethrough = fontValue.getStrikeThrough().orElse("1");
+                    final String valueColor = fontValue.getColor().orElse(String.valueOf(Color.BLACK.getRGB()));
 
-        final FontValue fontValue = font.getFontValue();
-        final String valueFontName = fontValue.getFontName().orElse("Arial");
-        final String valueFontSize = fontValue.getFontSize().orElse("10");
-        final String valueFontStyle = fontValue.getFontStyle().orElse("1");
-        final String valueUnderline = fontValue.getUnderline().orElse("1");
-        final String valueStrikethrough = fontValue.getStrikeThrough().orElse("1");
-        final String valueColor = fontValue.getColor().orElse(String.valueOf(Color.BLACK.getRGB()));
-
-        return new FontProperties(
-                getProperty(currentlyEditing, captionFontName, valueFontName),
-                getProperty(currentlyEditing, captionFontSize, valueFontSize),
-                getProperty(currentlyEditing, captionFontStyle, valueFontStyle),
-                getProperty(currentlyEditing, captionUnderline, valueUnderline),
-                getProperty(currentlyEditing, captionStrikethrough, valueStrikethrough),
-                getProperty(currentlyEditing, captionColor, valueColor)
-        );
+                    return new FontProperties(
+                            getProperty(currentlyEditing, captionFontName, valueFontName),
+                            getProperty(currentlyEditing, captionFontSize, valueFontSize),
+                            getProperty(currentlyEditing, captionFontStyle, valueFontStyle),
+                            getProperty(currentlyEditing, captionUnderline, valueUnderline),
+                            getProperty(currentlyEditing, captionStrikethrough, valueStrikethrough),
+                            getProperty(currentlyEditing, captionColor, valueColor)
+                    );
+                });
     }
 
     private void setComboValue(

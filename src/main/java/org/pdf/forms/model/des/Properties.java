@@ -1,6 +1,7 @@
 package org.pdf.forms.model.des;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -25,8 +26,8 @@ public class Properties {
         this.layout = new LayoutProperties();
     }
 
-    public FontProperties getFont() {
-        return font;
+    public Optional<FontProperties> getFont() {
+        return Optional.ofNullable(font);
     }
 
     public void setFont(final FontProperties font) {
@@ -49,16 +50,16 @@ public class Properties {
         this.layout = layout;
     }
 
-    public BorderProperties getBorder() {
-        return border;
+    public Optional<BorderProperties> getBorder() {
+        return Optional.ofNullable(border);
     }
 
     public void setBorder(final BorderProperties border) {
         this.border = border;
     }
 
-    public ParagraphProperties getParagraph() {
-        return paragraph;
+    public Optional<ParagraphProperties> getParagraph() {
+        return Optional.ofNullable(paragraph);
     }
 
     public void setParagraph(final ParagraphProperties paragraph) {

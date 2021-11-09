@@ -1,6 +1,7 @@
 package org.pdf.forms.gui.properties;
 
 import java.awt.*;
+import java.util.Optional;
 import java.util.Set;
 
 import org.pdf.forms.model.des.FontCaption;
@@ -17,20 +18,23 @@ public final class PropertyChanger {
             final String fontSize,
             final int fontStyle) {
         for (final IWidget widget: widgets) {
-            final FontProperties fontProperties = widget.getWidgetModel().getProperties().getFont();
+            final Optional<FontProperties> fontProperties = widget.getWidgetModel().getProperties().getFont();
+                if (fontProperties.isPresent()) {
+                    final FontProperties properties = fontProperties.get();
 
-            final FontCaption fontCaption = fontProperties.getFontCaption();
-            fontCaption.setFontName(fontName);
-            fontCaption.setFontSize(fontSize);
-            fontCaption.setFontStyle(String.valueOf(fontStyle));
+                    final FontCaption fontCaption = properties.getFontCaption();
+                    fontCaption.setFontName(fontName);
+                    fontCaption.setFontSize(fontSize);
+                    fontCaption.setFontStyle(String.valueOf(fontStyle));
 
-            if (widget.allowEditCaptionAndValue()) {
-                final FontValue fontValue = fontProperties.getFontValue();
-                fontValue.setFontName(fontName);
-                fontValue.setFontSize(fontSize);
-                fontValue.setFontStyle(String.valueOf(fontStyle));
+                    if (widget.allowEditCaptionAndValue()) {
+                        final FontValue fontValue = properties.getFontValue();
+                        fontValue.setFontName(fontName);
+                        fontValue.setFontSize(fontSize);
+                        fontValue.setFontStyle(String.valueOf(fontStyle));
 
-            }
+                    }
+                }
         }
     }
 

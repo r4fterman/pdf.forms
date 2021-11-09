@@ -15,11 +15,11 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.jpedal.objects.acroforms.creation.JPedalBorderFactory;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
-import org.pdf.forms.model.des.BackgroundFill;
 import org.pdf.forms.model.des.BindingProperties;
 import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.model.des.CaptionProperties;
 import org.pdf.forms.model.des.FontCaption;
+import org.pdf.forms.model.des.FontProperties;
 import org.pdf.forms.model.des.JavaScriptContent;
 import org.pdf.forms.model.des.SizeAndPosition;
 import org.pdf.forms.widgets.components.IPdfComponent;
@@ -402,7 +402,12 @@ public abstract class Widget implements IWidget {
     }
 
     protected void setFontProperties(final IPdfComponent component) {
-        final FontCaption fontCaption = getWidgetModel().getProperties().getFont().getFontCaption();
+        final Optional<FontProperties> font = getWidgetModel().getProperties().getFont();
+        if (font.isEmpty()) {
+            return;
+        }
+
+        final FontCaption fontCaption = font.get().getFontCaption();
 
         final String fontName = fontCaption.getFontName().orElse("Arial");
         final Font baseFont = fontHandler.getFontFromName(fontName);
@@ -459,16 +464,16 @@ public abstract class Widget implements IWidget {
     }
 
     protected void setParagraphProperties(final IPdfComponent component) {
-        final Optional<String> horizontalAlignment = getWidgetModel().getProperties().getParagraph()
+        final Optional<String> horizontalAlignment = getWidgetModel().getProperties().getParagraph().get()
                 .getParagraphCaption().getHorizontalAlignment();
-        final Optional<String> verticalAlignment = getWidgetModel().getProperties().getParagraph().getParagraphCaption()
-                .getVerticalAlignment();
+        final Optional<String> verticalAlignment = getWidgetModel().getProperties().getParagraph().get()
+                .getParagraphCaption().getVerticalAlignment();
 
         if (component instanceof PdfCaption) {
-            String text = component.getText();
-            text = StringEscapeUtils.escapeXml11(text);
-            text = "<html><p align=" + horizontalAlignment + ">" + text;
-            component.setText(text);
+            final String componentText = component.getText();
+            final String escapedComponentText = StringEscapeUtils.escapeXml11(componentText);
+            final String htmlText = "<html><p align=" + horizontalAlignment + ">" + escapedComponentText;
+            component.setText(htmlText);
         }
 
         if (horizontalAlignment.isPresent()) {
@@ -571,8 +576,9 @@ public abstract class Widget implements IWidget {
     public void setBorderAndBackgroundProperties() {
         final JComponent valueComponent = getValueComponent();
 
-        final Borders borders = getWidgetModel().getProperties().getBorder().getBorders();
-        setBordersOnValueComponent(valueComponent, borders);
+        getWidgetModel().getProperties().getBorder()
+                .ifPresent(borderProperties -> setBordersOnValueComponent(valueComponent,
+                        borderProperties.getBorders()));
 
         setBackgroundOnValueComponent(valueComponent);
 
@@ -619,10 +625,12 @@ public abstract class Widget implements IWidget {
     }
 
     private void setBackgroundOnValueComponent(final JComponent valueComponent) {
-        final BackgroundFill backgroundFill = getWidgetModel().getProperties().getBorder().getBackgroundFill();
-        final Color backgroundColor = backgroundFill.getFillColor()
-                .map(c -> new Color(Integer.parseInt(c)))
+        final Color backgroundColor = getWidgetModel().getProperties().getBorder()
+                .map(borderProperties -> borderProperties.getBackgroundFill().getFillColor()
+                        .map(c -> new Color(Integer.parseInt(c)))
+                        .orElse(Color.WHITE))
                 .orElse(Color.WHITE);
+
         valueComponent.setBackground(backgroundColor);
     }
 

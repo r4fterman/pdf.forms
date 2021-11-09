@@ -397,7 +397,12 @@ public final class WidgetParser {
                         "W", "1"
                 ));
 
-        final BorderProperties borderProperties = widget.getWidgetModel().getProperties().getBorder();
+        final Optional<BorderProperties> properties = widget.getWidgetModel().getProperties().getBorder();
+        if (properties.isEmpty()) {
+            return;
+        }
+
+        final BorderProperties borderProperties = properties.get();
         final Borders borders = borderProperties.getBorders();
 
         final Color borderColor = formObject.getBorderColor();

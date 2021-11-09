@@ -23,12 +23,9 @@ public class BorderPropertiesTab extends JPanel implements Dockable {
     }
 
     public void setProperties(final Set<IWidget> widgets) {
-        if (widgets.isEmpty() || (widgets.iterator().next() instanceof Page)) {
+        if (widgets.isEmpty() || (widgets.iterator().next() instanceof Page) || (widgets.iterator().next().getType() == IWidget.IMAGE)) {
             removeAll();
         } else {
-            //todo: for an image all component on this container were removed???
-//            if (widget.getType() == IWidget.IMAGE) {
-//                removeAll();
             borderPanel.setProperties(widgets);
             add(borderPanel);
         }
