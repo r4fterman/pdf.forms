@@ -78,7 +78,7 @@ class WindowConfigurationFileReaderTest {
         final WindowConfiguration windowConfiguration = new WindowConfigurationFileReader(WINDOW_CONFIGURATION_DISABLED)
                 .getWindowConfiguration();
 
-        assertThat(windowConfiguration.isHierarchyVisible(), is(false));
+        assertThat("Config: "+windowConfiguration, windowConfiguration.isHierarchyVisible(), is(false));
     }
 
     @Test

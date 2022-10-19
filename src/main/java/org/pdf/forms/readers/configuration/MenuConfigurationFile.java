@@ -6,13 +6,13 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Set;
 
-import javax.xml.bind.JAXBException;
-
 import org.pdf.forms.model.configuration.MenuConfiguration;
 import org.pdf.forms.readers.XmlJavaObjectMapper;
 import org.pdf.forms.widgets.IWidget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.xml.bind.JAXBException;
 
 public class MenuConfigurationFile {
 

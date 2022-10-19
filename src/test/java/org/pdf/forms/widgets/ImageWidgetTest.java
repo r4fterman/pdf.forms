@@ -10,7 +10,6 @@ import java.net.URL;
 import java.nio.file.Files;
 
 import javax.swing.*;
-import javax.xml.bind.JAXBException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +18,8 @@ import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.xmlunit.diff.DefaultNodeMatcher;
 import org.xmlunit.diff.DifferenceEvaluators;
+
+import jakarta.xml.bind.JAXBException;
 
 class ImageWidgetTest {
 

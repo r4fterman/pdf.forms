@@ -3,8 +3,8 @@ package org.pdf.forms.model.configuration;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType
 public class Window {
@@ -50,9 +50,9 @@ public class Window {
     public boolean equals(final Object o) {
         if (o instanceof Window) {
             final Window window = (Window) o;
-            return visible == window.visible && Objects.equals(command, window.command) && Objects.equals(
-                    name,
-                    window.name);
+            return visible == window.visible
+                    && Objects.equals(command, window.command)
+                    && Objects.equals(name, window.name);
         }
         return false;
     }

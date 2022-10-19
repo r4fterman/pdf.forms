@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.pdf.forms.readers.configuration.ItemBuilder;
 import org.pdf.forms.readers.configuration.MenuBuilder;
 import org.pdf.forms.readers.configuration.MenuConfigurationBuilder;
+
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "menu_configuration")
 @XmlType(propOrder = "menu")

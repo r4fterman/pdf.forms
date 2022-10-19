@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import javax.xml.bind.JAXBException;
-
 import org.pdf.forms.model.des.Widget;
 import org.pdf.forms.readers.XmlJavaObjectMapper;
+
+import jakarta.xml.bind.JAXBException;
 
 public class WidgetFileReader {
 
