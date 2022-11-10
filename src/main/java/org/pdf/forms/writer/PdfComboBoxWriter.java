@@ -73,7 +73,7 @@ public class PdfComboBoxWriter implements PdfComponentWriter {
         combo.setFont(baseFont);
         combo.setFontSize(value.getFont().getSize());
         combo.setTextColor(getBaseColor(widget.getValueComponent().getForeground()));
-        combo.setChoices(objectProperties.getItems().getItemValues().toArray(new String[0]));
+        combo.setChoices(objectProperties.getItems().map(items -> items.getItemValues().toArray(new String[0])).orElse(new String[0]));
 
         final boolean editable = objectProperties.getField().allowCustomTextEntry();
         if (editable) {

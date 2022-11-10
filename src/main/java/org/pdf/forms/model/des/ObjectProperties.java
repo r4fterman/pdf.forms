@@ -1,6 +1,7 @@
 package org.pdf.forms.model.des;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlType;
@@ -38,8 +39,8 @@ public class ObjectProperties {
         this.binding = binding;
     }
 
-    public Items getItems() {
-        return items;
+    public Optional<Items> getItems() {
+        return Optional.ofNullable(items);
     }
 
     public void setItems(final Items items) {

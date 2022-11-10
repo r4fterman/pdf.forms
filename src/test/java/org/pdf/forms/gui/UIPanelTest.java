@@ -61,7 +61,7 @@ public abstract class UIPanelTest {
         frame.pack();
         frame.setVisible(true);
 
-        Thread.sleep(10000);
+        Thread.sleep(100);
 
         frame.dispose();
     }

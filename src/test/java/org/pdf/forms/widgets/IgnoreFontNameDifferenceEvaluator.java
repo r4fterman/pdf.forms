@@ -14,11 +14,19 @@ public class IgnoreFontNameDifferenceEvaluator implements DifferenceEvaluator {
             final ComparisonResult outcome) {
         if (outcome == ComparisonResult.DIFFERENT) {
             final Node controlNode = comparison.getControlDetails().getTarget();
-            if (((Attr) controlNode).getOwnerElement() != null) {
-                final Element element = ((Attr) controlNode).getOwnerElement();
-                final String nameValue = element.getAttribute("name");
+            if (controlNode instanceof Element) {
+                final String nameValue = ((Element) controlNode).getAttribute("name");
                 if (nameValue.equals("Font Name")) {
                     return ComparisonResult.SIMILAR;
+                }
+            }
+            if (controlNode instanceof Attr) {
+                if (((Attr) controlNode).getOwnerElement() != null) {
+                    final Element element = ((Attr) controlNode).getOwnerElement();
+                    final String nameValue = element.getAttribute("name");
+                    if (nameValue.equals("Font Name")) {
+                        return ComparisonResult.SIMILAR;
+                    }
                 }
             }
             System.out.println(outcome.name());

@@ -34,7 +34,6 @@
                 <property name="Name" value="List Box1"/>
                 <property name="Array Number" value="0"/>
             </binding>
-            <items></items>
         </object>
         <layout>
             <sizeandposition>
@@ -70,10 +69,6 @@
             </backgroundfill>
         </border>
         <paragraph>
-            <paragraph_caption>
-                <property name="Horizontal Alignment" value="left"/>
-                <property name="Vertical Alignment" value="center"/>
-            </paragraph_caption>
             <paragraph_value>
                 <property name="Horizontal Alignment" value="left"/>
                 <property name="Vertical Alignment" value="center"/>

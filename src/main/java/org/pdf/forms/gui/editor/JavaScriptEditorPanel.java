@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.*;
@@ -26,79 +27,95 @@ import com.vlsolutions.swing.docking.Dockable;
 
 public class JavaScriptEditorPanel extends JPanel implements Dockable {
 
+    private final JComboBox<String> eventBox;
+    private final JComboBox<String> languageBox;
+    private final JComboBox<String> runAtBox;
+    private final JTextArea scriptBox;
+
     private Map<String, String> eventsAndValues;
     private Set<IWidget> widgets;
 
-    private JComboBox<String> eventBox;
-    private JComboBox<String> languageBox;
-    private JComboBox<String> runAtBox;
-    private JTextArea scriptBox;
-
     public JavaScriptEditorPanel() {
-        initComponents();
+        scriptBox = createScriptBox();
+        eventBox = new JComboBox<>();
+        eventBox.addActionListener(this::eventChanged);
+        languageBox = new JComboBox<>(new String[]{"JavaScript"});
+        runAtBox = new JComboBox<>(new String[]{"Client"});
+
+        initPanel();
     }
 
-    private void initComponents() {
-        scriptBox = createScriptBox();
-
+    private void initPanel() {
         final JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(scriptBox);
 
         final JLabel eventBoxLabel = new JLabel("Show:");
-        eventBox = new JComboBox<>();
-        eventBox.addActionListener(this::eventChanged);
-
         final JLabel scriptLanguageLabel = new JLabel("Language:");
-        languageBox = new JComboBox<>(new String[]{"JavaScript"});
-
         final JLabel runAtLabel = new JLabel("Run At:");
-        runAtBox = new JComboBox<>(new String[]{"Client"});
-
         final JSeparator separator = new JSeparator(VERTICAL);
-
         final JButton saveButton = createSaveButton();
 
         final GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(LEADING)
-                        .add(layout.createSequentialGroup()
-                                .add(eventBoxLabel)
-                                .addPreferredGap(RELATED)
-                                .add(eventBox, PREFERRED_SIZE, 155, PREFERRED_SIZE)
-                                .addPreferredGap(RELATED)
-                                .add(separator, PREFERRED_SIZE, 2, PREFERRED_SIZE)
-                                .addPreferredGap(RELATED)
-                                .add(saveButton)
-                                .addPreferredGap(RELATED, 70, Short.MAX_VALUE)
-                                .add(scriptLanguageLabel)
-                                .addPreferredGap(RELATED)
-                                .add(languageBox, PREFERRED_SIZE, 93, PREFERRED_SIZE)
-                                .addPreferredGap(RELATED)
-                                .add(separator, PREFERRED_SIZE, 2, PREFERRED_SIZE)
-                                .addPreferredGap(RELATED)
-                                .add(runAtLabel)
-                                .addPreferredGap(RELATED)
-                                .add(runAtBox, PREFERRED_SIZE, 76, PREFERRED_SIZE))
+                        .add(createHorizontalGroup(eventBoxLabel, scriptLanguageLabel, runAtLabel, separator, saveButton, layout))
                         .add(GroupLayout.TRAILING, scrollPane, DEFAULT_SIZE, 607, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(LEADING)
                         .add(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .add(layout.createParallelGroup(LEADING, false)
-                                        .add(separator)
-                                        .add(eventBoxLabel, DEFAULT_SIZE, 23, Short.MAX_VALUE)
-                                        .add(eventBox, DEFAULT_SIZE, 23, Short.MAX_VALUE)
-                                        .add(languageBox, DEFAULT_SIZE, 23, Short.MAX_VALUE)
-                                        .add(scriptLanguageLabel, DEFAULT_SIZE, 23, Short.MAX_VALUE)
-                                        .add(runAtBox, DEFAULT_SIZE, 23, Short.MAX_VALUE)
-                                        .add(runAtLabel, PREFERRED_SIZE, 20, PREFERRED_SIZE)
-                                        .add(separator, DEFAULT_SIZE, 23, Short.MAX_VALUE)
-                                        .add(saveButton, DEFAULT_SIZE, DEFAULT_SIZE, Short.MAX_VALUE))
+                                .add(createVerticalGroup(eventBoxLabel, scriptLanguageLabel, runAtLabel, separator, saveButton, layout))
                                 .addPreferredGap(RELATED)
                                 .add(scrollPane, DEFAULT_SIZE, 144, Short.MAX_VALUE))
         );
+    }
+
+    private GroupLayout.ParallelGroup createVerticalGroup(
+            final JLabel eventBoxLabel,
+            final JLabel scriptLanguageLabel,
+            final JLabel runAtLabel,
+            final JSeparator separator,
+            final JButton saveButton,
+            final GroupLayout layout) {
+        return layout.createParallelGroup(LEADING, false)
+                .add(separator)
+                .add(eventBoxLabel, DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                .add(eventBox, DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                .add(languageBox, DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                .add(scriptLanguageLabel, DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                .add(runAtBox, DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                .add(runAtLabel, PREFERRED_SIZE, 20, PREFERRED_SIZE)
+                .add(separator, DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                .add(saveButton, DEFAULT_SIZE, DEFAULT_SIZE, Short.MAX_VALUE);
+    }
+
+    private GroupLayout.SequentialGroup createHorizontalGroup(
+            final JLabel eventBoxLabel,
+            final JLabel scriptLanguageLabel,
+            final JLabel runAtLabel,
+            final JSeparator separator,
+            final JButton saveButton,
+            final GroupLayout layout) {
+        return layout.createSequentialGroup()
+                .add(eventBoxLabel)
+                .addPreferredGap(RELATED)
+                .add(eventBox, PREFERRED_SIZE, 155, PREFERRED_SIZE)
+                .addPreferredGap(RELATED)
+                .add(separator, PREFERRED_SIZE, 2, PREFERRED_SIZE)
+                .addPreferredGap(RELATED)
+                .add(saveButton)
+                .addPreferredGap(RELATED, 70, Short.MAX_VALUE)
+                .add(scriptLanguageLabel)
+                .addPreferredGap(RELATED)
+                .add(languageBox, PREFERRED_SIZE, 93, PREFERRED_SIZE)
+                .addPreferredGap(RELATED)
+                .add(separator, PREFERRED_SIZE, 2, PREFERRED_SIZE)
+                .addPreferredGap(RELATED)
+                .add(runAtLabel)
+                .addPreferredGap(RELATED)
+                .add(runAtBox, PREFERRED_SIZE, 76, PREFERRED_SIZE);
     }
 
     private JTextArea createScriptBox() {
@@ -116,18 +133,18 @@ public class JavaScriptEditorPanel extends JPanel implements Dockable {
         return saveButton;
     }
 
-    private void saveClicked(final ActionEvent evt) {
+    private void saveClicked(final ActionEvent event) {
         if (widgets.size() == 1 && widgets.iterator().next() instanceof FormsDocument) {
             final FormsDocument formsDocument = (FormsDocument) widgets.iterator().next();
-            saveJavaScript(formsDocument.getDesDocument().getJavaScript());
+            formsDocument.getDesDocument().getJavaScript().ifPresent(this::saveJavaScript);
         } else {
             saveJavaScriptInWidgets();
         }
     }
 
-    private void eventChanged(final ActionEvent evt) {
+    private void eventChanged(final ActionEvent event) {
         final String selectedItem = (String) eventBox.getSelectedItem();
-        scriptBox.setText(eventsAndValues.get(selectedItem));
+        scriptBox.setText(eventsAndValues.getOrDefault(selectedItem, ""));
     }
 
     public void setScript(final Set<IWidget> widgets) {
@@ -141,7 +158,7 @@ public class JavaScriptEditorPanel extends JPanel implements Dockable {
         } else {
             getDockKey().setName("Script Editor - Multiple Components");
             handleWidgets(widgets);
-            eventsAndValues.keySet().forEach(event -> eventBox.addItem(event));
+            eventsAndValues.keySet().forEach(eventBox::addItem);
         }
     }
 
@@ -153,12 +170,12 @@ public class JavaScriptEditorPanel extends JPanel implements Dockable {
         if (widget instanceof FormsDocument) {
             getDockKey().setName("Script Editor - Document");
             final FormsDocument document = (FormsDocument) widget;
-            extractJavaScript(document.getDesDocument().getJavaScript());
+            document.getDesDocument().getJavaScript().ifPresent(this::extractJavaScript);
         } else {
             getDockKey().setName("Script Editor - " + widget.getWidgetName() + " Component");
             handleWidgets(widgets);
         }
-        eventsAndValues.keySet().forEach(event -> eventBox.addItem(event));
+        eventsAndValues.keySet().forEach(eventBox::addItem);
     }
 
     private void saveJavaScriptInWidgets() {
@@ -176,8 +193,12 @@ public class JavaScriptEditorPanel extends JPanel implements Dockable {
 
     private void handleWidgets(final Set<IWidget> widgets) {
         for (final IWidget widget: widgets) {
-            final JavaScriptContent javaScriptContent = widget.getJavaScript();
-            if (extractJavaScript(javaScriptContent)) {
+            final Optional<JavaScriptContent> javaScriptContent = Optional.ofNullable(widget.getJavaScript());
+
+            final boolean jsExtracted = javaScriptContent
+                    .map(this::extractJavaScript)
+                    .orElse(false);
+            if (jsExtracted) {
                 break;
             }
         }

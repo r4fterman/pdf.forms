@@ -1,6 +1,7 @@
 package org.pdf.forms.widgets;
 
 import java.awt.*;
+import java.util.Optional;
 
 import javax.swing.*;
 
@@ -136,9 +137,9 @@ public class TextWidget extends Widget {
     private void addParagraph() {
         final ParagraphProperties paragraphProperties = new ParagraphProperties();
 
-        final ParagraphCaption paragraphCaption = paragraphProperties.getParagraphCaption();
-        paragraphCaption.setHorizontalAlignment("left");
-        paragraphCaption.setVerticalAlignment("center");
+        final Optional<ParagraphCaption> paragraphCaption = paragraphProperties.getParagraphCaption();
+        paragraphCaption.ifPresent(caption -> caption.setHorizontalAlignment("left"));
+        paragraphCaption.ifPresent(caption -> caption.setVerticalAlignment("center"));
         getWidgetModel().getProperties().setParagraph(paragraphProperties);
     }
 

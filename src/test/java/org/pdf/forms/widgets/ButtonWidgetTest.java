@@ -33,8 +33,7 @@ class ButtonWidgetTest {
     @BeforeEach
     void setUp() {
         final Configuration configuration = new Configuration();
-        this.designerPropertiesFile = new DesignerPropertiesFile(configuration
-                .getConfigDirectory());
+        this.designerPropertiesFile = new DesignerPropertiesFile(configuration.getConfigDirectory());
         this.fontHandler = new FontHandler(designerPropertiesFile, new MockFontDirectories());
 
         this.baseComponent = new PdfButton("button", fontHandler);
@@ -47,7 +46,8 @@ class ButtonWidgetTest {
         final ButtonWidget buttonWidget = new ButtonWidget(IWidget.BUTTON,
                 baseComponent,
                 component,
-                fontHandler);
+                fontHandler
+        );
 
         final String serialize = new WidgetFileWriter(buttonWidget.getWidgetModel()).serialize();
         final String expected = Files.readString(getFile().toPath());

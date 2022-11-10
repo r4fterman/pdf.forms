@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.nullValue;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.model.components.CustomComponent;
@@ -49,8 +50,8 @@ class CustomComponentsFileReaderTest {
         assertThat(properties.getObject().getBinding(), is(nullValue()));
         assertThat(properties.getObject().getField().getProperty(), hasSize(1));
         assertThat(properties.getObject().getValue(), is(nullValue()));
-        assertThat(properties.getParagraph().get().getParagraphCaption().getProperty(), hasSize(2));
-        assertThat(properties.getParagraph().get().getParagraphValue(), is(nullValue()));
+        assertThat(properties.getParagraph().get().getParagraphCaption().get().getProperty(), hasSize(2));
+        assertThat(properties.getParagraph().get().getParagraphValue(), is(Optional.empty()));
     }
 
     private File getFile() throws URISyntaxException {

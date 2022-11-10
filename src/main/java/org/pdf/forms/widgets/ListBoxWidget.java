@@ -1,7 +1,9 @@
 package org.pdf.forms.widgets;
 
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.*;
 
@@ -178,9 +180,9 @@ public class ListBoxWidget extends Widget {
     private void addParagraphProperties() {
         final ParagraphProperties paragraphProperties = new ParagraphProperties();
 
-        final ParagraphCaption paragraphCaption = paragraphProperties.getParagraphCaption();
-        paragraphCaption.setHorizontalAlignment("left");
-        paragraphCaption.setVerticalAlignment("center");
+        final Optional<ParagraphCaption> paragraphCaption = paragraphProperties.getParagraphCaption();
+        paragraphCaption.ifPresent(caption -> caption.setHorizontalAlignment("left"));
+        paragraphCaption.ifPresent(caption -> caption.setVerticalAlignment("center"));
 
         final ParagraphValue paragraphValue = new ParagraphValue();
         paragraphValue.setHorizontalAlignment("left");
@@ -242,8 +244,10 @@ public class ListBoxWidget extends Widget {
         final DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
         model.removeAllElements();
 
-        final List<Item> items = getWidgetModel().getProperties().getObject().getItems().getItem();
-        items.forEach(item -> model.addElement(item.getItem()));
+        final List<Item> itemList = getWidgetModel().getProperties().getObject().getItems()
+                .map(Items::getItem)
+                .orElse(Collections.emptyList());
+        itemList.forEach(item -> model.addElement(item.getItem()));
 
         String defaultText = getWidgetModel().getProperties().getObject().getValue().getDefault().orElse("< None >");
         if (defaultText.equals("< None >")) {

@@ -141,9 +141,9 @@ public class WidgetPropertiesToolBar extends VLToolBar {
         for (final IWidget widget: widgets) {
             widget.getWidgetModel().getProperties().getParagraph()
                     .ifPresent(paragraphProperties -> {
-                        paragraphProperties.getParagraphCaption().setHorizontalAlignment(alignment);
+                        paragraphProperties.getParagraphCaption().ifPresent(caption -> caption.setHorizontalAlignment(alignment));
                         if (widget.allowEditCaptionAndValue()) {
-                            paragraphProperties.getParagraphValue().setHorizontalAlignment(alignment);
+                            paragraphProperties.getParagraphValue().ifPresent(value -> value.setHorizontalAlignment(alignment));
                         }
                         widget.setParagraphProperties(IWidget.COMPONENT_BOTH);
                     });
@@ -321,10 +321,12 @@ public class WidgetPropertiesToolBar extends VLToolBar {
                         .map(paragraphProperties -> {
                             if (widget.allowEditCaptionAndValue()) {
                                 return paragraphProperties.getParagraphValue()
-                                        .getHorizontalAlignment().orElse("left");
+                                        .map(value -> value.getHorizontalAlignment().orElse("left"))
+                                        .orElse("left");
                             }
                             return paragraphProperties.getParagraphCaption()
-                                    .getHorizontalAlignment().orElse("left");
+                                    .map(value -> value.getHorizontalAlignment().orElse("left"))
+                                    .orElse("left");
                         })
                         .orElse("left"))
                 .collect(toUnmodifiableList());

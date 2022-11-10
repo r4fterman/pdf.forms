@@ -211,16 +211,12 @@ public class ParagraphPropertiesPanel extends JPanel {
             widget.getWidgetModel().getProperties().getParagraph()
                     .ifPresent(paragraphProperties -> {
                         if ("Caption and Value".equals(selectedItem)) {
-                            paragraphProperties.getParagraphCaption().setVerticalAlignment(
-                                    alignment);
-                            paragraphProperties.getParagraphValue().setVerticalAlignment(
-                                    alignment);
+                            paragraphProperties.getParagraphCaption().ifPresent(caption -> caption.setVerticalAlignment(alignment));
+                            paragraphProperties.getParagraphValue().ifPresent(value -> value.setVerticalAlignment(alignment));
                         } else if ("Caption properties".equals(selectedItem)) {
-                            paragraphProperties.getParagraphCaption().setVerticalAlignment(
-                                    alignment);
+                            paragraphProperties.getParagraphCaption().ifPresent(caption -> caption.setVerticalAlignment(alignment));
                         } else if ("Value properties".equals(selectedItem)) {
-                            paragraphProperties.getParagraphValue().setVerticalAlignment(
-                                    alignment);
+                            paragraphProperties.getParagraphValue().ifPresent(value -> value.setVerticalAlignment(alignment));
                         } else {
                             logger.warn("Unexpected selected item {}", selectedItem);
                         }
@@ -241,16 +237,12 @@ public class ParagraphPropertiesPanel extends JPanel {
             widget.getWidgetModel().getProperties().getParagraph()
                     .ifPresent(paragraphProperties -> {
                         if ("Caption and Value".equals(selectedItem)) {
-                            paragraphProperties.getParagraphCaption().setHorizontalAlignment(
-                                    alignment);
-                            paragraphProperties.getParagraphValue().setHorizontalAlignment(
-                                    alignment);
+                            paragraphProperties.getParagraphCaption().ifPresent(caption -> caption.setHorizontalAlignment(alignment));
+                            paragraphProperties.getParagraphValue().ifPresent(value -> value.setHorizontalAlignment(alignment));
                         } else if ("Caption properties".equals(selectedItem)) {
-                            paragraphProperties.getParagraphCaption().setHorizontalAlignment(
-                                    alignment);
+                            paragraphProperties.getParagraphCaption().ifPresent(caption -> caption.setHorizontalAlignment(alignment));
                         } else if ("Value properties".equals(selectedItem)) {
-                            paragraphProperties.getParagraphValue().setHorizontalAlignment(
-                                    alignment);
+                            paragraphProperties.getParagraphValue().ifPresent(value -> value.setHorizontalAlignment(alignment));
                         } else {
                             logger.warn("Unexpected selected item {}", selectedItem);
                         }
@@ -294,9 +286,11 @@ public class ParagraphPropertiesPanel extends JPanel {
                 .map(widget -> widget.getWidgetModel().getProperties().getParagraph()
                         .map(paragraphProperties -> {
                             final String horizontalAlignmentCaption = paragraphProperties.getParagraphValue()
-                                    .getHorizontalAlignment().orElse("left");
+                                    .map(caption -> caption.getHorizontalAlignment().orElse("left"))
+                                    .orElse("left");
                             final String horizontalAlignmentValue = paragraphProperties.getParagraphCaption()
-                                    .getHorizontalAlignment().orElse("left");
+                                    .map(value -> value.getHorizontalAlignment().orElse("left"))
+                                    .orElse("left");
                             return getAlignmentValue(
                                     horizontalAlignmentCaption,
                                     horizontalAlignmentValue,
@@ -317,9 +311,9 @@ public class ParagraphPropertiesPanel extends JPanel {
                 .map(widget -> widget.getWidgetModel().getProperties().getParagraph()
                         .map(paragraphProperties -> {
                             final String verticalAlignmentCaption = paragraphProperties.getParagraphCaption()
-                                    .getVerticalAlignment().orElse("top");
+                                    .map(caption -> caption.getVerticalAlignment().orElse("top")).orElse("top");
                             final String verticalAlignmentValue = paragraphProperties.getParagraphValue()
-                                    .getVerticalAlignment().orElse("top");
+                                    .map(value -> value.getVerticalAlignment().orElse("top")).orElse("top");
 
                             return getAlignmentValue(
                                     verticalAlignmentCaption,

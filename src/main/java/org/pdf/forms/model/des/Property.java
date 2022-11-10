@@ -14,6 +14,7 @@ public class Property {
 
     public Property() {
         // need default constructor JAXB
+        this(null, null);
     }
 
     public Property(

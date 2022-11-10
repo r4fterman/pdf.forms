@@ -77,8 +77,8 @@ public class JavaScriptContent {
         this.keystroke = keystroke;
     }
 
-    public String getInitialize() {
-        return initialize;
+    public Optional<String> getInitialize() {
+        return Optional.ofNullable(initialize);
     }
 
     public void setInitialize(final String initialize) {

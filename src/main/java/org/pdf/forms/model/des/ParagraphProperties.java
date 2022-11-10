@@ -1,6 +1,7 @@
 package org.pdf.forms.model.des;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,19 +18,16 @@ public class ParagraphProperties {
     @XmlElement(name = "paragraph_value")
     private ParagraphValue paragraphValue;
 
-    public ParagraphProperties() {
-        this.paragraphCaption = new ParagraphCaption();
-    }
-    public ParagraphCaption getParagraphCaption() {
-        return paragraphCaption;
+    public Optional<ParagraphCaption> getParagraphCaption() {
+        return Optional.ofNullable(paragraphCaption);
     }
 
     public void setParagraphCaption(final ParagraphCaption paragraphCaption) {
         this.paragraphCaption = paragraphCaption;
     }
 
-    public ParagraphValue getParagraphValue() {
-        return paragraphValue;
+    public Optional<ParagraphValue> getParagraphValue() {
+        return Optional.ofNullable(paragraphValue);
     }
 
     public void setParagraphValue(final ParagraphValue paragraphValue) {

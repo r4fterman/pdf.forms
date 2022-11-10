@@ -1,6 +1,7 @@
 package org.pdf.forms.widgets.utils;
 
 import java.awt.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.pdf.forms.model.des.BindingProperties;
 import org.pdf.forms.model.des.BorderProperties;
 import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.model.des.Item;
+import org.pdf.forms.model.des.Items;
 import org.pdf.forms.model.des.ObjectProperties;
 import org.pdf.forms.widgets.CheckBoxWidget;
 import org.pdf.forms.widgets.IWidget;
@@ -364,10 +366,12 @@ public final class WidgetParser {
         final ObjectProperties objectProperties = widget.getWidgetModel().getProperties().getObject();
 
         //populate items array with list from Opt
-        final String[] items = formObject.getItemsList();
-        if (items != null) {
-            final List<Item> itemList = objectProperties.getItems().getItem();
-            for (final String value: items) {
+        final String[] itemsList = formObject.getItemsList();
+        if (itemsList != null) {
+            final List<Item> itemList = objectProperties.getItems()
+                    .map(Items::getItem)
+                    .orElse(Collections.emptyList());
+            for (final String value: itemsList) {
                 if (value != null && !value.equals("")) {
                     itemList.add(new Item(value));
                 }

@@ -195,9 +195,9 @@ public class VLFrame extends JFrame implements IMainFrame {
         addWindowListener(new FrameCloser());
         desk = new DockingDesktop();
 
-        final ToolBarContainer toolbarContainer = ToolBarContainer.createDefaultContainer(true, false, true, false);
+        final ToolBarContainer toolbar = ToolBarContainer.createDefaultContainer(true, false, true, false);
         // insert our desktop as the only one component of the frame
-        toolbarContainer.add(desk, BorderLayout.CENTER);
+        toolbar.add(desk, BorderLayout.CENTER);
 
         this.designer = new Designer(IMainFrame.INSET,
                 horizontalRuler,
@@ -238,7 +238,7 @@ public class VLFrame extends JFrame implements IMainFrame {
             }
         });
 
-        return toolbarContainer;
+        return toolbar;
     }
 
     private Optional<String> getNameFromDockable(final Dockable name) {

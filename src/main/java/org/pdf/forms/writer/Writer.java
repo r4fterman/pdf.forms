@@ -98,7 +98,7 @@ public class Writer {
             final Map<Integer, List<IWidget>> widgetsByPageNumber,
             final DesDocument designerDocument) {
         final List<org.pdf.forms.model.des.Page> pages = designerDocument.getPage();
-        final Optional<String> javaScript = getJavaScript(designerDocument.getJavaScript());
+        final Optional<String> javaScript = designerDocument.getJavaScript().flatMap(this::getJavaScript);
         final PdfDocumentLayout pdfDocumentLayout = getPdfDocumentLayout(pages);
         if (pdfDocumentLayout.getPdfPages().isEmpty()) {
             logger.info("write: PDF page list is empty.");
