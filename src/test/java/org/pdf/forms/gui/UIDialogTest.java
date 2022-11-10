@@ -18,7 +18,7 @@ public abstract class UIDialogTest {
             dialog.setModal(false);
             dialog.setVisible(true);
 
-            Thread.sleep(10000);
+            Thread.sleep(100);
         } finally {
             dialog.setVisible(false);
             dialog.dispose();
