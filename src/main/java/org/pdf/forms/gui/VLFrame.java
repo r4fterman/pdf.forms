@@ -195,9 +195,9 @@ public class VLFrame extends JFrame implements IMainFrame {
         addWindowListener(new FrameCloser());
         desk = new DockingDesktop();
 
-        final ToolBarContainer toolbarContainer = ToolBarContainer.createDefaultContainer(true, false, true, false);
+        final ToolBarContainer toolbar = ToolBarContainer.createDefaultContainer(true, false, true, false);
         // insert our desktop as the only one component of the frame
-        toolbarContainer.add(desk, BorderLayout.CENTER);
+        toolbar.add(desk, BorderLayout.CENTER);
 
         this.designer = new Designer(IMainFrame.INSET,
                 horizontalRuler,
@@ -238,7 +238,7 @@ public class VLFrame extends JFrame implements IMainFrame {
             }
         });
 
-        return toolbarContainer;
+        return toolbar;
     }
 
     private Optional<String> getNameFromDockable(final Dockable name) {
@@ -456,7 +456,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         setJMenuBar(menubarCreator.getMenuBar());
     }
 
-    private void addRecentDesignerFilesAsMenuEntries(final JMenu file) {
+    private void addRecentDesignerFilesAsMenuEntries(final JMenu menu) {
         final List<String> recentDocs = designerPropertiesFile.getRecentDesignerDocuments();
         if (recentDocs.isEmpty()) {
             return;
@@ -465,7 +465,7 @@ public class VLFrame extends JFrame implements IMainFrame {
         final int numberOfRecentDocs = DesignerPropertiesFile.NO_OF_RECENT_DOCS;
         for (int i = 0; i < numberOfRecentDocs; i++) {
             final JMenuItem menuItem = addDocumentToMenuEntry(recentDocs.get(i), i);
-            file.add(menuItem);
+            menu.add(menuItem);
 
             menuItem.addActionListener(e -> {
                 final JMenuItem item = (JMenuItem) e.getSource();
@@ -478,13 +478,13 @@ public class VLFrame extends JFrame implements IMainFrame {
         }
     }
 
-    private void addRecentPDFFilesAsMenuEntries(final JMenu file) {
+    private void addRecentPDFFilesAsMenuEntries(final JMenu menu) {
         final List<String> recentDocs = designerPropertiesFile.getRecentPDFDocuments();
 
         final int numberOfRecentDocs = DesignerPropertiesFile.NO_OF_RECENT_DOCS;
         for (int i = 0; i < numberOfRecentDocs; i++) {
             final JMenuItem menuItem = addDocumentToMenuEntry(recentDocs.get(i), i);
-            file.add(menuItem);
+            menu.add(menuItem);
 
             menuItem.addActionListener(e -> {
                 final JMenuItem item = (JMenuItem) e.getSource();

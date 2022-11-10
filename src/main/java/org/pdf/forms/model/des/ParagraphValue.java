@@ -6,11 +6,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(name = "paragraph_value")
 public class ParagraphValue {
-
 
     private static final String VERTICAL_ALIGNMENT = "Vertical Alignment";
     private static final String HORIZONTAL_ALIGNMENT = "Horizontal Alignment";

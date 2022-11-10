@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(name = "javascript")
 public class JavaScriptContent {
@@ -77,8 +77,8 @@ public class JavaScriptContent {
         this.keystroke = keystroke;
     }
 
-    public String getInitialize() {
-        return initialize;
+    public Optional<String> getInitialize() {
+        return Optional.ofNullable(initialize);
     }
 
     public void setInitialize(final String initialize) {

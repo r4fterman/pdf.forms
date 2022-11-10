@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.nullValue;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.model.components.CustomComponent;
@@ -38,19 +39,19 @@ class CustomComponentsFileReaderTest {
     }
 
     private void assertWidgetProperties(final Properties properties) {
-        assertThat(properties.getBorder().getBorders().getProperty(), hasSize(3));
-        assertThat(properties.getBorder().getBackgroundFill().getProperty(), hasSize(2));
+        assertThat(properties.getBorder().get().getBorders().getProperty(), hasSize(3));
+        assertThat(properties.getBorder().get().getBackgroundFill().getProperty(), hasSize(2));
         assertThat(properties.getCaptionProperties().getProperty(), hasSize(1));
-        assertThat(properties.getFont().getFontCaption().getProperty(), hasSize(6));
-        assertThat(properties.getFont().getFontValue().getProperty(), is(empty()));
+        assertThat(properties.getFont().get().getFontCaption().getProperty(), hasSize(6));
+        assertThat(properties.getFont().get().getFontValue().getProperty(), is(empty()));
         assertThat(properties.getLayout().getCaption(), is(nullValue()));
         assertThat(properties.getLayout().getMargins().getProperty(), hasSize(4));
         assertThat(properties.getLayout().getSizeAndPosition().getProperty(), hasSize(8));
         assertThat(properties.getObject().getBinding(), is(nullValue()));
         assertThat(properties.getObject().getField().getProperty(), hasSize(1));
         assertThat(properties.getObject().getValue(), is(nullValue()));
-        assertThat(properties.getParagraph().getParagraphCaption().getProperty(), hasSize(2));
-        assertThat(properties.getParagraph().getParagraphValue(), is(nullValue()));
+        assertThat(properties.getParagraph().get().getParagraphCaption().get().getProperty(), hasSize(2));
+        assertThat(properties.getParagraph().get().getParagraphValue(), is(Optional.empty()));
     }
 
     private File getFile() throws URISyntaxException {

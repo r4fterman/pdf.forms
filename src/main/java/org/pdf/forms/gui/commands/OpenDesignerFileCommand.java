@@ -16,7 +16,7 @@ import javax.swing.*;
 import org.pdf.forms.document.FormsDocument;
 import org.pdf.forms.document.Page;
 import org.pdf.forms.gui.IMainFrame;
-import org.pdf.forms.gui.windows.FileFinder;
+import org.pdf.forms.gui.windows.FileFinderDialog;
 import org.pdf.forms.model.des.CheckBoxGroups;
 import org.pdf.forms.model.des.DesDocument;
 import org.pdf.forms.model.des.PageData;
@@ -100,7 +100,7 @@ public class OpenDesignerFileCommand implements Command {
             final List<org.pdf.forms.model.des.Page> pages = desDocument.getPage();
 
             final Map<String, String> changedFiles = getChangedPdfFileLocations(pages);
-            for (final org.pdf.forms.model.des.Page page: pages) {
+            for (final org.pdf.forms.model.des.Page page : pages) {
                 final Page newPage = convertToFormsPage(changedFiles, page);
 
                 addRadioButtonGroupsToPage(page, newPage);
@@ -110,7 +110,7 @@ public class OpenDesignerFileCommand implements Command {
                 addPage(mainFrame.getCurrentPage(), newPage);
 
                 final List<IWidget> widgets = getWidgetsFromPage(page);
-                for (final IWidget widget: widgets) {
+                for (final IWidget widget : widgets) {
                     mainFrame.addWidgetToHierarchy(widget);
                 }
                 newPage.setWidgets(widgets);
@@ -163,17 +163,26 @@ public class OpenDesignerFileCommand implements Command {
                 .map(Optional::get)
                 .collect(toUnmodifiableMap(
                         pdfFile -> pdfFile,
-                        this::pdfFileName
+                        pdfFile -> pdfFileName(new File(pdfFile))
                 ));
     }
 
-    private String pdfFileName(final String pdfFile) {
-        if (!new File(pdfFile).exists()) {
-            final FileFinder fileFinder = new FileFinder((Component) mainFrame, pdfFile);
-            fileFinder.setVisible(true);
-            return fileFinder.getFileLocation();
+    private String pdfFileName(final File pdfFile) {
+        if (!pdfFile.exists()) {
+            final FileFinderDialog fileFinderDialog = new FileFinderDialog((JFrame) mainFrame, pdfFile);
+            fileFinderDialog.setVisible(true);
+            final String pdfFileLocation = fileFinderDialog.getFileLocation();
+
+            if (!new File(pdfFileLocation).exists()) {
+                JOptionPane.showMessageDialog(
+                        (JFrame) mainFrame,
+                        "The file you have entered does not exist, please select an existing file!",
+                        "File Not Found",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
         }
-        return pdfFile;
+        return pdfFile.getAbsolutePath();
     }
 
     private void addRadioButtonGroupsToPage(
@@ -232,7 +241,7 @@ public class OpenDesignerFileCommand implements Command {
 
             final List<IWidget> widgetsInGroup = new ArrayList<>();
             final List<Widget> widgetInGroupList = widget.getWidgets().getWidget();
-            for (final Widget widgetInGroup: widgetInGroupList) {
+            for (final Widget widgetInGroup : widgetInGroupList) {
                 widgetsInGroup.add(createWidgetByType(widgetInGroup));
             }
             groupWidget.setWidgetsInGroup(widgetsInGroup);

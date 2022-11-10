@@ -20,6 +20,7 @@ import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.designer.gui.Rule;
+import org.pdf.forms.model.des.BorderProperties;
 import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.widgets.IWidget;
 
@@ -236,20 +237,27 @@ public class BorderPropertiesPanel extends JPanel {
         borderWidthBox.setEnabled(borderEnabled);
         borderColorButton.setEnabled(borderEnabled);
 
-        widgets.forEach(widget -> {
-            final Borders borders = widget.getWidgetModel().getProperties().getBorder().getBorders();
-
-            Optional.ofNullable(style)
-                    .ifPresent(s -> borders.setBorderStyle(s));
-
-            Optional.ofNullable(borderColorButton.getBackground())
-                    .ifPresent(color -> borders.setBorderColor(String.valueOf(color.getRGB())));
-
-            getBorderWidthValue()
-                    .ifPresent(width -> borders.setBorderWidth(String.valueOf(Math.round(width))));
-        });
+        widgets.forEach(widget -> setBorderValues(style, widget));
 
         designerPanel.repaint();
+    }
+
+    private void setBorderValues(
+            final String style,
+            final IWidget widget) {
+        widget.getWidgetModel().getProperties().getBorder()
+                .ifPresent(borderProperties -> {
+                    final Borders borders = borderProperties.getBorders();
+
+                    Optional.ofNullable(style)
+                            .ifPresent(borders::setBorderStyle);
+
+                    Optional.ofNullable(borderColorButton.getBackground())
+                            .ifPresent(color -> borders.setBorderColor(String.valueOf(color.getRGB())));
+
+                    getBorderWidthValue()
+                            .ifPresent(width -> borders.setBorderWidth(String.valueOf(Math.round(width))));
+                });
     }
 
     private Optional<Double> getBorderWidthValue() {
@@ -301,7 +309,10 @@ public class BorderPropertiesPanel extends JPanel {
 
     private String getBorderStyle(final Set<IWidget> widgets) {
         final List<String> borderStyles = widgets.stream()
-                .map(widget -> widget.getWidgetModel().getProperties().getBorder().getBorders())
+                .map(widget -> widget.getWidgetModel().getProperties().getBorder())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(BorderProperties::getBorders)
                 .map(borders -> borders.getBorderStyle().orElse(""))
                 .collect(toUnmodifiableList());
 
@@ -310,7 +321,10 @@ public class BorderPropertiesPanel extends JPanel {
 
     private String getBorderWidth(final Set<IWidget> widgets) {
         final List<String> borderWidth = widgets.stream()
-                .map(widget -> widget.getWidgetModel().getProperties().getBorder().getBorders())
+                .map(widget -> widget.getWidgetModel().getProperties().getBorder())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(BorderProperties::getBorders)
                 .map(borders -> borders.getBorderWidth().orElse(""))
                 .collect(toUnmodifiableList());
 
@@ -319,7 +333,10 @@ public class BorderPropertiesPanel extends JPanel {
 
     private String getBorderColor(final Set<IWidget> widgets) {
         final List<String> borderColors = widgets.stream()
-                .map(widget -> widget.getWidgetModel().getProperties().getBorder().getBorders())
+                .map(widget -> widget.getWidgetModel().getProperties().getBorder())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(BorderProperties::getBorders)
                 .map(borders -> borders.getBorderColor().orElse(""))
                 .collect(toUnmodifiableList());
 
@@ -328,7 +345,10 @@ public class BorderPropertiesPanel extends JPanel {
 
     private String getBackgroundStyle(final Set<IWidget> widgets) {
         final List<String> styles = widgets.stream()
-                .map(widget -> widget.getWidgetModel().getProperties().getBorder().getBackgroundFill())
+                .map(widget -> widget.getWidgetModel().getProperties().getBorder())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(BorderProperties::getBackgroundFill)
                 .map(backgroundFill -> backgroundFill.getStyle().orElse(""))
                 .collect(toUnmodifiableList());
 
@@ -337,7 +357,10 @@ public class BorderPropertiesPanel extends JPanel {
 
     private String getBackgroundColor(final Set<IWidget> widgets) {
         final List<String> backgroundColors = widgets.stream()
-                .map(widget -> widget.getWidgetModel().getProperties().getBorder().getBackgroundFill())
+                .map(widget -> widget.getWidgetModel().getProperties().getBorder())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(BorderProperties::getBackgroundFill)
                 .map(backgroundFill -> backgroundFill.getFillColor().orElse(""))
                 .collect(toUnmodifiableList());
 

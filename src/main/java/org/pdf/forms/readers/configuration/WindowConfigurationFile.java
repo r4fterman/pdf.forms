@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-import javax.xml.bind.JAXBException;
-
 import org.pdf.forms.model.configuration.WindowConfiguration;
 import org.pdf.forms.readers.XmlJavaObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.xml.bind.JAXBException;
 
 public class WindowConfigurationFile {
 

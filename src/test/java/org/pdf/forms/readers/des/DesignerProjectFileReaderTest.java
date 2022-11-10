@@ -11,6 +11,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.pdf.forms.model.des.DesDocument;
@@ -31,8 +32,11 @@ class DesignerProjectFileReaderTest {
         assertPages(desDocument.getPage());
     }
 
-    private void assertJavaScriptContent(final JavaScriptContent javaScriptContent) {
-        assertThat(javaScriptContent.getInitialize(), is(emptyString()));
+    private void assertJavaScriptContent(final Optional<JavaScriptContent> jsContent) {
+        assertThat(jsContent.isPresent(), is(true));
+
+        final JavaScriptContent javaScriptContent = jsContent.get();
+        assertThat(javaScriptContent.getInitialize(), is(Optional.empty()));
 
         assertThat(javaScriptContent.getChange(), is(nullValue()));
         assertThat(javaScriptContent.getMouseDown(), is(nullValue()));
@@ -94,8 +98,8 @@ class DesignerProjectFileReaderTest {
 
     private void assertWidget(final Widget widget) {
         assertThat(widget.getProperty(), hasSize(2));
-        assertThat(widget.getProperties().getFont().getFontCaption().getProperty(), hasSize(6));
-        assertThat(widget.getProperties().getFont().getFontValue().getProperty(), is(empty()));
+        assertThat(widget.getProperties().getFont().get().getFontCaption().getProperty(), hasSize(6));
+        assertThat(widget.getProperties().getFont().get().getFontValue().getProperty(), is(empty()));
 
         assertThat(widget.getProperties().getObject().getField().getProperty(), hasSize(3));
         assertThat(widget.getProperties().getObject().getValue().getProperty(), hasSize(2));
@@ -105,11 +109,11 @@ class DesignerProjectFileReaderTest {
         assertThat(widget.getProperties().getLayout().getMargins().getProperty(), hasSize(4));
         assertThat(widget.getProperties().getLayout().getCaption().getProperty(), hasSize(2));
 
-        assertThat(widget.getProperties().getBorder().getBorders().getProperty(), hasSize(3));
-        assertThat(widget.getProperties().getBorder().getBackgroundFill().getProperty(), hasSize(2));
+        assertThat(widget.getProperties().getBorder().get().getBorders().getProperty(), hasSize(3));
+        assertThat(widget.getProperties().getBorder().get().getBackgroundFill().getProperty(), hasSize(2));
 
-        assertThat(widget.getProperties().getParagraph().getParagraphCaption().getProperty(), hasSize(2));
-        assertThat(widget.getProperties().getParagraph().getParagraphValue(), is(nullValue()));
+        assertThat(widget.getProperties().getParagraph().get().getParagraphCaption().get().getProperty(), hasSize(2));
+        assertThat(widget.getProperties().getParagraph().get().getParagraphValue(), is(Optional.empty()));
 
         assertThat(widget.getProperties().getCaptionProperties().getProperty(), hasSize(2));
 

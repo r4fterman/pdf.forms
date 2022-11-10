@@ -7,13 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
-import javax.swing.Icon;
-import javax.swing.JCheckBox;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ActionMapUIResource;
 
@@ -35,31 +29,11 @@ import javax.swing.plaf.ActionMapUIResource;
  */
 public class TriStateCheckBox extends JCheckBox {
 
-    /**
-     * This is a type-safe enumerated type.
-     */
-    public static class State {
-        //todo: convert this class into a enum
+    public enum State {
+        NOT_SELECTED,
+        SELECTED,
+        DONT_CARE;
     }
-
-    public static final State NOT_SELECTED = new State() {
-        @Override
-        public String toString() {
-            return "NOT_SELECTED";
-        }
-    };
-    public static final State SELECTED = new State() {
-        @Override
-        public String toString() {
-            return "SELECTED";
-        }
-    };
-    public static final State DONT_CARE = new State() {
-        @Override
-        public String toString() {
-            return "DONT_CARE";
-        }
-    };
 
     private final TriStateDecorator decorator;
 
@@ -106,7 +80,7 @@ public class TriStateCheckBox extends JCheckBox {
     public TriStateCheckBox(
             final String text,
             final TriStateCheckBoxParent parent) {
-        this(text, DONT_CARE, parent);
+        this(text, State.DONT_CARE, parent);
     }
 
     public TriStateCheckBox(final TriStateCheckBoxParent parent) {
@@ -139,9 +113,9 @@ public class TriStateCheckBox extends JCheckBox {
     @Override
     public void setSelected(final boolean selected) {
         if (selected) {
-            setState(SELECTED);
+            setState(State.SELECTED);
         } else {
-            setState(NOT_SELECTED);
+            setState(State.NOT_SELECTED);
         }
     }
 
@@ -159,11 +133,11 @@ public class TriStateCheckBox extends JCheckBox {
         }
 
         private void setState(final State state) {
-            if (state == NOT_SELECTED) {
+            if (state == State.NOT_SELECTED) {
                 other.setArmed(false);
                 setPressed(false);
                 setSelected(false);
-            } else if (state == SELECTED) {
+            } else if (state == State.SELECTED) {
                 other.setArmed(false);
                 setPressed(false);
                 setSelected(true);
@@ -187,16 +161,16 @@ public class TriStateCheckBox extends JCheckBox {
         private State getState() {
             if (isSelected() && !isArmed()) {
                 // normal black tick
-                return SELECTED;
+                return State.SELECTED;
             }
 
             if (isSelected() && isArmed()) {
                 // don't care grey tick
-                return DONT_CARE;
+                return State.DONT_CARE;
             }
 
             // normal deselected
-            return NOT_SELECTED;
+            return State.NOT_SELECTED;
         }
 
         /**
@@ -204,12 +178,12 @@ public class TriStateCheckBox extends JCheckBox {
          */
         private void nextState() {
             final State current = getState();
-            if (current == NOT_SELECTED) {
-                setState(SELECTED);
-            } else if (current == SELECTED) {
-                setState(NOT_SELECTED);
-            } else if (current == DONT_CARE) {
-                setState(NOT_SELECTED);
+            if (current == State.NOT_SELECTED) {
+                setState(State.SELECTED);
+            } else if (current == State.SELECTED) {
+                setState(State.NOT_SELECTED);
+            } else if (current == State.DONT_CARE) {
+                setState(State.NOT_SELECTED);
             }
         }
 

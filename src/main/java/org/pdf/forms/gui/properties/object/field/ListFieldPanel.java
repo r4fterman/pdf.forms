@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import org.jdesktop.layout.LayoutStyle;
 import org.pdf.forms.gui.designer.IDesigner;
 import org.pdf.forms.gui.properties.customcomponents.tridstatecheckbox.TriStateCheckBox;
 import org.pdf.forms.model.des.Item;
+import org.pdf.forms.model.des.Items;
 import org.pdf.forms.widgets.IWidget;
 
 public class ListFieldPanel extends JPanel {
@@ -81,7 +83,7 @@ public class ListFieldPanel extends JPanel {
 
         allowCustomTextEntryBox = new TriStateCheckBox(
                 "Allow Custom Text Entry",
-                TriStateCheckBox.NOT_SELECTED,
+                TriStateCheckBox.State.NOT_SELECTED,
                 this::saveAllowedCustomText);
         allowCustomTextEntryBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         allowCustomTextEntryBox.setMargin(new Insets(0, 0, 0, 0));
@@ -216,15 +218,15 @@ public class ListFieldPanel extends JPanel {
     }
 
     private void updateItemsInModel(final IWidget widget) {
-        final List<Item> items = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         for (int i = 0; i < itemsTable.getRowCount(); i++) {
             final String value = (String) itemsTable.getValueAt(i, 0);
             if (value != null && !value.trim().isEmpty()) {
-                items.add(new Item(value.trim()));
+                itemList.add(new Item(value.trim()));
             }
         }
 
-        widget.getWidgetModel().getProperties().getObject().getItems().setItem(items);
+        widget.getWidgetModel().getProperties().getObject().getItems().ifPresent(items -> items.setItem(itemList));
     }
 
     public void setProperties(final Set<IWidget> widgets) {
@@ -236,9 +238,11 @@ public class ListFieldPanel extends JPanel {
         if (widgets.size() == 1) {
             final IWidget widget = widgets.iterator().next();
 
-            final List<Item> items = widget.getWidgetModel().getProperties().getObject().getItems().getItem();
-            for (int i = 0; i < items.size(); i++) {
-                final String value = getItemValue(items.get(i));
+            final List<Item> itemList = widget.getWidgetModel().getProperties().getObject().getItems()
+                    .map(Items::getItem)
+                    .orElse(Collections.emptyList());
+            for (int i = 0; i < itemList.size(); i++) {
+                final String value = getItemValue(itemList.get(i));
 
                 ((ItemsTableModel) itemsTable.getModel()).insertRow(i);
                 itemsTable.setValueAt(value, i, 0);
@@ -268,11 +272,11 @@ public class ListFieldPanel extends JPanel {
 
     private void saveAllowedCustomText(final MouseEvent mouseEvent) {
         final TriStateCheckBox.State state = (((TriStateCheckBox) allowCustomTextEntryBox).getState());
-        if (state == TriStateCheckBox.DONT_CARE) {
+        if (state == TriStateCheckBox.State.DONT_CARE) {
             return;
         }
 
-        final boolean allow = state == TriStateCheckBox.SELECTED;
+        final boolean allow = state == TriStateCheckBox.State.SELECTED;
         widgets.forEach(widget -> widget.getWidgetModel().getProperties().getObject().getField()
                 .allowCustomTextEntry(allow));
     }

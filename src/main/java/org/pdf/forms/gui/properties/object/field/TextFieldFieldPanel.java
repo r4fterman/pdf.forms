@@ -46,12 +46,14 @@ public class TextFieldFieldPanel extends JPanel {
     private void initComponents() {
         allowMultipleLinesBox = new TriStateCheckBox(
                 "Allow Multiple Line",
-                TriStateCheckBox.NOT_SELECTED,
+                TriStateCheckBox.State.NOT_SELECTED,
                 this::saveAllowedMultipleLines);
         allowMultipleLinesBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         allowMultipleLinesBox.setMargin(new Insets(0, 0, 0, 0));
 
-        limitLengthBox = new TriStateCheckBox("Limit Length", TriStateCheckBox.NOT_SELECTED, this::saveLimitLength);
+        limitLengthBox = new TriStateCheckBox("Limit Length",
+                TriStateCheckBox.State.NOT_SELECTED,
+                this::saveLimitLength);
         limitLengthBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         limitLengthBox.setMargin(new Insets(0, 0, 0, 0));
 
@@ -220,11 +222,11 @@ public class TextFieldFieldPanel extends JPanel {
     }
 
     private Optional<Boolean> getTriStateValue(final TriStateCheckBox.State state) {
-        if (state == TriStateCheckBox.DONT_CARE) {
+        if (state == TriStateCheckBox.State.DONT_CARE) {
             return Optional.empty();
         }
 
-        final boolean selected = state == TriStateCheckBox.SELECTED;
+        final boolean selected = state == TriStateCheckBox.State.SELECTED;
         return Optional.of(selected);
     }
 
@@ -234,11 +236,11 @@ public class TextFieldFieldPanel extends JPanel {
 
         if (listContainsOnlyEqualValues) {
             if (Boolean.TRUE.equals(values.get(0))) {
-                return TriStateCheckBox.SELECTED;
+                return TriStateCheckBox.State.SELECTED;
             }
-            return TriStateCheckBox.NOT_SELECTED;
+            return TriStateCheckBox.State.NOT_SELECTED;
         }
-        return TriStateCheckBox.DONT_CARE;
+        return TriStateCheckBox.State.DONT_CARE;
     }
 
     private String findCommonOrMixedValue(final List<String> values) {

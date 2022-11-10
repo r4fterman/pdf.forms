@@ -2,6 +2,7 @@ package org.pdf.forms.writer;
 
 import java.awt.*;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.pdf.forms.fonts.FontHandler;
@@ -75,10 +76,10 @@ public class PdfTextWriter implements PdfComponentWriter {
         cb.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
 
         final Font font = pdfCaption.getFont();
-        final String fontDirectory = fontHandler.getFontDirectory(font);
+        final Optional<String> fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
-        mapper.insertDirectory(fontDirectory);
+        fontDirectory.ifPresent(mapper::insertDirectory);
 
         /*
          * we need to make this erroneous call to awtToPdf to see if an exception is thrown, if it is, it is

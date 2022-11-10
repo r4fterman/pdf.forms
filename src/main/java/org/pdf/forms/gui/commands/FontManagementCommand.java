@@ -1,12 +1,13 @@
 package org.pdf.forms.gui.commands;
 
-import java.awt.*;
+import java.util.List;
 
 import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
-import org.pdf.forms.fonts.FontSelector;
+import org.pdf.forms.fonts.FontManagementDialog;
 import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.model.properties.Font;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 
 class FontManagementCommand implements Command {
@@ -26,12 +27,21 @@ class FontManagementCommand implements Command {
 
     @Override
     public void execute() {
-        final JDialog dialog = new JDialog((Frame) mainFrame, "Font Management", true);
-        dialog.add(new FontSelector(fontHandler, mainFrame, dialog, designerPropertiesFile));
-        dialog.pack();
-        dialog.setLocationRelativeTo((Frame) mainFrame);
-        dialog.setVisible(true);
+        final FontManagementDialog dialog = new FontManagementDialog(
+                (JFrame) mainFrame,
+                fontHandler.getFonts(),
+                designerPropertiesFile.getCustomFonts());
 
+        dialog.pack();
+        dialog.setLocationRelativeTo((JFrame) mainFrame);
+        dialog.setVisible(true);
+        if (dialog.isCanceled()) {
+            return;
+        }
+
+        final List<Font> customFonts = dialog.getCustomFonts();
+        designerPropertiesFile.setCustomFonts(customFonts);
+        fontHandler.updateFonts();
         mainFrame.updateAvailableFonts();
     }
 

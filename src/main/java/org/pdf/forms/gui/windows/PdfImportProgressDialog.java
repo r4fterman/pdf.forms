@@ -1,19 +1,13 @@
 package org.pdf.forms.gui.windows;
 
-import static javax.swing.LayoutStyle.ComponentPlacement;
-
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JProgressBar;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 
-public class PdfImportProgressDialog extends JDialog {
+import org.pdf.forms.gui.components.AbstractDialog;
+
+public class PdfImportProgressDialog extends AbstractDialog {
 
     private int noOfPages;
     private boolean isCancelled = false;
@@ -24,58 +18,50 @@ public class PdfImportProgressDialog extends JDialog {
 
     public PdfImportProgressDialog(final JFrame frame) {
         super(frame);
-        initComponents();
+
+        buildDialog();
+
+        setDialogSize(500, 250);
     }
 
-    private void initComponents() {
+    @Override
+    protected String getDialogTitle() {
+        return "Import PDF files";
+    }
 
-        final JLabel jLabel1 = new JLabel();
-        infoText = new JLabel();
-        progressBar = new JProgressBar();
-        stopButton = new JButton();
+    @Override
+    protected Component createMainPanel() {
+        final JPanel panel = new JPanel(new BorderLayout(5, 5));
 
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        panel.add(createAnimationPanel(), BorderLayout.CENTER);
+        panel.add(createProgressPanel(), BorderLayout.SOUTH);
 
-        jLabel1.setIcon(new ImageIcon(getClass().getResource("/org/pdf/forms/res/animation.gif"))); // NOI18N
+        return panel;
+    }
 
-        infoText.setText("Importing PDF page 1 of 10:");
+    private JPanel createAnimationPanel() {
+        final JPanel panel = new JPanel(new BorderLayout(5, 5));
 
-        stopButton.setText("Stop");
+        final JLabel animationLabel = new JLabel(new ImageIcon(getClass()
+                .getResource("/org/pdf/forms/res/animation.gif"))); // NOI18N
+
+        panel.add(animationLabel, BorderLayout.CENTER);
+
+        return panel;
+    }
+
+    private JPanel createProgressPanel() {
+        final JPanel panel = new JPanel(new BorderLayout(5, 5));
+
+        this.progressBar = new JProgressBar();
+
+        this.stopButton = new JButton("Stop");
         stopButton.addActionListener(this::stopButtonClicked);
 
-        final GroupLayout layout = new GroupLayout(getContentPane());
-        setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGap(0, 424, Short.MAX_VALUE)
-                        .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                        .addComponent(jLabel1, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addComponent(progressBar, GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
-                                                .addGap(10, 10, 10)
-                                                .addComponent(stopButton))
-                                        .addComponent(infoText, GroupLayout.Alignment.LEADING))
-                                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGap(0, 179, Short.MAX_VALUE)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel1, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                        .addGroup(GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                                .addComponent(infoText)
-                                                .addPreferredGap(ComponentPlacement.RELATED)
-                                                .addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(stopButton))
-                                .addContainerGap())
-        );
+        panel.add(progressBar, BorderLayout.CENTER);
+        panel.add(stopButton, BorderLayout.EAST);
 
-        pack();
+        return panel;
     }
 
     private void stopButtonClicked(final ActionEvent evt) {

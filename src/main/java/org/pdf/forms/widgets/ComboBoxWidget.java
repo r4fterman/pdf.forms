@@ -177,9 +177,9 @@ public class ComboBoxWidget extends Widget {
     private void addParagraphProperties() {
         final ParagraphProperties paragraphProperties = new ParagraphProperties();
 
-        final ParagraphCaption paragraphCaption = paragraphProperties.getParagraphCaption();
-        paragraphCaption.setHorizontalAlignment("left");
-        paragraphCaption.setVerticalAlignment("center");
+        final Optional<ParagraphCaption> paragraphCaption = paragraphProperties.getParagraphCaption();
+        paragraphCaption.ifPresent(caption -> caption.setHorizontalAlignment("left"));
+        paragraphCaption.ifPresent(caption -> caption.setVerticalAlignment("center"));
 
         final ParagraphValue paragraphValue = new ParagraphValue();
         paragraphValue.setHorizontalAlignment("left");
@@ -231,7 +231,7 @@ public class ComboBoxWidget extends Widget {
         final DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) comboBox.getModel();
         model.removeAllElements();
 
-        Optional.ofNullable(getWidgetModel().getProperties().getObject().getItems())
+        getWidgetModel().getProperties().getObject().getItems()
                 .ifPresent(items -> items.getItem().forEach(item -> model.addElement(item.getItem())));
 
         /* set default value for combo box */

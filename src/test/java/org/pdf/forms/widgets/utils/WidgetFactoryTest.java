@@ -25,6 +25,7 @@ import org.pdf.forms.widgets.ListBoxWidget;
 import org.pdf.forms.widgets.RadioButtonWidget;
 import org.pdf.forms.widgets.TextFieldWidget;
 import org.pdf.forms.widgets.TextWidget;
+import org.pdf.forms.writer.MockFontDirectories;
 
 class WidgetFactoryTest extends EasyMockSupport {
 
@@ -35,7 +36,7 @@ class WidgetFactoryTest extends EasyMockSupport {
     @BeforeEach
     void setUp() {
         final Configuration configuration = new Configuration();
-        final FontHandler fontHandler = new FontHandler(new DesignerPropertiesFile(configuration.getConfigDirectory()));
+        final FontHandler fontHandler = new FontHandler(new DesignerPropertiesFile(configuration.getConfigDirectory()), new MockFontDirectories());
         this.widgetFactory = new WidgetFactory(fontHandler);
     }
 

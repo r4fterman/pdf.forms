@@ -2,129 +2,116 @@ package org.pdf.forms.fonts;
 
 import java.awt.*;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Optional;
 
+import org.pdf.forms.model.properties.Font;
 import org.pdf.forms.readers.properties.DesignerPropertiesFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableList;
-
 public final class FontHandler {
 
-    private static final TreeMap<Font, String> FONT_FILE_MAP = new TreeMap<>((font1, font2) -> {
-        final String fontName1 = font1.getFontName();
-        final String fontName2 = font2.getFontName();
-
-        return fontName1.compareToIgnoreCase(fontName2);
-    });
-
     private final Logger logger = LoggerFactory.getLogger(FontHandler.class);
+    private final List<Font> fonts = new ArrayList<>();
+    private final DesignerPropertiesFile designerPropertiesFile;
 
-    public FontHandler(final DesignerPropertiesFile designerPropertiesFile) {
-        final String javaFontDir = System.getProperty("java.home") + "/lib/fonts";
-        final String[] fontDirectoriesWindows = {
-                "c:/windows/fonts",
-                "c:/winnt/fonts",
-                "d:/windows/fonts",
-                "d:/winnt/fonts"
-        };
-        final String[] fontDirectoriesUnix = {
-                "/usr/X/lib/X11/fonts/TrueType",
-                "/usr/openwin/lib/X11/fonts/TrueType",
-                "/usr/share/fonts",
-                "/usr/share/fonts/default/TrueType",
-                "/usr/share/fonts/truetype/liberation",
-                "/usr/X11R6/lib/X11/fonts/ttf",
-                "/Library/Fonts",
-                "/System/Library/Fonts"
-        };
-        final List<String> fontDirectories = ImmutableList.<String>builder()
-                .addAll(Arrays.asList(fontDirectoriesWindows))
-                .addAll(Arrays.asList(fontDirectoriesUnix))
-                .add(javaFontDir)
-                .build();
+    public FontHandler(
+            final DesignerPropertiesFile designerPropertiesFile,
+            final FontDirectories fontDirectories) {
+        this.designerPropertiesFile = designerPropertiesFile;
+        fontDirectories.getDirectories().forEach(this::registerDirectory);
 
-        fontDirectories.forEach(this::registerDirectory);
-
-        //todo: need to check if file has moved, and if so offer user chance to browse
-        designerPropertiesFile.getCustomFonts().forEach((key, value) -> registerFont(new File(value)));
+        updateFonts();
     }
 
-    private void registerDirectory(final String fontDirectory) {
+    public void updateFonts() {
+        //todo: need to check if file has moved, and if so offer user chance to browse
+        designerPropertiesFile.getCustomFonts().forEach(font -> registerFont(new File(font.getPath())));
+    }
+
+    private void registerDirectory(final File fontDirectory) {
         try {
-            final File folder = new File(fontDirectory);
-            if (!folder.exists() || !folder.isDirectory()) {
+            if (!fontDirectory.exists() || !fontDirectory.isDirectory()) {
                 return;
             }
 
-            final File[] fontFiles = folder.listFiles((directory, fileName) -> fileName.toLowerCase().endsWith(".ttf"));
+            final File[] fontFiles = fontDirectory.listFiles((directory, fileName) -> fileName.toLowerCase()
+                    .endsWith(".ttf"));
             if (fontFiles == null) {
                 return;
             }
 
             Arrays.stream(fontFiles).forEach(this::registerFont);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.info("Error registering directory. {}", e.getMessage());
         }
     }
 
-    String registerFont(final File file) {
-        //todo: adapt this method to handle a duff file, behave nicely, and tell
+    Optional<String> registerFont(final File fontFile) {
         try {
-            final String fontLocation = file.getPath();
-            final FileInputStream fontStream = new FileInputStream(fontLocation);
-            final Font font = Font.createFont(Font.TRUETYPE_FONT, fontStream);
+            final java.awt.Font font = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, fontFile);
+            final String fontName = font.getFontName();
 
-            FONT_FILE_MAP.put(font, fontLocation);
+            this.fonts.add(new Font(fontName, fontFile.getPath()));
 
-            return font.getFontName();
+            return Optional.of(fontName);
         } catch (FontFormatException | IOException e) {
             logger.warn("Unable reading font in FontHandler. {}", e.getMessage());
         }
 
-        return null;
+        return Optional.empty();
     }
 
-    public Font getDefaultFont() {
-        return FONT_FILE_MAP.firstKey();
+    public java.awt.Font getDefaultFont() {
+        if (!getFonts().isEmpty()) {
+            final Font font = getFonts().get(0);
+            final Optional<java.awt.Font> javaFont = font.convertToJavaFont();
+            if (javaFont.isPresent()) {
+                return javaFont.get();
+            }
+        }
+        return new java.awt.Font("Arial", java.awt.Font.PLAIN, 11);
     }
 
-    public Map<Font, String> getFontFileMap() {
-        return FONT_FILE_MAP;
+    public List<Font> getFonts() {
+        fonts.sort(Comparator.comparing(Font::getName));
+        return List.copyOf(fonts);
     }
 
-    public String getFontDirectory(final Font font) {
-        final String fontPath = getAbsoluteFontPath(font);
-        final String fileName = new File(fontPath).getName();
-        return fontPath.substring(0, fontPath.length() - fileName.length());
+    public Optional<String> getFontDirectory(final java.awt.Font font) {
+        return getAbsoluteFontPath(font)
+                .map(fontPath -> {
+                    final String fileName = new File(fontPath).getName();
+                    return fontPath.substring(0, fontPath.length() - fileName.length());
+                });
     }
 
-    public String getAbsoluteFontPath(final Font font) {
+    public Optional<String> getAbsoluteFontPath(final java.awt.Font font) {
         final String fontName = font.getName();
 
-        return FONT_FILE_MAP.entrySet().stream()
-                .filter(entry -> entry.getKey().getName().equals(fontName))
+        return fonts.stream()
+                .filter(f -> f.getName().equals(fontName))
                 .findFirst()
-                .map(Map.Entry::getValue)
-                .orElseGet(() -> FONT_FILE_MAP.get(getDefaultFont()));
+                .map(Font::getPath);
     }
 
-    public Font getFontFromName(final String fontName) {
-        return FONT_FILE_MAP.keySet().stream()
+    public java.awt.Font getFontFromName(final String fontName) {
+        return fonts.stream()
                 .filter(font -> font.getName().equals(fontName))
                 .findFirst()
+                .flatMap(Font::convertToJavaFont)
                 .orElseGet(this::getDefaultFont);
     }
 
     public String[] getFontFamilies() {
-        return FONT_FILE_MAP.keySet().stream()
-                .map(Font::getFontName)
+        return fonts.stream()
+                .map(Font::getName)
                 .toArray(String[]::new);
     }
+
 }

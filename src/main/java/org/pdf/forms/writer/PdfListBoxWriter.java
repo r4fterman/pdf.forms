@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.swing.*;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.model.des.BorderProperties;
 import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.model.des.LayoutProperties;
 import org.pdf.forms.model.des.ObjectProperties;
@@ -135,7 +137,7 @@ public class PdfListBoxWriter implements PdfComponentWriter {
                 pdfCaptionBounds.getTop() - captionBounds.height);
 
         final Font font = caption.getFont();
-        final String fontDirectory = fontHandler.getFontDirectory(font);
+        final Optional<String> fontDirectory = fontHandler.getFontDirectory(font);
 
         /*
          * we need to make this erroneous call to awtToPdf to see if an exception is thrown, if it is, it is
@@ -144,7 +146,7 @@ public class PdfListBoxWriter implements PdfComponentWriter {
         DefaultFontMapper mapper;
         try {
             mapper = new DefaultFontMapper();
-            mapper.insertDirectory(fontDirectory);
+            fontDirectory.ifPresent(mapper::insertDirectory);
             mapper.awtToPdf(font);
         } catch (final Exception e) {
             logger.error("Failed converting font from AWT to PDF for {}!", font.getName(), e);
@@ -169,7 +171,11 @@ public class PdfListBoxWriter implements PdfComponentWriter {
     private void addBorder(
             final IWidget widget,
             final BaseField baseField) {
-        final Borders borders = widget.getWidgetModel().getProperties().getBorder().getBorders();
+        final Optional<BorderProperties> borderProperties = widget.getWidgetModel().getProperties().getBorder();
+        if (borderProperties.isEmpty()) {
+            return;
+        }
+        final Borders borders = borderProperties.get().getBorders();
 
         final String style = borders.getBorderStyle().orElse("None");
         switch (style) {
@@ -208,19 +214,21 @@ public class PdfListBoxWriter implements PdfComponentWriter {
     }
 
     private BaseFont getBaseFont(final Font font) throws IOException, DocumentException {
-        final String fontPath = fontHandler.getAbsoluteFontPath(font);
-        try {
-            return BaseFont.createFont(fontPath, "Cp1250", BaseFont.EMBEDDED);
-        } catch (final DocumentException e) {
-            logger.error("Error embedding font. So use Helvetica instead.", e);
-            /*
-             * A document exception has been thrown meaning that the font cannot be embedded
-             * due to licensing restrictions so substitute with Helvetica
-             */
-            final BaseFont baseFont = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
-            fontSubstitutions.add(font.getFontName());
-            return baseFont;
+        final Optional<String> absoluteFontPath = fontHandler.getAbsoluteFontPath(font);
+        if (absoluteFontPath.isPresent()) {
+            final String fontPath = absoluteFontPath.get();
+            try {
+                return BaseFont.createFont(fontPath, "Cp1250", BaseFont.EMBEDDED);
+            } catch (final DocumentException e) {
+                 // A document exception has been thrown meaning that the font cannot be embedded
+                 // due to licensing restrictions
+                logger.error("Error embedding font. So use Helvetica instead.", e);
+            }
         }
+
+        // substitute with Helvetica
+        fontSubstitutions.add(font.getFontName());
+        return BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
     }
 
 }

@@ -3,10 +3,12 @@ package org.pdf.forms.writer;
 import java.awt.*;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.IMainFrame;
+import org.pdf.forms.model.des.BorderProperties;
 import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.model.des.Caption;
 import org.pdf.forms.widgets.IWidget;
@@ -102,10 +104,10 @@ public class PdfCheckBoxWriter implements PdfComponentWriter {
         cb.concatCTM(1, 0, 0, 1, pdfCaptionBounds.getLeft(), pdfCaptionBounds.getTop() - captionBounds.height);
 
         final java.awt.Font font = pdfCaption.getFont();
-        final String fontDirectory = fontHandler.getFontDirectory(font);
+        final Optional<String> fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
-        mapper.insertDirectory(fontDirectory);
+        fontDirectory.ifPresent(mapper::insertDirectory);
 
         /*
          * we need to make this erroneous call to awtToPdf to see if an exception is thrown, if it is, it is
@@ -132,7 +134,12 @@ public class PdfCheckBoxWriter implements PdfComponentWriter {
     private void addBorder(
             final IWidget widget,
             final BaseField baseField) {
-        final Borders borders = widget.getWidgetModel().getProperties().getBorder().getBorders();
+        final Optional<BorderProperties> borderProperties = widget.getWidgetModel().getProperties().getBorder();
+        if (borderProperties.isEmpty()) {
+            return;
+        }
+
+        final Borders borders = borderProperties.get().getBorders();
 
         final String style = borders.getBorderStyle().orElse("None");
         switch (style) {

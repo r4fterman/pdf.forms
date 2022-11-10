@@ -61,12 +61,7 @@
                 <property name="Fill Color" value="-1"/>
             </backgroundfill>
         </border>
-        <paragraph>
-            <paragraph_caption>
-                <property name="Horizontal Alignment" value="left"/>
-                <property name="Vertical Alignment" value="center"/>
-            </paragraph_caption>
-        </paragraph>
+        <paragraph/>
         <caption_properties>
             <property name="Text" value="Check Box"/>
             <property name="Divisor Location" value=""/>

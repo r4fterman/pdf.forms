@@ -98,7 +98,7 @@ public class Writer {
             final Map<Integer, List<IWidget>> widgetsByPageNumber,
             final DesDocument designerDocument) {
         final List<org.pdf.forms.model.des.Page> pages = designerDocument.getPage();
-        final Optional<String> javaScript = getJavaScript(designerDocument.getJavaScript());
+        final Optional<String> javaScript = designerDocument.getJavaScript().flatMap(this::getJavaScript);
         final PdfDocumentLayout pdfDocumentLayout = getPdfDocumentLayout(pages);
         if (pdfDocumentLayout.getPdfPages().isEmpty()) {
             logger.info("write: PDF page list is empty.");
@@ -424,8 +424,11 @@ public class Writer {
             final IWidget widget,
             final BaseField baseField) {
         final Widget model = widget.getWidgetModel();
-        final BorderProperties borderProperties = model.getProperties().getBorder();
-        final Borders borders = borderProperties.getBorders();
+        final Optional<BorderProperties> borderProperties = model.getProperties().getBorder();
+        if (borderProperties.isEmpty()) {
+            return;
+        }
+        final Borders borders = borderProperties.get().getBorders();
 
         final String style = borders.getBorderStyle().orElse("None");
 
@@ -522,10 +525,10 @@ public class Writer {
                 pdfCaptionBounds.getTop() - captionBounds.height);
 
         final Font font = pdfCaption.getFont();
-        final String fontDirectory = fontHandler.getFontDirectory(font);
+        final Optional<String> fontDirectory = fontHandler.getFontDirectory(font);
 
         DefaultFontMapper mapper = new DefaultFontMapper();
-        mapper.insertDirectory(fontDirectory);
+        fontDirectory.ifPresent(mapper::insertDirectory);
 
         /*
          * we need to make this erroneous call to awtToPdf to see if an exception is thrown, if it is, it is

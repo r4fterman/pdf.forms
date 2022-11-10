@@ -203,9 +203,7 @@ public class ValuePanel extends JPanel {
             defaultBox.addItem("< None >");
         }
 
-        objectProperties.getItems().getItem().forEach(item -> {
-            defaultBox.addItem(item.getValue());
-        });
+        objectProperties.getItems().ifPresent(items -> items.getItem().forEach(item -> defaultBox.addItem(item.getValue())));
     }
 
     private void applyRadioButtonProperties(final Set<IWidget> widgetsAndProperties) {

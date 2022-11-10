@@ -15,12 +15,14 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.jpedal.objects.acroforms.creation.JPedalBorderFactory;
 import org.pdf.forms.fonts.FontHandler;
 import org.pdf.forms.gui.designer.listeners.DesignerMouseMotionListener;
-import org.pdf.forms.model.des.BackgroundFill;
 import org.pdf.forms.model.des.BindingProperties;
 import org.pdf.forms.model.des.Borders;
 import org.pdf.forms.model.des.CaptionProperties;
 import org.pdf.forms.model.des.FontCaption;
+import org.pdf.forms.model.des.FontProperties;
 import org.pdf.forms.model.des.JavaScriptContent;
+import org.pdf.forms.model.des.ParagraphCaption;
+import org.pdf.forms.model.des.ParagraphProperties;
 import org.pdf.forms.model.des.SizeAndPosition;
 import org.pdf.forms.widgets.components.IPdfComponent;
 import org.pdf.forms.widgets.components.PdfCaption;
@@ -402,7 +404,12 @@ public abstract class Widget implements IWidget {
     }
 
     protected void setFontProperties(final IPdfComponent component) {
-        final FontCaption fontCaption = getWidgetModel().getProperties().getFont().getFontCaption();
+        final Optional<FontProperties> font = getWidgetModel().getProperties().getFont();
+        if (font.isEmpty()) {
+            return;
+        }
+
+        final FontCaption fontCaption = font.get().getFontCaption();
 
         final String fontName = fontCaption.getFontName().orElse("Arial");
         final Font baseFont = fontHandler.getFontFromName(fontName);
@@ -459,56 +466,50 @@ public abstract class Widget implements IWidget {
     }
 
     protected void setParagraphProperties(final IPdfComponent component) {
-        final Optional<String> horizontalAlignment = getWidgetModel().getProperties().getParagraph()
-                .getParagraphCaption().getHorizontalAlignment();
-        final Optional<String> verticalAlignment = getWidgetModel().getProperties().getParagraph().getParagraphCaption()
-                .getVerticalAlignment();
+        final Optional<ParagraphProperties> paragraphProperties = getWidgetModel().getProperties().getParagraph();
+        final Optional<String> horizontalAlignment = paragraphProperties.flatMap(paragraph -> paragraph.getParagraphCaption().flatMap(ParagraphCaption::getHorizontalAlignment));
 
         if (component instanceof PdfCaption) {
-            String text = component.getText();
-            text = StringEscapeUtils.escapeXml11(text);
-            text = "<html><p align=" + horizontalAlignment + ">" + text;
-            component.setText(text);
+            final String componentText = component.getText();
+            final String escapedComponentText = StringEscapeUtils.escapeXml11(componentText);
+            final String htmlText = "<html><p align=" + horizontalAlignment + ">" + escapedComponentText;
+            component.setText(htmlText);
         }
 
-        if (horizontalAlignment.isPresent()) {
-            final String alignment = horizontalAlignment.get();
-            switch (alignment) {
-                case "justify":
-                case "left":
-                    component.setHorizontalAlignment(SwingConstants.LEFT);
-                    break;
-                case "right":
-                    component.setHorizontalAlignment(SwingConstants.RIGHT);
-                    break;
-                case "center":
-                    component.setHorizontalAlignment(SwingConstants.CENTER);
-                    break;
-                default:
-                    logger.warn("Unexpected horizontal alignment {}", alignment);
-                    break;
-            }
-        }
+        horizontalAlignment.ifPresent(alignment -> setHorizontalAlignmentToComponent(alignment, component));
 
-        if (verticalAlignment.isPresent()) {
-            final String alignment = verticalAlignment.get();
-            switch (alignment) {
-                case "center":
-                    component.setVerticalAlignment(SwingConstants.CENTER);
-                    break;
-                case "top":
-                    component.setVerticalAlignment(SwingConstants.TOP);
-                    break;
-                case "bottom":
-                    component.setVerticalAlignment(SwingConstants.BOTTOM);
-                    break;
-                default:
-                    logger.warn("Unexpected vertical alignment {}", alignment);
-                    break;
-            }
-        }
+        final Optional<String> verticalAlignment = paragraphProperties.flatMap(paragraph -> paragraph.getParagraphCaption().flatMap(ParagraphCaption::getVerticalAlignment));
+        verticalAlignment.ifPresent(alignment -> setVerticalAlignmentToComponent(alignment, component));
 
         setSize(getWidth(), getHeight());
+    }
+
+    private void setHorizontalAlignmentToComponent(
+            final String alignment,
+            final IPdfComponent component) {
+        if ("justify".equals(alignment) || "left".equals(alignment)) {
+            component.setHorizontalAlignment(SwingConstants.LEFT);
+        } else if ("right".equals(alignment)) {
+            component.setHorizontalAlignment(SwingConstants.RIGHT);
+        } else if ("center".equals(alignment)) {
+            component.setHorizontalAlignment(SwingConstants.CENTER);
+        } else {
+            logger.warn("Unexpected horizontal alignment [{}]", alignment);
+        }
+    }
+
+    private void setVerticalAlignmentToComponent(
+            final String alignment,
+            final IPdfComponent component) {
+        if ("center".equals(alignment)) {
+            component.setVerticalAlignment(SwingConstants.CENTER);
+        } else if ("top".equals(alignment)) {
+            component.setVerticalAlignment(SwingConstants.TOP);
+        } else if ("bottom".equals(alignment)) {
+            component.setVerticalAlignment(SwingConstants.BOTTOM);
+        } else {
+            logger.warn("Unexpected vertical alignment [{}]", alignment);
+        }
     }
 
     @Override
@@ -571,8 +572,9 @@ public abstract class Widget implements IWidget {
     public void setBorderAndBackgroundProperties() {
         final JComponent valueComponent = getValueComponent();
 
-        final Borders borders = getWidgetModel().getProperties().getBorder().getBorders();
-        setBordersOnValueComponent(valueComponent, borders);
+        getWidgetModel().getProperties().getBorder()
+                .ifPresent(borderProperties -> setBordersOnValueComponent(valueComponent,
+                        borderProperties.getBorders()));
 
         setBackgroundOnValueComponent(valueComponent);
 
@@ -619,10 +621,12 @@ public abstract class Widget implements IWidget {
     }
 
     private void setBackgroundOnValueComponent(final JComponent valueComponent) {
-        final BackgroundFill backgroundFill = getWidgetModel().getProperties().getBorder().getBackgroundFill();
-        final Color backgroundColor = backgroundFill.getFillColor()
-                .map(c -> new Color(Integer.parseInt(c)))
+        final Color backgroundColor = getWidgetModel().getProperties().getBorder()
+                .map(borderProperties -> borderProperties.getBackgroundFill().getFillColor()
+                        .map(c -> new Color(Integer.parseInt(c)))
+                        .orElse(Color.WHITE))
                 .orElse(Color.WHITE);
+
         valueComponent.setBackground(backgroundColor);
     }
 

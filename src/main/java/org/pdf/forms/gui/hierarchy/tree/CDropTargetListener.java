@@ -105,10 +105,10 @@ class CDropTargetListener implements DropTargetListener {
             // Rub out the last ghost image and cue line
             cTree.paintImmediately(raGhost.getBounds());
             // And remember where we are about to draw the new ghost image
-            final int x = point.x - cTree.getPtOffset().x;
-            final int y = point.y - cTree.getPtOffset().y;
-            raGhost.setRect(x, y, cTree.getImgGhost().getWidth(), cTree.getImgGhost().getHeight());
-            g2.drawImage(cTree.getImgGhost(), AffineTransform.getTranslateInstance(raGhost.getX(), raGhost.getY()), null);
+            final int x = point.x - cTree.getDraggedImageMouseClickPoint().x;
+            final int y = point.y - cTree.getDraggedImageMouseClickPoint().y;
+            raGhost.setRect(x, y, cTree.getDraggedImage().getWidth(), cTree.getDraggedImage().getHeight());
+            g2.drawImage(cTree.getDraggedImage(), AffineTransform.getTranslateInstance(raGhost.getX(), raGhost.getY()), null);
         } else {
             // Just rub out the last cue line
             cTree.paintImmediately(raCueLine.getBounds());

@@ -63,14 +63,14 @@ public class MenubarCreator {
     }
 
     private JMenuBar createMenubar(final List<Menu> menus) {
-        final JMenuBar jMenuBar = new JMenuBar();
+        final JMenuBar menuBar = new JMenuBar();
 
         menus.stream()
                 .filter(Menu::isVisible)
                 .map(this::createJMenu)
-                .forEach(jMenuBar::add);
+                .forEach(menuBar::add);
 
-        return jMenuBar;
+        return menuBar;
     }
 
     private JMenu createAlignmentMenu(final Item item) {

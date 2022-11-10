@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.pdf.forms.readers.configuration.ItemBuilder;
 import org.pdf.forms.readers.configuration.MenuBuilder;
 import org.pdf.forms.readers.configuration.MenuConfigurationBuilder;
+
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "menu_configuration")
 @XmlType(propOrder = "menu")
@@ -52,26 +52,26 @@ public class MenuConfiguration {
     private static Menu buildFileMenu() {
         return new MenuBuilder().withName("File").withVisible(true)
                 .addItem(new ItemBuilder().withCommand("NEW").withName("New").withVisible(true).build())
-                .addItem(new ItemBuilder().withCommand("OPEN").withName("Open Designer File").withVisible(true)
+                .addItem(new ItemBuilder().withCommand("OPEN").withName("Open Designer File...").withVisible(true)
                         .build())
                 .addItem(new ItemBuilder().withCommand("RECENT_OPEN").withName("Recently Designer Files")
                         .withVisible(true).build())
-                .addItem(new ItemBuilder().withCommand("CLOSE").withName("Close").withVisible(true).build())
+                .addItem(new ItemBuilder().withCommand("CLOSE").withName("Close...").withVisible(true).build())
                 .addItem(buildSeparator())
-                .addItem(new ItemBuilder().withCommand("IMPORT").withName("Import PDF Documents").withVisible(true)
+                .addItem(new ItemBuilder().withCommand("IMPORT").withName("Import PDF Documents...").withVisible(true)
                         .build())
                 .addItem(new ItemBuilder().withCommand("RECENT_IMPORT").withName("Recently Imported PDF Documents")
                         .withVisible(true).build())
                 .addItem(buildSeparator())
                 .addItem(new ItemBuilder().withCommand("SAVE_FILE").withName("Save Designer File").withVisible(true)
                         .build())
-                .addItem(new ItemBuilder().withCommand("SAVE_FILE_AS").withName("Save Designer File As")
+                .addItem(new ItemBuilder().withCommand("SAVE_FILE_AS").withName("Save Designer File As...")
                         .withVisible(true).build())
                 .addItem(buildSeparator())
-                .addItem(new ItemBuilder().withCommand("PUBLISH").withName("Publish PDF Document").withVisible(true)
+                .addItem(new ItemBuilder().withCommand("PUBLISH").withName("Publish PDF Document...").withVisible(true)
                         .build())
                 .addItem(buildSeparator())
-                .addItem(new ItemBuilder().withCommand("FONT_MANAGEMENT").withName("Font Management")
+                .addItem(new ItemBuilder().withCommand("FONT_MANAGEMENT").withName("Font Management...")
                         .withVisible(true).build())
                 .addItem(buildSeparator())
                 .addItem(new ItemBuilder().withCommand("EXIT").withName("Exit").withVisible(true).build())

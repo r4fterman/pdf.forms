@@ -32,3 +32,7 @@ See the requirements to avoid run problems.
 # Build #
 
     $>./build.sh
+
+# Other PDF Projects #
+
+JavaScript based: https://pdf-lib.js.org/
