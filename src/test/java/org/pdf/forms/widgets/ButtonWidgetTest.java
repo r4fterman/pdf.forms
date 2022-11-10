@@ -10,7 +10,6 @@ import java.net.URL;
 import java.nio.file.Files;
 
 import javax.swing.*;
-import javax.xml.bind.JAXBException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +21,8 @@ import org.pdf.forms.widgets.components.PdfButton;
 import org.pdf.forms.writer.MockFontDirectories;
 import org.xmlunit.diff.DefaultNodeMatcher;
 import org.xmlunit.diff.DifferenceEvaluators;
+
+import jakarta.xml.bind.JAXBException;
 
 class ButtonWidgetTest {
 

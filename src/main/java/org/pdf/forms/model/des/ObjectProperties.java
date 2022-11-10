@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(name = "object")
 public class ObjectProperties {

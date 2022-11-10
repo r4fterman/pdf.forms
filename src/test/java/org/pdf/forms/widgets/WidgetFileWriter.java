@@ -1,9 +1,9 @@
 package org.pdf.forms.widgets;
 
-import javax.xml.bind.JAXBException;
-
 import org.pdf.forms.model.des.Widget;
 import org.pdf.forms.readers.XmlJavaObjectMapper;
+
+import jakarta.xml.bind.JAXBException;
 
 public class WidgetFileWriter {
 
